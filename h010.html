@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Editor de Arquivo TXT - Modificação de Campos H010</title>
+    <style>
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+      }
+
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        line-height: 1.6;
+        background-color: var(--background-color);
+        color: var(--text-color);
+      }
+
+      .container {
+        background-color: var(--background-color);
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      }
+
+      .logo-container {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .logo {
+        max-width: 180px;
+        margin-bottom: 10px;
+      }
+
+      h1 {
+        color: var(--primary-color);
+        text-align: center;
+        font-weight: 600;
+        margin-bottom: 25px;
+        font-size: 28px;
+      }
+
+      h2 {
+        color: var(--primary-color);
+        font-size: 20px;
+        font-weight: 500;
+        margin-top: 5px;
+        margin-bottom: 15px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 6px;
+        color: var(--text-color);
+      }
+
+      input[type="number"],
+      input[type="text"],
+      input[type="file"] {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        box-sizing: border-box;
+        font-size: 16px;
+        transition: border-color 0.3s;
+      }
+
+      input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(79, 0, 114, 0.1);
+      }
+
+      button {
+        background-color: var(--accent-color);
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        display: block;
+        margin: 25px auto;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(251, 10, 94, 0.3);
+      }
+
+      button:hover {
+        background-color: #e00050;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(251, 10, 94, 0.4);
+      }
+
+      #resultado {
+        margin-top: 25px;
+        padding: 15px;
+        background-color: #f8f8f8;
+        border-radius: 6px;
+        white-space: pre-wrap;
+        display: none;
+        border: 1px solid var(--border-color);
+        font-family: monospace;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .copy-button {
+        background-color: var(--primary-color);
+        margin-top: 10px;
+        box-shadow: 0 2px 5px rgba(79, 0, 114, 0.3);
+      }
+
+      .copy-button:hover {
+        background-color: #3b0056;
+        box-shadow: 0 4px 8px rgba(79, 0, 114, 0.4);
+      }
+
+      .secao {
+        border-left: 3px solid var(--primary-color);
+        padding-left: 15px;
+        margin-bottom: 25px;
+        background-color: var(--form-bg-color);
+        padding: 20px;
+        border-radius: 8px;
+      }
+
+      .destacado {
+        background-color: #f9f3ff;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        border-left: 3px solid var(--primary-color);
+      }
+
+      small {
+        color: #666;
+        font-size: 13px;
+        display: block;
+        margin-top: 5px;
+      }
+
+      /* Estilos do modal */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      .modal-content {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        width: 50%;
+        margin: 15% auto;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        position: relative;
+      }
+
+      .close-modal {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 24px;
+        cursor: pointer;
+      }
+
+      /* Estilos adicionais para nossa aplicação */
+      .preview {
+        margin-top: 20px;
+        border: 1px solid var(--border-color);
+        padding: 15px;
+        border-radius: 6px;
+        background-color: #fff;
+        max-height: 300px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        font-family: monospace;
+        font-size: 14px;
+      }
+
+      .stats {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #666;
+      }
+
+      .progress-container {
+        display: none;
+        margin-top: 20px;
+        text-align: center;
+        color: var(--primary-color);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Editor de Arquivo Sped Fiscal (Bloco H)</h1>
+    <div class="container">
+      <div class="secao">
+        <h2>Selecione o arquivo e informe a conta contábil</h2>
+        <div class="form-group">
+          <label for="fileInput">Arquivo TXT:</label>
+          <input type="file" id="fileInput" accept=".txt" />
+          <small
+            >Selecione o arquivo que contém as linhas |H010 para
+            modificação</small
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="contaContabil">Conta Contábil:</label>
+          <input
+            type="text"
+            id="contaContabil"
+            placeholder="Digite a conta contábil para o campo 10"
+          />
+          <small
+            >Este valor será inserido no campo 10 de todas as linhas que começam
+            com |H010|</small
+          >
+        </div>
+
+        <button id="processButton" disabled>Processar Arquivo</button>
+
+        <div class="progress-container" id="progressContainer">
+          <p>Processando arquivo...</p>
+        </div>
+      </div>
+
+      <div class="destacado">
+        <div class="stats" id="stats"></div>
+        <div class="preview" id="preview"></div>
+      </div>
+    </div>
+
+    <!-- Modal de Sucesso -->
+    <div id="successModal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal" id="closeModal">&times;</span>
+        <h2>Processamento Concluído</h2>
+        <p id="modalMessage"></p>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const fileInput = document.getElementById("fileInput");
+        const contaContabilInput = document.getElementById("contaContabil");
+        const processButton = document.getElementById("processButton");
+        const progressContainer = document.getElementById("progressContainer");
+        const previewElement = document.getElementById("preview");
+        const statsElement = document.getElementById("stats");
+        const successModal = document.getElementById("successModal");
+        const closeModal = document.getElementById("closeModal");
+        const modalMessage = document.getElementById("modalMessage");
+
+        let fileContent = "";
+        let fileName = "";
+
+        fileInput.addEventListener("change", function (e) {
+          const file = e.target.files[0];
+          if (!file) {
+            processButton.disabled = true;
+            return;
+          }
+
+          fileName = file.name;
+
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            fileContent = e.target.result;
+
+            // Habilita o botão se tiver arquivo e conta contábil
+            processButton.disabled = !(
+              fileContent && contaContabilInput.value.trim()
+            );
+
+            // Exibe uma prévia do conteúdo do arquivo (primeiras 5 linhas)
+            const lines = fileContent.split("\n").slice(0, 5);
+            previewElement.textContent =
+              "Prévia (primeiras 5 linhas):\n\n" + lines.join("\n");
+
+            // Conta e exibe estatísticas
+            const totalLines = fileContent.split("\n").length;
+            const h010Lines = fileContent
+              .split("\n")
+              .filter((line) => line.startsWith("|H010")).length;
+            statsElement.innerHTML = `<strong>Estatísticas do arquivo:</strong> ${totalLines} linhas no total, ${h010Lines} linhas começando com |H010`;
+          };
+          reader.readAsText(file);
+        });
+
+        contaContabilInput.addEventListener("input", function () {
+          // Habilita o botão se tiver arquivo e conta contábil
+          processButton.disabled = !(
+            fileContent && contaContabilInput.value.trim()
+          );
+        });
+
+        processButton.addEventListener("click", function () {
+          const contaContabil = contaContabilInput.value.trim();
+          if (!contaContabil) {
+            alert("Por favor, informe a conta contábil.");
+            return;
+          }
+
+          progressContainer.style.display = "block";
+
+          // Processar o arquivo (setTimeout para permitir que a UI atualize)
+          setTimeout(() => {
+            try {
+              const lines = fileContent.split("\n");
+              let modifiedCount = 0;
+
+              const modifiedLines = lines.map((line) => {
+                if (line.startsWith("|H010")) {
+                  // Divide a linha em campos
+                  const fields = line.split("|");
+
+                  // Verifica se há pelo menos 10 campos
+                  if (fields.length > 10) {
+                    // Atualiza o campo 10 (índice 10 após a divisão)
+                    fields[10] = contaContabil;
+                    modifiedCount++;
+                    return fields.join("|");
+                  }
+                }
+                return line;
+              });
+
+              const modifiedContent = modifiedLines.join("\n");
+
+              // Cria um novo arquivo para download
+              const blob = new Blob([modifiedContent], { type: "text/plain" });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+
+              // Cria um nome para o arquivo modificado
+              const dotIndex = fileName.lastIndexOf(".");
+              const newFileName =
+                fileName.substring(0, dotIndex) +
+                "_modificado" +
+                fileName.substring(dotIndex);
+              a.download = newFileName;
+
+              a.click();
+              URL.revokeObjectURL(url);
+
+              // Exibe o modal de sucesso
+              modalMessage.textContent = `${modifiedCount} linhas H010 foram modificadas com sucesso! O download do arquivo "${newFileName}" foi iniciado.`;
+              successModal.style.display = "block";
+            } catch (error) {
+              alert("Erro ao processar o arquivo: " + error.message);
+            } finally {
+              progressContainer.style.display = "none";
+            }
+          }, 100);
+        });
+
+        // Fechamento do modal
+        closeModal.addEventListener("click", function () {
+          successModal.style.display = "none";
+        });
+
+        // Fechar o modal quando clicar fora dele
+        window.addEventListener("click", function (event) {
+          if (event.target === successModal) {
+            successModal.style.display = "none";
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
