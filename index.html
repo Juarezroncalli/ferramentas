@@ -205,3 +205,215 @@
     </script>
   </body>
 </html>
+=======
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel de Navegação</title>
+    <style>
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+      }
+
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+        line-height: 1.6;
+        background-color: var(--background-color);
+        color: var(--text-color);
+      }
+
+      .container {
+        background-color: var(--background-color);
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      }
+
+      .logo-container {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .logo {
+        max-width: 180px;
+        margin-bottom: 10px;
+      }
+
+      h1 {
+        color: var(--primary-color);
+        text-align: center;
+        font-weight: 600;
+        margin-bottom: 25px;
+        font-size: 32px;
+      }
+
+      h2 {
+        color: var(--primary-color);
+        font-size: 22px;
+        font-weight: 500;
+        margin-top: 5px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .buttons-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 25px;
+        margin-top: 30px;
+      }
+
+      .nav-button {
+        background-color: var(--form-bg-color);
+        border: 1px solid var(--border-color);
+        border-left: 3px solid var(--primary-color);
+        border-radius: 8px;
+        padding: 25px;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        height: 180px;
+      }
+
+      .nav-button:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        border-left: 3px solid var(--accent-color);
+      }
+
+      .nav-button .icon {
+        font-size: 40px;
+        margin-bottom: 15px;
+        color: var(--primary-color);
+      }
+
+      .nav-button:hover .icon {
+        color: var(--accent-color);
+      }
+
+      .nav-button h3 {
+        font-size: 20px;
+        margin: 0 0 10px 0;
+        color: var(--primary-color);
+        transition: color 0.3s ease;
+      }
+
+      .nav-button:hover h3 {
+        color: var(--accent-color);
+      }
+
+      .nav-button p {
+        margin: 0;
+        font-size: 14px;
+        color: #666;
+      }
+
+      .destacado {
+        background-color: #f9f3ff;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        border-left: 3px solid var(--primary-color);
+        text-align: center;
+      }
+
+      footer {
+        margin-top: 40px;
+        text-align: center;
+        font-size: 14px;
+        color: #777;
+      }
+
+      @media (max-width: 768px) {
+        .buttons-container {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="logo-container">
+        <!-- Você pode adicionar um logo aqui -->
+        <!-- <img src="logo.png" alt="Logo" class="logo"> -->
+      </div>
+
+      <h1>Painel de Navegação</h1>
+
+      <div class="destacado">
+        <h2>Selecione uma ferramenta para começar</h2>
+        <p>
+          Acesse as diferentes ferramentas disponíveis clicando nos botões
+          abaixo
+        </p>
+      </div>
+
+      <div class="buttons-container">
+        <!-- Botão 1 -->
+        <a href="h010.html" class="nav-button">
+          <div class="icon">📝</div>
+          <h3>Editor de Arquivo TXT</h3>
+          <p>
+            Script para incluir automaticamente a conta contábil no registro
+            H010 (inventário) do SPED Fiscal, garantindo o preenchimento correto
+            do campo COD_CTA.
+          </p>
+        </a>
+
+        <!-- Botão 2 -->
+        <a href="financiamentos.html" class="nav-button">
+          <div class="icon">📊</div>
+          <h3>Separador de Prazos - Empréstimos e Financiamentos</h3>
+          <p>
+            Calcula e separa automaticamente os saldos de empréstimos e
+            financiamentos entre curto e longo prazo, facilitando a correta
+            contabilização conforme as normas contábeis.
+          </p>
+        </a>
+
+        <!-- Botão 3 -->
+        <a href="MIT_PRESUMIDO.html" class="nav-button">
+          <div class="icon">📋</div>
+          <h3>Gerador de JSON para MIT do e-CAC - Lucro Presumido</h3>
+          <p>
+            Agilize sua rotina contábil com nossa ferramenta online exclusiva
+            para geração do arquivo JSON do MIT (Módulo de Integração
+            Tributária) para empresas do Lucro Presumido. Ideal para escritórios
+            que administram um grande volume de CNPJs, o site permite criar
+            rapidamente os arquivos no formato exigido pela Receita Federal,
+            eliminando retrabalho manual e garantindo conformidade. Otimize seu
+            tempo, minimize erros e aumente a produtividade com poucos cliques!
+          </p>
+        </a>
+
+        <!-- Botão 4 -->
+        <a href="ferramenta4.html" class="nav-button">
+          <div class="icon">⚙️</div>
+          <h3>Ferramenta 4</h3>
+          <p>Descrição da funcionalidade desta ferramenta</p>
+        </a>
+      </div>
+    </div>
+
+    <footer>&copy; 2025 - Desenvolvido por Juarez Roncalli</footer>
+
+    <script>
+      // Você pode adicionar scripts adicionais aqui se necessário
+    </script>
+  </body>
+</html>
