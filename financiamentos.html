@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadora de Empréstimo</title>
+    <style>
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+      }
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        line-height: 1.6;
+        background-color: var(--background-color);
+        color: var(--text-color);
+      }
+      .container {
+        background-color: var(--background-color);
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      }
+      h1 {
+        color: var(--primary-color);
+        text-align: center;
+        font-weight: 600;
+        margin-bottom: 25px;
+        font-size: 28px;
+      }
+      .form-group {
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 6px;
+        color: var(--text-color);
+      }
+      input[type="text"],
+      input[type="number"],
+      input[type="date"] {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        box-sizing: border-box;
+        font-size: 16px;
+        transition: border-color 0.3s;
+        font-family: "Segoe UI", Arial, sans-serif;
+      }
+      input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(79, 0, 114, 0.1);
+      }
+      button {
+        background-color: var(--accent-color);
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        display: block;
+        margin: 25px auto;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(251, 10, 94, 0.3);
+      }
+      button:hover {
+        background-color: #e00050;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(251, 10, 94, 0.4);
+      }
+      .results {
+        margin-top: 25px;
+        padding: 20px;
+        background-color: #f9f3ff;
+        border-radius: 8px;
+        border-left: 3px solid var(--primary-color);
+      }
+      .results p {
+        margin-bottom: 12px;
+        font-size: 16px;
+      }
+      h2 {
+        color: var(--primary-color);
+        margin-top: 20px;
+        font-size: 20px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 5px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        padding: 8px 10px;
+        border: 1px solid var(--border-color);
+        text-align: center;
+      }
+      th {
+        background-color: var(--form-bg-color);
+        color: var(--primary-color);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Calculadora de Empréstimo</h1>
+      <form id="loanForm">
+        <div class="form-group">
+          <label>Valor do Empréstimo (Liberado + IOF + Taxas):</label>
+          <input type="text" id="loanAmount" required />
+        </div>
+        <div class="form-group">
+          <label>Quantidade de Parcelas:</label>
+          <input type="number" id="numInstallments" required />
+        </div>
+        <div class="form-group">
+          <label>Valor de Cada Parcela:</label>
+          <input type="text" id="installmentValue" required />
+        </div>
+        <div class="form-group">
+          <label>Vencimento da Primeira Parcela:</label>
+          <input type="date" id="firstDueDate" required />
+        </div>
+        <button type="submit">Calcular</button>
+      </form>
+
+      <div id="results" class="results" style="display: none"></div>
+    </div>
+
+    <script>
+      const formatter = new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+        minimumFractionDigits: 2,
+      });
+
+      function formatInputCurrency(input) {
+        let value = input.value.replace(/\D/g, "");
+        value = (parseFloat(value) / 100).toFixed(2);
+        input.value = formatter.format(value);
+      }
+
+      document
+        .getElementById("loanAmount")
+        .addEventListener("input", function () {
+          formatInputCurrency(this);
+        });
+      document
+        .getElementById("installmentValue")
+        .addEventListener("input", function () {
+          formatInputCurrency(this);
+        });
+
+      document
+        .getElementById("loanForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const loanAmountRaw =
+            parseFloat(
+              document.getElementById("loanAmount").value.replace(/\D/g, "")
+            ) / 100;
+          const installmentValueRaw =
+            parseFloat(
+              document
+                .getElementById("installmentValue")
+                .value.replace(/\D/g, "")
+            ) / 100;
+          const numInstallments = parseInt(
+            document.getElementById("numInstallments").value
+          );
+          const firstDueDate = new Date(
+            document.getElementById("firstDueDate").value
+          );
+
+          let installments = [];
+          let currentDate = new Date(firstDueDate);
+
+          for (let i = 0; i < numInstallments; i++) {
+            installments.push({
+              dueDate: new Date(currentDate),
+              value: installmentValueRaw,
+            });
+            currentDate.setMonth(currentDate.getMonth() + 1);
+          }
+
+          const yearLimit = firstDueDate.getFullYear() + 1;
+          let totalBeforeLimit = 0;
+          let totalAfterLimit = 0;
+
+          installments.forEach((inst) => {
+            if (inst.dueDate.getFullYear() <= yearLimit) {
+              totalBeforeLimit += inst.value;
+            } else {
+              totalAfterLimit += inst.value;
+            }
+          });
+
+          const totalInstallments = installmentValueRaw * numInstallments;
+          const totalInterest = totalInstallments - loanAmountRaw;
+          const interestBeforeLimit =
+            (totalBeforeLimit / totalInstallments) * totalInterest;
+          const interestAfterLimit = totalInterest - interestBeforeLimit;
+          const interestPerInstallment = totalInterest / numInstallments;
+
+          // Monta resultado
+          let html = `
+        <h2>Totais Gerais</h2>
+        <p><strong>Valor total a pagar:</strong> ${formatter.format(
+          totalInstallments
+        )}</p>
+        <p><strong>Total de juros:</strong> ${formatter.format(
+          totalInterest
+        )}</p>
+        
+        <h2>Parcelas e Juros de Curto Prazo</h2>
+        <p><strong>Valor total das parcelas até ${yearLimit}:</strong> ${formatter.format(
+            totalBeforeLimit
+          )}</p>
+        <p><strong>Juros pagos até ${yearLimit}:</strong> ${formatter.format(
+            interestBeforeLimit
+          )}</p>
+
+        <h2>Parcelas e Juros de Longo Prazo</h2>
+        <p><strong>Valor total das parcelas após ${yearLimit}:</strong> ${formatter.format(
+            totalAfterLimit
+          )}</p>
+        <p><strong>Juros pagos após ${yearLimit}:</strong> ${formatter.format(
+            interestAfterLimit
+          )}</p>
+
+        <h2>Detalhamento Parcela a Parcela</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Parcela</th>
+              <th>Vencimento</th>
+              <th>Valor</th>
+              <th>Juros</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+          installments.forEach((inst, index) => {
+            const dateStr = inst.dueDate.toLocaleDateString("pt-BR");
+            html += `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${dateStr}</td>
+            <td>${formatter.format(inst.value)}</td>
+            <td>${formatter.format(interestPerInstallment)}</td>
+          </tr>
+        `;
+          });
+
+          html += `</tbody></table>`;
+          document.getElementById("results").style.display = "block";
+          document.getElementById("results").innerHTML = html;
+        });
+    </script>
+  </body>
+</html>
