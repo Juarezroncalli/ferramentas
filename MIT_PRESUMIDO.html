@@ -81,7 +81,8 @@
         transition: border-color 0.3s;
       }
 
-      input:focus, select:focus {
+      input:focus,
+      select:focus {
         outline: none;
         border-color: var(--primary-color);
         box-shadow: 0 0 0 2px rgba(79, 0, 114, 0.1);
@@ -269,12 +270,20 @@
       <h1>Gerador de JSON para MIT (Lucro Presumido) - Versão 1.2</h1>
 
       <!-- Exibição dos dados salvos -->
-      <div id="infoArmazenada" class="info-armazenada" style="display: none;">
+      <div id="infoArmazenada" class="info-armazenada" style="display: none">
         <h2>Dados do Responsável Armazenados</h2>
         <p><strong>CPF:</strong> <span id="cpfSalvo"></span></p>
-        <p><strong>Telefone:</strong> (<span id="dddSalvo"></span>) <span id="telefoneSalvo"></span></p>
+        <p>
+          <strong>Telefone:</strong> (<span id="dddSalvo"></span>)
+          <span id="telefoneSalvo"></span>
+        </p>
         <p><strong>Email:</strong> <span id="emailSalvo"></span></p>
-        <p><strong>CRC:</strong> <span id="crcSalvo"></span> (<span id="ufSalvo"></span>)</p>
+        <p>
+          <strong>CRC:</strong> <span id="crcSalvo"></span> (<span
+            id="ufSalvo"
+          ></span
+          >)
+        </p>
       </div>
 
       <form id="formJson">
@@ -329,7 +338,7 @@
               maxlength="11"
               pattern="[0-9]{11}"
               required
-              placeholder="Ex: 65296524691"
+              placeholder="Ex: 99999999999"
             />
             <small>Apenas números, sem pontuação</small>
           </div>
@@ -402,12 +411,14 @@
               type="text"
               id="numRegistroCRC"
               required
-              placeholder="Ex: MG067426O"
+              placeholder="Ex: MG000000"
             />
           </div>
           <div class="grupo-salvar">
             <small>Estes dados serão salvos para futuras declarações</small>
-            <button type="button" id="salvarDados" class="btn-salvar">Salvar Dados</button>
+            <button type="button" id="salvarDados" class="btn-salvar">
+              Salvar Dados
+            </button>
           </div>
         </div>
 
@@ -506,82 +517,89 @@
 
     <script>
       // Constante para nome do localStorage
-      const STORAGE_KEY = 'mitResponsavelData';
-      
+      const STORAGE_KEY = "mitResponsavelData";
+
       // Carrega os dados salvos ao iniciar a página
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener("DOMContentLoaded", function () {
         carregarDadosSalvos();
       });
 
       // Função para carregar os dados salvos
       function carregarDadosSalvos() {
         const dadosSalvos = localStorage.getItem(STORAGE_KEY);
-        
+
         if (dadosSalvos) {
           const dados = JSON.parse(dadosSalvos);
-          
+
           // Preenche os campos do formulário
-          document.getElementById('cpfResponsavel').value = dados.cpf || '';
-          document.getElementById('dddResponsavel').value = dados.ddd || '';
-          document.getElementById('numTelefone').value = dados.telefone || '';
-          document.getElementById('emailResponsavel').value = dados.email || '';
-          document.getElementById('estadoUF').value = dados.uf || '';
-          document.getElementById('numRegistroCRC').value = dados.registroCrc || '';
-          
+          document.getElementById("cpfResponsavel").value = dados.cpf || "";
+          document.getElementById("dddResponsavel").value = dados.ddd || "";
+          document.getElementById("numTelefone").value = dados.telefone || "";
+          document.getElementById("emailResponsavel").value = dados.email || "";
+          document.getElementById("estadoUF").value = dados.uf || "";
+          document.getElementById("numRegistroCRC").value =
+            dados.registroCrc || "";
+
           // Exibe os dados salvos na seção de informações
-          document.getElementById('cpfSalvo').textContent = dados.cpf || '';
-          document.getElementById('dddSalvo').textContent = dados.ddd || '';
-          document.getElementById('telefoneSalvo').textContent = dados.telefone || '';
-          document.getElementById('emailSalvo').textContent = dados.email || '';
-          document.getElementById('crcSalvo').textContent = dados.registroCrc || '';
-          document.getElementById('ufSalvo').textContent = dados.uf || '';
-          
+          document.getElementById("cpfSalvo").textContent = dados.cpf || "";
+          document.getElementById("dddSalvo").textContent = dados.ddd || "";
+          document.getElementById("telefoneSalvo").textContent =
+            dados.telefone || "";
+          document.getElementById("emailSalvo").textContent = dados.email || "";
+          document.getElementById("crcSalvo").textContent =
+            dados.registroCrc || "";
+          document.getElementById("ufSalvo").textContent = dados.uf || "";
+
           // Mostra o bloco de informações armazenadas
-          document.getElementById('infoArmazenada').style.display = 'block';
+          document.getElementById("infoArmazenada").style.display = "block";
         }
       }
 
       // Função para salvar os dados do responsável
-      document.getElementById('salvarDados').addEventListener('click', function() {
-        const cpf = document.getElementById('cpfResponsavel').value;
-        const ddd = document.getElementById('dddResponsavel').value;
-        const telefone = document.getElementById('numTelefone').value;
-        const email = document.getElementById('emailResponsavel').value;
-        const uf = document.getElementById('estadoUF').value;
-        const registroCrc = document.getElementById('numRegistroCRC').value;
-        
-        // Validação básica
-        if (!cpf || !ddd || !telefone || !email || !uf || !registroCrc) {
-          alert('Por favor, preencha todos os campos do responsável antes de salvar.');
-          return;
-        }
-        
-        // Criar objeto com os dados
-        const dadosResponsavel = {
-          cpf: cpf,
-          ddd: ddd,
-          telefone: telefone,
-          email: email,
-          uf: uf,
-          registroCrc: registroCrc
-        };
-        
-        // Salvar no localStorage
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(dadosResponsavel));
-        
-        // Atualizar a exibição dos dados salvos
-        document.getElementById('cpfSalvo').textContent = cpf;
-        document.getElementById('dddSalvo').textContent = ddd;
-        document.getElementById('telefoneSalvo').textContent = telefone;
-        document.getElementById('emailSalvo').textContent = email;
-        document.getElementById('crcSalvo').textContent = registroCrc;
-        document.getElementById('ufSalvo').textContent = uf;
-        
-        // Mostrar o bloco de informações armazenadas
-        document.getElementById('infoArmazenada').style.display = 'block';
-        
-        alert('Dados do responsável salvos com sucesso!');
-      });
+      document
+        .getElementById("salvarDados")
+        .addEventListener("click", function () {
+          const cpf = document.getElementById("cpfResponsavel").value;
+          const ddd = document.getElementById("dddResponsavel").value;
+          const telefone = document.getElementById("numTelefone").value;
+          const email = document.getElementById("emailResponsavel").value;
+          const uf = document.getElementById("estadoUF").value;
+          const registroCrc = document.getElementById("numRegistroCRC").value;
+
+          // Validação básica
+          if (!cpf || !ddd || !telefone || !email || !uf || !registroCrc) {
+            alert(
+              "Por favor, preencha todos os campos do responsável antes de salvar."
+            );
+            return;
+          }
+
+          // Criar objeto com os dados
+          const dadosResponsavel = {
+            cpf: cpf,
+            ddd: ddd,
+            telefone: telefone,
+            email: email,
+            uf: uf,
+            registroCrc: registroCrc,
+          };
+
+          // Salvar no localStorage
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(dadosResponsavel));
+
+          // Atualizar a exibição dos dados salvos
+          document.getElementById("cpfSalvo").textContent = cpf;
+          document.getElementById("dddSalvo").textContent = ddd;
+          document.getElementById("telefoneSalvo").textContent = telefone;
+          document.getElementById("emailSalvo").textContent = email;
+          document.getElementById("crcSalvo").textContent = registroCrc;
+          document.getElementById("ufSalvo").textContent = uf;
+
+          // Mostrar o bloco de informações armazenadas
+          document.getElementById("infoArmazenada").style.display = "block";
+
+          alert("Dados do responsável salvos com sucesso!");
+        });
 
       // Validação do campo CNPJ e geração do JSON
       document
@@ -607,12 +625,15 @@
           const valorDebitoCofins = parseFloat(
             document.getElementById("valorDebitoCofins").value || 0
           );
-          
+
           // Dados do responsável
-          const cpfResponsavel = document.getElementById("cpfResponsavel").value;
-          const dddResponsavel = document.getElementById("dddResponsavel").value;
+          const cpfResponsavel =
+            document.getElementById("cpfResponsavel").value;
+          const dddResponsavel =
+            document.getElementById("dddResponsavel").value;
           const numTelefone = document.getElementById("numTelefone").value;
-          const emailResponsavel = document.getElementById("emailResponsavel").value;
+          const emailResponsavel =
+            document.getElementById("emailResponsavel").value;
           const ufRegistro = document.getElementById("estadoUF").value;
           const numRegistro = document.getElementById("numRegistroCRC").value;
 
@@ -628,10 +649,19 @@
             );
             return;
           }
-          
+
           // Validar os campos do responsável
-          if (!cpfResponsavel || !dddResponsavel || !numTelefone || !emailResponsavel || !ufRegistro || !numRegistro) {
-            alert("Por favor, preencha todos os campos do responsável pela apuração.");
+          if (
+            !cpfResponsavel ||
+            !dddResponsavel ||
+            !numTelefone ||
+            !emailResponsavel ||
+            !ufRegistro ||
+            !numRegistro
+          ) {
+            alert(
+              "Por favor, preencha todos os campos do responsável pela apuração."
+            );
             return;
           }
 
