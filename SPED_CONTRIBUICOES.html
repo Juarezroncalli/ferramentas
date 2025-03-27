@@ -186,13 +186,10 @@
         <div class="report-section">
             <h3>Informações de PIS</h3>
             <div class="report-grid">
+                <!-- Sequência reordenada conforme solicitado -->
                 <div class="report-item">
                     <span class="label">VALOR TOTAL DE CRÉDITO DE PIS</span>
                     <span class="value" id="pis-credito">-</span>
-                </div>
-                <div class="report-item">
-                    <span class="label">SALDO DE CRÉDITOS DE PIS A UTILIZAR EM PERÍODOS FUTUROS</span>
-                    <span class="value" id="pis-saldo">-</span>
                 </div>
                 <div class="report-item">
                     <span class="label">TOTAL DÉBITO PIS</span>
@@ -210,19 +207,20 @@
                     <span class="label">TOTAL A PAGAR DE PIS</span>
                     <span class="value" id="pis-pagar">-</span>
                 </div>
+                <div class="report-item">
+                    <span class="label">SALDO DE CRÉDITOS DE PIS A UTILIZAR EM PERÍODOS FUTUROS</span>
+                    <span class="value" id="pis-saldo">-</span>
+                </div>
             </div>
         </div>
         
         <div class="report-section">
             <h3>Informações de COFINS</h3>
             <div class="report-grid">
+                <!-- Sequência reordenada conforme solicitado -->
                 <div class="report-item">
                     <span class="label">VALOR TOTAL DE CRÉDITO DE COFINS</span>
                     <span class="value" id="cofins-credito">-</span>
-                </div>
-                <div class="report-item">
-                    <span class="label">SALDO DE CRÉDITOS DE COFINS A UTILIZAR EM PERÍODOS FUTUROS</span>
-                    <span class="value" id="cofins-saldo">-</span>
                 </div>
                 <div class="report-item">
                     <span class="label">TOTAL DÉBITO COFINS</span>
@@ -239,6 +237,10 @@
                 <div class="report-item">
                     <span class="label">TOTAL A PAGAR DE COFINS</span>
                     <span class="value" id="cofins-pagar">-</span>
+                </div>
+                <div class="report-item">
+                    <span class="label">SALDO DE CRÉDITOS DE COFINS A UTILIZAR EM PERÍODOS FUTUROS</span>
+                    <span class="value" id="cofins-saldo">-</span>
                 </div>
             </div>
         </div>
@@ -372,18 +374,18 @@
                         
                         // Atualiza os resultados
                         document.getElementById('pis-credito').textContent = data.pisCredito;
-                        document.getElementById('pis-saldo').textContent = data.pisSaldo;
                         document.getElementById('pis-debito').textContent = data.pisDebito;
                         document.getElementById('pis-credito-periodo').textContent = data.pisCreditoPeriodo;
                         document.getElementById('pis-credito-anterior').textContent = data.pisCreditoAnterior;
                         document.getElementById('pis-pagar').textContent = data.pisPagar;
+                        document.getElementById('pis-saldo').textContent = data.pisSaldo;
                         
                         document.getElementById('cofins-credito').textContent = data.cofinsCredito;
-                        document.getElementById('cofins-saldo').textContent = data.cofinsSaldo;
                         document.getElementById('cofins-debito').textContent = data.cofinsDebito;
                         document.getElementById('cofins-credito-periodo').textContent = data.cofinsCreditoPeriodo;
                         document.getElementById('cofins-credito-anterior').textContent = data.cofinsCreditoAnterior;
                         document.getElementById('cofins-pagar').textContent = data.cofinsPagar;
+                        document.getElementById('cofins-saldo').textContent = data.cofinsSaldo;
                         
                         // Mostra os resultados
                         results.style.display = 'block';
