@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisador de Arquivo PIS/COFINS</title>
+    <style>
+        :root {
+            --primary-color: #4f0072;
+            --accent-color: #fb0a5e;
+            --background-color: #ffffff;
+            --form-bg-color: #f9f9f9;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .upload-container {
+            background-color: var(--form-bg-color);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .file-drop-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-drop-area:hover, .file-drop-area.highlight {
+            border-color: var(--primary-color);
+            background-color: rgba(79, 0, 114, 0.05);
+        }
+        
+        .file-input-label {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 15px;
+        }
+        
+        .file-input-label:hover {
+            background-color: #3a0055;
+        }
+        
+        #file-input {
+            position: absolute;
+            left: -9999px;
+        }
+        
+        #file-name {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        
+        .results {
+            display: none;
+            background-color: var(--form-bg-color);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .results h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .report-section {
+            margin-bottom: 30px;
+            background-color: var(--background-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .report-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        
+        .report-item {
+            padding: 15px;
+            background-color: var(--form-bg-color);
+            border-radius: 6px;
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .report-item .label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        .report-item .value {
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 18px;
+        }
+        
+        .error-message {
+            color: var(--accent-color);
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+            padding: 15px;
+            background-color: rgba(251, 10, 94, 0.1);
+            border-radius: 6px;
+        }
+        
+        @media (max-width: 768px) {
+            .report-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Analisador de Arquivo PIS/COFINS</h1>
+        <p>Faça upload do arquivo de texto para análise dos dados de PIS e COFINS</p>
+    </header>
+    
+    <div class="upload-container">
+        <div class="file-drop-area" id="drop-area">
+            <p>Arraste e solte seu arquivo aqui</p>
+            <p>ou</p>
+            <label for="file-input" class="file-input-label">Selecionar Arquivo</label>
+            <input type="file" id="file-input" accept=".txt">
+            <div id="file-name">Nenhum arquivo selecionado</div>
+        </div>
+    </div>
+    
+    <div id="error-message" class="error-message">
+        Ocorreu um erro ao processar o arquivo. Verifique se o formato está correto.
+    </div>
+    
+    <div id="results" class="results">
+        <h2>Relatório de PIS/COFINS</h2>
+        
+        <div class="report-section">
+            <h3>Informações de PIS</h3>
+            <div class="report-grid">
+                <div class="report-item">
+                    <span class="label">VALOR TOTAL DE CRÉDITO DE PIS</span>
+                    <span class="value" id="pis-credito">-</span>
+                </div>
+                <div class="report-item">
+                    <span class="label">SALDO DE CRÉDITOS DE PIS A UTILIZAR EM PERÍODOS FUTUROS</span>
+                    <span class="value" id="pis-saldo">-</span>
+                </div>
+                <div class="report-item">
+                    <span class="label">TOTAL DÉBITO PIS</span>
+                    <span class="value" id="pis-debito">-</span>
+                </div>
+                <div class="report-item">
+                    <span class="label">CRÉDITO DO PIS DESCONTADO DO PERÍODO</span>
+                    <span class="value" id="pis-credito-periodo">-</span>
+                </div>
+                <div class="report-item">
+                    <span class="label">CRÉDITO DO PIS DESCONTADO DO PERÍODO ANTERIOR</span>
+                    <span class="value" id="pis-credito-anterior">-</span>
+                </div>
+                <div class="report-item">
+                    <span class="label">TOTAL A PAGAR DE PIS</span>
+                    <span class="value" id="pis-pagar">-</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="report-section">
+            <h3>Informações de COFINS</h3>
+            <div class="report-grid">
+                <div class="report-item">
+                    <span class="label">VALOR TOTAL DE CRÉDITO DE COFINS</span>
+                    <span class="value" id="cofins-credito">-</span>
+                </div>
+                <div class="report-item">
+                    <span class="label">SALDO DE CRÉDITOS DE COFINS A UTILIZAR EM PERÍODOS FUTUROS</span>
+                    <span class="value" id="cofins-saldo">-</span>
+                </div>
+                <div class="report-item">
+                    <span class="label">TOTAL DÉBITO COFINS</span>
+                    <span class="value" id="cofins-debito">-</span>
+                </div>
+                <div class="report-item">
+                    <span class="label">CRÉDITO DO COFINS DESCONTADO DO PERÍODO</span>
+                    <span class="value" id="cofins-credito-periodo">-</span>
+                </div>
+                <div class="report-item">
+                    <span class="label">CRÉDITO DO COFINS DESCONTADO DO PERÍODO ANTERIOR</span>
+                    <span class="value" id="cofins-credito-anterior">-</span>
+                </div>
+                <div class="report-item">
+                    <span class="label">TOTAL A PAGAR DE COFINS</span>
+                    <span class="value" id="cofins-pagar">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('file-input');
+            const fileName = document.getElementById('file-name');
+            const results = document.getElementById('results');
+            const errorMessage = document.getElementById('error-message');
+            const dropArea = document.getElementById('drop-area');
+            
+            // Drag and drop functionality
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight() {
+                dropArea.classList.add('highlight');
+            }
+            
+            function unhighlight() {
+                dropArea.classList.remove('highlight');
+            }
+            
+            dropArea.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                
+                if (files.length) {
+                    fileInput.files = files;
+                    handleFiles(files);
+                }
+            }
+            
+            function handleFiles(files) {
+                if (files[0]) {
+                    fileName.textContent = files[0].name;
+                    processFile(files[0]);
+                }
+            }
+            
+            // File input change event
+            fileInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    fileName.textContent = this.files[0].name;
+                    processFile(this.files[0]);
+                } else {
+                    fileName.textContent = 'Nenhum arquivo selecionado';
+                }
+            });
+            
+            // Processa o arquivo
+            function processFile(file) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    try {
+                        const content = e.target.result;
+                        const lines = content.split('\n');
+                        
+                        // Valores padrão
+                        let data = {
+                            pisCredito: '-',
+                            pisSaldo: '-',
+                            pisDebito: '-',
+                            pisCreditoPeriodo: '-',
+                            pisCreditoAnterior: '-',
+                            pisPagar: '-',
+                            cofinsCredito: '-',
+                            cofinsSaldo: '-',
+                            cofinsDebito: '-',
+                            cofinsCreditoPeriodo: '-',
+                            cofinsCreditoAnterior: '-',
+                            cofinsPagar: '-'
+                        };
+                        
+                        // Procura as linhas e extrai os dados
+                        for (const line of lines) {
+                            const trimmedLine = line.trim();
+                            
+                            if (trimmedLine.startsWith('|M100|')) {
+                                const fields = trimmedLine.split('|');
+                                if (fields.length >= 16) {
+                                    data.pisCredito = formatCurrency(fields[12]);
+                                    data.pisSaldo = formatCurrency(fields[15]);
+                                }
+                            } 
+                            else if (trimmedLine.startsWith('|M200|')) {
+                                const fields = trimmedLine.split('|');
+                                if (fields.length >= 14) {
+                                    data.pisDebito = formatCurrency(fields[2]);
+                                    data.pisCreditoPeriodo = formatCurrency(fields[3]);
+                                    data.pisCreditoAnterior = formatCurrency(fields[4]);
+                                    data.pisPagar = formatCurrency(fields[13]);
+                                }
+                            }
+                            else if (trimmedLine.startsWith('|M500|')) {
+                                const fields = trimmedLine.split('|');
+                                if (fields.length >= 16) {
+                                    data.cofinsCredito = formatCurrency(fields[12]);
+                                    data.cofinsSaldo = formatCurrency(fields[15]);
+                                }
+                            }
+                            else if (trimmedLine.startsWith('|M600|')) {
+                                const fields = trimmedLine.split('|');
+                                if (fields.length >= 14) {
+                                    data.cofinsDebito = formatCurrency(fields[2]);
+                                    data.cofinsCreditoPeriodo = formatCurrency(fields[3]);
+                                    data.cofinsCreditoAnterior = formatCurrency(fields[4]);
+                                    data.cofinsPagar = formatCurrency(fields[13]);
+                                }
+                            }
+                        }
+                        
+                        // Atualiza os resultados
+                        document.getElementById('pis-credito').textContent = data.pisCredito;
+                        document.getElementById('pis-saldo').textContent = data.pisSaldo;
+                        document.getElementById('pis-debito').textContent = data.pisDebito;
+                        document.getElementById('pis-credito-periodo').textContent = data.pisCreditoPeriodo;
+                        document.getElementById('pis-credito-anterior').textContent = data.pisCreditoAnterior;
+                        document.getElementById('pis-pagar').textContent = data.pisPagar;
+                        
+                        document.getElementById('cofins-credito').textContent = data.cofinsCredito;
+                        document.getElementById('cofins-saldo').textContent = data.cofinsSaldo;
+                        document.getElementById('cofins-debito').textContent = data.cofinsDebito;
+                        document.getElementById('cofins-credito-periodo').textContent = data.cofinsCreditoPeriodo;
+                        document.getElementById('cofins-credito-anterior').textContent = data.cofinsCreditoAnterior;
+                        document.getElementById('cofins-pagar').textContent = data.cofinsPagar;
+                        
+                        // Mostra os resultados
+                        results.style.display = 'block';
+                        errorMessage.style.display = 'none';
+                    } catch (error) {
+                        console.error('Erro ao processar o arquivo:', error);
+                        results.style.display = 'none';
+                        errorMessage.style.display = 'block';
+                    }
+                };
+                
+                reader.onerror = function() {
+                    console.error('Erro ao ler o arquivo');
+                    results.style.display = 'none';
+                    errorMessage.style.display = 'block';
+                };
+                
+                reader.readAsText(file);
+            }
+            
+            // Formata valores monetários
+            function formatCurrency(value) {
+                if (!value || isNaN(parseFloat(value))) return 'R$ 0,00';
+                
+                return new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                }).format(parseFloat(value));
+            }
+        });
+    </script>
+</body>
+</html>
