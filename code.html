@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Dinâmico - Lançamentos por Usuário</title>
+    <!-- Incluindo Chart.js via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      /* CSS incorporado */
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        color: #333;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 15px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+      }
+      h1,
+      h2 {
+        text-align: center;
+        color: #0056b3; /* Azul escuro */
+      }
+      h2 {
+        color: #333; /* Cor mais suave para títulos de gráfico */
+        margin-top: 30px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 5px;
+      }
+      .filter-container {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 15px;
+        background-color: #e9ecef;
+        border-radius: 5px;
+      }
+      .filter-container label {
+        margin-right: 10px;
+        font-weight: bold;
+      }
+      .filter-container select {
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        min-width: 200px;
+      }
+      .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 25px;
+        margin-top: 20px;
+      }
+      .chart-container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        position: relative; /* Necessário para Chart.js responsivo */
+        min-height: 350px; /* Altura mínima para visualização */
+      }
+      .kpi-container {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 30px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+      }
+      .kpi-card {
+        background-color: #007bff; /* Azul primário */
+        color: white;
+        padding: 15px 20px;
+        border-radius: 5px;
+        text-align: center;
+        min-width: 180px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .kpi-card .value {
+        font-size: 1.8em;
+        font-weight: bold;
+        display: block; /* Quebra de linha */
+        margin-bottom: 5px;
+      }
+      .kpi-card .label {
+        font-size: 0.9em;
+        opacity: 0.9;
+      }
+
+      /* Estilos específicos para KPIs de Lançamentos Manuais */
+      .kpi-card.manual {
+        background-color: #dc3545; /* Vermelho */
+      }
+      .kpi-card.percentage {
+        background-color: #ffc107; /* Amarelo */
+        color: #333;
+      }
+
+      /* Media query para telas menores */
+      @media (max-width: 600px) {
+        .charts-grid {
+          grid-template-columns: 1fr; /* Uma coluna em telas pequenas */
+        }
+        .kpi-container {
+          flex-direction: column;
+          align-items: center;
+        }
+        .kpi-card {
+          width: 80%; /* Ocupa mais largura */
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Dashboard Dinâmico de Lançamentos</h1>
+
+      <!-- KPIs -->
+      <div class="kpi-container">
+        <div class="kpi-card">
+          <span class="value" id="kpi-total-geral">--</span>
+          <span class="label">Quantidade Total Geral</span>
+        </div>
+        <div class="kpi-card manual">
+          <span class="value" id="kpi-total-manual">--</span>
+          <span class="label">Total Lanç. Manuais</span>
+        </div>
+        <div class="kpi-card percentage">
+          <span class="value" id="kpi-perc-manual">--</span>
+          <span class="label">% Médio Manual</span>
+        </div>
+        <div class="kpi-card">
+          <span class="value" id="kpi-num-usuarios">--</span>
+          <span class="label">Nº de Usuários</span>
+        </div>
+      </div>
+
+      <!-- Filtro -->
+      <div class="filter-container">
+        <label for="user-select">Filtrar por Usuário:</label>
+        <select id="user-select">
+          <option value="TODOS">-- Todos os Usuários --</option>
+          <!-- Opções serão preenchidas via JavaScript -->
+        </select>
+      </div>
+
+      <!-- Grid de Gráficos -->
+      <div class="charts-grid">
+        <div class="chart-container">
+          <h2>Quantidade Total por Usuário</h2>
+          <canvas id="totalQuantityChart"></canvas>
+        </div>
+        <div class="chart-container">
+          <h2>Lançamentos Manuais por Usuário</h2>
+          <canvas id="manualEntriesChart"></canvas>
+        </div>
+        <div class="chart-container">
+          <h2>% de Lançamentos Manuais por Usuário</h2>
+          <canvas id="percentageManualChart"></canvas>
+        </div>
+        <div class="chart-container">
+          <h2>Comparativo: Total vs Manual</h2>
+          <canvas id="comparisonChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // JavaScript Incorporado
+
+      // 1. Dados Originais
+      const originalData = [
+        {
+          USUARIO: "GERENTE",
+          "QUANTIDADE TOTAL": 681963,
+          "LANÇAMENTOS MANUAIS": 155458,
+        },
+        {
+          USUARIO: "ANA PAULA",
+          "QUANTIDADE TOTAL": 29952,
+          "LANÇAMENTOS MANUAIS": 7348,
+        },
+        {
+          USUARIO: "FABIANE",
+          "QUANTIDADE TOTAL": 85989,
+          "LANÇAMENTOS MANUAIS": 13858,
+        },
+        {
+          USUARIO: "GUSTAVO",
+          "QUANTIDADE TOTAL": 27437,
+          "LANÇAMENTOS MANUAIS": 2088,
+        },
+        {
+          USUARIO: "JACK",
+          "QUANTIDADE TOTAL": 71326,
+          "LANÇAMENTOS MANUAIS": 17106,
+        },
+        {
+          USUARIO: "LECA",
+          "QUANTIDADE TOTAL": 45765,
+          "LANÇAMENTOS MANUAIS": 20754,
+        },
+        {
+          USUARIO: "MARIA",
+          "QUANTIDADE TOTAL": 27829,
+          "LANÇAMENTOS MANUAIS": 19269,
+        },
+        {
+          USUARIO: "SILMARA",
+          "QUANTIDADE TOTAL": 288732,
+          "LANÇAMENTOS MANUAIS": 34955,
+        },
+      ];
+
+      // Função para formatar números (adiciona pontos como separador de milhar)
+      function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+      }
+
+      // Função para calcular métricas e adicionar aos dados
+      function preprocessData(data) {
+        return data.map((item) => ({
+          ...item, // Copia propriedades existentes
+          "% MANUAL": item["QUANTIDADE TOTAL"]
+            ? (item["LANÇAMENTOS MANUAIS"] / item["QUANTIDADE TOTAL"]) * 100
+            : 0,
+          "QUANTIDADE NAO MANUAL":
+            item["QUANTIDADE TOTAL"] - item["LANÇAMENTOS MANUAIS"],
+        }));
+      }
+
+      // Preprocessa os dados originais
+      const dashboardData = preprocessData(originalData);
+
+      // 2. Referências aos Elementos HTML
+      const userSelect = document.getElementById("user-select");
+      const ctxTotal = document
+        .getElementById("totalQuantityChart")
+        ?.getContext("2d");
+      const ctxManual = document
+        .getElementById("manualEntriesChart")
+        ?.getContext("2d");
+      const ctxPercent = document
+        .getElementById("percentageManualChart")
+        ?.getContext("2d");
+      const ctxComparison = document
+        .getElementById("comparisonChart")
+        ?.getContext("2d");
+      const kpiTotalGeral = document.getElementById("kpi-total-geral");
+      const kpiTotalManual = document.getElementById("kpi-total-manual");
+      const kpiPercManual = document.getElementById("kpi-perc-manual");
+      const kpiNumUsuarios = document.getElementById("kpi-num-usuarios");
+
+      // 3. Variáveis para guardar as instâncias dos gráficos Chart.js
+      let totalChart, manualChart, percentChart, comparisonChart;
+
+      // 4. Função para criar/atualizar os gráficos
+      function createOrUpdateCharts(filteredData) {
+        if (!ctxTotal || !ctxManual || !ctxPercent || !ctxComparison) {
+          console.error("Um ou mais elementos canvas não foram encontrados!");
+          return;
+        }
+
+        // Destruir gráficos antigos se existirem
+        if (totalChart) totalChart.destroy();
+        if (manualChart) manualChart.destroy();
+        if (percentChart) percentChart.destroy();
+        if (comparisonChart) comparisonChart.destroy();
+
+        // Preparar dados para os gráficos
+        const labels = filteredData.map((item) => item.USUARIO);
+        const totalQuantities = filteredData.map(
+          (item) => item["QUANTIDADE TOTAL"]
+        );
+        const manualEntries = filteredData.map(
+          (item) => item["LANÇAMENTOS MANUAIS"]
+        );
+        const percentages = filteredData.map((item) => item["% MANUAL"]);
+        const nonManualQuantities = filteredData.map(
+          (item) => item["QUANTIDADE NAO MANUAL"]
+        );
+
+        // Cores consistentes
+        const colorTotal = "rgba(54, 162, 235, 0.7)"; // Azul
+        const colorManual = "rgba(255, 99, 132, 0.7)"; // Vermelho
+        const colorPercent = "rgba(255, 206, 86, 0.7)"; // Amarelo
+        const colorNonManual = "rgba(75, 192, 192, 0.7)"; // Verde-água
+
+        // Gráfico 1: Quantidade Total
+        totalChart = new Chart(ctxTotal, {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Quantidade Total",
+                data: totalQuantities,
+                backgroundColor: colorTotal,
+                borderColor: "rgba(54, 162, 235, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: { responsive: true, scales: { y: { beginAtZero: true } } },
+        });
+
+        // Gráfico 2: Lançamentos Manuais
+        manualChart = new Chart(ctxManual, {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Lançamentos Manuais",
+                data: manualEntries,
+                backgroundColor: colorManual,
+                borderColor: "rgba(255, 99, 132, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            //maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true } },
+          },
+        });
+
+        // Gráfico 3: Percentual Manual
+        percentChart = new Chart(ctxPercent, {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "% Manual",
+                data: percentages,
+                backgroundColor: colorPercent,
+                borderColor: "rgba(255, 206, 86, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            //maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { callback: (value) => value.toFixed(1) + "%" }, // Formata eixo Y
+              },
+            },
+            plugins: {
+              tooltip: {
+                callbacks: {
+                  label: (context) =>
+                    `${context.dataset.label}: ${context.parsed.y.toFixed(1)}%`,
+                },
+              },
+            }, // Formata tooltip
+          },
+        });
+
+        // Gráfico 4: Comparativo Empilhado ou Agrupado
+        comparisonChart = new Chart(ctxComparison, {
+          type: "bar", // Pode ser 'bar' (agrupado) ou deixar empilhado (ver opções)
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Lanç. Manuais",
+                data: manualEntries,
+                backgroundColor: colorManual,
+                borderColor: "rgba(255, 99, 132, 1)",
+                borderWidth: 1,
+              },
+              {
+                label: "Outros Lançamentos",
+                data: nonManualQuantities,
+                backgroundColor: colorNonManual,
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            //maintainAspectRatio: false,
+            scales: {
+              x: { stacked: true }, // Empilha no eixo X
+              y: { stacked: true, beginAtZero: true }, // Empilha no eixo Y
+            },
+            // Se quiser barras agrupadas em vez de empilhadas, remova 'stacked: true' das opções de scales.
+          },
+        });
+      }
+
+      // 5. Função para atualizar os KPIs
+      function updateKPIs(data) {
+        const totalGeral = data.reduce(
+          (sum, item) => sum + item["QUANTIDADE TOTAL"],
+          0
+        );
+        const totalManual = data.reduce(
+          (sum, item) => sum + item["LANÇAMENTOS MANUAIS"],
+          0
+        );
+        const percMedioManual =
+          totalGeral > 0 ? (totalManual / totalGeral) * 100 : 0;
+        const numUsuarios = new Set(data.map((item) => item.USUARIO)).size; // Conta usuários únicos nos dados filtrados
+
+        if (kpiTotalGeral) kpiTotalGeral.textContent = formatNumber(totalGeral);
+        if (kpiTotalManual)
+          kpiTotalManual.textContent = formatNumber(totalManual);
+        if (kpiPercManual)
+          kpiPercManual.textContent = percMedioManual.toFixed(1) + "%";
+
+        // O KPI de número de usuários deve mostrar o total OU 1 se filtrado
+        if (kpiNumUsuarios) {
+          const selectedUser = userSelect.value;
+          kpiNumUsuarios.textContent =
+            selectedUser === "TODOS"
+              ? originalData.length
+              : data.length > 0
+              ? "1"
+              : "0";
+        }
+      }
+
+      // 6. Função para preencher o filtro de usuários
+      function populateUserFilter() {
+        const uniqueUsers = [
+          ...new Set(originalData.map((item) => item.USUARIO)),
+        ];
+        uniqueUsers.sort().forEach((user) => {
+          const option = document.createElement("option");
+          option.value = user;
+          option.textContent = user;
+          userSelect.appendChild(option);
+        });
+      }
+
+      // 7. Função para lidar com a mudança no filtro
+      function handleFilterChange() {
+        const selectedUser = userSelect.value;
+        let filteredData;
+
+        if (selectedUser === "TODOS") {
+          filteredData = dashboardData; // Usa os dados pré-processados completos
+        } else {
+          filteredData = dashboardData.filter(
+            (item) => item.USUARIO === selectedUser
+          );
+        }
+
+        createOrUpdateCharts(filteredData);
+        updateKPIs(filteredData); // Atualiza KPIs com base nos dados filtrados
+      }
+
+      // 8. Inicialização do Dashboard
+      populateUserFilter(); // Preenche o dropdown de usuários
+      createOrUpdateCharts(dashboardData); // Cria os gráficos iniciais com todos os dados
+      updateKPIs(dashboardData); // Calcula e exibe os KPIs iniciais
+      userSelect.addEventListener("change", handleFilterChange); // Adiciona o listener para o filtro
+    </script>
+  </body>
+</html>
