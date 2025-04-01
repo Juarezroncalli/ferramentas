@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Dinâmico - Lançamentos (v3)</title>
+    <!-- Incluindo Chart.js via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* CSS (mesmo da versão anterior) */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; color: #333;
+        }
+        .container {
+            max-width: 1200px; margin: 20px auto; padding: 15px; background-color: #fff; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 8px;
+        }
+        h1, h2 {
+            text-align: center; color: #0056b3;
+        }
+        h2 {
+            color: #333; margin-top: 30px; border-bottom: 1px solid #eee; padding-bottom: 5px;
+        }
+        .filter-container {
+            text-align: center; margin-bottom: 30px; padding: 15px; background-color: #e9ecef; border-radius: 5px;
+        }
+        .filter-container label { margin-right: 10px; font-weight: bold; }
+        .filter-container select { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; min-width: 200px; }
+        .charts-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px; margin-top: 20px;
+        }
+        .chart-container {
+            background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative; min-height: 350px; /* Altura mínima */ display: flex; flex-direction: column; /* Garante que h2 e canvas fiquem empilhados */
+        }
+        /* Ajuste para canvas ocupar espaço disponível */
+         .chart-container canvas {
+             flex-grow: 1; /* Tenta ocupar espaço vertical restante */
+             max-height: 400px; /* Limita altura máxima */
+             width: 100% !important; /* Força largura total do container */
+             height: auto !important; /* Deixa chart.js calcular altura */
+         }
+        .kpi-container {
+            display: flex; justify-content: space-around; flex-wrap: wrap; gap: 15px; margin-bottom: 30px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;
+        }
+        .kpi-card {
+            background-color: #007bff; color: white; padding: 15px 20px; border-radius: 5px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex: 1; min-width: 150px;
+        }
+        .kpi-card .value { font-size: 1.8em; font-weight: bold; display: block; margin-bottom: 5px; }
+        .kpi-card .label { font-size: 0.9em; opacity: 0.9; }
+        .kpi-card.manual { background-color: #dc3545; }
+        .kpi-card.percentage { background-color: #ffc107; color: #333; }
+
+        @media (max-width: 768px) {
+             .charts-grid { grid-template-columns: 1fr; }
+             .kpi-container { flex-direction: column; align-items: stretch; }
+             .kpi-card { min-width: unset; width: auto; }
+        }
+         @media (max-width: 480px) {
+             .filter-container select { min-width: 150px; }
+             h1 { font-size: 1.5em; }
+             .kpi-card .value { font-size: 1.5em;}
+             .kpi-card .label { font-size: 0.8em;}
+         }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Dashboard Dinâmico de Lançamentos (v3)</h1>
+
+    <!-- KPIs -->
+    <div class="kpi-container">
+        <div class="kpi-card"><span class="value" id="kpi-total-geral">--</span><span class="label">Quantidade Total Geral</span></div>
+        <div class="kpi-card manual"><span class="value" id="kpi-total-manual">--</span><span class="label">Total Lanç. Manuais</span></div>
+        <div class="kpi-card percentage"><span class="value" id="kpi-perc-manual">--</span><span class="label">% Médio Manual</span></div>
+        <div class="kpi-card"><span class="value" id="kpi-num-usuarios">--</span><span class="label">Nº de Usuários</span></div>
+    </div>
+
+    <!-- Filtro -->
+    <div class="filter-container">
+         <label for="user-select">Filtrar por Usuário:</label>
+         <select id="user-select">
+             <option value="TODOS">-- Todos os Usuários --</option>
+         </select>
+    </div>
+
+    <!-- Grid de Gráficos -->
+    <div class="charts-grid">
+        <div class="chart-container">
+            <h2>Distribuição da Quantidade Total</h2>
+            <canvas id="totalQuantityChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <h2>Distribuição dos Lançamentos Manuais</h2>
+            <canvas id="manualEntriesChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <h2>% de Lançamentos Manuais por Usuário</h2>
+            <canvas id="percentageManualChart"></canvas>
+        </div>
+         <div class="chart-container">
+            <h2 id="compositionTitleH2">Composição do Trabalho (Manual vs Outros)</h2>
+            <canvas id="compositionChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    // === INÍCIO DO JAVASCRIPT ===
+
+    // 1. Dados Originais e Pré-processamento
+    const originalData = [
+        { USUARIO: "GERENTE", "QUANTIDADE TOTAL": 681963, "LANÇAMENTOS MANUAIS": 155458 },
+        { USUARIO: "ANA PAULA", "QUANTIDADE TOTAL": 29952, "LANÇAMENTOS MANUAIS": 7348 },
+        { USUARIO: "FABIANE", "QUANTIDADE TOTAL": 85989, "LANÇAMENTOS MANUAIS": 13858 },
+        { USUARIO: "GUSTAVO", "QUANTIDADE TOTAL": 27437, "LANÇAMENTOS MANUAIS": 2088 },
+        { USUARIO: "JACK", "QUANTIDADE TOTAL": 71326, "LANÇAMENTOS MANUAIS": 17106 },
+        { USUARIO: "LECA", "QUANTIDADE TOTAL": 45765, "LANÇAMENTOS MANUAIS": 20754 },
+        { USUARIO: "MARIA", "QUANTIDADE TOTAL": 27829, "LANÇAMENTOS MANUAIS": 19269 },
+        { USUARIO: "SILMARA", "QUANTIDADE TOTAL": 288732, "LANÇAMENTOS MANUAIS": 34955 }
+    ];
+
+    function formatNumber(num) {
+        if (typeof num !== 'number') return num; // Retorna se não for número
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    function preprocessData(data) {
+        return data.map(item => ({
+            ...item,
+            '% MANUAL': item['QUANTIDADE TOTAL'] ? (item['LANÇAMENTOS MANUAIS'] / item['QUANTIDADE TOTAL']) * 100 : 0,
+            'QUANTIDADE NAO MANUAL': item['QUANTIDADE TOTAL'] - item['LANÇAMENTOS MANUAIS']
+        }));
+    }
+
+    const dashboardData = preprocessData(originalData);
+    console.log("Dados pré-processados:", dashboardData); // Log para verificar dados
+
+    // 2. Referências aos Elementos HTML
+    const userSelect = document.getElementById('user-select');
+    const ctxTotal = document.getElementById('totalQuantityChart')?.getContext('2d');
+    const ctxManual = document.getElementById('manualEntriesChart')?.getContext('2d');
+    const ctxPercent = document.getElementById('percentageManualChart')?.getContext('2d');
+    const ctxComposition = document.getElementById('compositionChart')?.getContext('2d');
+    const kpiTotalGeral = document.getElementById('kpi-total-geral');
+    const kpiTotalManual = document.getElementById('kpi-total-manual');
+    const kpiPercManual = document.getElementById('kpi-perc-manual');
+    const kpiNumUsuarios = document.getElementById('kpi-num-usuarios');
+    const compositionTitleH2 = document.getElementById('compositionTitleH2'); // Referência ao H2
+
+    // 3. Variáveis para guardar as instâncias dos gráficos Chart.js
+    let totalDistChart, manualDistChart, percentBarChart, compositionChartInstance; // Nome da instância do gráfico de composição alterado para evitar conflito
+
+     // --- Paleta de Cores ---
+    const chartColors = [
+        'rgba(0, 123, 255, 0.7)','rgba(255, 193, 7, 0.7)','rgba(40, 167, 69, 0.7)','rgba(220, 53, 69, 0.7)',
+        'rgba(23, 162, 184, 0.7)','rgba(108, 117, 125, 0.7)','rgba(253, 126, 20, 0.7)','rgba(111, 66, 193, 0.7)'
+    ];
+    const colorManual = 'rgba(220, 53, 69, 0.8)';
+    const colorNonManual = 'rgba(0, 123, 255, 0.6)';
+    const colorPercentBar = 'rgba(255, 193, 7, 0.7)';
+
+     function getColors(count) {
+        const colors = [];
+        for (let i = 0; i < count; i++) {
+            colors.push(chartColors[i % chartColors.length]);
+        }
+        return colors.length > 0 ? colors : ['rgba(200, 200, 200, 0.7)']; // Cor padrão se não houver dados
+     }
+
+    // 4. Função para criar/atualizar os gráficos
+    function createOrUpdateCharts(filteredData) {
+        console.log("Tentando atualizar gráficos com:", filteredData); // Log para verificar dados filtrados
+        const selectedUser = userSelect.value;
+
+        // Destruir gráficos antigos
+        if (totalDistChart) totalDistChart.destroy();
+        if (manualDistChart) manualDistChart.destroy();
+        if (percentBarChart) percentBarChart.destroy();
+        if (compositionChartInstance) compositionChartInstance.destroy(); // Usando nome de variável corrigido
+
+        // Verifica se os contextos dos canvas existem antes de prosseguir
+        if (!ctxTotal || !ctxManual || !ctxPercent || !ctxComposition) {
+             console.error("ERRO: Um ou mais elementos canvas (<canvas>) não foram encontrados no HTML ou não puderam obter o contexto 2D.");
+             return; // Interrompe a função se um canvas estiver faltando
+        }
+
+        try { // Adiciona um bloco try...catch para capturar erros durante a criação do gráfico
+
+            // --- Gráfico 1: Distribuição da Quantidade Total (Doughnut) ---
+            const totalLabels = filteredData.map(item => item.USUARIO);
+            const totalQuantities = filteredData.map(item => item['QUANTIDADE TOTAL']);
+            console.log("Dados Gráfico 1 (Total):", { labels: totalLabels, data: totalQuantities });
+            totalDistChart = new Chart(ctxTotal, {
+                type: 'doughnut',
+                data: {
+                    labels: totalLabels,
+                    datasets: [{
+                        label: 'Quantidade Total',
+                        data: totalQuantities,
+                        backgroundColor: getColors(totalLabels.length),
+                        borderColor: '#fff', borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    // maintainAspectRatio: true, // Deixando padrão
+                    plugins: { legend: { position: 'top' } } // Tooltip simplificado por enquanto
+                }
+            });
+
+            // --- Gráfico 2: Distribuição dos Lançamentos Manuais (Doughnut) ---
+            const manualLabels = filteredData.map(item => item.USUARIO);
+            const manualEntries = filteredData.map(item => item['LANÇAMENTOS MANUAIS']);
+            console.log("Dados Gráfico 2 (Manual):", { labels: manualLabels, data: manualEntries });
+            manualDistChart = new Chart(ctxManual, {
+                type: 'doughnut',
+                data: {
+                    labels: manualLabels,
+                    datasets: [{
+                        label: 'Lançamentos Manuais',
+                        data: manualEntries,
+                        backgroundColor: getColors(manualLabels.length),
+                        borderColor: '#fff', borderWidth: 1
+                    }]
+                },
+                 options: {
+                    responsive: true,
+                    // maintainAspectRatio: true, // Deixando padrão
+                    plugins: { legend: { position: 'top' } } // Tooltip simplificado
+                }
+            });
+
+            // --- Gráfico 3: % de Lançamentos Manuais por Usuário (Bar) ---
+            const percentLabels = filteredData.map(item => item.USUARIO);
+            const percentages = filteredData.map(item => item['% MANUAL']);
+            console.log("Dados Gráfico 3 (Percentual):", { labels: percentLabels, data: percentages });
+            percentBarChart = new Chart(ctxPercent, {
+                type: 'bar',
+                data: {
+                    labels: percentLabels,
+                    datasets: [{
+                        label: '% Manual',
+                        data: percentages,
+                        backgroundColor: colorPercentBar,
+                        borderColor: 'rgba(255, 193, 7, 1)', borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    indexAxis: 'y',
+                    scales: { x: { beginAtZero: true, ticks: { callback: value => value.toFixed(0) + '%' } } },
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: context => `${context.dataset.label}: ${context.parsed.x.toFixed(1)}%` } } }
+                }
+            });
+
+            // --- Gráfico 4: Composição do Trabalho (Manual vs Outros - Doughnut Condicional) ---
+            let compositionLabels, compositionData, compositionTitleText;
+            const totalManualGlobal = filteredData.reduce((sum, item) => sum + item['LANÇAMENTOS MANUAIS'], 0);
+            const totalNaoManualGlobal = filteredData.reduce((sum, item) => sum + item['QUANTIDADE NAO MANUAL'], 0);
+
+            if (selectedUser === 'TODOS') {
+                compositionLabels = ['Total Lanç. Manuais', 'Total Outros Lançamentos'];
+                // Garante que os dados não sejam negativos ou NaN
+                compositionData = [Math.max(0, totalManualGlobal), Math.max(0, totalNaoManualGlobal)];
+                compositionTitleText = 'Composição Geral do Trabalho';
+            } else if (filteredData.length === 1) {
+                const user = filteredData[0];
+                compositionLabels = ['Lanç. Manuais', 'Outros Lançamentos'];
+                compositionData = [Math.max(0, user['LANÇAMENTOS MANUAIS']), Math.max(0, user['QUANTIDADE NAO MANUAL'])];
+                compositionTitleText = `Composição: ${user.USUARIO}`;
+            } else { // Nenhum usuário selecionado ou dados filtrados vazios
+                compositionLabels = ['Sem dados'];
+                compositionData = [1]; // Doughnut precisa de pelo menos um valor > 0
+                compositionTitleText = 'Composição do Trabalho';
+            }
+             console.log("Dados Gráfico 4 (Composição):", { labels: compositionLabels, data: compositionData, title: compositionTitleText });
+
+            // Atualiza o título H2
+            if (compositionTitleH2) {
+                compositionTitleH2.textContent = compositionTitleText;
+            } else {
+                console.warn("Elemento H2 para o título do gráfico de composição não encontrado.");
+            }
+
+            compositionChartInstance = new Chart(ctxComposition, { // Usando nome de variável corrigido
+                type: 'doughnut',
+                data: {
+                    labels: compositionLabels,
+                    datasets: [{
+                        label: 'Composição',
+                        data: compositionData,
+                        backgroundColor: [colorManual, colorNonManual], // Cores específicas
+                        borderColor: '#fff', borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    // maintainAspectRatio: true, // Deixando padrão
+                    plugins: { legend: { position: 'top' } } // Tooltip simplificado
+                }
+            });
+
+        } catch (error) {
+            console.error("ERRO AO CRIAR/ATUALIZAR GRÁFICOS:", error); // Captura e exibe erros
+        }
+    }
+
+
+    // 5. Função para atualizar os KPIs
+    function updateKPIs(data) {
+        // Cálculos dos KPIs (sem alterações, mas adicionando verificações)
+        const totalGeral = data.reduce((sum, item) => sum + (item['QUANTIDADE TOTAL'] || 0), 0);
+        const totalManual = data.reduce((sum, item) => sum + (item['LANÇAMENTOS MANUAIS'] || 0), 0);
+        const percMedioManual = totalGeral > 0 ? (totalManual / totalGeral) * 100 : 0;
+        const selectedUser = userSelect.value;
+        const numUsuarios = selectedUser === 'TODOS' ? originalData.length : (data.length > 0 ? 1 : 0);
+
+        // Atualiza os elementos HTML, verificando se existem
+        if (kpiTotalGeral) kpiTotalGeral.textContent = formatNumber(totalGeral);
+        if (kpiTotalManual) kpiTotalManual.textContent = formatNumber(totalManual);
+        if (kpiPercManual) kpiPercManual.textContent = percMedioManual.toFixed(1) + '%';
+        if (kpiNumUsuarios) kpiNumUsuarios.textContent = numUsuarios;
+        console.log("KPIs atualizados:", { totalGeral, totalManual, percMedioManual, numUsuarios });
+    }
+
+
+    // 6. Função para preencher o filtro de usuários
+    function populateUserFilter() {
+        if (!userSelect) {
+            console.error("Elemento <select> do filtro não encontrado.");
+            return;
+        }
+        const uniqueUsers = [...new Set(originalData.map(item => item.USUARIO))];
+        uniqueUsers.sort().forEach(user => {
+            const option = document.createElement('option');
+            option.value = user;
+            option.textContent = user;
+            userSelect.appendChild(option);
+        });
+         console.log("Filtro de usuários preenchido.");
+    }
+
+    // 7. Função para lidar com a mudança no filtro
+    function handleFilterChange() {
+        console.log("Filtro alterado para:", userSelect.value);
+        const selectedUser = userSelect.value;
+        let filteredData;
+
+        if (selectedUser === 'TODOS') {
+            filteredData = dashboardData;
+        } else {
+            filteredData = dashboardData.filter(item => item.USUARIO === selectedUser);
+        }
+
+        createOrUpdateCharts(filteredData);
+        updateKPIs(filteredData);
+    }
+
+    // 8. Inicialização do Dashboard quando o DOM estiver pronto
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log("DOM carregado. Iniciando dashboard.");
+        if (!Chart) {
+            console.error("Chart.js não foi carregado! Verifique a tag <script> no <head>.");
+            alert("Erro: Biblioteca de gráficos não carregou. Verifique a conexão com a internet e o console (F12).");
+            return;
+        }
+        populateUserFilter();
+        createOrUpdateCharts(dashboardData); // Cria gráficos iniciais
+        updateKPIs(dashboardData); // Calcula KPIs iniciais
+
+        // Adiciona listener apenas se o select existir
+        if (userSelect) {
+            userSelect.addEventListener('change', handleFilterChange);
+        } else {
+            console.error("Não foi possível adicionar listener ao filtro - elemento <select> não encontrado.");
+        }
+    });
+
+     // === FIM DO JAVASCRIPT ===
+</script>
+
+</body>
+</html>
