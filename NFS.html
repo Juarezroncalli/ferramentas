@@ -15,6 +15,7 @@
         --button-text-color: #fff;
         --error-color: #d9534f; /* Vermelho para erros */
         --success-color: #5cb85c; /* Verde para sucesso */
+        --warning-color: #f0ad4e; /* Laranja para avisos/duplicatas */
       }
 
       body {
@@ -46,17 +47,19 @@
       .input-row-header,
       .input-row {
         display: flex;
-        align-items: center; /* Alinha verticalmente os itens */
+        align-items: stretch; /* Alinha itens para terem a mesma altura */
         margin-bottom: 10px;
-        padding-bottom: 10px;
+        padding: 10px 5px; /* Add padding horizontal/vertical */
         border-bottom: 1px solid #eee;
         gap: 10px; /* Espaçamento entre colunas */
         flex-wrap: wrap; /* Permite quebra de linha em telas menores */
+        transition: background-color 0.3s ease; /* Para highlight suave */
+        border-radius: 4px; /* Bordas arredondadas para a linha */
       }
 
       .input-row:last-child {
         border-bottom: none;
-        padding-bottom: 0;
+        padding-bottom: 10px; /* Mantém padding inferior */
       }
 
       .input-row-header div {
@@ -66,6 +69,9 @@
         min-width: 100px; /* Largura mínima para evitar aperto */
         text-align: center; /* Centraliza texto do cabeçalho */
         font-size: 0.9em;
+        display: flex;
+        align-items: center; /* Centraliza verticalmente o texto do header */
+        justify-content: center; /* Centraliza horizontalmente */
       }
 
       /* Ajusta a largura da coluna de Ação */
@@ -73,6 +79,9 @@
       .input-row .col-action {
         flex: 0 0 50px; /* Não cresce, não encolhe, largura fixa */
         min-width: 50px;
+        display: flex; /* Para alinhar o botão dentro */
+        align-items: center; /* Centraliza botão verticalmente */
+        justify-content: center; /* Centraliza botão horizontalmente */
       }
 
       .input-row div {
@@ -80,6 +89,7 @@
         min-width: 100px;
         display: flex; /* Para alinhar input/label dentro da div se necessário */
         flex-direction: column;
+        justify-content: center; /* Centraliza conteúdo verticalmente na div */
       }
 
       .input-row label {
@@ -106,17 +116,32 @@
         box-shadow: 0 0 5px rgba(79, 0, 114, 0.3);
       }
 
-      /* Estilos específicos para validação */
+      /* --- Estilos de Validação e Erro --- */
       input:invalid {
         border-color: var(
           --error-color
         ) !important; /* Força a borda vermelha */
-        background-color: #fdd; /* Fundo levemente rosado para erro */
+        background-color: #fff0f0; /* Fundo levemente avermelhado */
       }
-      /* Estilo para erro manual (ex: CNPJ inválido mas com 14 chars) */
+      /* Estilo para erro manual */
       input.manual-error {
         border-color: var(--error-color) !important;
-        background-color: #fdd;
+        background-color: #fff0f0;
+      }
+      /* Estilo para destacar linha duplicada */
+      .input-row.duplicate-error {
+        background-color: #fff9e6 !important; /* Fundo amarelo claro */
+        border: 1px solid var(--warning-color);
+        box-shadow: 0 0 8px rgba(240, 173, 78, 0.3);
+      }
+      /* Reset background for inputs inside duplicate row unless they are also invalid */
+      .input-row.duplicate-error input:not(:invalid) {
+        background-color: #fff; /* Garante fundo branco normal para inputs válidos na linha duplicada */
+      }
+      .input-row.duplicate-error input:invalid {
+        /* Mantém o estilo de inválido se for inválido E duplicado */
+        border-color: var(--error-color) !important;
+        background-color: #fff0f0;
       }
 
       .button-container {
@@ -166,8 +191,8 @@
         border-radius: 3px;
         font-size: 0.8em;
         line-height: 1; /* Ajusta altura */
-        margin: auto 0; /* Centraliza verticalmente se a div pai for flex column */
-        align-self: center; /* Centraliza verticalmente */
+        /* margin: auto 0; Não necessário com align-items center no pai */
+        /* align-self: center; Não necessário com align-items center no pai */
         border: none;
         cursor: pointer;
       }
@@ -228,8 +253,11 @@
         border-top-color: var(--error-color);
       }
       #modal.modal-info {
-        border-top-color: var(--primary-color); /* Azul para info */
+        border-top-color: var(--primary-color);
       }
+      #modal.modal-warning {
+        border-top-color: var(--warning-color);
+      } /* Para duplicatas */
 
       #modal h2 {
         margin-top: 0;
@@ -269,15 +297,11 @@
         background-color: #3a0054;
       }
 
-      /* Responsividade básica */
+      /* Responsividade */
       @media (max-width: 992px) {
-        .input-row-header,
-        .input-row {
-          gap: 8px;
-        }
         .input-row-header div,
         .input-row div {
-          min-width: 80px; /* Reduz largura mínima */
+          min-width: 80px;
         }
         .input-row-header .col-action,
         .input-row .col-action {
@@ -300,30 +324,28 @@
         h1 {
           font-size: 1.5em;
         }
-
-        /* Esconde o header em telas pequenas e mostra labels */
         .input-row-header {
           display: none;
         }
         .input-row label {
-          display: block; /* Mostra labels */
+          display: block;
         }
         .input-row {
-          flex-direction: column; /* Empilha colunas verticalmente */
+          flex-direction: column;
           border-bottom: 2px solid var(--primary-color);
-          padding-bottom: 20px;
+          padding: 15px; /* Ajuste padding */
           margin-bottom: 20px;
-          align-items: stretch; /* Faz itens ocuparem largura */
+          align-items: stretch;
         }
         .input-row div {
-          min-width: 100%; /* Ocupa toda largura */
+          min-width: 100%;
           margin-bottom: 10px;
         }
         .input-row .col-action {
-          flex-basis: auto; /* Reseta base flex */
+          flex-basis: auto;
           min-width: auto;
-          align-self: flex-end; /* Alinha botão à direita */
-          margin-top: -10px; /* Ajuste fino */
+          align-self: flex-end;
+          margin-top: -5px;
         }
         .delete-row-btn {
           padding: 8px 15px;
@@ -331,7 +353,7 @@
         }
         .button-container {
           flex-direction: column;
-          align-items: stretch; /* Botões ocupam toda largura */
+          align-items: stretch;
         }
         button {
           width: 100%;
@@ -354,7 +376,6 @@
       <h1>Gerador de Notas Fiscais para Domínio Sistemas</h1>
 
       <form id="data-form" novalidate>
-        <!-- novalidate desabilita balões de validação do browser -->
         <!-- Cabeçalho das Colunas -->
         <div class="input-row-header">
           <div>Espécie</div>
@@ -411,7 +432,7 @@
                 type="text"
                 id="cfop-0"
                 name="cfop"
-                placeholder="Ex: 1102"
+                placeholder="Ex: 1933"
                 required
               />
             </div>
@@ -442,9 +463,10 @@
                 name="valor"
                 placeholder="Ex: 1000.50"
                 step="0.01"
-                min="0"
+                min="0.01"
                 required
               />
+              <!-- min="0.01" para valor > 0 -->
             </div>
             <div>
               <label for="irrf-0">Valor IRRF</label>
@@ -515,35 +537,22 @@
 
       // --- Funções do Modal ---
       function showModal(message, type = "info", title = "Aviso") {
-        modalMessage.textContent = message;
+        modalMessage.innerHTML = message; // Use innerHTML se precisar formatar msg
         modalTitle.textContent = title;
-
-        // Remove classes de tipo anteriores e adiciona a atual
-        modal.classList.remove("modal-success", "modal-error", "modal-info");
-        if (type === "success") {
-          modal.classList.add("modal-success");
-        } else if (type === "error") {
-          modal.classList.add("modal-error");
-        } else {
-          modal.classList.add("modal-info");
-        }
-
+        modal.className = "modal"; // Reset classes
+        modal.classList.add(`modal-${type}`);
         modalOverlay.classList.add("visible");
       }
 
       function hideModal() {
         modalOverlay.classList.remove("visible");
-        // Limpa classes de erro dos inputs ao fechar o modal
-        form
-          .querySelectorAll(".manual-error")
-          .forEach((el) => el.classList.remove("manual-error"));
+        // Não limpa mais os erros dos inputs aqui, fazemos no início da geração
       }
 
       // --- Event Listeners do Modal ---
       modalCloseBtnTop.addEventListener("click", hideModal);
       modalOkBtn.addEventListener("click", hideModal);
       modalOverlay.addEventListener("click", (event) => {
-        // Fecha somente se clicar no overlay (fora do modal)
         if (event.target === modalOverlay) {
           hideModal();
         }
@@ -556,6 +565,7 @@
         );
         const newRow = lastRow.cloneNode(true);
 
+        newRow.classList.remove("duplicate-error"); // Remove highlight de erro ao clonar
         newRow.querySelectorAll("input").forEach((input) => {
           input.value = "";
           const oldId = input.id;
@@ -566,9 +576,12 @@
             const label = newRow.querySelector(`label[for="${oldId}"]`);
             if (label) label.setAttribute("for", newId);
           }
-          input.classList.remove("manual-error"); // Remove erro visual ao clonar
-          // Garante que inputs clonados não fiquem inválidos por padrão
+          input.classList.remove("manual-error");
           input.setCustomValidity("");
+          // Garante que a validação 'min' seja aplicada corretamente ao clonar
+          if (input.name === "valor" && !input.value) {
+            input.setCustomValidity(""); // Limpa validação inicial
+          }
         });
 
         const deleteBtn = newRow.querySelector(".delete-row-btn");
@@ -584,12 +597,11 @@
       inputRowsContainer.addEventListener("click", (event) => {
         if (event.target.classList.contains("delete-row-btn")) {
           if (inputRowsContainer.querySelectorAll(".input-row").length > 1) {
-            const rowToRemove = event.target.closest(".input-row");
-            rowToRemove.remove();
+            event.target.closest(".input-row").remove();
           } else {
             showModal(
               "É necessário manter pelo menos uma linha.",
-              "error",
+              "warning",
               "Atenção"
             );
           }
@@ -598,22 +610,19 @@
 
       // --- Gerar Arquivo TXT ---
       generateBtn.addEventListener("click", () => {
-        let txtContent = "";
-        let isValid = true;
-        const rows = inputRowsContainer.querySelectorAll(".input-row");
-
-        // Limpa erros manuais anteriores
+        // 1. Limpar erros visuais anteriores (validação e duplicatas)
         form
           .querySelectorAll(".manual-error")
           .forEach((el) => el.classList.remove("manual-error"));
         form
           .querySelectorAll("input")
-          .forEach((el) => el.setCustomValidity("")); // Limpa validações customizadas
+          .forEach((el) => el.setCustomValidity(""));
+        form
+          .querySelectorAll(".input-row.duplicate-error")
+          .forEach((row) => row.classList.remove("duplicate-error"));
 
-        // Validação geral do formulário (campos required, pattern, types)
+        // 2. Validação básica HTML5
         if (!form.checkValidity()) {
-          isValid = false;
-          // Encontra o primeiro campo inválido e foca nele
           const firstInvalidField = form.querySelector(":invalid");
           if (firstInvalidField) {
             firstInvalidField.focus();
@@ -623,13 +632,19 @@
             "error",
             "Erro de Validação"
           );
-          return; // Para a execução
+          return;
         }
 
-        // Validação específica por linha e coleta de dados
-        rows.forEach((row, index) => {
-          if (!isValid) return; // Se já encontrou erro, não processa mais linhas
+        // 3. Preparação para verificações e geração
+        const uniqueRowSignatures = new Set();
+        let txtContent = "";
+        let isValid = true;
+        let hasDuplicates = false;
+        const rows = inputRowsContainer.querySelectorAll(".input-row");
+        const duplicateRowsIndexes = []; // Guarda índices das linhas duplicadas
 
+        // 4. Loop para validação específica, checagem de duplicatas e coleta
+        for (const [index, row] of rows.entries()) {
           const especieInput = row.querySelector('input[name="especie"]');
           const cnpjInput = row.querySelector('input[name="cnpj"]');
           const acumuladorInput = row.querySelector('input[name="acumulador"]');
@@ -642,8 +657,11 @@
           const irrfInput = row.querySelector('input[name="irrf"]');
           const csrfInput = row.querySelector('input[name="csrf"]');
 
-          // Checagem manual do CNPJ (redundante com pattern, mas boa prática)
-          if (!/^\d{14}$/.test(cnpjInput.value)) {
+          // Validação manual CNPJ (reforço)
+          if (!/^\d{14}$/.test(cnpjInput.value.trim())) {
+            isValid = false;
+            cnpjInput.classList.add("manual-error");
+            cnpjInput.focus();
             showModal(
               `Erro na linha ${
                 index + 1
@@ -651,155 +669,194 @@
               "error",
               "Erro de Validação"
             );
-            cnpjInput.classList.add("manual-error"); // Adiciona classe de erro visual
-            cnpjInput.focus();
-            isValid = false;
-            return;
+            break; // Para no primeiro erro de validação
           }
-
-          const especie = especieInput.value.trim();
-          const cnpj = cnpjInput.value.trim();
-          const acumulador = acumuladorInput.value.trim();
-          const cfop = cfopInput.value.trim();
-          const nf = nfInput.value.trim();
-          const dataEntradaRaw = dataEntradaInput.value;
-          const valorStr = valorInput.value;
-          const irrfStr = irrfInput.value;
-          const csrfStr = csrfInput.value;
-
-          // Formata Data (YYYY-MM-DD -> DD/MM/YYYY)
-          let dataEntradaFormatada = "";
-          if (dataEntradaRaw) {
-            const parts = dataEntradaRaw.split("-");
-            if (parts.length === 3 && parts[0].length === 4) {
-              // Validação básica do formato
-              dataEntradaFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
-            } else {
-              showModal(
-                `Erro na linha ${
-                  index + 1
-                }: Data de entrada inválida. Use o formato DD/MM/AAAA.`,
-                "error",
-                "Erro de Validação"
-              );
-              dataEntradaInput.classList.add("manual-error");
-              dataEntradaInput.focus();
-              isValid = false;
-              return;
-            }
-          } else {
-            // O required já deve pegar isso, mas como segurança:
-            showModal(
-              `Erro na linha ${index + 1}: Data de entrada é obrigatória.`,
-              "error",
-              "Erro de Validação"
-            );
-            dataEntradaInput.classList.add("manual-error");
-            dataEntradaInput.focus();
+          // Validação manual Valor > 0 (reforço)
+          const valorNum = parseFloat(valorInput.value);
+          if (isNaN(valorNum) || valorNum <= 0) {
             isValid = false;
-            return;
-          }
-
-          // Formata Valores (ponto para vírgula, duas casas decimais)
-          const formatValue = (valueStr) => {
-            if (
-              valueStr === null ||
-              valueStr === undefined ||
-              valueStr.trim() === ""
-            )
-              return "0,00"; // Considera vazio como 0,00 para opcionais
-            const num = parseFloat(valueStr);
-            if (isNaN(num)) return "0,00"; // Retorna 0,00 se não for um número válido
-            return num.toFixed(2).replace(".", ",");
-          };
-
-          const valorFormatado = formatValue(valorStr);
-          // Validação extra: Valor principal não pode ser 0 ou negativo
-          if (parseFloat(valorStr) <= 0) {
-            showModal(
-              `Erro na linha ${index + 1}: O Valor NF deve ser maior que zero.`,
-              "error",
-              "Erro de Validação"
-            );
             valorInput.classList.add("manual-error");
             valorInput.focus();
-            isValid = false;
-            return;
-          }
-
-          const valorIRRFFormatado = formatValue(irrfStr);
-          const valorCSRFFormatado = formatValue(csrfStr);
-
-          // Gera linha |1000|
-          const linha1000 = `|1000|${especie}|${cnpj}||${acumulador}|${cfop}||${nf}|U||${dataEntradaFormatada}|${dataEntradaFormatada}|${valorFormatado}||||||||||||||||||||||||||${valorFormatado}||||||||||||||||||||||||||||||||||||||||||||||||||||||||||`;
-          txtContent += linha1000 + "\n";
-
-          // Gera linha |1020| para IRRF se houver valor > 0
-          const valorIRRFNum = parseFloat(irrfStr);
-          if (!isNaN(valorIRRFNum) && valorIRRFNum > 0) {
-            const codigoRecolhimentoIRRF = "170806"; // Exemplo, ajuste se necessário
-            const linha1020_IRRF = `|1020|16||${valorFormatado}|1,50|${valorIRRFFormatado}|||||${valorFormatado}|${codigoRecolhimentoIRRF}||||`;
-            txtContent += linha1020_IRRF + "\n";
-          }
-
-          // Gera linha |1020| para CSRF se houver valor > 0
-          const valorCSRFNum = parseFloat(csrfStr);
-          if (!isNaN(valorCSRFNum) && valorCSRFNum > 0) {
-            const codigoRecolhimentoCSRF = "595207"; // Exemplo, ajuste se necessário
-            const linha1020_CSRF = `|1020|25||${valorFormatado}|4,65|${valorCSRFFormatado}|||||${valorFormatado}|${codigoRecolhimentoCSRF}||||`;
-            txtContent += linha1020_CSRF + "\n";
-          }
-        });
-
-        // Se a validação falhou em alguma linha, não gera o arquivo
-        if (!isValid) {
-          // O modal de erro já foi exibido dentro do loop
-          return;
-        }
-
-        // Se não houver conteúdo (nenhuma linha válida processada ou form vazio inicialmente)
-        if (txtContent.trim() === "") {
-          // Verifica se há linhas preenchidas, mesmo que inválidas
-          if (
-            inputRowsContainer
-              .querySelectorAll(".input-row input[required]")
-              .some((inp) => inp.value.trim() !== "")
-          ) {
-            // Se havia algo preenchido mas deu erro antes de adicionar ao txtContent
             showModal(
-              "Houve um erro inesperado ou nenhum dado válido foi processado. Verifique as linhas.",
+              `Erro na linha ${
+                index + 1
+              }: O Valor NF deve ser um número maior que zero.`,
               "error",
-              "Erro"
+              "Erro de Validação"
             );
+            break; // Para no primeiro erro de validação
+          }
+
+          // Criar assinatura da linha (usando valores trimados)
+          const signatureParts = [
+            especieInput.value.trim(),
+            cnpjInput.value.trim(),
+            acumuladorInput.value.trim(),
+            cfopInput.value.trim(),
+            nfInput.value.trim(),
+            dataEntradaInput.value, // Data não precisa de trim
+            valorInput.value.trim(),
+            irrfInput.value.trim(),
+            csrfInput.value.trim(),
+          ];
+          const rowSignature = signatureParts.join("|||"); // Separador robusto
+
+          // Verificar duplicatas
+          if (uniqueRowSignatures.has(rowSignature)) {
+            isValid = false; // Impede geração, mas continua para marcar todas as duplicatas
+            hasDuplicates = true;
+            row.classList.add("duplicate-error");
+            duplicateRowsIndexes.push(index + 1); // Adiciona o número da linha (base 1)
+            // Não mostra modal ainda, acumula os erros
           } else {
-            // Se realmente não há nada preenchido
+            uniqueRowSignatures.add(rowSignature);
+          }
+
+          // Se não for duplicado E a validação geral ainda é válida, processa dados
+          if (!row.classList.contains("duplicate-error") && isValid) {
+            // Formata Data (DD/MM/YYYY)
+            const dataEntradaRaw = dataEntradaInput.value;
+            let dataEntradaFormatada = "";
+            if (dataEntradaRaw) {
+              const parts = dataEntradaRaw.split("-");
+              if (parts.length === 3 && parts[0].length === 4) {
+                dataEntradaFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
+              } else {
+                // Segurança, embora type=date ajude
+                isValid = false; // Marca como inválido
+                dataEntradaInput.classList.add("manual-error");
+                showModal(
+                  `Erro na linha ${index + 1}: Data inválida.`,
+                  "error",
+                  "Erro de Validação"
+                );
+                break; // Para processamento
+              }
+            } // 'required' já garante que existe
+
+            // Formata Valores (vírgula, 2 casas)
+            const formatValue = (valueStr) => {
+              if (
+                valueStr === null ||
+                valueStr === undefined ||
+                valueStr.trim() === ""
+              )
+                return "0,00";
+              const num = parseFloat(valueStr);
+              return isNaN(num) ? "0,00" : num.toFixed(2).replace(".", ",");
+            };
+
+            const valorFormatado = formatValue(valorInput.value);
+            const valorIRRFFormatado = formatValue(irrfInput.value);
+            const valorCSRFFormatado = formatValue(csrfInput.value);
+
+            // Gera linha |1000|
+            const linha1000 = `|1000|${signatureParts[0]}|${signatureParts[1]}||${signatureParts[2]}|${signatureParts[3]}||${signatureParts[4]}|U||${dataEntradaFormatada}|${dataEntradaFormatada}|${valorFormatado}||||||||||||||||||||||||||${valorFormatado}||||||||||||||||||||||||||||||||||||||||||||||||||||||||||`;
+            txtContent += linha1000 + "\n";
+
+            // Gera linha |1020| IRRF (se valor > 0)
+            const valorIRRFNum = parseFloat(irrfInput.value);
+            if (!isNaN(valorIRRFNum) && valorIRRFNum > 0) {
+              const codigoRecolhimentoIRRF = "1708"; // Ajuste se necessário
+              const linha1020_IRRF = `|1020|16||${valorFormatado}|1,50|${valorIRRFFormatado}|||||${valorFormatado}|${codigoRecolhimentoIRRF}||||`;
+              txtContent += linha1020_IRRF + "\n";
+            }
+
+            // Gera linha |1020| CSRF (se valor > 0)
+            const valorCSRFNum = parseFloat(csrfInput.value);
+            if (!isNaN(valorCSRFNum) && valorCSRFNum > 0) {
+              const codigoRecolhimentoCSRF = "5952"; // Ajuste se necessário
+              const linha1020_CSRF = `|1020|25||${valorFormatado}|4,65|${valorCSRFFormatado}|||||${valorFormatado}|${codigoRecolhimentoCSRF}||||`;
+              txtContent += linha1020_CSRF + "\n";
+            }
+          }
+        } // Fim do loop for...of
+
+        // 5. Verificação final e Geração do Arquivo
+        if (!isValid) {
+          if (hasDuplicates) {
+            // Encontra a primeira linha original que tem uma duplicata
+            let firstOccurrenceIndex = -1;
+            const firstDuplicateSignature = [...uniqueRowSignatures].find(
+              (sig) => {
+                let count = 0;
+                for (const r of rows) {
+                  const sigParts = [
+                    /* extrair valores de r */
+                    r.querySelector('input[name="especie"]').value.trim(),
+                    r.querySelector('input[name="cnpj"]').value.trim(),
+                    r.querySelector('input[name="acumulador"]').value.trim(),
+                    r.querySelector('input[name="cfop"]').value.trim(),
+                    r.querySelector('input[name="nf"]').value.trim(),
+                    r.querySelector('input[name="data_entrada"]').value,
+                    r.querySelector('input[name="valor"]').value.trim(),
+                    r.querySelector('input[name="irrf"]').value.trim(),
+                    r.querySelector('input[name="csrf"]').value.trim(),
+                  ].join("|||");
+                  if (sigParts === sig) count++;
+                }
+                return count > 1;
+              }
+            );
+            // Encontra o índice da primeira ocorrência da primeira assinatura duplicada
+            for (const [i, r] of rows.entries()) {
+              const sigParts = [
+                /* extrair valores de r */
+                r.querySelector('input[name="especie"]').value.trim(),
+                r.querySelector('input[name="cnpj"]').value.trim(),
+                r.querySelector('input[name="acumulador"]').value.trim(),
+                r.querySelector('input[name="cfop"]').value.trim(),
+                r.querySelector('input[name="nf"]').value.trim(),
+                r.querySelector('input[name="data_entrada"]').value,
+                r.querySelector('input[name="valor"]').value.trim(),
+                r.querySelector('input[name="irrf"]').value.trim(),
+                r.querySelector('input[name="csrf"]').value.trim(),
+              ].join("|||");
+              if (sigParts === firstDuplicateSignature) {
+                firstOccurrenceIndex = i + 1;
+                r.classList.add("duplicate-error"); // Marca a original também
+                break;
+              }
+            }
+
             showModal(
-              "Nenhum dado inserido para gerar o arquivo.",
-              "info",
-              "Atenção"
+              `Foram encontradas linhas duplicadas (marcadas em amarelo). A linha ${duplicateRowsIndexes.join(
+                ", "
+              )} é/são idêntica(s) à linha ${firstOccurrenceIndex} ou outra anterior. Remova as duplicatas.`,
+              "warning",
+              "Erro de Duplicidade"
             );
           }
+          // Se o erro não foi de duplicidade, o modal de validação já foi exibido.
+          return; // Impede a geração
+        }
+
+        if (txtContent.trim() === "") {
+          showModal(
+            "Nenhum dado válido para gerar o arquivo. Verifique se preencheu alguma linha.",
+            "info",
+            "Atenção"
+          );
           return;
         }
 
-        // Cria e baixa o arquivo TXT
+        // 6. Cria e baixa o arquivo TXT
         try {
           const blob = new Blob([txtContent], {
             type: "text/plain;charset=utf-8",
           });
           const link = document.createElement("a");
           link.href = URL.createObjectURL(blob);
-          link.download = "layout_gerado.txt"; // Nome do arquivo
+          link.download = "layout_gerado.txt";
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
           URL.revokeObjectURL(link.href);
-
           showModal("Arquivo TXT gerado com sucesso!", "success", "Sucesso");
         } catch (error) {
-          console.error("Erro ao gerar o blob ou link de download:", error);
+          console.error("Erro ao gerar blob/link:", error);
           showModal(
-            "Ocorreu um erro ao tentar gerar o arquivo TXT. Verifique o console para detalhes.",
+            "Ocorreu um erro ao gerar o arquivo. Verifique o console.",
             "error",
             "Erro"
           );
