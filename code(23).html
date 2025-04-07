@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <!-- ... (cabeçalho HTML e CSS igual ao anterior) ... -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Processador de Planilha para TXT</title>
+    <!-- Importa a biblioteca SheetJS (js-xlsx) para ler arquivos Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+      /* ... (CSS igual ao anterior) ... */
+      :root {
+        --primary-color: #4f0072; /* Roxo escuro */
+        --accent-color: #fb0a5e; /* Rosa vibrante */
+        --background-color: #ffffff; /* Branco */
+        --form-bg-color: #f9f9f9; /* Cinza bem claro */
+        --text-color: #333333; /* Cinza escuro */
+        --border-color: #e0e0e0; /* Cinza claro */
+        --text-color-light: #ffffff; /* Branco */
+        --error-color: #d9534f; /* Vermelho para erros */
+        --success-color: #5cb85c; /* Verde para sucesso */
+      }
+
+      body {
+        font-family: sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        margin: 0;
+        padding: 20px;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 20px auto;
+        padding: 25px;
+        background-color: var(--form-bg-color);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      h1,
+      h2 {
+        color: var(--primary-color);
+        border-bottom: 2px solid var(--accent-color);
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+      }
+
+      .section {
+        margin-bottom: 30px;
+        padding: 20px;
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        background-color: #fff;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: var(--primary-color);
+      }
+
+      input[type="text"],
+      input[type="file"] {
+        width: calc(100% - 22px); /* Considera padding e border */
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        font-size: 1rem;
+        box-sizing: border-box; /* Garante que padding não aumente o tamanho total */
+      }
+
+      button {
+        background-color: var(--primary-color);
+        color: var(--text-color-light);
+        border: none;
+        padding: 12px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.3s ease;
+        margin-right: 10px;
+      }
+
+      button:hover {
+        background-color: var(--accent-color);
+      }
+
+      button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+
+      #mapping-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+      }
+
+      #mapping-table th,
+      #mapping-table td {
+        border: 1px solid var(--border-color);
+        padding: 10px;
+        text-align: left;
+      }
+
+      #mapping-table th {
+        background-color: var(--primary-color);
+        color: var(--text-color-light);
+      }
+
+      #mapping-table tr:nth-child(even) {
+        background-color: var(--form-bg-color);
+      }
+
+      #mapping-table button.remove-btn {
+        background-color: var(--accent-color);
+        color: white;
+        padding: 5px 10px;
+        font-size: 0.9rem;
+      }
+      #mapping-table button.remove-btn:hover {
+        opacity: 0.8;
+      }
+
+      #status,
+      #report {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 5px;
+      }
+
+      #status.error,
+      #report.error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+      #status.success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+      #report.info {
+        background-color: #e2e3e5;
+        color: #383d41;
+        border: 1px solid #d6d8db;
+      }
+
+      #downloadButton {
+        background-color: var(--success-color);
+      }
+      #downloadButton:disabled {
+        background-color: #ccc;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .form-inline {
+        display: flex;
+        gap: 10px;
+        align-items: flex-end; /* Alinha itens na parte inferior */
+        margin-bottom: 15px;
+      }
+      .form-inline div {
+        flex-grow: 1; /* Faz os inputs ocuparem espaço disponível */
+      }
+      .form-inline label {
+        margin-bottom: 5px; /* Menor margem para label inline */
+      }
+      .form-inline input[type="text"] {
+        margin-bottom: 0; /* Remove margem inferior do input */
+        width: 100%; /* Garante que o input preencha a div */
+      }
+      .form-inline button {
+        flex-shrink: 0; /* Impede que o botão encolha */
+        height: 40px; /* Ajusta altura para alinhar com inputs */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Gerador de TXT a partir de Planilha</h1>
+
+      <!-- Seção 1: De/Para Nome x CPF -->
+      <div class="section">
+        <h2>1. Mapeamento Nome x CPF</h2>
+        <p>
+          Adicione os nomes (ou partes deles) a serem buscados na coluna
+          'Histórico' e seus respectivos CPFs. A busca **não** diferencia
+          maiúsculas/minúsculas ou acentos.
+        </p>
+        <div class="form-inline">
+          <div>
+            <label for="nameInput">Nome a ser Buscado:</label>
+            <input
+              type="text"
+              id="nameInput"
+              placeholder="Ex: JOÃO SILVA ou apenas JOAO"
+            />
+          </div>
+          <div>
+            <label for="cpfInput">CPF Correspondente:</label>
+            <input
+              type="text"
+              id="cpfInput"
+              placeholder="Somente números (Ex: 01234567890)"
+            />
+          </div>
+          <button id="addMappingBtn">Adicionar</button>
+        </div>
+
+        <table id="mapping-table">
+          <thead>
+            <tr>
+              <th>Nome Buscado (Original)</th>
+              <th>CPF</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+          <tbody id="mapping-body">
+            <!-- Linhas de mapeamento serão adicionadas aqui -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Seção 2: Importação da Planilha -->
+      <div class="section">
+        <h2>2. Importar Planilha Excel</h2>
+        <p>
+          Selecione o arquivo Excel (.xlsx ou .xls). A planilha deve conter as
+          colunas: <strong>Histórico</strong>, <strong>Valor</strong> e
+          <strong>Data</strong>.
+        </p>
+        <label for="excelFile">Arquivo Excel:</label>
+        <input type="file" id="excelFile" accept=".xlsx, .xls" />
+        <button id="processButton" disabled>
+          Processar Planilha e Gerar TXT
+        </button>
+      </div>
+
+      <!-- Seção 3: Resultados e Download -->
+      <div class="section">
+        <h2>3. Resultado</h2>
+        <div id="status">Aguardando processamento...</div>
+        <div id="report" class="hidden"></div>
+        <button id="downloadButton" class="hidden" disabled>
+          Baixar Arquivo TXT
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const nameInput = document.getElementById("nameInput");
+      const cpfInput = document.getElementById("cpfInput");
+      const addMappingBtn = document.getElementById("addMappingBtn");
+      const mappingBody = document.getElementById("mapping-body");
+      const excelFileInput = document.getElementById("excelFile");
+      const processButton = document.getElementById("processButton");
+      const downloadButton = document.getElementById("downloadButton");
+      const statusDiv = document.getElementById("status");
+      const reportDiv = document.getElementById("report");
+
+      // Armazena os mapeamentos { 'NOME ORIGINAL DIGITADO': 'CPF' }
+      // Usamos o nome original como chave para facilitar a remoção pelo usuário
+      let mappings = {};
+      let processedLines = [];
+      let notFoundRows = [];
+      let excelData = [];
+
+      // --- Função de Normalização ---
+      /**
+       * Normaliza uma string: converte para maiúsculas e remove acentos/diacríticos.
+       * @param {string} str A string para normalizar.
+       * @returns {string} A string normalizada.
+       */
+      function normalizeString(str) {
+        if (!str) return "";
+        return str
+          .toString() // Garante que é string
+          .toUpperCase() // Converte para maiúsculas
+          .normalize("NFD") // Decompõe caracteres acentuados (ex: 'Á' -> 'A' + ´)
+          .replace(/[\u0300-\u036f]/g, ""); // Remove os diacríticos (acentos)
+      }
+
+      // --- Funções de Mapeamento ---
+
+      function renderMappingTable() {
+        mappingBody.innerHTML = "";
+        const names = Object.keys(mappings);
+
+        if (names.length === 0) {
+          mappingBody.innerHTML =
+            '<tr><td colspan="3">Nenhum mapeamento adicionado.</td></tr>';
+          processButton.disabled = true;
+          return;
+        }
+
+        // Ordena pelo nome original para exibição
+        names.sort().forEach((originalName) => {
+          const cpf = mappings[originalName];
+          const row = document.createElement("tr");
+          row.innerHTML = `
+                    <td>${originalName}</td>
+                    <td>${formatCPF(cpf)}</td>
+                    <td><button class="remove-btn" data-name="${originalName}">Remover</button></td>
+                `;
+          mappingBody.appendChild(row);
+        });
+
+        mappingBody.querySelectorAll(".remove-btn").forEach((button) => {
+          button.addEventListener("click", (e) => {
+            // Usa o atributo 'data-name' que contém o nome original
+            const nameToRemove = e.target.getAttribute("data-name");
+            removeMapping(nameToRemove);
+          });
+        });
+
+        processButton.disabled =
+          !excelFileInput.files || excelFileInput.files.length === 0;
+      }
+
+      function addMapping() {
+        const originalName = nameInput.value.trim(); // Mantém o nome original digitado
+        const cpf = cpfInput.value.replace(/\D/g, "");
+
+        if (!originalName) {
+          alert("Por favor, insira um nome para buscar.");
+          nameInput.focus();
+          return;
+        }
+        if (!cpf || cpf.length !== 11) {
+          alert("Por favor, insira um CPF válido com 11 dígitos.");
+          cpfInput.focus();
+          return;
+        }
+
+        // Verifica se o nome original já existe (evita duplicidade exata)
+        if (mappings[originalName]) {
+          alert(
+            `O nome "${originalName}" já foi mapeado. Remova o mapeamento existente se quiser alterá-lo.`
+          );
+          return;
+        }
+
+        // Armazena usando o nome original como chave
+        mappings[originalName] = cpf;
+        renderMappingTable();
+        nameInput.value = "";
+        cpfInput.value = "";
+        nameInput.focus();
+      }
+
+      function removeMapping(originalName) {
+        // Remove usando o nome original como chave
+        if (mappings[originalName]) {
+          delete mappings[originalName];
+          renderMappingTable();
+          updateStatus("Mapeamento removido.", "info");
+        }
+      }
+
+      function formatCPF(cpf) {
+        if (!cpf || cpf.length !== 11) return cpf;
+        return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+      }
+
+      // --- Funções de Processamento da Planilha ---
+
+      function handleFileProcess() {
+        const file = excelFileInput.files[0];
+        if (!file) {
+          updateStatus("Nenhum arquivo selecionado.", "error");
+          return;
+        }
+        if (Object.keys(mappings).length === 0) {
+          updateStatus(
+            "Adicione pelo menos um mapeamento Nome x CPF antes de processar.",
+            "error"
+          );
+          return;
+        }
+
+        updateStatus("Lendo arquivo...", "info");
+        resetResults();
+
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+          try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, {
+              type: "array",
+              cellDates: true,
+            });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            excelData = XLSX.utils.sheet_to_json(worksheet, {
+              raw: false,
+              dateNF: "dd/mm/yyyy",
+            });
+
+            updateStatus("Processando dados...", "info");
+            processExcelData();
+          } catch (error) {
+            console.error("Erro ao ler ou processar o arquivo Excel:", error);
+            updateStatus(
+              `Erro ao processar o arquivo: ${error.message}. Verifique o formato e as colunas (Histórico, Valor, Data).`,
+              "error"
+            );
+            processButton.disabled = false;
+          }
+        };
+
+        reader.onerror = function (e) {
+          console.error("Erro ao ler o arquivo:", e);
+          updateStatus("Erro ao ler o arquivo.", "error");
+          processButton.disabled = false;
+        };
+
+        reader.readAsArrayBuffer(file);
+        processButton.disabled = true;
+      }
+
+      function processExcelData() {
+        processedLines = [];
+        notFoundRows = [];
+        let processedRowCount = 0;
+
+        // --- INÍCIO DO DEBUG ---
+        console.log("Iniciando processExcelData...");
+        if (!excelData || excelData.length === 0) {
+          updateStatus(
+            "Erro: Nenhum dado encontrado na planilha ou falha na leitura inicial. Verifique se a planilha tem conteúdo na primeira aba.",
+            "error"
+          );
+          console.error("Erro: excelData está vazio ou nulo.");
+          processButton.disabled = false;
+          return;
+        }
+
+        console.log(
+          `Total de linhas lidas do Excel (incluindo cabeçalho implícito): ${excelData.length}`
+        );
+        console.log(
+          "Objeto da primeira linha de dados (excelData[0]):",
+          JSON.stringify(excelData[0], null, 2)
+        );
+
+        // Verifica se a primeira linha (objeto) existe antes de tentar pegar as chaves
+        if (!excelData[0]) {
+          console.error(
+            "excelData[0] é indefinido. A planilha pode estar vazia ou mal formatada."
+          );
+          updateStatus(
+            "Erro: Não foi possível ler a linha de cabeçalhos ou a primeira linha de dados. Verifique a estrutura da planilha.",
+            "error"
+          );
+          processButton.disabled = false;
+          return;
+        }
+        // --- FIM DO DEBUG ---
+
+        const headersRaw = Object.keys(excelData[0]); // Pega os nomes originais das colunas lidas
+        const headersLower = headersRaw.map((h) => h.toLowerCase());
+        console.log("Cabeçalhos detectados (como lidos):", headersRaw); // Log dos cabeçalhos originais
+
+        // Encontra os nomes EXATOS das colunas usadas no arquivo, sendo flexível com 'historico'/'histórico'
+        // Armazena a chave original encontrada para usar depois
+        const historicoHeaderKey = headersRaw.find(
+          (h) =>
+            h.toLowerCase() === "histórico" || h.toLowerCase() === "historico"
+        );
+        const valorHeaderKey = headersRaw.find(
+          (h) => h.toLowerCase() === "valor"
+        );
+        const dataHeaderKey = headersRaw.find(
+          (h) => h.toLowerCase() === "data"
+        );
+
+        console.log(
+          "Chave encontrada para Histórico:",
+          historicoHeaderKey || "NÃO ENCONTRADA"
+        );
+        console.log(
+          "Chave encontrada para Valor:",
+          valorHeaderKey || "NÃO ENCONTRADA"
+        );
+        console.log(
+          "Chave encontrada para Data:",
+          dataHeaderKey || "NÃO ENCONTRADA"
+        );
+
+        if (!historicoHeaderKey || !valorHeaderKey || !dataHeaderKey) {
+          const missing = [
+            !historicoHeaderKey ? '"Histórico" ou "Historico"' : null,
+            !valorHeaderKey ? '"Valor"' : null,
+            !dataHeaderKey ? '"Data"' : null,
+          ]
+            .filter(Boolean)
+            .join(", ");
+          // Mensagem de erro mais clara sobre os cabeçalhos
+          updateStatus(
+            `Erro Fatal: Coluna(s) obrigatória(s) não encontrada(s): ${missing}. Verifique os nomes EXATOS na LINHA 1 da sua planilha.`,
+            "error"
+          );
+          console.error(
+            `Erro Fatal: Coluna(s) não encontrada(s): ${missing}. Cabeçalhos detectados:`,
+            headersRaw
+          );
+          processButton.disabled = false;
+          return;
+        }
+
+        const searchTerms = Object.keys(mappings).map((originalName) => ({
+          normalizedName: normalizeString(originalName),
+          cpf: mappings[originalName],
+        }));
+
+        excelData.forEach((row, index) => {
+          const excelRowNum = index + 2; // Número da linha como no Excel
+
+          // Lê os dados usando as chaves exatas encontradas anteriormente
+          const historicoRaw = row[historicoHeaderKey];
+          const valorRaw = row[valorHeaderKey];
+          let dataRaw = row[dataHeaderKey];
+
+          // --- DEBUG Específico para Linha 2 ---
+          if (excelRowNum === 2) {
+            console.log(`--- Verificando Linha ${excelRowNum} ---`);
+            console.log(
+              `Valor bruto de '${historicoHeaderKey}':`,
+              historicoRaw,
+              `(Tipo: ${typeof historicoRaw})`
+            );
+            console.log(
+              `Valor bruto de '${valorHeaderKey}':`,
+              valorRaw,
+              `(Tipo: ${typeof valorRaw})`
+            );
+            console.log(
+              `Valor bruto de '${dataHeaderKey}':`,
+              dataRaw,
+              `(Tipo: ${typeof dataRaw})`
+            );
+          }
+          // --- FIM DEBUG ---
+
+          // Verifica se ALGUM dos valores essenciais é estritamente undefined
+          // (Permite strings vazias ou zero, mas não 'undefined' que indica coluna faltando ou erro de leitura)
+          if (
+            historicoRaw === undefined ||
+            valorRaw === undefined ||
+            dataRaw === undefined
+          ) {
+            let missingFields = [];
+            if (historicoRaw === undefined)
+              missingFields.push(`'${historicoHeaderKey}'`);
+            if (valorRaw === undefined)
+              missingFields.push(`'${valorHeaderKey}'`);
+            if (dataRaw === undefined) missingFields.push(`'${dataHeaderKey}'`);
+
+            const reason = `Dados ausentes (coluna(s) ${missingFields.join(
+              ", "
+            )} não encontrada(s) ou vazia(s) nesta linha específica)`;
+            console.warn(`Linha ${excelRowNum}: ${reason}. Dados brutos:`, {
+              historicoRaw,
+              valorRaw,
+              dataRaw,
+            });
+            notFoundRows.push({ row: excelRowNum, reason: reason });
+            return; // Pula linha
+          }
+
+          // Converte histórico para string APÓS verificar se não é undefined
+          const historico = String(historicoRaw); // Agora é seguro converter
+
+          // Verifica se o histórico está vazio APÓS garantir que não era undefined
+          if (historico.trim() === "") {
+            const reason = `Coluna '${historicoHeaderKey}' está vazia`;
+            console.warn(`Linha ${excelRowNum}: ${reason}.`);
+            notFoundRows.push({ row: excelRowNum, reason: reason });
+            return; // Pula linha se histórico for essencial e vazio
+          }
+
+          // --- Continua o processamento normal (Data, Valor, Matching) ---
+
+          let rowDate;
+          let rowDateStr = "";
+          if (dataRaw instanceof Date) {
+            rowDate = dataRaw;
+            rowDateStr = formatDate(rowDate);
+          } else if (
+            typeof dataRaw === "string" &&
+            dataRaw.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)
+          ) {
+            rowDateStr = dataRaw;
+            rowDate = parseDateDDMMYYYY(dataRaw);
+          } else if (typeof dataRaw === "number" && dataRaw > 1) {
+            try {
+              const excelEpoch = new Date(1899, 11, 30);
+              const jsDate = new Date(
+                excelEpoch.getTime() + dataRaw * 24 * 60 * 60 * 1000
+              );
+              const offset = jsDate.getTimezoneOffset() * 60000;
+              rowDate = new Date(jsDate.getTime() + offset); // Ajusta fuso horário
+              rowDateStr = formatDate(rowDate);
+              if (excelRowNum === 2)
+                console.log(
+                  `Linha ${excelRowNum}: Data convertida de número ${dataRaw} para ${rowDateStr}`
+                );
+            } catch (dateErr) {
+              console.error(
+                `Linha ${excelRowNum}: Falha ao converter número de data ${dataRaw}.`,
+                dateErr
+              );
+              rowDate = null;
+            }
+          } else {
+            if (excelRowNum === 2)
+              console.warn(
+                `Linha ${excelRowNum}: Formato de data não reconhecido: ${dataRaw}`
+              );
+            rowDate = null;
+          }
+
+          if (!rowDate) {
+            notFoundRows.push({
+              row: excelRowNum,
+              reason: `Data inválida ou não reconhecida ('${dataRaw}')`,
+            });
+            return;
+          }
+
+          // Formatação do Valor
+          const valorNum = Number(valorRaw);
+          if (isNaN(valorNum)) {
+            notFoundRows.push({
+              row: excelRowNum,
+              reason: `Valor inválido ('${valorRaw}')`,
+            });
+            return;
+          }
+          const valorFormatado = valorNum
+            .toLocaleString("pt-BR", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })
+            .replace(".", ",");
+
+          // Lógica de busca (match)
+          let matchFound = false;
+          const normalizedHistorico = normalizeString(historico);
+
+          for (const term of searchTerms) {
+            if (normalizedHistorico.includes(term.normalizedName)) {
+              const cpf = term.cpf;
+              const quarterDate = getQuarterEndDatePlusOne(rowDate);
+              const txtLine = `${quarterDate};${cpf};BRASIL;12001;${valorFormatado};${rowDateStr};;;;;;;;;;;;;`;
+              processedLines.push(txtLine);
+              matchFound = true;
+              processedRowCount++;
+              break;
+            }
+          }
+
+          if (!matchFound) {
+            notFoundRows.push({
+              row: excelRowNum,
+              reason: "Nenhum nome mapeado encontrado no Histórico",
+            });
+          }
+        }); // Fim do forEach
+
+        // Finaliza o processamento (status, report, botão download)
+        // ... (código restante para exibir status e relatório - sem alterações) ...
+        if (processedLines.length > 0) {
+          updateStatus(
+            `Processamento concluído. ${processedLines.length} linhas geradas para o arquivo TXT.`,
+            "success"
+          );
+          downloadButton.disabled = false;
+          downloadButton.classList.remove("hidden");
+        } else if (
+          excelData.length > 0 &&
+          notFoundRows.length === excelData.length
+        ) {
+          // Caso especial: processou todas as linhas mas NENHUMA foi válida ou teve match
+          updateStatus(
+            `Processamento concluído, mas nenhuma linha válida foi encontrada ou correspondeu aos mapeamentos. Verifique o relatório abaixo.`,
+            "error"
+          );
+          downloadButton.disabled = true;
+          downloadButton.classList.add("hidden");
+        } else {
+          updateStatus(
+            "Processamento concluído, mas nenhuma linha correspondente aos mapeamentos foi encontrada para gerar o TXT.",
+            "info"
+          );
+          downloadButton.disabled = true;
+          downloadButton.classList.add("hidden");
+        }
+
+        displayReport(); // Mostra o relatório de erros/não encontrados
+        processButton.disabled = false; // Reabilita o botão
+      }
+
+      // --- Funções Auxiliares (formatDate, parseDateDDMMYYYY, getQuarterEndDatePlusOne, updateStatus, displayReport, resetResults - iguais às anteriores) ---
+
+      function formatDate(date) {
+        if (!(date instanceof Date) || isNaN(date)) return "";
+        const day = String(date.getDate()).padStart(2, "0");
+        const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is 0-indexed
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      }
+
+      function parseDateDDMMYYYY(dateString) {
+        const parts = dateString.split("/");
+        if (parts.length === 3) {
+          const year = parseInt(parts[2], 10);
+          const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed
+          const day = parseInt(parts[0], 10);
+
+          // Verifica se os números são válidos
+          if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
+
+          const date = new Date(year, month, day);
+          // Verifica se a data resultante é válida e corresponde à string original
+          // (evita erros como 31/02/2024 virando 02/03/2024)
+          if (
+            date &&
+            date.getFullYear() === year &&
+            date.getMonth() === month &&
+            date.getDate() === day
+          ) {
+            return date;
+          }
+        }
+        console.warn("Falha ao parsear data:", dateString);
+        return null; // Retorna null se inválido
+      }
+
+      function getQuarterEndDatePlusOne(date) {
+        if (!(date instanceof Date) || isNaN(date)) return "DATA_INVALIDA";
+        const month = date.getMonth(); // 0-11
+        const year = date.getFullYear();
+        let targetMonth,
+          targetYear = year;
+
+        if (month >= 0 && month <= 2) {
+          targetMonth = 3;
+        } // Q1 -> 01/Abr (idx 3)
+        else if (month >= 3 && month <= 5) {
+          targetMonth = 6;
+        } // Q2 -> 01/Jul (idx 6)
+        else if (month >= 6 && month <= 8) {
+          targetMonth = 9;
+        } // Q3 -> 01/Out (idx 9)
+        else {
+          targetMonth = 0;
+          targetYear = year + 1;
+        } // Q4 -> 01/Jan (idx 0)
+
+        const targetDate = new Date(targetYear, targetMonth, 1);
+        return formatDate(targetDate);
+      }
+
+      function updateStatus(message, type = "info") {
+        statusDiv.textContent = message;
+        statusDiv.className = type;
+      }
+
+      function displayReport() {
+        if (notFoundRows.length > 0) {
+          reportDiv.innerHTML = `<strong>Relatório de Linhas Não Processadas ou com Avisos (${notFoundRows.length}):</strong><br>`;
+          // Limita a exibição para não sobrecarregar a tela, se necessário
+          const maxReportItems = 100;
+          const itemsToShow = notFoundRows.slice(0, maxReportItems);
+          const list = itemsToShow
+            .map((item) => `Linha ${item.row}: ${item.reason}`)
+            .join("<br>");
+
+          reportDiv.innerHTML += list;
+          if (notFoundRows.length > maxReportItems) {
+            reportDiv.innerHTML += `<br>... e mais ${
+              notFoundRows.length - maxReportItems
+            } linhas.`;
+          }
+          reportDiv.className = "info";
+          reportDiv.classList.remove("hidden");
+        } else if (
+          excelData.length > 0 &&
+          processedLines.length == 0 &&
+          notFoundRows.length > 0
+        ) {
+          // Caso onde processou, não gerou linhas TXT, e tem erros
+          reportDiv.innerHTML = `Nenhuma linha TXT foi gerada. Verifique o relatório de erros acima.`;
+          reportDiv.className = "info"; // Mantem como info ou error? Info está bom.
+          reportDiv.classList.remove("hidden");
+        } else if (excelData.length > 0) {
+          reportDiv.innerHTML =
+            "Todas as linhas válidas da planilha foram verificadas.";
+          if (processedLines.length > 0) {
+            reportDiv.innerHTML +=
+              " Mapeamentos encontrados e linhas TXT geradas.";
+          } else {
+            reportDiv.innerHTML +=
+              " Nenhum mapeamento correspondeu aos históricos encontrados.";
+          }
+          reportDiv.className = "success";
+          reportDiv.classList.remove("hidden");
+        } else {
+          // Caso não tenha dados no excel ou erro de leitura inicial
+          reportDiv.classList.add("hidden");
+          reportDiv.innerHTML = "";
+        }
+      }
+
+      function resetResults() {
+        processedLines = [];
+        notFoundRows = [];
+        excelData = [];
+        downloadButton.disabled = true;
+        downloadButton.classList.add("hidden");
+        reportDiv.classList.add("hidden");
+        reportDiv.innerHTML = "";
+        statusDiv.textContent = "Aguardando processamento...";
+        statusDiv.className = "";
+      }
+
+      // --- Função de Download ---
+
+      function downloadTxt() {
+        if (processedLines.length === 0) {
+          alert("Não há dados processados para baixar.");
+          return;
+        }
+        const txtContent = processedLines.join("\r\n"); // CRLF para Windows
+        const blob = new Blob([txtContent], {
+          type: "text/plain;charset=utf-8",
+        });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "resultado_processamento.txt";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        updateStatus(
+          `Arquivo TXT gerado e download iniciado. ${processedLines.length} linhas.`,
+          "success"
+        );
+      }
+
+      // --- Event Listeners ---
+      addMappingBtn.addEventListener("click", addMapping);
+      processButton.addEventListener("click", handleFileProcess);
+      downloadButton.addEventListener("click", downloadTxt);
+
+      excelFileInput.addEventListener("change", () => {
+        const hasFile = excelFileInput.files.length > 0;
+        const hasMappings = Object.keys(mappings).length > 0;
+        processButton.disabled = !(hasFile && hasMappings);
+
+        if (hasFile && !hasMappings) {
+          updateStatus(
+            `Arquivo "${excelFileInput.files[0].name}" selecionado, mas falta adicionar mapeamentos.`,
+            "info"
+          );
+          resetResults();
+        } else if (hasFile && hasMappings) {
+          updateStatus(
+            `Arquivo "${excelFileInput.files[0].name}" selecionado. Pronto para processar.`,
+            "info"
+          );
+          resetResults();
+        } else {
+          updateStatus("Nenhum arquivo selecionado.", "info");
+        }
+      });
+
+      // Inicializa a tabela de mapeamento
+      renderMappingTable();
+    </script>
+  </body>
+</html>
