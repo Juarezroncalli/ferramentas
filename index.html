@@ -3,9 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Painel de Navegação</title>
-    <link rel="icon" href="din.ico" type="image/x-icon" />
+    <title>Contábil Tech - Ferramentas Inteligentes para Contabilidade</title>
+    <!-- Font Awesome para ícones -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
     <style>
+      /* Variáveis de cores - Nova paleta */
       :root {
         --primary-color: #4f0072;
         --accent-color: #fb0a5e;
@@ -13,225 +18,467 @@
         --form-bg-color: #f9f9f9;
         --text-color: #333333;
         --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease;
+      }
+
+      /* Reset e estilos globais */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", "Poppins", "Roboto", sans-serif;
       }
 
       body {
-        font-family: "Segoe UI", Arial, sans-serif;
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 20px;
-        line-height: 1.6;
         background-color: var(--background-color);
         color: var(--text-color);
+        line-height: 1.6;
       }
 
-      .container {
-        background-color: var(--background-color);
-        border-radius: 12px;
-        padding: 25px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      /* Header */
+      header {
+        background-color: var(--primary-color);
+        color: var(--text-color-light);
+        padding: 16px 24px;
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+        box-shadow: var(--sombra);
       }
 
-      .logo-container {
-        text-align: center;
-        margin-bottom: 30px;
+      .header-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
       }
 
       .logo {
-        max-width: 180px;
-        margin-bottom: 10px;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-color-light);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
       }
 
-      h1 {
-        color: var(--primary-color);
+      .logo i {
+        color: var(--accent-color);
+        margin-right: 8px;
+      }
+
+      .slogan {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-left: 16px;
+      }
+
+      /* Conteúdo principal */
+      main {
+        margin-top: 80px;
+        padding: 24px;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      /* Seção de boas-vindas */
+      .welcome-section {
         text-align: center;
-        font-weight: 600;
-        margin-bottom: 25px;
-        font-size: 32px;
+        margin-bottom: 48px;
+        padding: 24px;
+        background: linear-gradient(135deg, var(--primary-color), #7a1e99);
+        color: var(--text-color-light);
+        border-radius: 12px;
+        box-shadow: var(--sombra);
       }
 
-      h2 {
-        color: var(--primary-color);
-        font-size: 22px;
-        font-weight: 500;
-        margin-top: 5px;
-        margin-bottom: 20px;
-        text-align: center;
+      .welcome-section h1 {
+        font-size: 2.2rem;
+        margin-bottom: 16px;
+        position: relative;
+        display: inline-block;
       }
 
-      .buttons-container {
+      .welcome-section h1:after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: var(--accent-color);
+        border-radius: 2px;
+      }
+
+      .welcome-section p {
+        font-size: 1.1rem;
+        max-width: 700px;
+        margin: 24px auto 0;
+      }
+
+      /* Grid de cards */
+      .tools-grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 25px;
-        margin-top: 30px;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 24px;
+        margin-top: 32px;
       }
 
-      .nav-button {
+      .tool-card {
         background-color: var(--form-bg-color);
-        border: 1px solid var(--border-color);
-        border-left: 3px solid var(--primary-color);
-        border-radius: 8px;
-        padding: 25px;
-        text-align: center;
-        transition: all 0.3s ease;
-        cursor: pointer;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: var(--sombra);
+        transition: var(--transicao);
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        height: 180px;
+        text-align: center;
+        cursor: pointer;
+        border: 1px solid var(--border-color);
       }
 
-      .nav-button:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-        border-left: 3px solid var(--accent-color);
+      .tool-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 8px 24px rgba(79, 0, 114, 0.2);
+        border-color: var(--primary-color);
       }
 
-      .nav-button .icon {
-        font-size: 40px;
-        margin-bottom: 15px;
+      .tool-card:hover .tool-icon {
+        color: var(--accent-color);
+        transform: scale(1.1);
+      }
+
+      .tool-icon {
+        font-size: 2.5rem;
+        margin-bottom: 16px;
+        color: var(--primary-color);
+        transition: var(--transicao);
+      }
+
+      .tool-name {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 12px;
         color: var(--primary-color);
       }
 
-      .nav-button:hover .icon {
-        color: var(--accent-color);
-      }
-
-      .nav-button h3 {
-        font-size: 20px;
-        margin: 0 0 10px 0;
-        color: var(--primary-color);
-        transition: color 0.3s ease;
-      }
-
-      .nav-button:hover h3 {
-        color: var(--accent-color);
-      }
-
-      .nav-button p {
-        margin: 0;
-        font-size: 14px;
-        color: #666;
-      }
-
-      .destacado {
-        background-color: #f9f3ff;
-        padding: 20px;
-        border-radius: 8px;
-        margin-bottom: 25px;
-        border-left: 3px solid var(--primary-color);
-        text-align: center;
-      }
-
-      footer {
-        margin-top: 40px;
-        text-align: center;
-        font-size: 14px;
+      .tool-description {
+        font-size: 0.9rem;
         color: #777;
+        margin-bottom: 16px;
+        flex-grow: 1;
       }
 
+      .access-btn {
+        background: var(--accent-color);
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 6px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: var(--transicao);
+        width: 100%;
+      }
+
+      .access-btn:hover {
+        background: #d9084f;
+        box-shadow: 0 4px 12px rgba(251, 10, 94, 0.3);
+      }
+
+      /* Footer */
+      footer {
+        background-color: var(--primary-color);
+        color: var(--text-color-light);
+        text-align: center;
+        padding: 24px;
+        margin-top: 48px;
+      }
+
+      .footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .footer-links {
+        margin-top: 16px;
+      }
+
+      .footer-links a {
+        color: var(--accent-color);
+        margin: 0 8px;
+        text-decoration: none;
+        transition: var(--transicao);
+      }
+
+      .footer-links a:hover {
+        color: var(--text-color-light);
+      }
+
+      /* Responsividade */
       @media (max-width: 768px) {
-        .buttons-container {
+        .header-container {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .slogan {
+          margin-left: 0;
+          margin-top: 8px;
+        }
+
+        .welcome-section h1 {
+          font-size: 1.8rem;
+        }
+
+        .welcome-section p {
+          font-size: 1rem;
+        }
+
+        main {
+          margin-top: 120px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .tools-grid {
           grid-template-columns: 1fr;
+        }
+
+        .welcome-section h1 {
+          font-size: 1.5rem;
         }
       }
     </style>
   </head>
+
   <body>
-    <div class="container">
-      <div class="logo-container">
-        <!-- Você pode adicionar um logo aqui -->
-        <!-- <img src="logo.png" alt="Logo" class="logo"> -->
+    <!-- Cabeçalho Fixo -->
+    <header>
+      <div class="header-container">
+        <a href="#" class="logo">
+          <i class="fas fa-calculator"></i>
+          Contábil Tech
+        </a>
+        <div class="slogan">
+          Ferramentas inteligentes para o contador moderno
+        </div>
       </div>
+    </header>
 
-      <h1>Painel de Navegação</h1>
-
-      <div class="destacado">
-        <h2>Selecione uma ferramenta para começar</h2>
+    <!-- Conteúdo Principal -->
+    <main>
+      <!-- Seção de Boas-vindas -->
+      <section class="welcome-section">
+        <h1>Bem-vindo ao Contábil Tech</h1>
         <p>
-          Acesse as diferentes ferramentas disponíveis clicando nos botões
-          abaixo
+          Central de ferramentas gratuitas e automatizadas com tecnologia de IA
+          para facilitar sua rotina contábil, aumentar produtividade e reduzir
+          erros.
         </p>
-      </div>
+      </section>
 
-      <div class="buttons-container">
-        <!-- Botão 1 -->
-        <a href="h010.html" class="nav-button">
-          <div class="icon">📝</div>
-          <h3>Editor de Arquivo TXT</h3>
-          <p>
+      <!-- Grade de Ferramentas -->
+      <div class="tools-grid">
+        <!-- Card 1 -->
+        <div
+          class="tool-card"
+          data-url="https://ferramentas-seven.vercel.app/h010.html"
+        >
+          <i class="fas fa-calculator tool-icon"></i>
+          <h3 class="tool-name">Editor de Arquivos TXT</h3>
+          <p class="tool-description">
             Script para incluir automaticamente a conta contábil no registro
             H010 (inventário) do SPED Fiscal, garantindo o preenchimento correto
             do campo COD_CTA.
           </p>
-        </a>
+          <button class="access-btn">Acessar</button>
+        </div>
 
-        <!-- Botão 2 -->
-        <a href="financiamentos.html" class="nav-button">
-          <div class="icon">📊</div>
-          <h3>Separador de Prazos - Empréstimos e Financiamentos</h3>
-          <p>
+        <!-- Card 2 -->
+        <div
+          class="tool-card"
+          data-url="https://ferramentas-seven.vercel.app/financiamentos.html"
+        >
+          <i class="fas fa-file-invoice tool-icon"></i>
+          <h3 class="tool-name">
+            Separador de Prazos - Empréstimos e Financiamentos
+          </h3>
+          <p class="tool-description">
             Calcula e separa automaticamente os saldos de empréstimos e
             financiamentos entre curto e longo prazo, facilitando a correta
             contabilização conforme as normas contábeis.
           </p>
-        </a>
+          <button class="access-btn">Acessar</button>
+        </div>
 
-        <!-- Botão 3 -->
-        <a href="MIT_PRESUMIDO.html" class="nav-button">
-          <div class="icon">📋</div>
-          <h3>Gerador de JSON para MIT do e-CAC - Lucro Presumido</h3>
-          <p>
+        <!-- Card 3 -->
+        <div
+          class="tool-card"
+          data-url="https://ferramentas-seven.vercel.app/MIT_PRESUMIDO.html"
+        >
+          <i class="fas fa-check-circle tool-icon"></i>
+          <h3 class="tool-name">
+            Gerador de JSON para MIT do e-CAC - Lucro Presumido
+          </h3>
+          <p class="tool-description">
             Gere arquivos JSON para o MIT do e-CAC de forma rápida e sem erros.
             Ideal para quem lida com várias empresas, automatizando o processo e
             ganhando agilidade no envio.
           </p>
-        </a>
+          <button class="access-btn">Acessar</button>
+        </div>
 
-        <!-- Botão 4 -->
-        <a href="MIT_REAL.html" class="nav-button">
-          <div class="icon">⚙️</div>
-          <h3>Gerador de JSON para MIT do e-CAC - Lucro Real</h3>
-          <p>
+        <!-- Card 4 -->
+        <div
+          class="tool-card"
+          data-url="https://ferramentas-seven.vercel.app/MIT_REAL.html"
+        >
+          <i class="fas fa-file-export tool-icon"></i>
+          <h3 class="tool-name">
+            Gerador de JSON para MIT do e-CAC - Lucro Real
+          </h3>
+          <p class="tool-description">
             Gere arquivos JSON para o MIT do e-CAC de forma rápida e sem erros.
             Ideal para quem lida com várias empresas, automatizando o processo e
             ganhando agilidade no envio.
           </p>
-        </a>
+          <button class="access-btn">Acessar</button>
+        </div>
 
-        <!-- Botão 4 -->
-        <a href="SPED_CONTRIBUICOES.html" class="nav-button">
-          <div class="icon">💡</div>
-          <h3>Analise de crédito e débitos do Sped Contribuições</h3>
-          <p>
+        <!-- Card 5 -->
+        <div
+          class="tool-card"
+          data-url="https://ferramentas-seven.vercel.app/SPED_CONTRIBUICOES.html"
+        >
+          <i class="fas fa-chart-pie tool-icon"></i>
+          <h3 class="tool-name">
+            Analise de crédito e débitos do Sped Contribuições
+          </h3>
+          <p class="tool-description">
             Facilitamos sua análise do SPED Contribuições! Nosso site extrai em
             segundos todas as informações sobre créditos e débitos de PIS e
             COFINS direto do seu arquivo TXT.
           </p>
-        </a>
+          <button class="access-btn">Acessar</button>
+        </div>
 
-        <!-- Botão 4 -->
-        <a href="NFS.html" class="nav-button">
-          <div class="icon">⏳</div>
-          <h3>
-            Automatize a Importação de Notas Fiscais para o Domínio Sistemas🚀
+        <!-- Card 6 -->
+        <div
+          class="tool-card"
+          data-url="https://ferramentas-seven.vercel.app/NFS.html"
+        >
+          <i class="fas fa-balance-scale tool-icon"></i>
+          <h3 class="tool-name">
+            Automatize a Importação de Notas Fiscais para o Domínio Sistemas
           </h3>
-          <p>
+          <p class="tool-description">
             Ganhe tempo e evite retrabalho! Com nossa ferramenta, você lança
             apenas algumas informações das notas fiscais e gera um arquivo TXT
             pronto para importação direta no Domínio Sistemas. Diga adeus ao
             lançamento manual e avance com mais eficiência no seu dia a dia!
           </p>
-        </a>
-      </div>
-    </div>
+          <button class="access-btn">Acessar</button>
+        </div>
 
-    <footer>&copy; 2025 - Desenvolvido por Juarez Roncalli</footer>
+        <!-- Card 7 -->
+        <div
+          class="tool-card"
+          data-url="https://ferramentas-seven.vercel.app/index.html"
+        >
+          <i class="fas fa-file-alt tool-icon"></i>
+          <h3 class="tool-name">Em Breve</h3>
+          <p class="tool-description">
+            Em breve, você terá acesso a ferramentas inteligentes que vão
+            transformar sua rotina contábil..
+          </p>
+          <button class="access-btn">Acessar</button>
+        </div>
+
+        <!-- Card 8 -->
+        <div
+          class="tool-card"
+          data-url="https://ferramentas-seven.vercel.app/index.html"
+        >
+          <i class="fas fa-robot tool-icon"></i>
+          <h3 class="tool-name">Em Breve</h3>
+          <p class="tool-description">
+            Em breve, você terá acesso a ferramentas inteligentes que vão
+            transformar sua rotina contábil.
+          </p>
+          <button class="access-btn">Acessar</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Rodapé -->
+    <footer>
+      <div class="footer-container">
+        <p>&copy; 2025 Contábil Tech. Todos os direitos reservados.</p>
+        <div class="footer-links">
+          <a href="mailto:contato@contabiltech.com.br"
+            ><i class="fas fa-envelope"></i> Contato</a
+          >
+          <a href="https://wa.me/5511999999999"
+            ><i class="fab fa-whatsapp"></i> WhatsApp</a
+          >
+          <a href="sobre.html"><i class="fas fa-info-circle"></i> Sobre</a>
+        </div>
+      </div>
+    </footer>
 
     <script>
-      // Você pode adicionar scripts adicionais aqui se necessário
+      // Script para adicionar efeitos e funcionalidades
+      document.addEventListener("DOMContentLoaded", function () {
+        // Adiciona animação suave ao scroll
+        document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+          anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute("href")).scrollIntoView({
+              behavior: "smooth",
+            });
+          });
+        });
+
+        // Adiciona funcionalidade para os botões de acesso redirecionarem para URLs
+        const toolCards = document.querySelectorAll(".tool-card");
+        toolCards.forEach((card) => {
+          const button = card.querySelector(".access-btn");
+          const url = card.getAttribute("data-url");
+
+          button.addEventListener("click", function () {
+            // Verifica se há uma URL definida
+            if (url) {
+              // Abre a URL em uma nova aba
+              window.open(url, "_blank");
+            } else {
+              // Fallback caso não haja URL definida
+              const toolName = card.querySelector(".tool-name").textContent;
+              alert(
+                `Ferramenta "${toolName}" em desenvolvimento. Em breve estará disponível!`
+              );
+            }
+          });
+
+          // Adiciona evento de clique ao card inteiro (não apenas o botão)
+          card.addEventListener("click", function (e) {
+            // Evita que o clique no botão seja processado duas vezes
+            if (e.target !== button) {
+              button.click();
+            }
+          });
+        });
+      });
     </script>
   </body>
 </html>
