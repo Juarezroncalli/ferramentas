@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Custos</title>
+    <title>Dashboard Comparativo de Custos</title>
     <style>
         :root {
             --green-dark: #1e5631;
@@ -46,10 +46,19 @@
             margin-bottom: 10px;
         }
         
+        h2 {
+            font-size: 20px;
+            margin: 20px 0;
+            color: var(--green-dark);
+            border-bottom: 2px solid var(--green-light);
+            padding-bottom: 10px;
+        }
+        
         .dashboard {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
+            margin-bottom: 30px;
         }
         
         @media (max-width: 768px) {
@@ -141,7 +150,7 @@
         .bar {
             position: absolute;
             bottom: 0;
-            width: 15%;
+            width: 12%;
             background-color: var(--green-medium);
             border-top-left-radius: 4px;
             border-top-right-radius: 4px;
@@ -165,6 +174,19 @@
             color: var(--text-dark);
         }
         
+        .section-divider {
+            height: 2px;
+            background-color: var(--green-dark);
+            margin: 40px 0;
+        }
+        
+        .comparison-card {
+            background-color: var(--green-pale);
+            border-left: 4px solid var(--green-dark);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
         footer {
             background-color: var(--green-dark);
             color: var(--text-light);
@@ -178,13 +200,16 @@
 <body>
     <div class="container">
         <header>
-            <h1>Dashboard de Custos</h1>
-            <p>Visão geral dos custos operacionais</p>
+            <h1>Dashboard Comparativo de Custos</h1>
+            <p>Análise comparativa entre lotes de 500 e 2500 pneus</p>
         </header>
+        
+        <!-- Seção para 500 pneus -->
+        <h2>Custos para Lote de 500 Pneus</h2>
         
         <div class="dashboard">
             <div class="card">
-                <div class="card-header">Tabela de Custos</div>
+                <div class="card-header">Tabela de Custos - 500 Pneus</div>
                 <table>
                     <thead>
                         <tr>
@@ -225,16 +250,22 @@
                             <td>0,15%</td>
                             <td>R$ 900,00</td>
                         </tr>
+                        <tr>
+                            <td>Frete</td>
+                            <td>2</td>
+                            <td>R$ 16.000,00</td>
+                            <td>R$ 32.000,00</td>
+                        </tr>
                         <tr class="total-row">
                             <td>Custo Total</td>
                             <td></td>
                             <td></td>
-                            <td>R$ 21.000,00</td>
+                            <td>R$ 53.000,00</td>
                         </tr>
                         <tr>
                             <td>Custo por Pneu</td>
                             <td>500</td>
-                            <td>R$ 42,00</td>
+                            <td>R$ 106,00</td>
                             <td></td>
                         </tr>
                     </tbody>
@@ -242,27 +273,31 @@
             </div>
             
             <div class="card">
-                <div class="card-header">Distribuição de Custos</div>
+                <div class="card-header">Distribuição de Custos - 500 Pneus</div>
                 <div class="chart-container">
-                    <div class="bar" style="left: 5%; height: 6.2%; background-color: #2e7d32;">
+                    <div class="bar" style="left: 5%; height: 2.5%; background-color: #2e7d32;">
                         <div class="bar-label">Sala ADM</div>
                         <div class="bar-value">R$ 1.300</div>
                     </div>
-                    <div class="bar" style="left: 25%; height: 9.5%; background-color: #388e3c;">
+                    <div class="bar" style="left: 20%; height: 3.8%; background-color: #388e3c;">
                         <div class="bar-label">Contabilidade</div>
                         <div class="bar-value">R$ 2.000</div>
                     </div>
-                    <div class="bar" style="left: 45%; height: 8.6%; background-color: #43a047;">
+                    <div class="bar" style="left: 35%; height: 3.4%; background-color: #43a047;">
                         <div class="bar-label">Descarga</div>
                         <div class="bar-value">R$ 1.800</div>
                     </div>
-                    <div class="bar" style="left: 65%; height: 71.4%; background-color: #4caf50;">
+                    <div class="bar" style="left: 50%; height: 28.3%; background-color: #4caf50;">
                         <div class="bar-label">Estocagem</div>
                         <div class="bar-value">R$ 15.000</div>
                     </div>
-                    <div class="bar" style="left: 85%; height: 4.3%; background-color: #66bb6a;">
+                    <div class="bar" style="left: 65%; height: 1.7%; background-color: #66bb6a;">
                         <div class="bar-label">Seguro</div>
                         <div class="bar-value">R$ 900</div>
+                    </div>
+                    <div class="bar" style="left: 80%; height: 60.4%; background-color: #81c784;">
+                        <div class="bar-label">Frete</div>
+                        <div class="bar-value">R$ 32.000</div>
                     </div>
                 </div>
             </div>
@@ -271,11 +306,11 @@
         <div class="summary-box">
             <div class="summary-item">
                 <h3>Custo Total</h3>
-                <p>R$ 21.000,00</p>
+                <p>R$ 53.000,00</p>
             </div>
             <div class="summary-item">
                 <h3>Custo por Pneu</h3>
-                <p>R$ 42,00</p>
+                <p>R$ 106,00</p>
             </div>
             <div class="summary-item">
                 <h3>Quantidade de Pneus</h3>
@@ -284,14 +319,146 @@
         </div>
         
         <div class="card">
-            <div class="card-header">Análise de Custos</div>
-            <p>O custo total de operação é de R$ 21.000,00, resultando em um custo unitário de R$ 42,00 por pneu para um lote de 500 unidades.</p>
-            <p>O maior componente de custo é a estocagem, representando aproximadamente 71,4% do custo total.</p>
-            <p>Os custos fixos (Sala ADM e Contabilidade) representam aproximadamente 15,7% do custo total.</p>
+            <div class="card-header">Análise de Custos - 500 Pneus</div>
+            <p>O custo total para o lote de 500 pneus é de R$ 53.000,00, resultando em um custo unitário de R$ 106,00 por pneu.</p>
+            <p>O frete representa o maior componente de custo (60,4%), seguido pela estocagem (28,3%).</p>
+            <p>Os custos fixos (Sala ADM e Contabilidade) representam aproximadamente 6,3% do custo total.</p>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <!-- Seção para 2500 pneus -->
+        <h2>Custos para Lote de 2500 Pneus</h2>
+        
+        <div class="dashboard">
+            <div class="card">
+                <div class="card-header">Tabela de Custos - 2500 Pneus</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Custos</th>
+                            <th>Quantidade</th>
+                            <th>Valor unitário</th>
+                            <th>Valor total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Sala ADM</td>
+                            <td>1</td>
+                            <td>R$ 1.300,00</td>
+                            <td>R$ 1.300,00</td>
+                        </tr>
+                        <tr>
+                            <td>Contabilidade</td>
+                            <td>1</td>
+                            <td>R$ 2.000,00</td>
+                            <td>R$ 2.000,00</td>
+                        </tr>
+                        <tr>
+                            <td>Descarga Container</td>
+                            <td>10</td>
+                            <td>R$ 900,00</td>
+                            <td>R$ 9.000,00</td>
+                        </tr>
+                        <tr>
+                            <td>Estocagem</td>
+                            <td>2500</td>
+                            <td>R$ 30,00</td>
+                            <td>R$ 75.000,00</td>
+                        </tr>
+                        <tr>
+                            <td>Seguro</td>
+                            <td>R$ 3.000.000,00</td>
+                            <td>0,15%</td>
+                            <td>R$ 4.500,00</td>
+                        </tr>
+                        <tr>
+                            <td>Frete</td>
+                            <td>10</td>
+                            <td>R$ 16.000,00</td>
+                            <td>R$ 160.000,00</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td>Custo Total</td>
+                            <td></td>
+                            <td></td>
+                            <td>R$ 251.800,00</td>
+                        </tr>
+                        <tr>
+                            <td>Custo por Pneu</td>
+                            <td>2500</td>
+                            <td>R$ 100,72</td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">Distribuição de Custos - 2500 Pneus</div>
+                <div class="chart-container">
+                    <div class="bar" style="left: 5%; height: 0.5%; background-color: #2e7d32;">
+                        <div class="bar-label">Sala ADM</div>
+                        <div class="bar-value">R$ 1.300</div>
+                    </div>
+                    <div class="bar" style="left: 20%; height: 0.8%; background-color: #388e3c;">
+                        <div class="bar-label">Contabilidade</div>
+                        <div class="bar-value">R$ 2.000</div>
+                    </div>
+                    <div class="bar" style="left: 35%; height: 3.6%; background-color: #43a047;">
+                        <div class="bar-label">Descarga</div>
+                        <div class="bar-value">R$ 9.000</div>
+                    </div>
+                    <div class="bar" style="left: 50%; height: 29.8%; background-color: #4caf50;">
+                        <div class="bar-label">Estocagem</div>
+                        <div class="bar-value">R$ 75.000</div>
+                    </div>
+                    <div class="bar" style="left: 65%; height: 1.8%; background-color: #66bb6a;">
+                        <div class="bar-label">Seguro</div>
+                        <div class="bar-value">R$ 4.500</div>
+                    </div>
+                    <div class="bar" style="left: 80%; height: 63.5%; background-color: #81c784;">
+                        <div class="bar-label">Frete</div>
+                        <div class="bar-value">R$ 160.000</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="summary-box">
+            <div class="summary-item">
+                <h3>Custo Total</h3>
+                <p>R$ 251.800,00</p>
+            </div>
+            <div class="summary-item">
+                <h3>Custo por Pneu</h3>
+                <p>R$ 100,72</p>
+            </div>
+            <div class="summary-item">
+                <h3>Quantidade de Pneus</h3>
+                <p>2500</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">Análise de Custos - 2500 Pneus</div>
+            <p>O custo total para o lote de 2500 pneus é de R$ 251.800,00, resultando em um custo unitário de R$ 100,72 por pneu.</p>
+            <p>O frete continua sendo o maior componente de custo (63,5%), seguido pela estocagem (29,8%).</p>
+            <p>Os custos fixos (Sala ADM e Contabilidade) representam apenas 1,3% do custo total, demonstrando diluição dos custos fixos em volumes maiores.</p>
+        </div>
+        
+        <!-- Seção de comparação -->
+        <div class="card comparison-card">
+            <div class="card-header">Análise Comparativa</div>
+            <p>Ao aumentar o volume de 500 para 2500 pneus, observa-se uma redução de 5% no custo unitário (de R$ 106,00 para R$ 100,72).</p>
+            <p>A economia de escala é evidenciada pela diluição dos custos fixos, que passam de 6,3% para apenas 1,3% do custo total.</p>
+            <p>Embora o custo total aumente em 4,75 vezes (de R$ 53.000,00 para R$ 251.800,00), o volume aumenta em 5 vezes, resultando em maior eficiência.</p>
+            <p>O frete e a estocagem continuam sendo os principais componentes de custo em ambos os cenários, representando juntos mais de 88% do custo total.</p>
         </div>
         
         <footer>
-            Dashboard de Custos - Gerado em: <span id="current-date"></span>
+            Dashboard Comparativo de Custos - Gerado em: <span id="current-date"></span>
         </footer>
     </div>
     
