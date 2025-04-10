@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conversor de Planilha para Layout</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: var(--background-color);
+        color: var(--text-color);
+        line-height: 1.6;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      h1,
+      h2,
+      h3 {
+        color: var(--primary-color);
+        margin-bottom: 15px;
+      }
+
+      .card {
+        background-color: var(--form-bg-color);
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: var(--sombra);
+      }
+
+      .file-input {
+        margin-bottom: 20px;
+      }
+
+      .btn {
+        background-color: var(--primary-color);
+        color: var(--text-color-light);
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background-color 0.3s;
+        margin-right: 10px;
+      }
+
+      .btn:hover {
+        background-color: #3a0055;
+      }
+
+      .btn-accent {
+        background-color: var(--accent-color);
+      }
+
+      .btn-accent:hover {
+        background-color: #d9084f;
+      }
+
+      .btn-small {
+        padding: 5px 10px;
+        font-size: 0.9em;
+      }
+
+      .btn-outline {
+        background-color: transparent;
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+      }
+
+      .btn-outline:hover {
+        background-color: rgba(79, 0, 114, 0.1);
+      }
+
+      .btn:disabled {
+        background-color: #cccccc;
+        border-color: #999999;
+        color: #666666;
+        cursor: not-allowed;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+
+      table,
+      th,
+      td {
+        border: 1px solid var(--border-color);
+      }
+
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
+      }
+
+      th {
+        background-color: var(--primary-color);
+        color: var(--text-color-light);
+      }
+
+      tr:nth-child(even) {
+        background-color: rgba(79, 0, 114, 0.05);
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+      }
+
+      .alert {
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        font-weight: 600;
+      }
+
+      .alert-warning {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeeba;
+      }
+
+      .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      #outputPreview {
+        white-space: pre-wrap;
+        font-family: monospace;
+        background-color: #f5f5f5;
+        padding: 15px;
+        border-radius: 4px;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .tabs {
+        display: flex;
+        margin-bottom: 20px;
+      }
+
+      .tab {
+        padding: 10px 20px;
+        cursor: pointer;
+        background-color: var(--form-bg-color);
+        border: 1px solid var(--border-color);
+        border-bottom: none;
+        border-radius: 4px 4px 0 0;
+        margin-right: 5px;
+      }
+
+      .tab.active {
+        background-color: var(--primary-color);
+        color: var(--text-color-light);
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      #columnMappingInfo {
+        margin-top: 15px;
+        padding: 10px;
+        background-color: #e8f4fd;
+        border: 1px solid #b8daff;
+        border-radius: 4px;
+      }
+
+      .button-group {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 30px;
+        padding: 20px;
+        border-top: 1px solid var(--border-color);
+      }
+
+      @media (max-width: 768px) {
+        .button-group {
+          flex-direction: column;
+        }
+
+        .btn {
+          margin-right: 0;
+          margin-bottom: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Conversor de Planilha para Layout</h1>
+      </header>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="import">Importar Planilha</div>
+        <div class="tab" data-tab="mapping">Gerenciar Mapeamento</div>
+        <div class="tab" data-tab="output">Visualizar Resultado</div>
+      </div>
+
+      <div id="importTab" class="tab-content active">
+        <div class="card">
+          <h2>Importar Planilha Excel</h2>
+          <p>Selecione um arquivo Excel (.xlsx ou .xls) para processar.</p>
+
+          <div class="file-input">
+            <input type="file" id="excelFile" accept=".xlsx, .xls" />
+          </div>
+          <button id="processButton" class="btn">Processar Planilha</button>
+          <div id="columnMappingInfo" class="hidden">
+            <h3>Colunas Identificadas:</h3>
+            <ul id="columnsList"></ul>
+          </div>
+        </div>
+
+        <div id="unmappedAlert" class="alert alert-warning hidden">
+          <p>
+            Atenção! Existem itens no Plano Financeiro que não possuem
+            mapeamento:
+          </p>
+          <ul id="unmappedItems"></ul>
+          <p>
+            Por favor, adicione o mapeamento para estes itens na aba "Gerenciar
+            Mapeamento".
+          </p>
+        </div>
+
+        <div id="processedAlert" class="alert alert-success hidden">
+          <p>
+            Planilha processada com sucesso! Você pode visualizar o resultado na
+            aba "Visualizar Resultado".
+          </p>
+        </div>
+      </div>
+
+      <div id="mappingTab" class="tab-content">
+        <div class="card">
+          <h2>Gerenciar Mapeamento</h2>
+          <p>
+            Adicione ou remova mapeamentos para converter os valores do Plano
+            Financeiro.
+          </p>
+
+          <div class="form-group">
+            <label for="planoFinanceiro">Plano Financeiro:</label>
+            <input
+              type="text"
+              id="planoFinanceiro"
+              placeholder="Ex: 4.2.2.01 - ENERGIA ELETRICA - [64]"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="contaDebito">Conta Débito:</label>
+            <input type="text" id="contaDebito" placeholder="Ex: 111" />
+          </div>
+
+          <div class="form-group">
+            <label for="historico">Histórico:</label>
+            <input
+              type="text"
+              id="historico"
+              placeholder="Ex: BAIXA DA DUPLICATA"
+            />
+          </div>
+
+          <button id="addMapping" class="btn">Adicionar Mapeamento</button>
+        </div>
+
+        <div class="card">
+          <h2>Mapeamentos Existentes</h2>
+          <div class="table-container">
+            <table id="mappingTable">
+              <thead>
+                <tr>
+                  <th>Plano Financeiro</th>
+                  <th>Conta Débito</th>
+                  <th>Histórico</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="mappingTableBody">
+                <!-- Mapeamentos serão inseridos aqui -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="outputTab" class="tab-content">
+        <div class="card">
+          <h2>Resultado Gerado</h2>
+          <div id="outputPreview">
+            <!-- O resultado será exibido aqui -->
+            <p>Importe uma planilha para gerar o resultado.</p>
+          </div>
+          <button id="downloadButton" class="btn btn-accent" disabled>
+            Baixar Arquivo TXT
+          </button>
+        </div>
+      </div>
+
+      <footer>
+        <button id="templateButton" class="btn btn-outline">
+          Baixar Planilha Modelo
+        </button>
+      </footer>
+    </div>
+
+    <script>
+      // Mapeamento padrão
+      const defaultMapping = [
+        {
+          planoFinanceiro: "4.2.2.01 - ENERGIA ELETRICA - [64]",
+          contaDebito: "667",
+          historico: "GASTOS C/ ENERGIA, CONF. ",
+        },
+        {
+          planoFinanceiro: "4.1.3.18 - PARCELAMENTO INSS - [204]",
+          contaDebito: "1441",
+          historico: "VALOR PAGO REF. PARCELAMENTO ",
+        },
+        {
+          planoFinanceiro: "4.2.2.10 - TAXAS BANCARIAS - [74]",
+          contaDebito: "755",
+          historico: "DESPESAS BANCARIAS, REF. ",
+        },
+        {
+          planoFinanceiro: "4.2.2.22 - OUTRAS DESPESAS DE FUNCIONAMEN - [86]",
+          contaDebito: "722",
+          historico: "VALOR PAGO, REF. ",
+        },
+        {
+          planoFinanceiro: "4.2.2.37 - MONITORAMENTO E LOCACAO SISTEM - [187]",
+          contaDebito: "618",
+          historico: "VALOR PAGO, REF. ",
+        },
+        {
+          planoFinanceiro: "4.3.1.16 - DIARIA - [169]",
+          contaDebito: "612",
+          historico: "VALOR PAGO, REF. ",
+        },
+        {
+          planoFinanceiro: "4.3.2.01 - PECAS VEICULOS - [104]",
+          contaDebito: "228",
+          historico: "BAIXA DA DUPLICATA No ",
+        },
+        {
+          planoFinanceiro: "4.3.2.04 - COMBUSTIVEL E LUBRIFICANTE VEI - [107]",
+          contaDebito: "228",
+          historico: "BAIXA DA DUPLICATA No ",
+        },
+        {
+          planoFinanceiro: "4.3.2.09 - COMPRA DE PNEUS - [112]",
+          contaDebito: "228",
+          historico: "BAIXA DA DUPLICATA No ",
+        },
+        {
+          planoFinanceiro: "4.3.2.10 - REFORMA DE PNEUS - [113]",
+          contaDebito: "228",
+          historico: "BAIXA DA DUPLICATA No ",
+        },
+        {
+          planoFinanceiro: "4.3.2.11 - SERVICOS DE TERCEIROS - [114]",
+          contaDebito: "623",
+          historico: "VALOR PAGO, REF. ",
+        },
+        {
+          planoFinanceiro: "4.3.2.12 - LICENCIAMENTO - [158]",
+          contaDebito: "787",
+          historico: "VALOR PAGO, REF. ",
+        },
+        {
+          planoFinanceiro: "4.3.3.07 - CONSORCIO - [151]",
+          contaDebito: "880",
+          historico: "VALOR PAGO, REF. ",
+        },
+        {
+          planoFinanceiro: "4.3.4.01 - PGT DE FRETE A TERCEIROS - [150]",
+          contaDebito: "613",
+          historico: "VALOR PAGO, REF. ",
+        },
+        {
+          planoFinanceiro: "5.1.3.01 - FINANCIAMENTOS - [153]",
+          contaDebito: "84",
+          historico: "VALOR PAGO, REF. ",
+        },
+        {
+          planoFinanceiro: "4.3.4.02 - SEGURO DE CARGAS - [175]",
+          contaDebito: "621",
+          historico: "VALOR PAGO, REF. ",
+        },
+      ];
+
+      // Variáveis globais
+      let excelData = null;
+      let outputText = "";
+      let columnMapping = {
+        planoFinanceiro: null,
+        pagamento: null,
+        conta: null,
+        valorPago: null,
+        documento: null,
+        fornecedor: null,
+      };
+
+      // Elementos DOM
+      const excelFileInput = document.getElementById("excelFile");
+      const processButton = document.getElementById("processButton");
+      const templateButton = document.getElementById("templateButton");
+      const unmappedAlert = document.getElementById("unmappedAlert");
+      const unmappedItems = document.getElementById("unmappedItems");
+      const processedAlert = document.getElementById("processedAlert");
+      const outputPreview = document.getElementById("outputPreview");
+      const downloadButton = document.getElementById("downloadButton");
+      const addMappingButton = document.getElementById("addMapping");
+      const mappingTableBody = document.getElementById("mappingTableBody");
+      const tabs = document.querySelectorAll(".tab");
+      const tabContents = document.querySelectorAll(".tab-content");
+      const columnMappingInfo = document.getElementById("columnMappingInfo");
+      const columnsList = document.getElementById("columnsList");
+
+      // Inicialização
+      document.addEventListener("DOMContentLoaded", function () {
+        // Inicializar o mapeamento no localStorage se não existir
+        if (!localStorage.getItem("mapping")) {
+          localStorage.setItem("mapping", JSON.stringify(defaultMapping));
+        }
+
+        // Carregar mapeamentos existentes
+        loadMappings();
+
+        // Configurar eventos
+        setupEventListeners();
+      });
+
+      // Configurar listeners de eventos
+      function setupEventListeners() {
+        // Tabs
+        tabs.forEach((tab) => {
+          tab.addEventListener("click", () => {
+            const tabId = tab.getAttribute("data-tab");
+
+            // Atualizar tabs ativas
+            tabs.forEach((t) => t.classList.remove("active"));
+            tab.classList.add("active");
+
+            // Atualizar conteúdo ativo
+            tabContents.forEach((content) => {
+              content.classList.remove("active");
+            });
+            document.getElementById(tabId + "Tab").classList.add("active");
+          });
+        });
+
+        // Processar planilha
+        processButton.addEventListener("click", processExcel);
+
+        // Baixar planilha modelo
+        templateButton.addEventListener("click", downloadTemplateExcel);
+
+        // Adicionar mapeamento
+        addMappingButton.addEventListener("click", addNewMapping);
+
+        // Download do arquivo TXT
+        downloadButton.addEventListener("click", downloadTxtFile);
+      }
+
+      // Gerar e baixar planilha modelo
+      function downloadTemplateExcel() {
+        try {
+          // Criar dados para a planilha modelo
+          const templateData = [
+            [
+              "Documento",
+              "Pagamento",
+              "Plano Financeiro",
+              "Valor Pago",
+              "Observação",
+              "Conta",
+            ],
+          ];
+
+          // Criar uma nova planilha
+          const wb = XLSX.utils.book_new();
+          const ws = XLSX.utils.aoa_to_sheet(templateData);
+
+          // Adicionar a planilha ao workbook
+          XLSX.utils.book_append_sheet(wb, ws, "Modelo");
+
+          // Gerar o arquivo e fazer o download
+          XLSX.writeFile(wb, "planilha_modelo.xlsx");
+        } catch (error) {
+          console.error("Erro ao gerar planilha modelo:", error);
+          alert("Erro ao gerar planilha modelo. Por favor, tente novamente.");
+        }
+      }
+
+      // Carregar mapeamentos do localStorage
+      function loadMappings() {
+        const mappings = JSON.parse(localStorage.getItem("mapping"));
+        mappingTableBody.innerHTML = "";
+
+        mappings.forEach((mapping, index) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+                    <td>${mapping.planoFinanceiro}</td>
+                    <td>${mapping.contaDebito}</td>
+                    <td>${mapping.historico}</td>
+                    <td>
+                        <button class="btn btn-small btn-accent delete-mapping" data-index="${index}">Excluir</button>
+                    </td>
+                `;
+          mappingTableBody.appendChild(row);
+        });
+
+        // Adicionar eventos aos botões de exclusão
+        document.querySelectorAll(".delete-mapping").forEach((button) => {
+          button.addEventListener("click", function () {
+            const index = parseInt(this.getAttribute("data-index"));
+            deleteMapping(index);
+          });
+        });
+      }
+
+      // Adicionar novo mapeamento
+      function addNewMapping() {
+        const planoFinanceiro = document
+          .getElementById("planoFinanceiro")
+          .value.trim();
+        const contaDebito = document.getElementById("contaDebito").value.trim();
+        const historico = document.getElementById("historico").value.trim();
+
+        if (!planoFinanceiro || !contaDebito || !historico) {
+          alert("Por favor, preencha todos os campos.");
+          return;
+        }
+
+        const mappings = JSON.parse(localStorage.getItem("mapping"));
+
+        // Verificar se já existe um mapeamento para este plano financeiro
+        const existingIndex = mappings.findIndex(
+          (m) => m.planoFinanceiro === planoFinanceiro
+        );
+        if (existingIndex !== -1) {
+          if (
+            confirm(
+              "Já existe um mapeamento para este Plano Financeiro. Deseja substituí-lo?"
+            )
+          ) {
+            mappings[existingIndex] = {
+              planoFinanceiro,
+              contaDebito,
+              historico,
+            };
+          } else {
+            return;
+          }
+        } else {
+          mappings.push({ planoFinanceiro, contaDebito, historico });
+        }
+
+        localStorage.setItem("mapping", JSON.stringify(mappings));
+
+        // Limpar campos
+        document.getElementById("planoFinanceiro").value = "";
+        document.getElementById("contaDebito").value = "";
+        document.getElementById("historico").value = "";
+
+        // Recarregar tabela
+        loadMappings();
+      }
+
+      // Excluir mapeamento
+      function deleteMapping(index) {
+        if (confirm("Tem certeza que deseja excluir este mapeamento?")) {
+          const mappings = JSON.parse(localStorage.getItem("mapping"));
+          mappings.splice(index, 1);
+          localStorage.setItem("mapping", JSON.stringify(mappings));
+          loadMappings();
+        }
+      }
+
+      // Identificar colunas na planilha
+      function identifyColumns(headers) {
+        // Limpar mapeamento anterior
+        columnMapping = {
+          planoFinanceiro: null,
+          pagamento: null,
+          conta: null,
+          valorPago: null,
+          documento: null,
+          fornecedor: null,
+        };
+
+        // Converter cabeçalhos para minúsculas para comparação
+        const lowerHeaders = headers.map((h) =>
+          (h || "").toString().toLowerCase().trim()
+        );
+
+        // Identificar cada coluna necessária
+        for (let i = 0; i < lowerHeaders.length; i++) {
+          const header = lowerHeaders[i];
+
+          if (header.includes("plano") && header.includes("financeiro")) {
+            columnMapping.planoFinanceiro = i;
+          } else if (
+            header.includes("pagamento") ||
+            (header.includes("data") && !header.includes("emissao"))
+          ) {
+            columnMapping.pagamento = i;
+          } else if (header === "conta") {
+            columnMapping.conta = i;
+          } else if (
+            (header.includes("valor") && header.includes("pago")) ||
+            header === "valor"
+          ) {
+            columnMapping.valorPago = i;
+          } else if (header.includes("documento") || header.includes("doc")) {
+            columnMapping.documento = i;
+          } else if (
+            header.includes("fornecedor") ||
+            header.includes("cliente")
+          ) {
+            columnMapping.fornecedor = i;
+          }
+        }
+
+        // Exibir informações sobre as colunas identificadas
+        columnsList.innerHTML = "";
+        let allColumnsFound = true;
+
+        for (const [key, value] of Object.entries(columnMapping)) {
+          const li = document.createElement("li");
+          if (value !== null) {
+            li.textContent = `${formatColumnName(key)}: ${headers[value]}`;
+            li.style.color = "green";
+          } else {
+            li.textContent = `${formatColumnName(key)}: Não encontrada`;
+            li.style.color = "red";
+            allColumnsFound = false;
+          }
+          columnsList.appendChild(li);
+        }
+
+        columnMappingInfo.classList.remove("hidden");
+
+        return allColumnsFound;
+      }
+
+      // Formatar nome da coluna para exibição
+      function formatColumnName(name) {
+        return name
+          .replace(/([A-Z])/g, " $1")
+          .replace(/^./, (str) => str.toUpperCase())
+          .replace("Financeiro", "Financeiro")
+          .replace("Pago", "Pago");
+      }
+
+      // Processar arquivo Excel
+      function processExcel() {
+        const file = excelFileInput.files[0];
+        if (!file) {
+          alert("Por favor, selecione um arquivo Excel.");
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: "array" });
+
+            // Assumindo que queremos a primeira planilha
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+
+            // Converter para array com cabeçalhos
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+            if (jsonData.length < 2) {
+              alert("A planilha não contém dados suficientes.");
+              return;
+            }
+
+            // Identificar colunas pelos cabeçalhos (primeira linha)
+            const headers = jsonData[0];
+            const allColumnsFound = identifyColumns(headers);
+
+            if (!allColumnsFound) {
+              alert(
+                "Algumas colunas necessárias não foram encontradas. Verifique o mapeamento de colunas."
+              );
+              return;
+            }
+
+            // Converter para array de objetos para facilitar o processamento
+            excelData = [];
+            for (let i = 1; i < jsonData.length; i++) {
+              const row = jsonData[i];
+              if (row.length === 0) continue; // Pular linhas vazias
+
+              const rowData = {
+                planoFinanceiro: row[columnMapping.planoFinanceiro],
+                pagamento: row[columnMapping.pagamento],
+                conta: row[columnMapping.conta],
+                valorPago: row[columnMapping.valorPago],
+                documento: row[columnMapping.documento],
+                fornecedor: row[columnMapping.fornecedor],
+              };
+
+              // Só adicionar se tiver plano financeiro
+              if (rowData.planoFinanceiro) {
+                excelData.push(rowData);
+              }
+            }
+
+            // Processar os dados
+            processData();
+          } catch (error) {
+            console.error("Erro ao processar o arquivo:", error);
+            alert(
+              "Erro ao processar o arquivo. Verifique se é um arquivo Excel válido."
+            );
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      }
+
+      // Processar os dados da planilha
+      function processData() {
+        if (!excelData || excelData.length === 0) {
+          alert("Não foram encontrados dados na planilha.");
+          return;
+        }
+
+        const mappings = JSON.parse(localStorage.getItem("mapping"));
+        const unmappedPlanos = [];
+        outputText = "";
+
+        // Verificar se todas as entradas têm mapeamento
+        excelData.forEach((row) => {
+          if (row.planoFinanceiro) {
+            const mapping = mappings.find(
+              (m) => m.planoFinanceiro === row.planoFinanceiro
+            );
+            if (!mapping && !unmappedPlanos.includes(row.planoFinanceiro)) {
+              unmappedPlanos.push(row.planoFinanceiro);
+            }
+          }
+        });
+
+        // Mostrar alerta se houver itens não mapeados
+        if (unmappedPlanos.length > 0) {
+          unmappedItems.innerHTML = "";
+          unmappedPlanos.forEach((plano) => {
+            const li = document.createElement("li");
+            li.textContent = plano;
+            unmappedItems.appendChild(li);
+          });
+          unmappedAlert.classList.remove("hidden");
+
+          // Mudar para a aba de mapeamento
+          tabs.forEach((t) => t.classList.remove("active"));
+          document
+            .querySelector('[data-tab="mapping"]')
+            .classList.add("active");
+
+          tabContents.forEach((content) => {
+            content.classList.remove("active");
+          });
+          document.getElementById("mappingTab").classList.add("active");
+
+          return;
+        } else {
+          unmappedAlert.classList.add("hidden");
+        }
+
+        // Gerar o layout
+        excelData.forEach((row) => {
+          if (!row.planoFinanceiro) return;
+
+          const mapping = mappings.find(
+            (m) => m.planoFinanceiro === row.planoFinanceiro
+          );
+          if (!mapping) return;
+
+          // Formatar a data (assumindo que está no formato DD/MM/AAAA)
+          let dataPagamento = row.pagamento;
+          if (dataPagamento) {
+            // Se for um objeto Date do Excel (número)
+            if (typeof dataPagamento === "number") {
+              const excelEpoch = new Date(1899, 11, 30);
+              const date = new Date(
+                excelEpoch.getTime() + dataPagamento * 24 * 60 * 60 * 1000
+              );
+              dataPagamento = `${date.getDate().toString().padStart(2, "0")}/${(
+                date.getMonth() + 1
+              )
+                .toString()
+                .padStart(2, "0")}/${date.getFullYear()}`;
+            } else if (dataPagamento instanceof Date) {
+              // Se for um objeto Date
+              dataPagamento = `${dataPagamento
+                .getDate()
+                .toString()
+                .padStart(2, "0")}/${(dataPagamento.getMonth() + 1)
+                .toString()
+                .padStart(2, "0")}/${dataPagamento.getFullYear()}`;
+            }
+            // Se for string, manter como está
+          } else {
+            dataPagamento = "";
+          }
+
+          // Formatar o valor (garantir que seja um número com vírgula como separador decimal)
+          let valorFormatado = "";
+          if (row.valorPago !== undefined && row.valorPago !== null) {
+            // Converter para string
+            let valorStr = row.valorPago.toString();
+
+            // Remover caracteres não numéricos, exceto ponto e vírgula
+            valorStr = valorStr.replace(/[^\d.,]/g, "");
+
+            // Se tiver ponto e vírgula, assumir que a vírgula é o separador decimal
+            if (valorStr.includes(",") && valorStr.includes(".")) {
+              // Remover pontos (separadores de milhar) e manter a vírgula
+              valorStr = valorStr.replace(/\./g, "");
+            }
+            // Se tiver apenas ponto, substituir por vírgula
+            else if (valorStr.includes(".") && !valorStr.includes(",")) {
+              valorStr = valorStr.replace(".", ",");
+            }
+            // Se não tiver nem ponto nem vírgula, adicionar ,00
+            else if (!valorStr.includes(",") && !valorStr.includes(".")) {
+              valorStr = valorStr + ",00";
+            }
+
+            valorFormatado = valorStr;
+          }
+
+          // Construir o histórico
+          const documento = row.documento || "";
+          const fornecedor = row.fornecedor || "";
+          const historicoCompleto = `${mapping.historico} ${documento} DE ${fornecedor}`;
+
+          // Construir a linha do layout
+          const linha = `${dataPagamento};${mapping.contaDebito};${
+            row.conta || ""
+          };${valorFormatado};;${historicoCompleto};;;;`;
+          outputText += linha + "\n";
+        });
+
+        // Exibir o resultado
+        outputPreview.textContent = outputText;
+        downloadButton.disabled = false;
+        processedAlert.classList.remove("hidden");
+
+        // Mudar para a aba de resultado
+        tabs.forEach((t) => t.classList.remove("active"));
+        document.querySelector('[data-tab="output"]').classList.add("active");
+
+        tabContents.forEach((content) => {
+          content.classList.remove("active");
+        });
+        document.getElementById("outputTab").classList.add("active");
+      }
+
+      // Download do arquivo TXT
+      function downloadTxtFile() {
+        if (!outputText) {
+          alert("Não há dados para download.");
+          return;
+        }
+
+        const blob = new Blob([outputText], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "layout_" + new Date().toISOString().slice(0, 10) + ".txt";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    </script>
+  </body>
+</html>
