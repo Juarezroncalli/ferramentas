@@ -840,15 +840,6 @@
           unmappedAlert.classList.remove("hidden");
 
           // Mudar para a aba de mapeamento
-          tabs.forEach((t) => t.classList.remove("active"));
-          document
-            .querySelector('[data-tab="mapping"]')
-            .classList.add("active");
-
-          tabContents.forEach((content) => {
-            content.classList.remove("active");
-          });
-          document.getElementById("mappingTab").classList.add("active");
 
           return;
         } else {
