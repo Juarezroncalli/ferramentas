@@ -179,6 +179,76 @@
         margin-left: 10px;
         font-weight: 400; /* Normal weight */
       }
+      /* === Add these styles for the Tooltip === */
+      .tooltip-trigger {
+        display: inline-flex; /* Use flex to center content easily */
+        align-items: center;
+        justify-content: center;
+        margin-left: 6px; /* Space between text and trigger */
+        cursor: help; /* Indicate interactivity */
+        background-color: var(--secondary-color); /* Darker orange */
+        color: var(--text-color); /* White text */
+        border-radius: 50%; /* Make it circular */
+        width: 16px; /* Size of the circle */
+        height: 16px;
+        font-size: 11px; /* Size of the '?' or 'i' inside */
+        line-height: 16px; /* Align text vertically */
+        text-align: center;
+        font-weight: bold;
+        position: relative; /* Needed for absolute positioning of the tooltip */
+        vertical-align: middle; /* Align nicely with the table text */
+        user-select: none; /* Prevent selecting the '?' */
+      }
+
+      /* The Tooltip Bubble (using ::after pseudo-element) */
+      .tooltip-trigger::after {
+        content: attr(data-tooltip); /* Get text from data-tooltip attribute */
+        position: absolute;
+        bottom: 130%; /* Position above the trigger */
+        left: 50%;
+        transform: translateX(-50%); /* Center the tooltip */
+        background-color: var(
+          --primary-color
+        ); /* *** THE DESIRED YELLOW COLOR *** */
+        color: var(--bg-color); /* Dark text for contrast on yellow */
+        padding: 6px 10px; /* Padding inside the bubble */
+        border-radius: 5px; /* Slightly rounded corners */
+        font-size: 0.85em; /* Smaller font for the tooltip */
+        font-weight: 400; /* Normal weight */
+        white-space: nowrap; /* Prevent text wrapping */
+        z-index: 10; /* Ensure it appears above other elements */
+        /* Initially hidden */
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+        pointer-events: none; /* Tooltip doesn't block mouse */
+      }
+
+      /* Optional: Arrow pointing to the trigger (using ::before pseudo-element) */
+      .tooltip-trigger::before {
+        content: "";
+        position: absolute;
+        bottom: 100%; /* Position it right below the bubble */
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 5px;
+        border-style: solid;
+        border-color: var(--primary-color) transparent transparent transparent; /* Creates the arrow */
+        /* Initially hidden */
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+        z-index: 10;
+        pointer-events: none;
+      }
+
+      /* Show the tooltip bubble and arrow on hover */
+      .tooltip-trigger:hover::after,
+      .tooltip-trigger:hover::before {
+        opacity: 1;
+        visibility: visible;
+      }
+      /* ========================================== */
 
       .chart-container {
         position: relative;
@@ -226,6 +296,7 @@
         .summary-total {
           font-size: 1em;
         }
+
         .chart-container {
           height: 250px;
         } /* Adjust chart height */
@@ -261,20 +332,48 @@
               <td class="value">R$ 2.000,00</td>
             </tr>
             <tr>
-              <td>Descarga Container</td>
+              <td>
+                Descarga Container
+                <span
+                  class="tooltip-trigger"
+                  data-tooltip="R$ 900,00 por descarga de container. 2 container."
+                ></span>
+              </td>
               <td class="value">R$ 1.800,00</td>
             </tr>
             <tr>
-              <td>Estocagem</td>
+              <td>
+                Estocagem
+                <span
+                  class="tooltip-trigger"
+                  data-tooltip="R$ 30,00 por pneu/mês. 500 pneus por 1 mês."
+                ></span>
+              </td>
               <td class="value">R$ 15.000,00</td>
-            </tr>
-            <tr>
-              <td>Seguro</td>
-              <td class="value">R$ 900,00</td>
-            </tr>
-            <tr>
-              <td>Frete</td>
-              <td class="value">R$ 32.000,00</td>
+                <tr>
+                  <td>
+                    Seguros
+                    <span
+                      class="tooltip-trigger"
+                      data-tooltip="0,15% do valor total dos pneus. 500 pneus a R$ 1.200,00 cada."
+                    ></span>
+                  </td>
+                  <td class="value">R$ 900,00</td>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+                    Frete p/ MG
+                    <span
+                      class="tooltip-trigger"
+                      data-tooltip="R$ 16.000,00 por container. 2 container."
+                    ></span>
+                  </td>
+                  <td class="value">R$ 32.000,00</td>
+                  </td>
+                </tr>
+              </td>
             </tr>
           </tbody>
         </table>
