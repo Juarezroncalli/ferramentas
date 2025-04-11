@@ -3,163 +3,261 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard Combinado - Legendas Corrigidas</title>
+    <title>Dashboard Combinado - Estilo Moderno</title>
     <!-- Incluindo Chart.js via CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Incluindo Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
-      /* CSS (Baseado nas versões anteriores, com correção para canvas) */
-      body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      /* === INÍCIO DO NOVO CSS - ESTILO MODERNO === */
+      :root {
+        --bg-color: #1a1a1a; /* Fundo principal escuro */
+        --card-bg-color: #2c2c2c; /* Fundo dos cards e elementos */
+        --primary-color: #f39c12; /* Laranja/Amarelo (cor principal) */
+        --secondary-color: #e67e22; /* Laranja mais escuro */
+        --text-color: #ffffff; /* Texto principal (branco) */
+        --text-muted-color: #bdc3c7; /* Texto secundário (cinza claro) */
+        --border-color: #444; /* Cor das bordas sutis */
+        --kpi-color-1: #007bff; /* Azul vibrante para KPI (ajustado) */
+        --kpi-color-2: #e74c3c; /* Vermelho vibrante para KPI (ajustado) */
+        --kpi-color-3: #f1c40f; /* Amarelo vibrante para KPI (ajustado) */
+      }
+
+      * {
+        box-sizing: border-box;
         margin: 0;
         padding: 0;
-        background-color: #f4f4f4;
-        color: #333;
       }
+
+      body {
+        font-family: "Poppins", sans-serif; /* Fonte Poppins */
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        line-height: 1.6;
+        padding: 20px;
+      }
+
+      .dashboard-header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 15px;
+        background-color: var(--card-bg-color);
+        border-radius: 8px;
+        border-left: 5px solid var(--primary-color);
+      }
+
+      .dashboard-header h1 {
+        color: var(--primary-color);
+        margin: 0;
+        font-weight: 600;
+      }
+
+      /* Container Principal - Adaptado */
       .container {
         max-width: 1300px;
-        margin: 20px auto;
-        padding: 20px;
-        background-color: #fff;
-        box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
+        margin: 0 auto; /* Removido margin top, padding do body cuida disso */
+        padding: 0; /* Removido padding interno */
+        background-color: transparent; /* Fundo vem do body */
+        box-shadow: none; /* Sem sombra no container geral */
+        border-radius: 0;
       }
-      h1,
+
+      /* Estilo para títulos H2 dentro dos cards */
       h2 {
-        text-align: center;
-        color: #0056b3;
+        text-align: left; /* Alinhado à esquerda */
+        color: var(--text-muted-color);
         margin-bottom: 15px;
-      }
-      h1 {
-        margin-bottom: 30px;
-      }
-      h2 {
-        color: #333;
-        margin-top: 10px;
-        border-bottom: 1px solid #eee;
+        margin-top: 0; /* Removido margin-top */
+        border-bottom: 1px solid var(--border-color);
         padding-bottom: 8px;
         font-size: 1.1em;
+        font-weight: 400; /* Mais leve */
       }
+
+      /* Container de Filtro */
       .filter-container {
         text-align: center;
         margin-bottom: 30px;
-        padding: 15px;
-        background-color: #e9ecef;
-        border-radius: 5px;
+        padding: 20px;
+        background-color: var(--card-bg-color);
+        border-radius: 8px;
+        border-top: 4px solid var(--secondary-color); /* Borda de destaque */
       }
       .filter-container label {
         margin-right: 10px;
-        font-weight: bold;
+        font-weight: 600;
+        color: var(--text-muted-color);
       }
       .filter-container select {
-        padding: 8px 12px;
-        border: 1px solid #ccc;
+        padding: 10px 15px;
+        border: 1px solid var(--border-color);
         border-radius: 4px;
-        min-width: 220px;
+        min-width: 250px;
         font-size: 1em;
+        background-color: #3f3f3f; /* Fundo escuro para select */
+        color: var(--text-color); /* Texto branco */
+        cursor: pointer;
+      }
+      .filter-container select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(243, 156, 18, 0.3);
       }
 
+      /* Grid de Gráficos */
       .charts-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-        gap: 30px;
-        margin-top: 20px;
+        gap: 25px; /* Espaçamento entre cards */
+        margin-top: 0; /* Removido margin top */
       }
+
+      /* Container do Gráfico (Agora como Card) */
       .chart-container {
-        background-color: #fff;
-        padding: 15px 20px;
+        background-color: var(--card-bg-color);
+        padding: 20px 25px;
         border-radius: 8px;
-        box-shadow: 0 3px 7px rgba(0, 0, 0, 0.07);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        border-top: 4px solid var(--primary-color); /* Borda de destaque */
         position: relative;
-        min-height: 400px;
+        min-height: 420px; /* Altura mínima ajustada */
         display: flex;
         flex-direction: column;
+        transition: transform 0.3s ease;
       }
-      /* === CORREÇÃO CSS para Legendas === */
-      .chart-container canvas {
-        flex-grow: 1;
-        max-height: 350px;
-        width: 100%; /* Removido !important */
-        height: auto; /* Removido !important */
+      .chart-container:hover {
+         transform: translateY(-5px);
       }
-      /* === FIM CORREÇÃO CSS === */
 
+      .chart-container canvas {
+        flex-grow: 1; /* Canvas ocupa espaço restante */
+        max-height: 350px; /* Altura máxima do canvas */
+        width: 100%;
+        height: auto; /* Altura automática */
+      }
+
+      /* Container de KPIs */
       .kpi-container {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 15px;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); /* Ajuste minmax */
+        gap: 20px; /* Espaçamento */
         margin-bottom: 30px;
-        padding: 15px;
-        background-color: #f8f9fa;
-        border-radius: 5px;
+        padding: 0; /* Removido padding */
+        background-color: transparent; /* Sem fundo próprio */
+        border-radius: 0;
       }
+
+      /* Card de KPI */
       .kpi-card {
-        background-color: #007bff;
-        color: white;
-        padding: 15px;
-        border-radius: 5px;
+        background-color: var(--card-bg-color); /* Fundo padrão de card */
+        color: var(--text-color);
+        padding: 20px;
+        border-radius: 8px;
         text-align: center;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        border-top: 4px solid var(--kpi-color-1); /* Borda azul */
+        transition: transform 0.3s ease;
       }
+       .kpi-card:hover {
+         transform: translateY(-5px);
+      }
+
       .kpi-card .value {
-        font-size: 1.7em;
-        font-weight: bold;
+        font-size: 2em; /* Maior */
+        font-weight: 700; /* Mais forte */
         display: block;
-        margin-bottom: 5px;
+        margin-bottom: 8px;
+        color: var(--text-color); /* Cor branca padrão */
       }
       .kpi-card .label {
         font-size: 0.9em;
-        opacity: 0.9;
-      }
-      .kpi-card.manual {
-        background-color: #dc3545;
-      }
-      .kpi-card.percentage {
-        background-color: #ffc107;
-        color: #333;
+        opacity: 0.8;
+        color: var(--text-muted-color); /* Cinza claro */
       }
 
+      /* Cores específicas para KPIs mantidas, mas usando as variáveis */
+      .kpi-card.manual {
+        border-top-color: var(--kpi-color-2); /* Borda vermelha */
+      }
+      .kpi-card.manual .value {
+         color: var(--kpi-color-2); /* Valor vermelho */
+      }
+
+      .kpi-card.percentage {
+        border-top-color: var(--kpi-color-3); /* Borda amarela */
+      }
+       .kpi-card.percentage .value {
+         color: var(--kpi-color-3); /* Valor amarelo */
+      }
+
+      /* Media Queries (Ajustadas do exemplo anterior) */
       @media (max-width: 900px) {
         .charts-grid {
           grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
         }
+         .kpi-container {
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+         }
       }
       @media (max-width: 500px) {
+        body { padding: 10px; }
         .charts-grid {
           grid-template-columns: 1fr;
         }
         .kpi-container {
-          grid-template-columns: 1fr;
+          grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+          gap: 15px;
         }
-        h1 {
-          font-size: 1.6em;
+        .dashboard-header h1 {
+          font-size: 1.4em;
         }
+         h2 { font-size: 1em;}
+        .kpi-card { padding: 15px; }
         .kpi-card .value {
-          font-size: 1.6em;
+          font-size: 1.7em;
         }
+        .filter-container select {
+            min-width: 200px;
+            font-size: 0.9em;
+        }
+        .chart-container { min-height: 380px; }
+        .chart-container canvas { max-height: 300px; }
       }
+      /* === FIM DO NOVO CSS === */
     </style>
   </head>
   <body>
+    <!-- Container principal ainda útil para limitar largura máxima -->
     <div class="container">
-      <h1>Dashboard Combinado - 01/01/2023 a 26/03/2025</h1>
+      <!-- Cabeçalho Padrão -->
+      <header class="dashboard-header">
+        <h1>Dashboard Combinado - 01/01/2023 a 26/03/2025</h1>
+      </header>
 
       <!-- KPIs -->
       <div class="kpi-container">
+        <!-- Classes 'manual' e 'percentage' usadas para aplicar cores específicas -->
         <div class="kpi-card">
-          <span class="value" id="kpi-total-geral">--</span
-          ><span class="label">Quantidade Total Geral</span>
+          <span class="value" id="kpi-total-geral">--</span>
+          <span class="label">Quantidade Total Geral</span>
         </div>
         <div class="kpi-card manual">
-          <span class="value" id="kpi-total-manual">--</span
-          ><span class="label">Total Lanç. Manuais</span>
+          <span class="value" id="kpi-total-manual">--</span>
+          <span class="label">Total Lanç. Manuais</span>
         </div>
         <div class="kpi-card percentage">
-          <span class="value" id="kpi-perc-manual">--</span
-          ><span class="label">% Médio Manual</span>
+          <span class="value" id="kpi-perc-manual">--</span>
+          <span class="label">% Médio Manual</span>
         </div>
         <div class="kpi-card">
-          <span class="value" id="kpi-num-usuarios">--</span
-          ><span class="label">Nº de Usuários</span>
+          <span class="value" id="kpi-num-usuarios">--</span>
+          <span class="label">Nº de Usuários</span>
         </div>
       </div>
 
@@ -168,12 +266,13 @@
         <label for="user-select">Filtrar por Usuário:</label>
         <select id="user-select">
           <option value="TODOS">-- Todos os Usuários --</option>
+          <!-- Opções preenchidas via JS -->
         </select>
       </div>
 
       <!-- Grid de Gráficos -->
       <div class="charts-grid">
-        <!-- Gráficos de Barras Originais -->
+        <!-- Gráficos mantidos como estavam no HTML original -->
         <div class="chart-container">
           <h2>Quantidade Total (Barras)</h2>
           <canvas id="totalQuantityBarChart"></canvas>
@@ -183,135 +282,67 @@
           <canvas id="manualEntriesBarChart"></canvas>
         </div>
         <div class="chart-container">
-          <h2>% Manual por Usuário (Barras)</h2>
+          <h2>% Manual por Usuário (Barras Horiz.)</h2>
           <canvas id="percentageManualBarChart"></canvas>
         </div>
         <div class="chart-container">
           <h2>Comparativo Empilhado (Barras)</h2>
           <canvas id="comparisonBarChart"></canvas>
         </div>
-        <!-- Gráficos de Pizza/Rosca -->
         <div class="chart-container">
-          <h2>Distribuição Qtd Total (Pizza)</h2>
+          <h2>Distribuição Qtd Total (Rosca)</h2>
           <canvas id="totalDistPieChart"></canvas>
         </div>
         <div class="chart-container">
-          <h2>Distribuição Lanç Manuais (Pizza)</h2>
+          <h2>Distribuição Lanç Manuais (Rosca)</h2>
           <canvas id="manualDistPieChart"></canvas>
         </div>
       </div>
     </div>
 
     <script>
-      // === INÍCIO DO JAVASCRIPT ===
+      // === INÍCIO DO JAVASCRIPT (IDÊNTICO AO SEU ORIGINAL, EXCETO CORES E DEFAULTS) ===
 
-      // 1. Dados Originais e Pré-processamento
-      const originalData = [
-        {
-          USUARIO: "GERENTE",
-          "QUANTIDADE TOTAL": 681963,
-          "LANÇAMENTOS MANUAIS": 155458,
-        },
-        {
-          USUARIO: "ANA PAULA",
-          "QUANTIDADE TOTAL": 29952,
-          "LANÇAMENTOS MANUAIS": 7348,
-        },
-        {
-          USUARIO: "FABIANE",
-          "QUANTIDADE TOTAL": 85989,
-          "LANÇAMENTOS MANUAIS": 13858,
-        },
-        {
-          USUARIO: "GUSTAVO",
-          "QUANTIDADE TOTAL": 27437,
-          "LANÇAMENTOS MANUAIS": 2088,
-        },
-        {
-          USUARIO: "JACK",
-          "QUANTIDADE TOTAL": 71326,
-          "LANÇAMENTOS MANUAIS": 17106,
-        },
-        {
-          USUARIO: "LECA",
-          "QUANTIDADE TOTAL": 45765,
-          "LANÇAMENTOS MANUAIS": 20754,
-        },
-        {
-          USUARIO: "MARIA",
-          "QUANTIDADE TOTAL": 27829,
-          "LANÇAMENTOS MANUAIS": 19269,
-        },
-        {
-          USUARIO: "SILMARA",
-          "QUANTIDADE TOTAL": 288732,
-          "LANÇAMENTOS MANUAIS": 34955,
-        },
-      ];
+      // 1. Dados Originais e Pré-processamento (Sem alterações)
+       const originalData = [ { USUARIO: "GERENTE", "QUANTIDADE TOTAL": 681963, "LANÇAMENTOS MANUAIS": 155458, }, { USUARIO: "ANA PAULA", "QUANTIDADE TOTAL": 29952, "LANÇAMENTOS MANUAIS": 7348, }, { USUARIO: "FABIANE", "QUANTIDADE TOTAL": 85989, "LANÇAMENTOS MANUAIS": 13858, }, { USUARIO: "GUSTAVO", "QUANTIDADE TOTAL": 27437, "LANÇAMENTOS MANUAIS": 2088, }, { USUARIO: "JACK", "QUANTIDADE TOTAL": 71326, "LANÇAMENTOS MANUAIS": 17106, }, { USUARIO: "LECA", "QUANTIDADE TOTAL": 45765, "LANÇAMENTOS MANUAIS": 20754, }, { USUARIO: "MARIA", "QUANTIDADE TOTAL": 27829, "LANÇAMENTOS MANUAIS": 19269, }, { USUARIO: "SILMARA", "QUANTIDADE TOTAL": 288732, "LANÇAMENTOS MANUAIS": 34955, }, ];
+       function formatNumber(num) { if (typeof num !== "number") return num; return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
+       function preprocessData(data) { return data.map((item) => ({ ...item, "% MANUAL": item["QUANTIDADE TOTAL"] ? (item["LANÇAMENTOS MANUAIS"] / item["QUANTIDADE TOTAL"]) * 100 : 0, "QUANTIDADE NAO MANUAL": item["QUANTIDADE TOTAL"] - item["LANÇAMENTOS MANUAIS"], })); }
+       const dashboardData = preprocessData(originalData);
 
-      function formatNumber(num) {
-        if (typeof num !== "number") return num;
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      }
-
-      function preprocessData(data) {
-        return data.map((item) => ({
-          ...item,
-          "% MANUAL": item["QUANTIDADE TOTAL"]
-            ? (item["LANÇAMENTOS MANUAIS"] / item["QUANTIDADE TOTAL"]) * 100
-            : 0,
-          "QUANTIDADE NAO MANUAL":
-            item["QUANTIDADE TOTAL"] - item["LANÇAMENTOS MANUAIS"],
-        }));
-      }
-
-      const dashboardData = preprocessData(originalData);
-
-      // 2. Referências aos Elementos HTML
+      // 2. Referências aos Elementos HTML (Sem alterações)
       const userSelect = document.getElementById("user-select");
       const kpiTotalGeral = document.getElementById("kpi-total-geral");
       const kpiTotalManual = document.getElementById("kpi-total-manual");
       const kpiPercManual = document.getElementById("kpi-perc-manual");
       const kpiNumUsuarios = document.getElementById("kpi-num-usuarios");
-      const ctxTotalBar = document
-        .getElementById("totalQuantityBarChart")
-        ?.getContext("2d");
-      const ctxManualBar = document
-        .getElementById("manualEntriesBarChart")
-        ?.getContext("2d");
-      const ctxPercentBar = document
-        .getElementById("percentageManualBarChart")
-        ?.getContext("2d");
-      const ctxComparisonBar = document
-        .getElementById("comparisonBarChart")
-        ?.getContext("2d");
-      const ctxTotalPie = document
-        .getElementById("totalDistPieChart")
-        ?.getContext("2d");
-      const ctxManualPie = document
-        .getElementById("manualDistPieChart")
-        ?.getContext("2d");
+      const ctxTotalBar = document.getElementById("totalQuantityBarChart")?.getContext("2d");
+      const ctxManualBar = document.getElementById("manualEntriesBarChart")?.getContext("2d");
+      const ctxPercentBar = document.getElementById("percentageManualBarChart")?.getContext("2d");
+      const ctxComparisonBar = document.getElementById("comparisonBarChart")?.getContext("2d");
+      const ctxTotalPie = document.getElementById("totalDistPieChart")?.getContext("2d");
+      const ctxManualPie = document.getElementById("manualDistPieChart")?.getContext("2d");
 
-      // 3. Variáveis para guardar as instâncias dos gráficos
+      // 3. Variáveis para guardar as instâncias dos gráficos (Sem alterações)
       let totalBarChart, manualBarChart, percentBarChart, comparisonBarChart;
       let totalDistPieChartInstance, manualDistPieChartInstance;
 
-      // --- Paleta de Cores ---
-      const chartColors = [
-        "rgba(0, 123, 255, 0.7)",
-        "rgba(255, 193, 7, 0.7)",
-        "rgba(40, 167, 69, 0.7)",
-        "rgba(220, 53, 69, 0.7)",
-        "rgba(23, 162, 184, 0.7)",
-        "rgba(108, 117, 125, 0.7)",
-        "rgba(253, 126, 20, 0.7)",
-        "rgba(111, 66, 193, 0.7)",
-      ];
-      const colorManual = "rgba(220, 53, 69, 0.8)";
-      const colorNonManual = "rgba(75, 192, 192, 0.7)";
-      const colorTotalBar = "rgba(54, 162, 235, 0.7)";
-      const colorManualBar = "rgba(255, 99, 132, 0.7)";
-      const colorPercentBar = "rgba(255, 206, 86, 0.7)";
+      // --- Paleta de Cores Adaptada ---
+       // Usando cores mais vibrantes para o tema escuro
+       const chartColors = [
+         'rgba(243, 156, 18, 0.8)',  // Laranja primário
+         'rgba(230, 126, 34, 0.8)',  // Laranja secundário
+         'rgba(52, 152, 219, 0.8)',  // Azul
+         'rgba(46, 204, 113, 0.8)',  // Verde
+         'rgba(155, 89, 182, 0.8)',  // Roxo
+         'rgba(26, 188, 156, 0.8)',  // Turquesa
+         'rgba(241, 196, 15, 0.8)',  // Amarelo
+         'rgba(231, 76, 60, 0.8)'   // Vermelho
+        ];
+       const colorManual = 'rgba(231, 76, 60, 0.85)'; // Vermelho mais forte para Manual
+       const colorNonManual = 'rgba(52, 152, 219, 0.7)'; // Azul para Não Manual
+       const colorTotalBar = 'rgba(26, 188, 156, 0.8)'; // Turquesa para Barra Total
+       const colorManualBar = 'rgba(231, 76, 60, 0.8)'; // Vermelho para Barra Manual
+       const colorPercentBar = 'rgba(241, 196, 15, 0.8)'; // Amarelo para Barra Percentual
 
       function getColors(count) {
         const colors = [];
@@ -321,12 +352,12 @@
         return colors.length > 0 ? colors : ["rgba(200, 200, 200, 0.7)"];
       }
 
-      // 4. Função para criar/atualizar os gráficos
+      // 4. Função para criar/atualizar os gráficos (Lógica mantida, cores atualizadas)
       function createOrUpdateCharts(filteredData) {
-        console.log("Atualizando gráficos com:", filteredData);
+        //console.log("Atualizando gráficos com:", filteredData);
         const selectedUser = userSelect.value;
 
-        // Destruir gráficos antigos
+        // Destruir gráficos antigos (Sem alterações)
         if (totalBarChart) totalBarChart.destroy();
         if (manualBarChart) manualBarChart.destroy();
         if (percentBarChart) percentBarChart.destroy();
@@ -334,32 +365,14 @@
         if (totalDistPieChartInstance) totalDistPieChartInstance.destroy();
         if (manualDistPieChartInstance) manualDistPieChartInstance.destroy();
 
-        const contexts = [
-          ctxTotalBar,
-          ctxManualBar,
-          ctxPercentBar,
-          ctxComparisonBar,
-          ctxTotalPie,
-          ctxManualPie,
-        ];
-        if (contexts.some((ctx) => !ctx)) {
-          console.error(
-            "ERRO: Pelo menos um elemento <canvas> não foi encontrado."
-          );
-          return;
-        }
+        const contexts = [ ctxTotalBar, ctxManualBar, ctxPercentBar, ctxComparisonBar, ctxTotalPie, ctxManualPie, ];
+        if (contexts.some((ctx) => !ctx)) { console.error("ERRO: Pelo menos um elemento <canvas> não foi encontrado."); return; }
 
         const labels = filteredData.map((item) => item.USUARIO);
-        const totalQuantities = filteredData.map(
-          (item) => item["QUANTIDADE TOTAL"]
-        );
-        const manualEntries = filteredData.map(
-          (item) => item["LANÇAMENTOS MANUAIS"]
-        );
+        const totalQuantities = filteredData.map((item) => item["QUANTIDADE TOTAL"]);
+        const manualEntries = filteredData.map((item) => item["LANÇAMENTOS MANUAIS"]);
         const percentages = filteredData.map((item) => item["% MANUAL"]);
-        const nonManualQuantities = filteredData.map(
-          (item) => item["QUANTIDADE NAO MANUAL"]
-        );
+        const nonManualQuantities = filteredData.map((item) => item["QUANTIDADE NAO MANUAL"]);
 
         try {
           // --- Gráfico 1: Quantidade Total (Barras) ---
@@ -367,19 +380,13 @@
             type: "bar",
             data: {
               labels: labels,
-              datasets: [
-                {
-                  label: "Qtd Total",
-                  data: totalQuantities,
-                  backgroundColor: colorTotalBar,
-                },
-              ],
+              datasets: [{ label: "Qtd Total", data: totalQuantities, backgroundColor: colorTotalBar }], // Cor atualizada
             },
             options: {
               responsive: true,
-              scales: { y: { beginAtZero: true } },
-
-              plugins: { legend: { display: false } },
+              maintainAspectRatio: false, // Adicionado para melhor controle
+              scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)'} }, x: { grid: { color: 'rgba(255,255,255,0.1)'} } },
+              plugins: { legend: { display: false } }, // Legenda desabilitada como no original
             },
           });
 
@@ -388,17 +395,12 @@
             type: "bar",
             data: {
               labels: labels,
-              datasets: [
-                {
-                  label: "Lanç. Manuais",
-                  data: manualEntries,
-                  backgroundColor: colorManualBar,
-                },
-              ],
+              datasets: [{ label: "Lanç. Manuais", data: manualEntries, backgroundColor: colorManualBar }], // Cor atualizada
             },
             options: {
               responsive: true,
-              scales: { y: { beginAtZero: true } },
+              maintainAspectRatio: false,
+              scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)'} }, x: { grid: { color: 'rgba(255,255,255,0.1)'} } },
               plugins: { legend: { display: false } },
             },
           });
@@ -408,31 +410,19 @@
             type: "bar",
             data: {
               labels: labels,
-              datasets: [
-                {
-                  label: "% Manual",
-                  data: percentages,
-                  backgroundColor: colorPercentBar,
-                },
-              ],
+              datasets: [{ label: "% Manual", data: percentages, backgroundColor: colorPercentBar }], // Cor atualizada
             },
             options: {
               responsive: true,
-              indexAxis: "y",
+              maintainAspectRatio: false,
+              indexAxis: "y", // Mantido horizontal
               scales: {
-                x: {
-                  beginAtZero: true,
-                  ticks: { callback: (v) => v.toFixed(0) + "%" },
-                },
+                x: { beginAtZero: true, ticks: { callback: (v) => v.toFixed(0) + "%" }, grid: { color: 'rgba(255,255,255,0.1)'} },
+                y: { grid: { color: 'rgba(255,255,255,0.1)'} }
               },
               plugins: {
                 legend: { display: false },
-                tooltip: {
-                  callbacks: {
-                    label: (c) =>
-                      `${c.dataset.label}: ${c.parsed.x.toFixed(1)}%`,
-                  },
-                },
+                tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.x.toFixed(1)}%` } },
               },
             },
           });
@@ -443,198 +433,143 @@
             data: {
               labels: labels,
               datasets: [
-                {
-                  label: "Lanç. Manuais",
-                  data: manualEntries,
-                  backgroundColor: colorManual,
-                },
-                {
-                  label: "Outros Lanç.",
-                  data: nonManualQuantities,
-                  backgroundColor: colorNonManual,
-                },
+                { label: "Lanç. Manuais", data: manualEntries, backgroundColor: colorManual }, // Cor atualizada
+                { label: "Outros Lanç.", data: nonManualQuantities, backgroundColor: colorNonManual }, // Cor atualizada
               ],
             },
             options: {
               responsive: true,
+              maintainAspectRatio: false,
               scales: {
-                x: { stacked: true },
-                y: { stacked: true, beginAtZero: true },
+                x: { stacked: true, grid: { color: 'rgba(255,255,255,0.1)'} },
+                y: { stacked: true, beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)'} },
               },
               plugins: {
-                legend: {
+                legend: { // Legenda mantida e ajustada
                   position: "top",
-                  // === CORREÇÃO Legenda Gráfico 4 ===
-                  labels: {
-                    font: { size: 11 },
-                    padding: 15,
-                    boxWidth: 25,
-                  },
-                  // === FIM CORREÇÃO ===
-                },
+                  labels: { font: { size: 11 }, padding: 15, boxWidth: 15, color: 'var(--text-muted-color)' } // Cor do texto da legenda
+                 },
               },
             },
           });
 
-          // --- Gráfico 5: Distribuição Qtd Total (Pizza/Rosca) ---
+          // --- Gráfico 5: Distribuição Qtd Total (Rosca) ---
           totalDistPieChartInstance = new Chart(ctxTotalPie, {
-            type: "doughnut",
+            type: "doughnut", // Mantido como Rosca
             data: {
               labels: labels,
-              datasets: [
-                {
+              datasets: [{
                   label: "Distribuição Total",
                   data: totalQuantities,
-                  backgroundColor: getColors(labels.length),
-                  borderColor: "#fff",
-                  borderWidth: 1,
-                },
-              ],
+                  backgroundColor: getColors(labels.length), // Usando a paleta adaptada
+                  borderColor: 'var(--card-bg-color)', // Borda com cor do fundo do card
+                  borderWidth: 2,
+                  hoverOffset: 4
+               }],
             },
             options: {
               responsive: true,
+              maintainAspectRatio: false,
               plugins: {
-                legend: {
-                  position: "top",
-                  // === CORREÇÃO Legenda Gráfico 5 ===
-                  labels: {
-                    font: { size: 8 },
-                    padding: 15,
-                    boxWidth: 25,
-                  },
-                  // === FIM CORREÇÃO ===
-                },
-                tooltip: {
-                  callbacks: {
-                    label: (c) =>
-                      `${c.label}: ${formatNumber(c.parsed)} (${(
-                        (c.parsed /
-                          totalQuantities.reduce((a, b) => a + b, 0)) *
-                        100
-                      ).toFixed(1)}%)`,
-                  },
-                },
+                legend: { // Legenda mantida e ajustada
+                  position: "bottom", // Movida para baixo para melhor espaço
+                  labels: { font: { size: 10 }, padding: 10, boxWidth: 12, color: 'var(--text-muted-color)' }
+                 },
+                tooltip: { callbacks: { label: (c) => `${c.label}: ${formatNumber(c.parsed)} (${((c.parsed / totalQuantities.reduce((a, b) => a + b, 0)) * 100).toFixed(1)}%)` } },
               },
             },
           });
 
-          // --- Gráfico 6: Distribuição Lanç Manuais (Pizza/Rosca) ---
+          // --- Gráfico 6: Distribuição Lanç Manuais (Rosca) ---
           manualDistPieChartInstance = new Chart(ctxManualPie, {
-            type: "doughnut",
+            type: "doughnut", // Mantido como Rosca
             data: {
               labels: labels,
-              datasets: [
-                {
+              datasets: [{
                   label: "Distribuição Manual",
                   data: manualEntries,
-                  backgroundColor: getColors(labels.length),
-                  borderColor: "#fff",
-                  borderWidth: 1,
-                },
-              ],
+                  backgroundColor: getColors(labels.length).reverse(), // Paleta reversa para diferenciar
+                  borderColor: 'var(--card-bg-color)',
+                  borderWidth: 2,
+                  hoverOffset: 4
+                }],
             },
             options: {
               responsive: true,
+              maintainAspectRatio: false,
               plugins: {
-                legend: {
-                  position: "top",
-                  // === CORREÇÃO Legenda Gráfico 6 ===
-                  labels: {
-                    font: { size: 11 },
-                    padding: 15,
-                    boxWidth: 25,
-                  },
-                  // === FIM CORREÇÃO ===
-                },
-                tooltip: {
-                  callbacks: {
-                    label: (c) =>
-                      `${c.label}: ${formatNumber(c.parsed)} (${(
-                        (c.parsed / manualEntries.reduce((a, b) => a + b, 0)) *
-                        100
-                      ).toFixed(1)}%)`,
-                  },
-                },
+                 legend: { // Legenda mantida e ajustada
+                  position: "bottom",
+                  labels: { font: { size: 10 }, padding: 10, boxWidth: 12, color: 'var(--text-muted-color)' }
+                 },
+                tooltip: { callbacks: { label: (c) => `${c.label}: ${formatNumber(c.parsed)} (${((c.parsed / manualEntries.reduce((a, b) => a + b, 0)) * 100).toFixed(1)}%)` } },
               },
             },
           });
+
         } catch (error) {
           console.error("ERRO AO CRIAR/ATUALIZAR GRÁFICOS:", error);
         }
       }
 
-      // 5. Função para atualizar os KPIs
+      // 5. Função para atualizar os KPIs (Sem alterações na lógica)
       function updateKPIs(data) {
-        const totalGeral = data.reduce(
-          (sum, item) => sum + (item["QUANTIDADE TOTAL"] || 0),
-          0
-        );
-        const totalManual = data.reduce(
-          (sum, item) => sum + (item["LANÇAMENTOS MANUAIS"] || 0),
-          0
-        );
-        const percMedioManual =
-          totalGeral > 0 ? (totalManual / totalGeral) * 100 : 0;
-        const selectedUser = userSelect.value;
-        const numUsuarios =
-          selectedUser === "TODOS"
-            ? originalData.length
-            : data.length > 0
-            ? 1
-            : 0;
+         const totalGeral = data.reduce( (sum, item) => sum + (item["QUANTIDADE TOTAL"] || 0), 0 );
+         const totalManual = data.reduce( (sum, item) => sum + (item["LANÇAMENTOS MANUAIS"] || 0), 0 );
+         const percMedioManual = totalGeral > 0 ? (totalManual / totalGeral) * 100 : 0;
+         const selectedUser = userSelect.value;
+         const numUsuarios = selectedUser === "TODOS" ? originalData.length : data.length > 0 ? 1 : 0;
+         if (kpiTotalGeral) kpiTotalGeral.textContent = formatNumber(totalGeral);
+         if (kpiTotalManual) kpiTotalManual.textContent = formatNumber(totalManual);
+         if (kpiPercManual) kpiPercManual.textContent = percMedioManual.toFixed(1) + "%";
+         if (kpiNumUsuarios) kpiNumUsuarios.textContent = numUsuarios;
+       }
 
-        if (kpiTotalGeral) kpiTotalGeral.textContent = formatNumber(totalGeral);
-        if (kpiTotalManual)
-          kpiTotalManual.textContent = formatNumber(totalManual);
-        if (kpiPercManual)
-          kpiPercManual.textContent = percMedioManual.toFixed(1) + "%";
-        if (kpiNumUsuarios) kpiNumUsuarios.textContent = numUsuarios;
-      }
+      // 6. Função para preencher o filtro de usuários (Sem alterações)
+       function populateUserFilter() {
+         if (!userSelect) return;
+         const uniqueUsers = [ ...new Set(originalData.map((item) => item.USUARIO)), ];
+         uniqueUsers.sort().forEach((user) => {
+           const option = document.createElement("option");
+           option.value = user;
+           option.textContent = user;
+           userSelect.appendChild(option);
+         });
+       }
 
-      // 6. Função para preencher o filtro de usuários
-      function populateUserFilter() {
-        if (!userSelect) return;
-        const uniqueUsers = [
-          ...new Set(originalData.map((item) => item.USUARIO)),
-        ];
-        uniqueUsers.sort().forEach((user) => {
-          const option = document.createElement("option");
-          option.value = user;
-          option.textContent = user;
-          userSelect.appendChild(option);
-        });
-      }
-
-      // 7. Função para lidar com a mudança no filtro
-      function handleFilterChange() {
-        const selectedUser = userSelect.value;
-        let filteredData;
-        if (selectedUser === "TODOS") {
-          filteredData = dashboardData;
-        } else {
-          filteredData = dashboardData.filter(
-            (item) => item.USUARIO === selectedUser
-          );
-        }
-        createOrUpdateCharts(filteredData);
-        updateKPIs(filteredData);
-      }
+      // 7. Função para lidar com a mudança no filtro (Sem alterações)
+       function handleFilterChange() {
+         const selectedUser = userSelect.value;
+         let filteredData;
+         if (selectedUser === "TODOS") {
+           filteredData = dashboardData;
+         } else {
+           filteredData = dashboardData.filter( (item) => item.USUARIO === selectedUser );
+         }
+         createOrUpdateCharts(filteredData);
+         updateKPIs(filteredData);
+       }
 
       // 8. Inicialização do Dashboard
       document.addEventListener("DOMContentLoaded", () => {
-        console.log(
-          "DOM carregado. Iniciando dashboard combinado (legendas corrigidas)."
-        );
-        if (!Chart) {
-          console.error("Chart.js não foi carregado!");
-          alert("Erro: Biblioteca de gráficos não carregou.");
-          return;
+        console.log("DOM carregado. Iniciando dashboard com Estilo Moderno.");
+
+        // Definindo padrões do Chart.js para o tema escuro
+        if (Chart) {
+            Chart.defaults.color = 'rgba(255, 255, 255, 0.8)'; // Cor padrão do texto nos gráficos
+            Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)'; // Cor padrão das bordas/grades
+            Chart.defaults.font.family = "'Poppins', sans-serif"; // Fonte padrão
+        } else {
+            console.error("Chart.js não foi carregado!");
+            alert("Erro: Biblioteca de gráficos não carregou.");
+            return;
         }
+
         populateUserFilter();
-        createOrUpdateCharts(dashboardData);
-        updateKPIs(dashboardData);
+        createOrUpdateCharts(dashboardData); // Cria gráficos iniciais
+        updateKPIs(dashboardData); // Atualiza KPIs iniciais
         if (userSelect) {
-          userSelect.addEventListener("change", handleFilterChange);
+          userSelect.addEventListener("change", handleFilterChange); // Adiciona listener do filtro
         }
       });
 
