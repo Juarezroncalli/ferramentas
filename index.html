@@ -145,6 +145,37 @@
         border: 1px solid var(--border-color);
       }
 
+      /* Add this inside the <style> tag */
+
+      .tool-card {
+        /* ... other styles ... */
+        position: relative; /* Make the card a positioning context for the badge */
+        overflow: hidden; /* Optional: helps contain the badge if needed */
+      }
+
+      .custom-solution-badge {
+        position: absolute;
+        top: 10px; /* Distance from the top edge */
+        right: 10px; /* Distance from the right edge */
+        background-color: #007bff; /* A different highlight color (e.g., blue) */
+        color: var(--text-color-light); /* White text */
+        padding: 4px 8px; /* Small padding */
+        border-radius: 4px; /* Slightly rounded corners */
+        font-size: 0.7rem; /* Very small text */
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        z-index: 1; /* Ensure it's above other card content */
+        line-height: 1; /* Adjust line height */
+      }
+
+      /* Optional: Slightly adjust card padding if badge feels too close to content */
+      .tool-card .tool-icon,
+      .tool-card .tool-name,
+      .tool-card .tool-description {
+        position: relative; /* Ensure content respects the badge */
+        z-index: 0;
+      }
       .tool-card:hover {
         transform: translateY(-6px);
         box-shadow: 0 8px 24px rgba(79, 0, 114, 0.2);
@@ -397,6 +428,7 @@
           class="tool-card"
           data-url="https://ferramentas-seven.vercel.app/REINF.html"
         >
+          <span class="custom-solution-badge">Personalizado</span>
           <i class="fas fa-file-alt tool-icon"></i>
           <h3 class="tool-name">
             Geração de arquivo TXT para importação de Lucros Reinf
@@ -415,6 +447,7 @@
           class="tool-card"
           data-url="https://ferramentas-seven.vercel.app/Ideal.html"
         >
+          <span class="custom-solution-badge">Personalizado</span>
           <i class="fas fa-robot tool-icon"></i>
           <h3 class="tool-name">Importador Financeiro</h3>
           <p class="tool-description">
