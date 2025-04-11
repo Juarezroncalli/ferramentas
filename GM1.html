@@ -3,468 +3,423 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Comparativo de Custos</title>
+    <title>Dashboard GM Pneus - Análise de Custos e DRE</title>
+    <!-- 1. Inclui a biblioteca Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --green-dark: #1e5631;
-            --green-medium: #2e7d32;
-            --green-light: #4caf50;
-            --green-pale: #e8f5e9;
-            --green-accent: #81c784;
-            --text-dark: #212121;
-            --text-light: #ffffff;
+            --bg-color: #1a1a1a; /* Dark background */
+            --card-bg-color: #2c2c2c; /* Slightly lighter card background */
+            --primary-color: #f39c12; /* Orange/Yellow from logo */
+            --secondary-color: #e67e22; /* Darker orange */
+            --text-color: #ffffff; /* White text */
+            --text-muted-color: #bdc3c7; /* Lighter gray text */
+            --border-color: #444;
+            --profit-color: #2ecc71; /* Green for profit */
+            --cost-color: #e74c3c; /* Reddish for cost */
         }
-        
+
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
-            background-color: #f5f5f5;
-            color: var(--text-dark);
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
             padding: 20px;
         }
-        
-        header {
-            background-color: var(--green-dark);
-            color: var(--text-light);
-            padding: 20px;
-            border-radius: 8px 8px 0 0;
-            margin-bottom: 20px;
-        }
-        
-        h1 {
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-        
-        h2 {
-            font-size: 20px;
-            margin: 20px 0;
-            color: var(--green-dark);
-            border-bottom: 2px solid var(--green-light);
-            padding-bottom: 10px;
-        }
-        
-        .dashboard {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+
+        .dashboard-header {
+            text-align: center;
             margin-bottom: 30px;
-        }
-        
-        @media (max-width: 768px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .card {
-            background-color: white;
+            padding: 15px;
+            background-color: var(--card-bg-color);
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .dashboard-header img {
+            max-width: 250px;
+            height: auto;
+            vertical-align: middle; /* Aligns image better if there's text */
+        }
+
+        .dashboard-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .card {
+            background-color: var(--card-bg-color);
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            flex: 1 1 350px;
+            min-width: 300px;
+            border-top: 4px solid var(--primary-color);
+            transition: transform 0.3s ease;
+            display: flex; /* Use flexbox for card content */
+            flex-direction: column; /* Stack content vertically */
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            color: var(--primary-color);
             margin-bottom: 20px;
-        }
-        
-        .card-header {
-            border-bottom: 2px solid var(--green-light);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
             padding-bottom: 10px;
-            margin-bottom: 15px;
-            color: var(--green-dark);
-            font-weight: bold;
         }
-        
-        table {
+
+        .card h3 {
+            color: var(--secondary-color);
+            margin-top: 25px; /* More space before chart title */
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 1.1em;
+            text-align: center;
+        }
+
+        .data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
-        
-        th {
-            background-color: var(--green-medium);
-            color: var(--text-light);
+
+        .data-table th, .data-table td {
+            padding: 10px 8px;
             text-align: left;
-            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.95em;
         }
-        
-        td {
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
+
+        .data-table th {
+            color: var(--text-muted-color);
+            font-weight: 400;
         }
-        
-        tr:nth-child(even) {
-            background-color: var(--green-pale);
+
+        .data-table td.value {
+            text-align: right;
+            font-weight: 600;
         }
-        
-        tr:hover {
-            background-color: var(--green-accent);
-            color: var(--text-dark);
+
+        .data-list {
+             margin-bottom: 15px;
         }
-        
-        .total-row {
-            font-weight: bold;
-            background-color: var(--green-light) !important;
-            color: var(--text-light);
+
+        .data-list dt {
+            color: var(--text-muted-color);
+            float: left;
+            clear: left;
+            width: 60%;
+            padding: 6px 0;
+             font-size: 0.95em;
         }
-        
-        .summary-box {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
+
+        .data-list dd {
+            font-weight: 600;
+            float: right;
+            width: 40%;
+            text-align: right;
+            padding: 6px 0;
+             font-size: 0.95em;
         }
-        
-        .summary-item {
-            background-color: var(--green-medium);
-            color: var(--text-light);
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            flex: 1;
-            margin: 0 10px;
+
+        .data-list::after {
+            content: "";
+            display: table;
+            clear: both;
         }
-        
-        .summary-item h3 {
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-        
-        .summary-item p {
-            font-size: 24px;
-            font-weight: bold;
-        }
-        
-        .chart-container {
-            height: 300px;
-            position: relative;
-        }
-        
-        .bar {
-            position: absolute;
-            bottom: 0;
-            width: 12%;
-            background-color: var(--green-medium);
-            border-top-left-radius: 4px;
-            border-top-right-radius: 4px;
-            transition: height 0.5s ease;
-        }
-        
-        .bar-label {
-            position: absolute;
-            bottom: -25px;
-            width: 100%;
-            text-align: center;
-            font-size: 12px;
-        }
-        
-        .bar-value {
-            position: absolute;
-            top: -25px;
-            width: 100%;
-            text-align: center;
-            font-size: 12px;
-            color: var(--text-dark);
-        }
-        
-        .section-divider {
-            height: 2px;
-            background-color: var(--green-dark);
-            margin: 40px 0;
-        }
-        
-        .comparison-card {
-            background-color: var(--green-pale);
-            border-left: 4px solid var(--green-dark);
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        
-        footer {
-            background-color: var(--green-dark);
-            color: var(--text-light);
-            text-align: center;
-            padding: 15px;
-            border-radius: 0 0 8px 8px;
+
+
+        .summary-total {
             margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid var(--primary-color);
+            font-size: 1.1em;
+            font-weight: 700;
         }
+
+         .summary-total dt {
+             width: 55%; /* Adjust for potentially longer text */
+             font-size: 1em; /* Slightly larger */
+              color: var(--text-color); /* Make label white */
+         }
+         .summary-total dd {
+             width: 45%;
+             color: var(--primary-color);
+             font-size: 1em; /* Slightly larger */
+         }
+         .summary-total.profit dd {
+             color: var(--profit-color); /* Green for net profit */
+         }
+
+         .profit-margin {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.85em; /* Smaller font for percentage */
+            margin-left: 10px;
+            font-weight: 400; /* Normal weight */
+         }
+
+
+        .chart-container {
+            position: relative;
+            height: 280px; /* Fixed height */
+            width: 100%;
+            margin-top: auto; /* Pushes chart towards bottom if content above is short */
+            padding-top: 15px; /* Space above chart */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+            .card {
+                 flex-basis: auto;
+            }
+            .data-list dt, .data-list dd {
+                width: 50%;
+            }
+        }
+         @media (max-width: 480px) {
+             body { padding: 10px; }
+             .card { padding: 15px; }
+             .dashboard-header img { max-width: 200px; }
+             h2 { font-size: 1.3em; }
+             .data-table th, .data-table td { font-size: 0.9em; padding: 8px 5px;}
+             .data-list dt, .data-list dd { font-size: 0.9em; }
+             .summary-total { font-size: 1em; }
+             .chart-container { height: 250px; } /* Adjust chart height */
+         }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Dashboard Comparativo de Custos</h1>
-            <p>Análise comparativa entre lotes de 500 e 2500 pneus</p>
-        </header>
-        
-        <!-- Seção para 500 pneus -->
-        <h2>Custos para Lote de 500 Pneus</h2>
-        
-        <div class="dashboard">
-            <div class="card">
-                <div class="card-header">Tabela de Custos - 500 Pneus</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Custos</th>
-                            <th>Quantidade</th>
-                            <th>Valor unitário</th>
-                            <th>Valor total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Sala ADM</td>
-                            <td>1</td>
-                            <td>R$ 1.300,00</td>
-                            <td>R$ 1.300,00</td>
-                        </tr>
-                        <tr>
-                            <td>Contabilidade</td>
-                            <td>1</td>
-                            <td>R$ 2.000,00</td>
-                            <td>R$ 2.000,00</td>
-                        </tr>
-                        <tr>
-                            <td>Descarga Container</td>
-                            <td>2</td>
-                            <td>R$ 900,00</td>
-                            <td>R$ 1.800,00</td>
-                        </tr>
-                        <tr>
-                            <td>Estocagem</td>
-                            <td>500</td>
-                            <td>R$ 30,00</td>
-                            <td>R$ 15.000,00</td>
-                        </tr>
-                        <tr>
-                            <td>Seguro</td>
-                            <td>R$ 600.000,00</td>
-                            <td>0,15%</td>
-                            <td>R$ 900,00</td>
-                        </tr>
-                        <tr>
-                            <td>Frete</td>
-                            <td>2</td>
-                            <td>R$ 16.000,00</td>
-                            <td>R$ 32.000,00</td>
-                        </tr>
-                        <tr class="total-row">
-                            <td>Custo Total</td>
-                            <td></td>
-                            <td></td>
-                            <td>R$ 53.000,00</td>
-                        </tr>
-                        <tr>
-                            <td>Custo por Pneu</td>
-                            <td>500</td>
-                            <td>R$ 106,00</td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
+
+    <header class="dashboard-header">
+        <!-- Certifique-se que 'logo_gm_pneus.png' está na pasta correta -->
+        <img src="logo_gm_pneus.png" alt="GM Pneus e Lubrificantes Logo">
+    </header>
+
+    <div class="dashboard-container">
+
+        <!-- Card 1: Installation Costs -->
+        <section class="card">
+            <h2>Custos de Instalações no ES</h2>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Custo</th>
+                        <!-- <th>Quantidade</th> -->
+                        <!-- <th>Valor Unitário</th> -->
+                        <th>Valor Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr> <td>Sala ADM</td> <td class="value">R$ 1.300,00</td> </tr>
+                    <tr> <td>Contabilidade</td> <td class="value">R$ 2.000,00</td> </tr>
+                    <tr> <td>Descarga Container</td> <td class="value">R$ 1.800,00</td> </tr>
+                    <tr> <td>Estocagem</td> <td class="value">R$ 15.000,00</td> </tr>
+                    <tr> <td>Seguro</td> <td class="value">R$ 900,00</td> </tr>
+                    <tr> <td>Frete</td> <td class="value">R$ 32.000,00</td> </tr>
+                </tbody>
+            </table>
+             <dl class="data-list summary-total">
+                <dt>Custo Total Instalações</dt>
+                <dd>R$ 53.000,00</dd>
+                <dt>Custo por Pneu (Base 500)</dt>
+                <dd>R$ 106,00</dd>
+            </dl>
+
+            <h3>Distribuição dos Custos de Instalação (%)</h3>
+            <!-- 2. Canvas para o gráfico de custos -->
+            <div class="chart-container">
+                <canvas id="installationCostsChart"></canvas>
             </div>
-            
-            <div class="card">
-                <div class="card-header">Distribuição de Custos - 500 Pneus</div>
-                <div class="chart-container">
-                    <div class="bar" style="left: 5%; height: 2.5%; background-color: #2e7d32;">
-                        <div class="bar-label">Sala ADM</div>
-                        <div class="bar-value">R$ 1.300</div>
-                    </div>
-                    <div class="bar" style="left: 20%; height: 3.8%; background-color: #388e3c;">
-                        <div class="bar-label">Contabilidade</div>
-                        <div class="bar-value">R$ 2.000</div>
-                    </div>
-                    <div class="bar" style="left: 35%; height: 3.4%; background-color: #43a047;">
-                        <div class="bar-label">Descarga</div>
-                        <div class="bar-value">R$ 1.800</div>
-                    </div>
-                    <div class="bar" style="left: 50%; height: 28.3%; background-color: #4caf50;">
-                        <div class="bar-label">Estocagem</div>
-                        <div class="bar-value">R$ 15.000</div>
-                    </div>
-                    <div class="bar" style="left: 65%; height: 1.7%; background-color: #66bb6a;">
-                        <div class="bar-label">Seguro</div>
-                        <div class="bar-value">R$ 900</div>
-                    </div>
-                    <div class="bar" style="left: 80%; height: 60.4%; background-color: #81c784;">
-                        <div class="bar-label">Frete</div>
-                        <div class="bar-value">R$ 32.000</div>
-                    </div>
-                </div>
+        </section>
+
+        <!-- Card 2: Purchase Costs -->
+        <section class="card">
+            <h2>Custo de Compra por Pneu</h2>
+            <dl class="data-list">
+                <dt>Preço de Compra Unitário</dt>
+                <dd>R$ 1.200,00</dd>
+                <dt>ICMS ST</dt>
+                <dd>R$ 65,28</dd>
+                <dt>Custos de Instalação (Alocado)</dt>
+                <dd>R$ 106,00</dd>
+            </dl>
+             <dl class="data-list summary-total">
+                <dt>Custo Total de Compra por Pneu</dt>
+                <dd style="color: var(--cost-color);">R$ 1.371,28</dd> <!-- Highlight cost -->
+            </dl>
+             <div style="flex-grow: 1; display: flex; align-items: flex-end;"> <!-- Pushes note down -->
+                 <p style="margin-top: 20px; font-size: 0.9em; color: var(--text-muted-color); width: 100%;">
+                    Nota: O Custo de Compra Total por Pneu (COGS - Custo dos Bens Vendidos) inclui o preço base, impostos de compra (ICMS ST) e a alocação dos custos de instalação no ES.
+                </p>
             </div>
-        </div>
-        
-        <div class="summary-box">
-            <div class="summary-item">
-                <h3>Custo Total</h3>
-                <p>R$ 53.000,00</p>
+
+        </section>
+
+        <!-- Card 3: DRE - Income Statement -->
+        <section class="card">
+            <h2>DRE Simplificada por Pneu</h2>
+             <dl class="data-list">
+                <dt>Preço de Venda</dt>
+                <dd>R$ 1.800,00</dd>
+                 <dt>(-) Custo de Compra (COGS)</dt>
+                <dd>R$ 1.371,28</dd>
+                <dt><strong>(=) Lucro Bruto</strong></dt>
+                <dd><strong>R$ 428,72</strong></dd>
+                <dt>(-) Impostos sobre Venda:</dt> <dd></dd>
+                <dt style="padding-left: 15px;">ICMS Compete</dt> <dd>R$ 20,52</dd>
+                <dt style="padding-left: 15px;">IRPJ</dt> <dd>R$ 36,00</dd>
+                <dt style="padding-left: 15px;">CSLL</dt> <dd>R$ 19,44</dd>
+                <dt>(-) Total Impostos Venda</dt> <dd>R$ 75,96</dd>
+             </dl>
+             <dl class="data-list summary-total profit"> <!-- Added 'profit' class -->
+                <dt>Lucro Líquido por Pneu</dt>
+                <dd>R$ 352,76 <span class="profit-margin">19,60%</span></dd>
+            </dl>
+
+             <h3>Composição do Preço de Venda (%)</h3>
+             <!-- 3. Canvas para o gráfico da DRE -->
+             <div class="chart-container">
+                <canvas id="dreChart"></canvas>
             </div>
-            <div class="summary-item">
-                <h3>Custo por Pneu</h3>
-                <p>R$ 106,00</p>
-            </div>
-            <div class="summary-item">
-                <h3>Quantidade de Pneus</h3>
-                <p>500</p>
-            </div>
-        </div>
-        
-        <div class="card">
-            <div class="card-header">Análise de Custos - 500 Pneus</div>
-            <p>O custo total para o lote de 500 pneus é de R$ 53.000,00, resultando em um custo unitário de R$ 106,00 por pneu.</p>
-            <p>O frete representa o maior componente de custo (60,4%), seguido pela estocagem (28,3%).</p>
-            <p>Os custos fixos (Sala ADM e Contabilidade) representam aproximadamente 6,3% do custo total.</p>
-        </div>
-        
-        <div class="section-divider"></div>
-        
-        <!-- Seção para 2500 pneus -->
-        <h2>Custos para Lote de 2500 Pneus</h2>
-        
-        <div class="dashboard">
-            <div class="card">
-                <div class="card-header">Tabela de Custos - 2500 Pneus</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Custos</th>
-                            <th>Quantidade</th>
-                            <th>Valor unitário</th>
-                            <th>Valor total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Sala ADM</td>
-                            <td>1</td>
-                            <td>R$ 1.300,00</td>
-                            <td>R$ 1.300,00</td>
-                        </tr>
-                        <tr>
-                            <td>Contabilidade</td>
-                            <td>1</td>
-                            <td>R$ 2.000,00</td>
-                            <td>R$ 2.000,00</td>
-                        </tr>
-                        <tr>
-                            <td>Descarga Container</td>
-                            <td>10</td>
-                            <td>R$ 900,00</td>
-                            <td>R$ 9.000,00</td>
-                        </tr>
-                        <tr>
-                            <td>Estocagem</td>
-                            <td>2500</td>
-                            <td>R$ 30,00</td>
-                            <td>R$ 75.000,00</td>
-                        </tr>
-                        <tr>
-                            <td>Seguro</td>
-                            <td>R$ 3.000.000,00</td>
-                            <td>0,15%</td>
-                            <td>R$ 4.500,00</td>
-                        </tr>
-                        <tr>
-                            <td>Frete</td>
-                            <td>10</td>
-                            <td>R$ 16.000,00</td>
-                            <td>R$ 160.000,00</td>
-                        </tr>
-                        <tr class="total-row">
-                            <td>Custo Total</td>
-                            <td></td>
-                            <td></td>
-                            <td>R$ 251.800,00</td>
-                        </tr>
-                        <tr>
-                            <td>Custo por Pneu</td>
-                            <td>2500</td>
-                            <td>R$ 100,72</td>
-                            <td></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">Distribuição de Custos - 2500 Pneus</div>
-                <div class="chart-container">
-                    <div class="bar" style="left: 5%; height: 0.5%; background-color: #2e7d32;">
-                        <div class="bar-label">Sala ADM</div>
-                        <div class="bar-value">R$ 1.300</div>
-                    </div>
-                    <div class="bar" style="left: 20%; height: 0.8%; background-color: #388e3c;">
-                        <div class="bar-label">Contabilidade</div>
-                        <div class="bar-value">R$ 2.000</div>
-                    </div>
-                    <div class="bar" style="left: 35%; height: 3.6%; background-color: #43a047;">
-                        <div class="bar-label">Descarga</div>
-                        <div class="bar-value">R$ 9.000</div>
-                    </div>
-                    <div class="bar" style="left: 50%; height: 29.8%; background-color: #4caf50;">
-                        <div class="bar-label">Estocagem</div>
-                        <div class="bar-value">R$ 75.000</div>
-                    </div>
-                    <div class="bar" style="left: 65%; height: 1.8%; background-color: #66bb6a;">
-                        <div class="bar-label">Seguro</div>
-                        <div class="bar-value">R$ 4.500</div>
-                    </div>
-                    <div class="bar" style="left: 80%; height: 63.5%; background-color: #81c784;">
-                        <div class="bar-label">Frete</div>
-                        <div class="bar-value">R$ 160.000</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="summary-box">
-            <div class="summary-item">
-                <h3>Custo Total</h3>
-                <p>R$ 251.800,00</p>
-            </div>
-            <div class="summary-item">
-                <h3>Custo por Pneu</h3>
-                <p>R$ 100,72</p>
-            </div>
-            <div class="summary-item">
-                <h3>Quantidade de Pneus</h3>
-                <p>2500</p>
-            </div>
-        </div>
-        
-        <div class="card">
-            <div class="card-header">Análise de Custos - 2500 Pneus</div>
-            <p>O custo total para o lote de 2500 pneus é de R$ 251.800,00, resultando em um custo unitário de R$ 100,72 por pneu.</p>
-            <p>O frete continua sendo o maior componente de custo (63,5%), seguido pela estocagem (29,8%).</p>
-            <p>Os custos fixos (Sala ADM e Contabilidade) representam apenas 1,3% do custo total, demonstrando diluição dos custos fixos em volumes maiores.</p>
-        </div>
-        
-        <!-- Seção de comparação -->
-        <div class="card comparison-card">
-            <div class="card-header">Análise Comparativa</div>
-            <p>Ao aumentar o volume de 500 para 2500 pneus, observa-se uma redução de 5% no custo unitário (de R$ 106,00 para R$ 100,72).</p>
-            <p>A economia de escala é evidenciada pela diluição dos custos fixos, que passam de 6,3% para apenas 1,3% do custo total.</p>
-            <p>Embora o custo total aumente em 4,75 vezes (de R$ 53.000,00 para R$ 251.800,00), o volume aumenta em 5 vezes, resultando em maior eficiência.</p>
-            <p>O frete e a estocagem continuam sendo os principais componentes de custo em ambos os cenários, representando juntos mais de 88% do custo total.</p>
-        </div>
-        
-        <footer>
-            Dashboard Comparativo de Custos - Gerado em: <span id="current-date"></span>
-        </footer>
+        </section>
+
     </div>
-    
+
+    <!-- 4. JavaScript para criar os gráficos (DEVE VIR DEPOIS DOS ELEMENTOS CANVAS) -->
     <script>
-        // Set current date
-        document.getElementById('current-date').textContent = new Date().toLocaleDateString('pt-BR');
+        // Espera o DOM carregar completamente para garantir que os canvas existem
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // Configuração Padrão dos Gráficos
+            Chart.defaults.color = 'rgba(255, 255, 255, 0.85)';
+            Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+            Chart.defaults.font.family = "'Poppins', sans-serif";
+
+            // --- Dados e Cores ---
+            const installationLabels = ['Frete', 'Estocagem', 'Contabilidade', 'Descarga', 'Sala ADM', 'Seguro']; // Ordered largest to smallest for potentially better visuals
+            const installationData = [32000, 15000, 2000, 1800, 1300, 900];
+            const dreLabels = ['Custo Compra (COGS)', 'Lucro Líquido', 'Impostos (Venda)']; // Reordered for visual flow
+            const dreData = [1371.28, 352.76, 75.96];
+            const sellingPrice = 1800;
+
+            const primaryColors = ['#f39c12', '#e67e22', '#f1c40f', '#d35400', '#ffb142', '#f7d794']; // Shades of orange/yellow
+            const dreColors = [ '#e74c3c', '#2ecc71', '#e67e22']; // Cost (Red), Profit (Green), Tax (Orange)
+
+
+            // --- Função para formatar como Moeda (BRL) ---
+            const formatCurrency = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+
+            // --- Gráfico 1: Custos de Instalação ---
+            const ctxInstallation = document.getElementById('installationCostsChart');
+            if (ctxInstallation) { // Verifica se o elemento canvas existe
+                new Chart(ctxInstallation.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: installationLabels,
+                        datasets: [{
+                            label: 'Custo de Instalação',
+                            data: installationData,
+                            backgroundColor: primaryColors,
+                            borderColor: 'var(--card-bg-color)',
+                            borderWidth: 3,
+                            hoverOffset: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '60%', // Makes it a doughnut
+                        plugins: {
+                            title: { display: false },
+                            legend: {
+                                position: 'bottom',
+                                labels: { padding: 15, boxWidth: 12 }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.parsed || 0;
+                                        const total = context.dataset.data.reduce((acc, val) => acc + val, 0);
+                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                        return `${label}: ${formatCurrency(value)} (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                console.error("Elemento canvas 'installationCostsChart' não encontrado.");
+            }
+
+            // --- Gráfico 2: Composição do Preço de Venda (DRE) ---
+            const ctxDRE = document.getElementById('dreChart');
+            if (ctxDRE) { // Verifica se o elemento canvas existe
+                new Chart(ctxDRE.getContext('2d'), {
+                    type: 'pie',
+                    data: {
+                        labels: dreLabels,
+                        datasets: [{
+                            label: 'Composição do Preço de Venda',
+                            data: dreData,
+                            backgroundColor: dreColors,
+                            borderColor: 'var(--card-bg-color)',
+                            borderWidth: 3,
+                            hoverOffset: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: { display: false },
+                            legend: {
+                                position: 'bottom',
+                                labels: { padding: 15, boxWidth: 12 }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.parsed || 0;
+                                        const percentage = sellingPrice > 0 ? ((value / sellingPrice) * 100).toFixed(1) : 0;
+                                        return `${label}: ${formatCurrency(value)} (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                console.error("Elemento canvas 'dreChart' não encontrado.");
+            }
+
+        }); // Fim do document.addEventListener
     </script>
+
 </body>
 </html>
