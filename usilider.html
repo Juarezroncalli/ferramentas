@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Tributário Usilider 2024 [Strokes nas Barras]</title>
+    <title>Dashboard Tributário Usilider 2024 [Valores Finais Atualizados]</title>
     <!-- Using Poppins font from the example -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
@@ -244,7 +244,7 @@
     <div class="dashboard-container">
         <header>
             <h1>Dashboard Tributário Usilider</h1>
-            <p>Comparativo entre regimes tributários - 2024 (Valores PIS/COFINS Presumido Atualizados)</p>
+            <p>Comparativo entre regimes tributários - 2024 (Valores Finais Atualizados)</p>
         </header>
 
         <!-- KPI Cards Section -->
@@ -319,8 +319,8 @@
         const taxes = {
             categories: ['IRPJ', 'CSLL', 'PIS', 'COFINS'],
             lucroReal: {
-                IRPJ: parseBrazilianNumber('94.228,70'),
-                CSLL: parseBrazilianNumber('106.873,20'),
+                IRPJ: parseBrazilianNumber('106.873,20'), // <-- UPDATED VALUE
+                CSLL: parseBrazilianNumber('47.114,35'),  // <-- UPDATED VALUE
                 PIS: parseBrazilianNumber('75.626,07'),
                 COFINS: parseBrazilianNumber('346.636,34'),
                 TOTAL: 0 // Calculated below
@@ -328,23 +328,23 @@
             lucroPresumido: {
                 IRPJ: parseBrazilianNumber('351.563,90'),
                 CSLL: parseBrazilianNumber('174.556,68'),
-                PIS: parseBrazilianNumber('63.147,99'),   // Updated
-                COFINS: parseBrazilianNumber('291.452,27'),// Updated
+                PIS: parseBrazilianNumber('63.147,99'),
+                COFINS: parseBrazilianNumber('291.452,27'),
                 TOTAL: 0 // Calculated below
             }
         };
 
         // --- Calculate Totals ---
-        taxes.lucroReal.TOTAL = taxes.lucroReal.IRPJ + taxes.lucroReal.CSLL + taxes.lucroReal.PIS + taxes.lucroReal.COFINS;
+        taxes.lucroReal.TOTAL = taxes.lucroReal.IRPJ + taxes.lucroReal.CSLL + taxes.lucroReal.PIS + taxes.lucroReal.COFINS; // <-- RECALCULATED TOTAL
         taxes.lucroPresumido.TOTAL = taxes.lucroPresumido.IRPJ + taxes.lucroPresumido.CSLL + taxes.lucroPresumido.PIS + taxes.lucroPresumido.COFINS;
 
-        // --- Calculate Differences ---
+        // --- Calculate Differences (AFTER totals are calculated) ---
         const difference = {
-             IRPJ: taxes.lucroPresumido.IRPJ - taxes.lucroReal.IRPJ,
-             CSLL: taxes.lucroPresumido.CSLL - taxes.lucroReal.CSLL,
+             IRPJ: taxes.lucroPresumido.IRPJ - taxes.lucroReal.IRPJ,       // <-- RECALCULATED DIFFERENCE
+             CSLL: taxes.lucroPresumido.CSLL - taxes.lucroReal.CSLL,       // <-- RECALCULATED DIFFERENCE
              PIS: taxes.lucroPresumido.PIS - taxes.lucroReal.PIS,
              COFINS: taxes.lucroPresumido.COFINS - taxes.lucroReal.COFINS,
-             TOTAL: taxes.lucroPresumido.TOTAL - taxes.lucroReal.TOTAL
+             TOTAL: taxes.lucroPresumido.TOTAL - taxes.lucroReal.TOTAL      // <-- RECALCULATED DIFFERENCE
         };
 
         // --- Helper Functions ---
@@ -354,11 +354,11 @@
              return value < 0 ? `- ${formatted}` : formatted;
         };
 
-        // --- Update KPIs ---
-        document.getElementById('total-real').textContent = formatCurrency(taxes.lucroReal.TOTAL);
+        // --- Update KPIs (AFTER calculations) ---
+        document.getElementById('total-real').textContent = formatCurrency(taxes.lucroReal.TOTAL); // Uses new total
         document.getElementById('total-presumido').textContent = formatCurrency(taxes.lucroPresumido.TOTAL);
         const totalDifferenceElement = document.getElementById('total-difference');
-        totalDifferenceElement.textContent = formatCurrency(difference.TOTAL);
+        totalDifferenceElement.textContent = formatCurrency(difference.TOTAL); // Uses new difference
 
         const diffDetail = document.getElementById('difference-detail');
         totalDifferenceElement.classList.remove('positive', 'negative');
@@ -407,14 +407,12 @@
              theme: { mode: 'dark' }
         };
 
-        // --- Chart 1: Comparison Bar Chart ---
+        // --- Chart 1: Comparison Bar Chart (Uses updated taxes.lucroReal.IRPJ/CSLL) ---
         var optionsComparisonBar = {
             ...commonChartOptions,
-            // Override stroke for grouped bar charts if needed (optional)
-            // stroke: { width: 1, colors: [colorCardBg] },
             series: [{
                 name: 'Lucro Real',
-                data: [taxes.lucroReal.IRPJ, taxes.lucroReal.CSLL, taxes.lucroReal.PIS, taxes.lucroReal.COFINS],
+                data: [taxes.lucroReal.IRPJ, taxes.lucroReal.CSLL, taxes.lucroReal.PIS, taxes.lucroReal.COFINS], // <-- USES UPDATED VALUES
                 color: regimeColors[0]
              }, {
                 name: 'Lucro Presumido',
@@ -428,40 +426,39 @@
         chartComparisonBar.render();
 
 
-         // --- Chart 2: Total Comparison Bar Chart ---
+         // --- Chart 2: Total Comparison Bar Chart (Uses updated taxes.lucroReal.TOTAL) ---
          var optionsTotalComparisonBar = {
               ...commonChartOptions,
              series: [{
                  name: 'Total Impostos',
-                 data: [taxes.lucroReal.TOTAL, taxes.lucroPresumido.TOTAL],
+                 data: [taxes.lucroReal.TOTAL, taxes.lucroPresumido.TOTAL], // <-- USES UPDATED REAL TOTAL
              }],
              xaxis: { categories: ['Lucro Real', 'Lucro Presumido'], labels: { style: { colors: colorTextMuted } }, axisBorder: { show: false }, axisTicks: { show: false } },
              colors: regimeColors,
              legend: { show: false },
              plotOptions: { bar: { distributed: true, horizontal: false, columnWidth: '40%', borderRadius: 5 } },
              dataLabels: { enabled: true, formatter: function (val) { return formatCurrency(val); }, offsetY: -25, style: { fontSize: '12px', fontWeight: 'bold', colors: [colorText] } },
-             // Stroke inherited from common options
          };
          var chartTotalComparisonBar = new ApexCharts(document.querySelector("#total-comparison-bar-chart"), optionsTotalComparisonBar);
          chartTotalComparisonBar.render();
 
 
-        // --- Chart 3: Composition Pie - Lucro Real ---
+        // --- Chart 3: Composition Pie - Lucro Real (Uses updated taxes.lucroReal.IRPJ/CSLL & TOTAL) ---
         var optionsPieReal = {
              chart: { type: 'donut', height: 380, foreColor: colorTextMuted },
-             series: [taxes.lucroReal.IRPJ, taxes.lucroReal.CSLL, taxes.lucroReal.PIS, taxes.lucroReal.COFINS],
+             series: [taxes.lucroReal.IRPJ, taxes.lucroReal.CSLL, taxes.lucroReal.PIS, taxes.lucroReal.COFINS], // <-- USES UPDATED VALUES
              labels: taxes.categories, colors: pieChartColors, theme: { mode: 'dark' },
              plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, showAlways: true, label: 'Total Real', fontSize: '18px', fontWeight: 600, color: colorPrimary, formatter: function (w) { const total = w.globals.seriesTotals.reduce((a, b) => a + b, 0); return formatCurrency(total); } }, value: { show: true, fontSize: '16px', fontWeight: 400, color: colorText, offsetY: 5, formatter: function(val) { return formatCurrency(parseFloat(val)) } } } }, expandOnClick: false } },
              dataLabels: { enabled: true, formatter: function (val, opts) { return opts.w.globals.labels[opts.seriesIndex] + ':  ' + val.toFixed(1) + '%' }, style: { fontSize: '11px', fontWeight: 'bold', colors: [colorText] }, dropShadow: { enabled: false } },
              legend: { position: 'bottom', horizontalAlign: 'center', labels: { colors: colorTextMuted }, markers: { fillColors: pieChartColors } },
              tooltip: { theme: 'dark', y: { formatter: function (val) { return formatCurrency(val); }, title: { formatter: (seriesName) => seriesName } } },
-             stroke: { width: 2, colors: [colorCardBg] } // Specific stroke for donut
+             stroke: { width: 2, colors: [colorCardBg] }
         };
         var chartPieReal = new ApexCharts(document.querySelector("#composition-pie-real"), optionsPieReal);
         chartPieReal.render();
 
 
-        // --- Chart 4: Composition Pie - Lucro Presumido ---
+        // --- Chart 4: Composition Pie - Lucro Presumido (No changes needed here) ---
         var optionsPiePresumido = {
             ...optionsPieReal, // Inherits donut stroke
              series: [taxes.lucroPresumido.IRPJ, taxes.lucroPresumido.CSLL, taxes.lucroPresumido.PIS, taxes.lucroPresumido.COFINS],
@@ -471,16 +468,16 @@
         chartPiePresumido.render();
 
 
-         // --- Chart 5: Difference Bar Chart ---
+         // --- Chart 5: Difference Bar Chart (Uses updated difference.IRPJ/CSLL & recalculated colors) ---
          var optionsDifferenceBar = {
              ...commonChartOptions, // Inherits common stroke
              series: [{
                  name: 'Diferença (Presumido - Real)',
-                 data: [difference.IRPJ, difference.CSLL, difference.PIS, difference.COFINS],
+                 data: [difference.IRPJ, difference.CSLL, difference.PIS, difference.COFINS], // <-- USES UPDATED DIFFERENCES
              }],
-             colors: [
-                 difference.IRPJ >= 0 ? colorDanger : colorSuccess,
-                 difference.CSLL >= 0 ? colorDanger : colorSuccess,
+             colors: [ // Colors recalculated based on new differences
+                 difference.IRPJ >= 0 ? colorDanger : colorSuccess, // <-- Recalculated Color
+                 difference.CSLL >= 0 ? colorDanger : colorSuccess, // <-- Recalculated Color
                  difference.PIS >= 0 ? colorDanger : colorSuccess,
                  difference.COFINS >= 0 ? colorDanger : colorSuccess
              ],
@@ -489,13 +486,12 @@
              dataLabels: { enabled: true, formatter: function (val) { return formatCurrency(val); }, offsetY: -20, style: { fontSize: '11px', colors: [colorText] } },
              tooltip: { theme: 'dark', y: { formatter: function (val) { let comparison = val > 0 ? ' (Presumido Maior)' : val < 0 ? ' (Real Maior)' : ''; return formatCurrency(val) + comparison; } } },
              xaxis: { ...commonChartOptions.xaxis, title: { text: 'Tipo de Imposto', style:{ color: colorTextMuted, fontWeight: 400 }}},
-             // Stroke inherited from common options
          };
         var chartDifferenceBar = new ApexCharts(document.querySelector("#difference-bar-chart"), optionsDifferenceBar);
         chartDifferenceBar.render();
 
 
-         // --- Generate Summary Table ---
+         // --- Generate Summary Table (Uses updated taxes and difference objects) ---
         const createTable = () => {
             let tableHTML = `
                 <table class="summary-table">
@@ -503,10 +499,10 @@
                     <tbody>
             `;
             taxes.categories.forEach(cat => {
-                 const realValue = taxes.lucroReal[cat];
+                 const realValue = taxes.lucroReal[cat]; // <-- USES UPDATED VALUE
                  const presumidoValue = taxes.lucroPresumido[cat];
-                 const diffValue = difference[cat];
-                 let diffClass = diffValue > 0 ? 'negative' : (diffValue < 0 ? 'positive' : 'zero');
+                 const diffValue = difference[cat]; // <-- USES UPDATED VALUE
+                 let diffClass = diffValue > 0 ? 'negative' : (diffValue < 0 ? 'positive' : 'zero'); // Color class updated
 
                  tableHTML += `
                     <tr>
@@ -517,15 +513,15 @@
                     </tr>
                  `;
             });
-            let totalDiffClass = difference.TOTAL > 0 ? 'negative' : (difference.TOTAL < 0 ? 'positive' : 'zero');
+            let totalDiffClass = difference.TOTAL > 0 ? 'negative' : (difference.TOTAL < 0 ? 'positive' : 'zero'); // Color class updated
              tableHTML += `
                     </tbody>
                     <tfoot>
                          <tr>
                             <td>TOTAL</td>
-                            <td class="real-col">${formatCurrency(taxes.lucroReal.TOTAL)}</td>
+                            <td class="real-col">${formatCurrency(taxes.lucroReal.TOTAL)}</td> <!-- USES UPDATED TOTAL -->
                             <td class="presumido-col">${formatCurrency(taxes.lucroPresumido.TOTAL)}</td>
-                            <td class="diff-col ${totalDiffClass}">${formatCurrency(difference.TOTAL)}</td>
+                            <td class="diff-col ${totalDiffClass}">${formatCurrency(difference.TOTAL)}</td> <!-- USES UPDATED TOTAL DIFF -->
                         </tr>
                     </tfoot>
                 </table>
@@ -533,7 +529,7 @@
             document.getElementById('summary-table').innerHTML = tableHTML;
         };
 
-        createTable();
+        createTable(); // Re-generates table with new data
 
         // --- Update Footer Date ---
         document.getElementById('generation-date').textContent = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric'});
