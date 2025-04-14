@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gerador de Layout TXT</title>
+    <style>
+      /* Define as cores como variáveis CSS */
+      :root {
+        --primary-color: #4f0072; /* Roxo escuro */
+        --accent-color: #fb0a5e; /* Rosa vibrante */
+        --text-color: #333;
+        --background-color: #f4f4f4;
+        --input-border-color: #ccc;
+        --button-text-color: #fff;
+        --error-color: #d9534f; /* Vermelho para erros */
+        --success-color: #5cb85c; /* Verde para sucesso */
+        --warning-color: #f0ad4e; /* Laranja para avisos/duplicatas */
+      }
+
+      body {
+        font-family: sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        line-height: 1.6;
+      }
+
+      #app {
+        max-width: 1200px;
+        margin: 20px auto;
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: relative; /* Para contexto de posicionamento se necessário */
+        z-index: 1; /* Garante que a app fique abaixo do modal */
+      }
+
+      h1 {
+        color: var(--primary-color);
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .input-row-header,
+      .input-row {
+        display: flex;
+        align-items: stretch; /* Alinha itens para terem a mesma altura */
+        margin-bottom: 10px;
+        padding: 10px 5px; /* Add padding horizontal/vertical */
+        border-bottom: 1px solid #eee;
+        gap: 10px; /* Espaçamento entre colunas */
+        flex-wrap: wrap; /* Permite quebra de linha em telas menores */
+        transition: background-color 0.3s ease; /* Para highlight suave */
+        border-radius: 4px; /* Bordas arredondadas para a linha */
+      }
+
+      .input-row:last-child {
+        border-bottom: none;
+        padding-bottom: 10px; /* Mantém padding inferior */
+      }
+
+      .input-row-header div {
+        font-weight: bold;
+        color: var(--primary-color);
+        flex: 1; /* Distribui espaço igualmente */
+        min-width: 100px; /* Largura mínima para evitar aperto */
+        text-align: center; /* Centraliza texto do cabeçalho */
+        font-size: 0.9em;
+        display: flex;
+        align-items: center; /* Centraliza verticalmente o texto do header */
+        justify-content: center; /* Centraliza horizontalmente */
+      }
+
+      /* Ajusta a largura da coluna de Ação */
+      .input-row-header .col-action,
+      .input-row .col-action {
+        flex: 0 0 50px; /* Não cresce, não encolhe, largura fixa */
+        min-width: 50px;
+        display: flex; /* Para alinhar o botão dentro */
+        align-items: center; /* Centraliza botão verticalmente */
+        justify-content: center; /* Centraliza botão horizontalmente */
+      }
+
+      .input-row div {
+        flex: 1;
+        min-width: 100px;
+        display: flex; /* Para alinhar input/label dentro da div se necessário */
+        flex-direction: column;
+        justify-content: center; /* Centraliza conteúdo verticalmente na div */
+      }
+
+      .input-row label {
+        display: none; /* Oculta labels, usamos o header */
+        font-size: 0.8em;
+        margin-bottom: 3px;
+        color: #555;
+      }
+
+      .input-row input[type="text"],
+      .input-row input[type="number"],
+      .input-row input[type="date"] {
+        width: 100%; /* Ocupa toda a largura da coluna flex */
+        padding: 8px;
+        border: 1px solid var(--input-border-color);
+        border-radius: 4px;
+        box-sizing: border-box; /* Inclui padding na largura total */
+        font-size: 0.9em;
+      }
+
+      .input-row input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 5px rgba(79, 0, 114, 0.3);
+      }
+
+      /* --- Estilos de Validação e Erro --- */
+      input:invalid {
+        border-color: var(
+          --error-color
+        ) !important; /* Força a borda vermelha */
+        background-color: #fff0f0; /* Fundo levemente avermelhado */
+      }
+      /* Estilo para erro manual */
+      input.manual-error {
+        border-color: var(--error-color) !important;
+        background-color: #fff0f0;
+      }
+      /* Estilo para destacar linha duplicada */
+      .input-row.duplicate-error {
+        background-color: #fff9e6 !important; /* Fundo amarelo claro */
+        border: 1px solid var(--warning-color);
+        box-shadow: 0 0 8px rgba(240, 173, 78, 0.3);
+      }
+      /* Reset background for inputs inside duplicate row unless they are also invalid */
+      .input-row.duplicate-error input:not(:invalid) {
+        background-color: #fff; /* Garante fundo branco normal para inputs válidos na linha duplicada */
+      }
+      .input-row.duplicate-error input:invalid {
+        /* Mantém o estilo de inválido se for inválido E duplicado */
+        border-color: var(--error-color) !important;
+        background-color: #fff0f0;
+      }
+
+      .button-container {
+        margin-top: 30px;
+        display: flex;
+        justify-content: space-between; /* Alinha botões nas extremidades */
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: bold;
+        transition: background-color 0.3s ease, transform 0.1s ease;
+      }
+
+      button:active {
+        transform: scale(0.98);
+      }
+
+      #add-row-btn {
+        background-color: var(--primary-color);
+        color: var(--button-text-color);
+      }
+
+      #add-row-btn:hover {
+        background-color: #3a0054; /* Tom mais escuro de roxo */
+      }
+
+      #generate-btn {
+        background-color: var(--accent-color);
+        color: var(--button-text-color);
+      }
+
+      #generate-btn:hover {
+        background-color: #d90850; /* Tom mais escuro de rosa */
+      }
+
+      .delete-row-btn {
+        background-color: #ccc;
+        color: #333;
+        padding: 5px 8px;
+        border-radius: 3px;
+        font-size: 0.8em;
+        line-height: 1; /* Ajusta altura */
+        /* margin: auto 0; Não necessário com align-items center no pai */
+        /* align-self: center; Não necessário com align-items center no pai */
+        border: none;
+        cursor: pointer;
+      }
+
+      .delete-row-btn:hover {
+        background-color: #aaa;
+      }
+
+      /* Esconde o botão de deletar na primeira linha */
+      #input-rows .input-row:first-child .delete-row-btn {
+        display: none;
+      }
+
+      /* --- Estilos do Modal --- */
+      #modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6); /* Fundo escurecido */
+        display: none; /* Inicialmente oculto */
+        justify-content: center;
+        align-items: center;
+        z-index: 1000; /* Acima de outros conteúdos */
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      #modal-overlay.visible {
+        display: flex;
+        opacity: 1;
+      }
+
+      #modal {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        max-width: 500px;
+        width: 90%;
+        text-align: center;
+        position: relative;
+        border-top: 5px solid var(--primary-color); /* Borda superior na cor primária */
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+      }
+
+      #modal-overlay.visible #modal {
+        transform: scale(1);
+      }
+
+      /* Variações de cor da borda do modal */
+      #modal.modal-success {
+        border-top-color: var(--success-color);
+      }
+      #modal.modal-error {
+        border-top-color: var(--error-color);
+      }
+      #modal.modal-info {
+        border-top-color: var(--primary-color);
+      }
+      #modal.modal-warning {
+        border-top-color: var(--warning-color);
+      } /* Para duplicatas */
+
+      #modal h2 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: var(--primary-color);
+      }
+
+      #modal p {
+        margin-bottom: 25px;
+        line-height: 1.5;
+        color: #555;
+      }
+
+      #modal-close-btn-top {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        background: none;
+        border: none;
+        font-size: 2em;
+        color: #aaa;
+        cursor: pointer;
+        line-height: 1;
+        padding: 0;
+      }
+      #modal-close-btn-top:hover {
+        color: #777;
+      }
+
+      #modal-ok-btn {
+        background-color: var(--primary-color); /* Botão OK na cor primária */
+        color: var(--button-text-color);
+        padding: 10px 30px;
+        font-size: 1em;
+      }
+      #modal-ok-btn:hover {
+        background-color: #3a0054;
+      }
+
+      /* Responsividade */
+      @media (max-width: 992px) {
+        .input-row-header div,
+        .input-row div {
+          min-width: 80px;
+        }
+        .input-row-header .col-action,
+        .input-row .col-action {
+          flex: 0 0 40px;
+          min-width: 40px;
+        }
+        .delete-row-btn {
+          padding: 4px 6px;
+          font-size: 0.7em;
+        }
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 10px;
+        }
+        #app {
+          padding: 20px;
+        }
+        h1 {
+          font-size: 1.5em;
+        }
+        .input-row-header {
+          display: none;
+        }
+        .input-row label {
+          display: block;
+        }
+        .input-row {
+          flex-direction: column;
+          border-bottom: 2px solid var(--primary-color);
+          padding: 15px; /* Ajuste padding */
+          margin-bottom: 20px;
+          align-items: stretch;
+        }
+        .input-row div {
+          min-width: 100%;
+          margin-bottom: 10px;
+        }
+        .input-row .col-action {
+          flex-basis: auto;
+          min-width: auto;
+          align-self: flex-end;
+          margin-top: -5px;
+        }
+        .delete-row-btn {
+          padding: 8px 15px;
+          font-size: 0.9em;
+        }
+        .button-container {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        button {
+          width: 100%;
+        }
+        #modal {
+          width: 95%;
+          padding: 20px;
+        }
+        #modal h2 {
+          font-size: 1.2em;
+        }
+        #modal p {
+          font-size: 0.9em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <h1>Gerador de Notas Fiscais para Domínio Sistemas</h1>
+
+      <form id="data-form" novalidate>
+        <!-- Cabeçalho das Colunas -->
+        <div class="input-row-header">
+          <div>Espécie</div>
+          <div>CNPJ (14 dígitos)</div>
+          <div>Acumulador</div>
+          <div>CFOP</div>
+          <div>NF</div>
+          <div>Data Entrada</div>
+          <div>Valor NF</div>
+          <div>Valor IRRF</div>
+          <div>Valor CSRF</div>
+          <div class="col-action">Ação</div>
+        </div>
+
+        <div id="input-rows">
+          <!-- Linha de Exemplo (será clonada) -->
+          <div class="input-row">
+            <div>
+              <label for="especie-0">Espécie</label>
+              <input
+                type="text"
+                id="especie-0"
+                name="especie"
+                placeholder="Ex: 39"
+                required
+              />
+            </div>
+            <div>
+              <label for="cnpj-0">CNPJ (14 dígitos)</label>
+              <input
+                type="text"
+                id="cnpj-0"
+                name="cnpj"
+                placeholder="Só números"
+                required
+                pattern="\d{14}"
+                title="Digite exatamente 14 números"
+                maxlength="14"
+              />
+            </div>
+            <div>
+              <label for="acumulador-0">Acumulador</label>
+              <input
+                type="text"
+                id="acumulador-0"
+                name="acumulador"
+                placeholder="Ex: 100"
+                required
+              />
+            </div>
+            <div>
+              <label for="cfop-0">CFOP</label>
+              <input
+                type="text"
+                id="cfop-0"
+                name="cfop"
+                placeholder="Ex: 1933"
+                required
+              />
+            </div>
+            <div>
+              <label for="nf-0">NF</label>
+              <input
+                type="text"
+                id="nf-0"
+                name="nf"
+                placeholder="Ex: 12345"
+                required
+              />
+            </div>
+            <div>
+              <label for="data_entrada-0">Data Entrada</label>
+              <input
+                type="date"
+                id="data_entrada-0"
+                name="data_entrada"
+                required
+              />
+            </div>
+            <div>
+              <label for="valor-0">Valor NF</label>
+              <input
+                type="number"
+                id="valor-0"
+                name="valor"
+                placeholder="Ex: 1000.50"
+                step="0.01"
+                min="0.01"
+                required
+              />
+              <!-- min="0.01" para valor > 0 -->
+            </div>
+            <div>
+              <label for="irrf-0">Valor IRRF</label>
+              <input
+                type="number"
+                id="irrf-0"
+                name="irrf"
+                placeholder="Opcional"
+                step="0.01"
+                min="0"
+              />
+            </div>
+            <div>
+              <label for="csrf-0">Valor CSRF</label>
+              <input
+                type="number"
+                id="csrf-0"
+                name="csrf"
+                placeholder="Opcional"
+                step="0.01"
+                min="0"
+              />
+            </div>
+            <div class="col-action">
+              <button
+                type="button"
+                class="delete-row-btn"
+                title="Remover Linha"
+              >
+                X
+              </button>
+            </div>
+          </div>
+          <!-- Novas linhas serão adicionadas aqui -->
+        </div>
+
+        <div class="button-container">
+          <button type="button" id="add-row-btn">Adicionar Linha</button>
+          <button type="button" id="generate-btn">Gerar Arquivo TXT</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Estrutura do Modal -->
+    <div id="modal-overlay">
+      <div id="modal">
+        <button id="modal-close-btn-top" title="Fechar">&times;</button>
+        <h2 id="modal-title">Aviso</h2>
+        <p id="modal-message">Mensagem do modal aqui.</p>
+        <button id="modal-ok-btn">OK</button>
+      </div>
+    </div>
+
+    <script>
+      const inputRowsContainer = document.getElementById("input-rows");
+      const addRowBtn = document.getElementById("add-row-btn");
+      const generateBtn = document.getElementById("generate-btn");
+      const form = document.getElementById("data-form");
+      let rowIndex = 1;
+
+      // --- Elementos do Modal ---
+      const modalOverlay = document.getElementById("modal-overlay");
+      const modal = document.getElementById("modal");
+      const modalTitle = document.getElementById("modal-title");
+      const modalMessage = document.getElementById("modal-message");
+      const modalCloseBtnTop = document.getElementById("modal-close-btn-top");
+      const modalOkBtn = document.getElementById("modal-ok-btn");
+
+      // --- Funções do Modal ---
+      function showModal(message, type = "info", title = "Aviso") {
+        modalMessage.innerHTML = message; // Use innerHTML se precisar formatar msg
+        modalTitle.textContent = title;
+        modal.className = "modal"; // Reset classes
+        modal.classList.add(`modal-${type}`);
+        modalOverlay.classList.add("visible");
+      }
+
+      function hideModal() {
+        modalOverlay.classList.remove("visible");
+        // Não limpa mais os erros dos inputs aqui, fazemos no início da geração
+      }
+
+      // --- Event Listeners do Modal ---
+      modalCloseBtnTop.addEventListener("click", hideModal);
+      modalOkBtn.addEventListener("click", hideModal);
+      modalOverlay.addEventListener("click", (event) => {
+        if (event.target === modalOverlay) {
+          hideModal();
+        }
+      });
+
+      // --- Adicionar Linha ---
+      addRowBtn.addEventListener("click", () => {
+        const lastRow = inputRowsContainer.querySelector(
+          ".input-row:last-child"
+        );
+        const newRow = lastRow.cloneNode(true);
+
+        newRow.classList.remove("duplicate-error"); // Remove highlight de erro ao clonar
+        newRow.querySelectorAll("input").forEach((input) => {
+          input.value = "";
+          const oldId = input.id;
+          if (oldId) {
+            const baseId = oldId.substring(0, oldId.lastIndexOf("-"));
+            const newId = `${baseId}-${rowIndex}`;
+            input.id = newId;
+            const label = newRow.querySelector(`label[for="${oldId}"]`);
+            if (label) label.setAttribute("for", newId);
+          }
+          input.classList.remove("manual-error");
+          input.setCustomValidity("");
+          // Garante que a validação 'min' seja aplicada corretamente ao clonar
+          if (input.name === "valor" && !input.value) {
+            input.setCustomValidity(""); // Limpa validação inicial
+          }
+        });
+
+        const deleteBtn = newRow.querySelector(".delete-row-btn");
+        if (deleteBtn) {
+          deleteBtn.style.display = "inline-block";
+        }
+
+        inputRowsContainer.appendChild(newRow);
+        rowIndex++;
+      });
+
+      // --- Remover Linha ---
+      inputRowsContainer.addEventListener("click", (event) => {
+        if (event.target.classList.contains("delete-row-btn")) {
+          if (inputRowsContainer.querySelectorAll(".input-row").length > 1) {
+            event.target.closest(".input-row").remove();
+          } else {
+            showModal(
+              "É necessário manter pelo menos uma linha.",
+              "warning",
+              "Atenção"
+            );
+          }
+        }
+      });
+
+      // --- Gerar Arquivo TXT ---
+      generateBtn.addEventListener("click", () => {
+        // 1. Limpar erros visuais anteriores (validação e duplicatas)
+        form
+          .querySelectorAll(".manual-error")
+          .forEach((el) => el.classList.remove("manual-error"));
+        form
+          .querySelectorAll("input")
+          .forEach((el) => el.setCustomValidity(""));
+        form
+          .querySelectorAll(".input-row.duplicate-error")
+          .forEach((row) => row.classList.remove("duplicate-error"));
+
+        // 2. Validação básica HTML5
+        if (!form.checkValidity()) {
+          const firstInvalidField = form.querySelector(":invalid");
+          if (firstInvalidField) {
+            firstInvalidField.focus();
+          }
+          showModal(
+            "Por favor, preencha corretamente todos os campos obrigatórios destacados em vermelho.",
+            "error",
+            "Erro de Validação"
+          );
+          return;
+        }
+
+        // 3. Preparação para verificações e geração
+        const uniqueRowSignatures = new Set();
+        let txtContent = "";
+        let isValid = true;
+        let hasDuplicates = false;
+        const rows = inputRowsContainer.querySelectorAll(".input-row");
+        const duplicateRowsIndexes = []; // Guarda índices das linhas duplicadas
+
+        // 4. Loop para validação específica, checagem de duplicatas e coleta
+        for (const [index, row] of rows.entries()) {
+          const especieInput = row.querySelector('input[name="especie"]');
+          const cnpjInput = row.querySelector('input[name="cnpj"]');
+          const acumuladorInput = row.querySelector('input[name="acumulador"]');
+          const cfopInput = row.querySelector('input[name="cfop"]');
+          const nfInput = row.querySelector('input[name="nf"]');
+          const dataEntradaInput = row.querySelector(
+            'input[name="data_entrada"]'
+          );
+          const valorInput = row.querySelector('input[name="valor"]');
+          const irrfInput = row.querySelector('input[name="irrf"]');
+          const csrfInput = row.querySelector('input[name="csrf"]');
+
+          // Validação manual CNPJ (reforço)
+          if (!/^\d{14}$/.test(cnpjInput.value.trim())) {
+            isValid = false;
+            cnpjInput.classList.add("manual-error");
+            cnpjInput.focus();
+            showModal(
+              `Erro na linha ${
+                index + 1
+              }: CNPJ inválido. Deve conter exatamente 14 números.`,
+              "error",
+              "Erro de Validação"
+            );
+            break; // Para no primeiro erro de validação
+          }
+          // Validação manual Valor > 0 (reforço)
+          const valorNum = parseFloat(valorInput.value);
+          if (isNaN(valorNum) || valorNum <= 0) {
+            isValid = false;
+            valorInput.classList.add("manual-error");
+            valorInput.focus();
+            showModal(
+              `Erro na linha ${
+                index + 1
+              }: O Valor NF deve ser um número maior que zero.`,
+              "error",
+              "Erro de Validação"
+            );
+            break; // Para no primeiro erro de validação
+          }
+
+          // Criar assinatura da linha (usando valores trimados)
+          const signatureParts = [
+            especieInput.value.trim(),
+            cnpjInput.value.trim(),
+            acumuladorInput.value.trim(),
+            cfopInput.value.trim(),
+            nfInput.value.trim(),
+            dataEntradaInput.value, // Data não precisa de trim
+            valorInput.value.trim(),
+            irrfInput.value.trim(),
+            csrfInput.value.trim(),
+          ];
+          const rowSignature = signatureParts.join("|||"); // Separador robusto
+
+          // Verificar duplicatas
+          if (uniqueRowSignatures.has(rowSignature)) {
+            isValid = false; // Impede geração, mas continua para marcar todas as duplicatas
+            hasDuplicates = true;
+            row.classList.add("duplicate-error");
+            duplicateRowsIndexes.push(index + 1); // Adiciona o número da linha (base 1)
+            // Não mostra modal ainda, acumula os erros
+          } else {
+            uniqueRowSignatures.add(rowSignature);
+          }
+
+          // Se não for duplicado E a validação geral ainda é válida, processa dados
+          if (!row.classList.contains("duplicate-error") && isValid) {
+            // Formata Data (DD/MM/YYYY)
+            const dataEntradaRaw = dataEntradaInput.value;
+            let dataEntradaFormatada = "";
+            if (dataEntradaRaw) {
+              const parts = dataEntradaRaw.split("-");
+              if (parts.length === 3 && parts[0].length === 4) {
+                dataEntradaFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
+              } else {
+                // Segurança, embora type=date ajude
+                isValid = false; // Marca como inválido
+                dataEntradaInput.classList.add("manual-error");
+                showModal(
+                  `Erro na linha ${index + 1}: Data inválida.`,
+                  "error",
+                  "Erro de Validação"
+                );
+                break; // Para processamento
+              }
+            } // 'required' já garante que existe
+
+            // Formata Valores (vírgula, 2 casas)
+            const formatValue = (valueStr) => {
+              if (
+                valueStr === null ||
+                valueStr === undefined ||
+                valueStr.trim() === ""
+              )
+                return "0,00";
+              const num = parseFloat(valueStr);
+              return isNaN(num) ? "0,00" : num.toFixed(2).replace(".", ",");
+            };
+
+            const valorFormatado = formatValue(valorInput.value);
+            const valorIRRFFormatado = formatValue(irrfInput.value);
+            const valorCSRFFormatado = formatValue(csrfInput.value);
+
+            // Gera linha |1000|
+            const linha1000 = `|1000|${signatureParts[0]}|${signatureParts[1]}||${signatureParts[2]}|${signatureParts[3]}||${signatureParts[4]}|U||${dataEntradaFormatada}|${dataEntradaFormatada}|${valorFormatado}||||||||||||||||||||||||||${valorFormatado}||||||||||||||||||||||||||||||||||||||||||||||||||||||||||`;
+            txtContent += linha1000 + "\n";
+
+            // Gera linha |1020| IRRF (se valor > 0)
+            const valorIRRFNum = parseFloat(irrfInput.value);
+            if (!isNaN(valorIRRFNum) && valorIRRFNum > 0) {
+              const codigoRecolhimentoIRRF = "1708"; // Ajuste se necessário
+              const linha1020_IRRF = `|1020|16||${valorFormatado}|1,50|${valorIRRFFormatado}|||||${valorFormatado}|${codigoRecolhimentoIRRF}||||`;
+              txtContent += linha1020_IRRF + "\n";
+            }
+
+            // Gera linha |1020| CSRF (se valor > 0)
+            const valorCSRFNum = parseFloat(csrfInput.value);
+            if (!isNaN(valorCSRFNum) && valorCSRFNum > 0) {
+              const codigoRecolhimentoCSRF = "5952"; // Ajuste se necessário
+              const linha1020_CSRF = `|1020|25||${valorFormatado}|4,65|${valorCSRFFormatado}|||||${valorFormatado}|${codigoRecolhimentoCSRF}||||`;
+              txtContent += linha1020_CSRF + "\n";
+            }
+          }
+        } // Fim do loop for...of
+
+        // 5. Verificação final e Geração do Arquivo
+        if (!isValid) {
+          if (hasDuplicates) {
+            // Encontra a primeira linha original que tem uma duplicata
+            let firstOccurrenceIndex = -1;
+            const firstDuplicateSignature = [...uniqueRowSignatures].find(
+              (sig) => {
+                let count = 0;
+                for (const r of rows) {
+                  const sigParts = [
+                    /* extrair valores de r */
+                    r.querySelector('input[name="especie"]').value.trim(),
+                    r.querySelector('input[name="cnpj"]').value.trim(),
+                    r.querySelector('input[name="acumulador"]').value.trim(),
+                    r.querySelector('input[name="cfop"]').value.trim(),
+                    r.querySelector('input[name="nf"]').value.trim(),
+                    r.querySelector('input[name="data_entrada"]').value,
+                    r.querySelector('input[name="valor"]').value.trim(),
+                    r.querySelector('input[name="irrf"]').value.trim(),
+                    r.querySelector('input[name="csrf"]').value.trim(),
+                  ].join("|||");
+                  if (sigParts === sig) count++;
+                }
+                return count > 1;
+              }
+            );
+            // Encontra o índice da primeira ocorrência da primeira assinatura duplicada
+            for (const [i, r] of rows.entries()) {
+              const sigParts = [
+                /* extrair valores de r */
+                r.querySelector('input[name="especie"]').value.trim(),
+                r.querySelector('input[name="cnpj"]').value.trim(),
+                r.querySelector('input[name="acumulador"]').value.trim(),
+                r.querySelector('input[name="cfop"]').value.trim(),
+                r.querySelector('input[name="nf"]').value.trim(),
+                r.querySelector('input[name="data_entrada"]').value,
+                r.querySelector('input[name="valor"]').value.trim(),
+                r.querySelector('input[name="irrf"]').value.trim(),
+                r.querySelector('input[name="csrf"]').value.trim(),
+              ].join("|||");
+              if (sigParts === firstDuplicateSignature) {
+                firstOccurrenceIndex = i + 1;
+                r.classList.add("duplicate-error"); // Marca a original também
+                break;
+              }
+            }
+
+            showModal(
+              `Foram encontradas linhas duplicadas (marcadas em amarelo). A linha ${duplicateRowsIndexes.join(
+                ", "
+              )} é/são idêntica(s) à linha ${firstOccurrenceIndex} ou outra anterior. Remova as duplicatas.`,
+              "warning",
+              "Erro de Duplicidade"
+            );
+          }
+          // Se o erro não foi de duplicidade, o modal de validação já foi exibido.
+          return; // Impede a geração
+        }
+
+        if (txtContent.trim() === "") {
+          showModal(
+            "Nenhum dado válido para gerar o arquivo. Verifique se preencheu alguma linha.",
+            "info",
+            "Atenção"
+          );
+          return;
+        }
+
+        // 6. Cria e baixa o arquivo TXT
+        try {
+          const blob = new Blob([txtContent], {
+            type: "text/plain;charset=utf-8",
+          });
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = "layout_gerado.txt";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(link.href);
+          showModal("Arquivo TXT gerado com sucesso!", "success", "Sucesso");
+        } catch (error) {
+          console.error("Erro ao gerar blob/link:", error);
+          showModal(
+            "Ocorreu um erro ao gerar o arquivo. Verifique o console.",
+            "error",
+            "Erro"
+          );
+        }
+      });
+    </script>
+  </body>
+</html>
