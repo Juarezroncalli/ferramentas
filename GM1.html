@@ -201,6 +201,10 @@
       }
 
       /* The Tooltip Bubble (using ::after pseudo-element) */
+      /* The Tooltip Bubble (using ::after pseudo-element) */
+      /* The Tooltip Bubble (using ::after pseudo-element) - VERSÃO SIMPLIFICADA PARA TESTE */
+      /* The Tooltip Bubble (using ::after pseudo-element) */
+      /* The Tooltip Bubble (using ::after pseudo-element) */
       .tooltip-trigger::after {
         content: attr(data-tooltip); /* Get text from data-tooltip attribute */
         position: absolute;
@@ -211,17 +215,28 @@
           --primary-color
         ); /* *** THE DESIRED YELLOW COLOR *** */
         color: var(--bg-color); /* Dark text for contrast on yellow */
-        padding: 6px 10px; /* Padding inside the bubble */
+        padding: 8px 12px; /* Padding inside the bubble */
         border-radius: 5px; /* Slightly rounded corners */
-        font-size: 1em; /* Smaller font for the tooltip */
+        font-size: 0.9em; /* Font size */
         font-weight: 400; /* Normal weight */
-        white-space: nowrap; /* Prevent text wrapping */
-        z-index: 10; /* Ensure it appears above other elements */
-        /* Initially hidden */
+
+        /* Allow line breaks */
+        white-space: normal;
+        text-align: left;
+        line-height: 1.4;
+
+        /* === AJUSTES AQUI === */
+        min-width: 200px; /* <<< ADICIONADO: Define uma largura mínima */
+        max-width: 350px; /* <<< AJUSTADO: Define uma largura máxima razoável */
+        overflow-wrap: break-word; /* Mantém a quebra de palavras longas */
+        /* word-wrap: break-word; */ /* (Alternativa para compatibilidade) */
+        /* ======================== */
+
+        z-index: 10;
         opacity: 0;
         visibility: hidden;
         transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
-        pointer-events: none; /* Tooltip doesn't block mouse */
+        pointer-events: none;
       }
 
       /* Optional: Arrow pointing to the trigger (using ::before pseudo-element) */
@@ -350,30 +365,28 @@
                 ></span>
               </td>
               <td class="value">R$ 15.000,00</td>
-                <tr>
-                  <td>
-                    Seguros
-                    <span
-                      class="tooltip-trigger"
-                      data-tooltip="0,15% do valor total dos pneus. 500 pneus a R$ 1.200,00 cada."
-                    ></span>
-                  </td>
-                  <td class="value">R$ 900,00</td>
-                  </td>
-                </tr>
+            </tr>
 
-                <tr>
-                  <td>
-                    Frete p/ MG
-                    <span
-                      class="tooltip-trigger"
-                      data-tooltip="R$ 16.000,00 por container. 2 container."
-                    ></span>
-                  </td>
-                  <td class="value">R$ 32.000,00</td>
-                  </td>
-                </tr>
+            <tr>
+              <td>
+                Seguros
+                <span
+                  class="tooltip-trigger"
+                  data-tooltip="0,15% do valor total dos pneus. 500 pneus a R$ 1.200,00 cada."
+                ></span>
               </td>
+              <td class="value">R$ 900,00</td>
+            </tr>
+
+            <tr>
+              <td>
+                Frete p/ MG
+                <span
+                  class="tooltip-trigger"
+                  data-tooltip="R$ 16.000,00 por container. 2 container."
+                ></span>
+              </td>
+              <td class="value">R$ 32.000,00</td>
             </tr>
           </tbody>
         </table>
