@@ -1,651 +1,836 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Tributário Usilider 2024 [Estilo Atualizado + Prejuízo]</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Tributário Usilider 2024</title>
     <!-- Using Poppins font from the example -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
-        /* --- New Color Palette and Styles based on the example --- */
-        :root {
-            --primary: #8b5cf6;    /* Purple */
-            --secondary: #ec4899;  /* Pink */
-            --tertiary: #6366f1;   /* Indigo/Blue */
-            --success: #10b981;   /* Green */
-            --warning: #f59e0b;   /* Amber/Orange */
-            --danger: #ef4444;    /* Red */
-            --background: #0f172a; /* Very dark blue */
-            --card-bg: #1e293b;    /* Dark slate blue */
-            --text: #f8fafc;      /* Almost white */
-            --text-muted: #94a3b8; /* Light slate gray */
-            --border: #334155;    /* Darker slate gray */
-            --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
-        }
+      /* --- New Color Palette and Styles based on the example --- */
+      :root {
+        --primary: #8b5cf6; /* Purple */
+        --secondary: #ec4899; /* Pink */
+        --tertiary: #6366f1; /* Indigo/Blue */
+        --success: #10b981; /* Green */
+        --warning: #f59e0b; /* Amber/Orange */
+        --danger: #ef4444; /* Red */
+        --background: #0f172a; /* Very dark blue */
+        --card-bg: #1e293b; /* Dark slate blue */
+        --text: #f8fafc; /* Almost white */
+        --text-muted: #94a3b8; /* Light slate gray */
+        --border: #334155; /* Darker slate gray */
+        --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+      }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif; /* Ensure Poppins is applied */
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif; /* Ensure Poppins is applied */
+      }
 
-        body {
-            background-color: var(--background);
-            color: var(--text);
-            line-height: 1.6;
-            padding: 20px; /* Add some padding around the body */
-        }
+      body {
+        background-color: var(--background);
+        color: var(--text);
+        line-height: 1.6;
+        padding: 20px; /* Add some padding around the body */
+      }
 
-        .dashboard-container {
-            max-width: 1400px; /* Increased max-width slightly for 4 KPIs */
-            margin: 0 auto;
-            padding: 0 15px; /* Adjust padding like example */
-        }
+      .dashboard-container {
+        max-width: 1400px; /* Increased max-width slightly for 4 KPIs */
+        margin: 0 auto;
+        padding: 0 15px; /* Adjust padding like example */
+      }
 
-        /* --- New Header Style --- */
-        header {
-            background: var(--gradient);
-            color: white;
-            padding: 30px 0;
-            border-radius: 16px; /* Match border-radius */
-            margin-bottom: 30px;
-            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.2); /* Use primary color for shadow */
-            text-align: center;
-        }
+      /* --- New Header Style --- */
+      header {
+        background: var(--gradient);
+        color: white;
+        padding: 30px 0;
+        border-radius: 16px; /* Match border-radius */
+        margin-bottom: 30px;
+        box-shadow: 0 10px 25px rgba(139, 92, 246, 0.2); /* Use primary color for shadow */
+        text-align: center;
+      }
 
-        header h1 {
-            font-size: 2.5rem; /* Match font size */
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
+      header h1 {
+        font-size: 2.5rem; /* Match font size */
+        margin-bottom: 10px;
+        font-weight: 700;
+      }
 
-        header p {
-            opacity: 0.9; /* Slightly muted subtitle */
-            font-size: 1.1em;
-            font-weight: 400;
-        }
-        /* --- End Header Style --- */
+      header p {
+        opacity: 0.9; /* Slightly muted subtitle */
+        font-size: 1.1em;
+        font-weight: 400;
+      }
+      /* --- End Header Style --- */
 
-        .grid-container {
-            display: grid;
-            gap: 20px; /* Match gap */
-            margin-bottom: 30px;
-            grid-template-columns: 1fr; /* Default: 1 column */
-        }
+      .grid-container {
+        display: grid;
+        gap: 20px; /* Match gap */
+        margin-bottom: 30px;
+        grid-template-columns: 1fr; /* Default: 1 column */
+      }
 
-        /* Apply 2 columns layout for chart sections on wider screens */
-        @media (min-width: 768px) {
-            .grid-container:not(.kpi-grid) { /* Exclude kpi-grid from this rule */
-                grid-template-columns: repeat(2, 1fr); /* Force 2 columns for charts */
-            }
+      /* Apply 2 columns layout for chart sections on wider screens */
+      @media (min-width: 768px) {
+        .grid-container:not(.kpi-grid) {
+          /* Exclude kpi-grid from this rule */
+          grid-template-columns: repeat(
+            2,
+            1fr
+          ); /* Force 2 columns for charts */
         }
+      }
 
-        /* Layout for KPI Grid */
+      /* Layout for KPI Grid */
+      .kpi-grid {
+        grid-template-columns: repeat(
+          auto-fit,
+          minmax(240px, 1fr)
+        ); /* Flexible columns */
+      }
+      /* Force 4 columns for KPIs only on very wide screens */
+      @media (min-width: 1200px) {
         .kpi-grid {
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* Flexible columns */
+          grid-template-columns: repeat(4, 1fr);
         }
-        /* Force 4 columns for KPIs only on very wide screens */
-        @media (min-width: 1200px) {
-             .kpi-grid {
-                 grid-template-columns: repeat(4, 1fr);
-             }
+      }
+
+      /* --- Updated Card Style --- */
+      .card {
+        background: var(--card-bg);
+        border-radius: 16px; /* Match border-radius */
+        padding: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease;
+        border: 1px solid var(--border); /* Match border */
+        display: flex; /* Use flexbox for vertical alignment in cards */
+        flex-direction: column; /* Stack content vertically */
+        justify-content: space-between; /* Space out title and content */
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Slightly enhance shadow on hover */
+      }
+
+      .card-title {
+        /* Use this for chart titles within cards */
+        font-size: 1.2rem; /* Adjust size if needed */
+        font-weight: 600;
+        margin-bottom: 20px; /* Increase spacing */
+        color: var(--text);
+        padding-left: 0;
+      }
+
+      /* --- Updated KPI Card Styles --- */
+      .kpi-card {
+        text-align: center;
+        justify-content: center; /* Center KPI content vertically */
+      }
+
+      .kpi-value {
+        font-size: 2rem; /* Adjust size slightly */
+        font-weight: 700;
+        margin-bottom: 8px;
+        word-wrap: break-word; /* Prevent overflow */
+      }
+      /* Match KPI colors */
+      .kpi-value.real {
+        color: var(--primary);
+      }
+      .kpi-value.presumido {
+        color: var(--secondary);
+      }
+      .kpi-value.difference.positive {
+        color: var(--success);
+      }
+      .kpi-value.difference.negative {
+        color: var(--danger);
+      }
+      .kpi-value.info {
+        color: var(--tertiary);
+      } /* Color for the new info card */
+
+      .kpi-label {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-bottom: 15px; /* Add some space */
+      }
+      /* --- End KPI Card Styles --- */
+
+      /* Style adjustments for ApexCharts */
+      .apexcharts-canvas {
+        margin: 0 auto;
+      }
+      /* Match tooltip style */
+      .apexcharts-tooltip {
+        background: #2a2a3e !important; /* Slightly darker than card-bg */
+        color: var(--text) !important;
+        border: 1px solid var(--border) !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+        border-radius: 8px !important;
+        padding: 8px 12px !important;
+      }
+      .apexcharts-tooltip .apexcharts-tooltip-title {
+        background: var(--card-bg) !important; /* Match card bg */
+        border-bottom: 1px solid var(--border) !important;
+        font-weight: 600;
+        color: var(--primary); /* Keep primary color for title */
+        padding: 6px 10px !important;
+        margin: 0 !important;
+      }
+      .apexcharts-tooltip-series-group {
+        padding: 5px 10px !important;
+      }
+      /* Match text colors */
+      .apexcharts-legend-text {
+        color: var(--text-muted) !important;
+      }
+      .apexcharts-xaxis-label,
+      .apexcharts-yaxis-label {
+        fill: var(--text-muted) !important;
+      }
+      .apexcharts-title-text {
+        /* Titles inside charts, if used */
+        fill: var(--text) !important;
+        font-weight: 600;
+      }
+      .apexcharts-yaxis-title-text,
+      .apexcharts-xaxis-title-text {
+        fill: var(--text-muted) !important;
+        font-style: normal; /* Remove italic */
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 50px; /* Match margin */
+        padding-top: 20px;
+        border-top: 1px solid var(--border);
+        color: var(--text-muted);
+        font-size: 0.9rem; /* Match font size */
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 767px) {
+        header h1 {
+          font-size: 2rem;
         }
-
-
-        /* --- Updated Card Style --- */
-        .card {
-            background: var(--card-bg);
-            border-radius: 16px; /* Match border-radius */
-            padding: 25px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease;
-            border: 1px solid var(--border); /* Match border */
-            display: flex; /* Use flexbox for vertical alignment in cards */
-            flex-direction: column; /* Stack content vertically */
-            justify-content: space-between; /* Space out title and content */
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Slightly enhance shadow on hover */
-        }
-
-        .card-title { /* Use this for chart titles within cards */
-            font-size: 1.2rem; /* Adjust size if needed */
-            font-weight: 600;
-            margin-bottom: 20px; /* Increase spacing */
-            color: var(--text);
-            padding-left: 0;
-        }
-
-        /* --- Updated KPI Card Styles --- */
-        .kpi-card {
-            text-align: center;
-            justify-content: center; /* Center KPI content vertically */
-        }
-
         .kpi-value {
-            font-size: 2rem; /* Adjust size slightly */
-            font-weight: 700;
-            margin-bottom: 8px;
-            word-wrap: break-word; /* Prevent overflow */
+          font-size: 1.8em;
         }
-        /* Match KPI colors */
-        .kpi-value.real { color: var(--primary); }
-        .kpi-value.presumido { color: var(--secondary); }
-        .kpi-value.difference.positive { color: var(--success); }
-        .kpi-value.difference.negative { color: var(--danger); }
-        .kpi-value.info { color: var(--tertiary); } /* Color for the new info card */
+      }
+      @media (max-width: 480px) {
+        body {
+          padding: 10px;
+        }
+        .dashboard-container {
+          padding: 0 10px;
+        }
+        .card {
+          padding: 20px;
+        }
+        header h1 {
+          font-size: 1.8em;
+        }
+      }
 
-
-        .kpi-label {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-bottom: 15px; /* Add some space */
-        }
-        /* --- End KPI Card Styles --- */
-
-
-        /* Style adjustments for ApexCharts */
-        .apexcharts-canvas {
-            margin: 0 auto;
-        }
-        /* Match tooltip style */
-        .apexcharts-tooltip {
-            background: #2a2a3e !important; /* Slightly darker than card-bg */
-            color: var(--text) !important;
-            border: 1px solid var(--border) !important;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
-            border-radius: 8px !important;
-            padding: 8px 12px !important;
-        }
-        .apexcharts-tooltip .apexcharts-tooltip-title {
-            background: var(--card-bg) !important; /* Match card bg */
-            border-bottom: 1px solid var(--border) !important;
-            font-weight: 600;
-            color: var(--primary); /* Keep primary color for title */
-            padding: 6px 10px !important;
-            margin: 0 !important;
-        }
-        .apexcharts-tooltip-series-group {
-            padding: 5px 10px !important;
-        }
-        /* Match text colors */
-        .apexcharts-legend-text {
-             color: var(--text-muted) !important;
-        }
-        .apexcharts-xaxis-label, .apexcharts-yaxis-label {
-             fill: var(--text-muted) !important;
-        }
-        .apexcharts-title-text { /* Titles inside charts, if used */
-            fill: var(--text) !important;
-            font-weight: 600;
-        }
-        .apexcharts-yaxis-title-text, .apexcharts-xaxis-title-text {
-            fill: var(--text-muted) !important;
-            font-style: normal; /* Remove italic */
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 50px; /* Match margin */
-            padding-top: 20px;
-            border-top: 1px solid var(--border);
-            color: var(--text-muted);
-            font-size: 0.9rem; /* Match font size */
-        }
-
-         /* Responsive adjustments */
-         @media (max-width: 767px) {
-             header h1 { font-size: 2rem; }
-             .kpi-value { font-size: 1.8em; }
-         }
-         @media (max-width: 480px) {
-            body { padding: 10px; }
-            .dashboard-container { padding: 0 10px; }
-            .card { padding: 20px; }
-            header h1 { font-size: 1.8em; }
-         }
-
-        /* --- Updated Table style --- */
-        .table-container { /* Wrapper for table card */
-             background: var(--card-bg);
-             border-radius: 16px;
-             padding: 5px; /* Reduced padding for wrapper */
-             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-             border: 1px solid var(--border);
-             overflow-x: auto; /* Ensure horizontal scroll on small screens */
-        }
-        .summary-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 0; /* Remove margin as padding is on container */
-            font-size: 0.9em;
-        }
-        .summary-table th, .summary-table td {
-            border: none; /* Remove internal borders */
-            border-bottom: 1px solid var(--border); /* Keep bottom border like example */
-            padding: 15px; /* Match padding */
-            text-align: right;
-            white-space: nowrap; /* Prevent wrapping */
-        }
-        .summary-table th {
-            background-color: rgba(255, 255, 255, 0.03); /* Subtle header background */
-            color: var(--text); /* Header text color */
-            text-align: left;
-            font-weight: 600;
-        }
-        .summary-table td:first-child { /* First column (Imposto/Regime) */
-             text-align: left;
-             font-weight: 500; /* Match example */
-             color: var(--text-muted);
-        }
-        .summary-table tr:hover {
-            background-color: rgba(255, 255, 255, 0.05); /* Match hover */
-        }
-        .summary-table tfoot td { /* Footer row (TOTAL) */
-             font-weight: bold;
-             color: var(--text);
-             background-color: rgba(255, 255, 255, 0.03);
-             border-bottom: none; /* No border below footer */
-         }
-         .summary-table tr:last-of-type td { /* Last row (TOTAL) needs no bottom border */
-              border-bottom: none;
-         }
-        /* Colors for table values - Match example's logic */
-         .real-col { color: var(--primary); }
-         .presumido-col { color: var(--secondary); }
-         .diff-col.positive { color: var(--success); } /* Green if positive difference (Real lower) */
-         .diff-col.negative { color: var(--danger); } /* Red if negative difference (Presumido lower) */
-         .diff-col.zero { color: var(--text-muted); } /* Muted if zero */
-
+      /* --- Updated Table style --- */
+      .table-container {
+        /* Wrapper for table card */
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 5px; /* Reduced padding for wrapper */
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--border);
+        overflow-x: auto; /* Ensure horizontal scroll on small screens */
+      }
+      .summary-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0; /* Remove margin as padding is on container */
+        font-size: 0.9em;
+      }
+      .summary-table th,
+      .summary-table td {
+        border: none; /* Remove internal borders */
+        border-bottom: 1px solid var(--border); /* Keep bottom border like example */
+        padding: 15px; /* Match padding */
+        text-align: right;
+        white-space: nowrap; /* Prevent wrapping */
+      }
+      .summary-table th {
+        background-color: rgba(
+          255,
+          255,
+          255,
+          0.03
+        ); /* Subtle header background */
+        color: var(--text); /* Header text color */
+        text-align: left;
+        font-weight: 600;
+      }
+      .summary-table td:first-child {
+        /* First column (Imposto/Regime) */
+        text-align: left;
+        font-weight: 500; /* Match example */
+        color: var(--text-muted);
+      }
+      .summary-table tr:hover {
+        background-color: rgba(255, 255, 255, 0.05); /* Match hover */
+      }
+      .summary-table tfoot td {
+        /* Footer row (TOTAL) */
+        font-weight: bold;
+        color: var(--text);
+        background-color: rgba(255, 255, 255, 0.03);
+        border-bottom: none; /* No border below footer */
+      }
+      .summary-table tr:last-of-type td {
+        /* Last row (TOTAL) needs no bottom border */
+        border-bottom: none;
+      }
+      /* Colors for table values - Match example's logic */
+      .real-col {
+        color: var(--primary);
+      }
+      .presumido-col {
+        color: var(--secondary);
+      }
+      .diff-col.positive {
+        color: var(--success);
+      } /* Green if positive difference (Real lower) */
+      .diff-col.negative {
+        color: var(--danger);
+      } /* Red if negative difference (Presumido lower) */
+      .diff-col.zero {
+        color: var(--text-muted);
+      } /* Muted if zero */
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="dashboard-container">
-        <!-- Use Header structure like example -->
-        <header>
-            <h1>Dashboard Tributário Usilider</h1>
-            <p>Comparativo entre regimes tributários - 2024</p>
-        </header>
+      <!-- Use Header structure like example -->
+      <header>
+        <h1>Dashboard Tributário Usilider</h1>
+        <p>Comparativo entre regimes tributários - 2024</p>
+      </header>
 
-        <!-- KPI Cards Section - Now with 4 cards -->
-        <section class="grid-container kpi-grid">
-            <div class="card kpi-card">
-                <div class="kpi-label">Total Impostos - Lucro Real</div>
-                <div class="kpi-value real" id="total-real">R$ 0,00</div>
-            </div>
-            <div class="card kpi-card">
-                <div class="kpi-label">Total Impostos - Lucro Presumido</div>
-                <div class="kpi-value presumido" id="total-presumido">R$ 0,00</div>
-            </div>
-            <div class="card kpi-card">
-                <div class="kpi-label">Economia Potencial com Lucro Real</div>
-                <div class="kpi-value difference" id="total-difference">R$ 0,00</div>
-                 <small id="difference-detail" style="color: var(--text-muted); display: block; margin-top: 5px;"></small>
-            </div>
-             <!-- New KPI Card for Prejuízo Fiscal -->
-            <div class="card kpi-card">
-                <div class="kpi-label">Prejuízo Fiscal p/ 2025</div>
-                <div class="kpi-value info">R$ 501.616,02</div>
-                 <small style="color: var(--text-muted); display: block; margin-top: 5px;">(Saldo a compensar)</small>
-            </div>
-        </section>
+      <!-- KPI Cards Section - Now with 4 cards -->
+      <section class="grid-container kpi-grid">
+        <div class="card kpi-card">
+          <div class="kpi-label">Total Impostos - Lucro Real</div>
+          <div class="kpi-value real" id="total-real">R$ 0,00</div>
+        </div>
+        <div class="card kpi-card">
+          <div class="kpi-label">Total Impostos - Lucro Presumido</div>
+          <div class="kpi-value presumido" id="total-presumido">R$ 0,00</div>
+        </div>
+        <div class="card kpi-card">
+          <div class="kpi-label">Economia Potencial com Lucro Real</div>
+          <div class="kpi-value difference" id="total-difference">R$ 0,00</div>
+          <small
+            id="difference-detail"
+            style="color: var(--text-muted); display: block; margin-top: 5px"
+          ></small>
+        </div>
+        <!-- New KPI Card for Prejuízo Fiscal -->
+        <div class="card kpi-card">
+          <div class="kpi-label">Prejuízo Fiscal p/ 2025</div>
+          <div class="kpi-value info">R$ 501.616,02</div>
+          <small
+            style="color: var(--text-muted); display: block; margin-top: 5px"
+            >(Saldo a compensar)</small
+          >
+        </div>
+      </section>
 
-        <!-- Charts Section 1 -->
-        <section class="grid-container">
-             <div class="card">
-                <h2 class="card-title">Comparativo por Imposto</h2>
-                <div id="comparison-bar-chart"></div>
-            </div>
-            <div class="card">
-                <h2 class="card-title">Comparativo Total</h2>
-                 <div id="total-comparison-bar-chart"></div>
-            </div>
-        </section>
+      <!-- Charts Section 1 -->
+      <section class="grid-container">
+        <div class="card">
+          <h2 class="card-title">Comparativo por Imposto</h2>
+          <div id="comparison-bar-chart"></div>
+        </div>
+        <div class="card">
+          <h2 class="card-title">Comparativo Total</h2>
+          <div id="total-comparison-bar-chart"></div>
+        </div>
+      </section>
 
-        <!-- Charts Section 2 -->
-        <section class="grid-container">
-             <div class="card">
-                <h2 class="card-title">Composição % - Lucro Real</h2>
-                <div id="composition-pie-real"></div>
-            </div>
-            <div class="card">
-                <h2 class="card-title">Composição % - Lucro Presumido</h2>
-                <div id="composition-pie-presumido"></div>
-            </div>
-        </section>
+      <!-- Charts Section 2 -->
+      <section class="grid-container">
+        <div class="card">
+          <h2 class="card-title">Composição % - Lucro Real</h2>
+          <div id="composition-pie-real"></div>
+        </div>
+        <div class="card">
+          <h2 class="card-title">Composição % - Lucro Presumido</h2>
+          <div id="composition-pie-presumido"></div>
+        </div>
+      </section>
 
-        <!-- Charts Section 3 (Difference Chart + Table) -->
-         <section class="grid-container">
-              <div class="card">
-                <h2 class="card-title">Diferença (Presumido - Real)</h2>
-                <div id="difference-bar-chart"></div>
-              </div>
-              <!-- Table wrapped in its own container -->
-             <div class="card table-container"> <!-- Use card style for table container -->
-                <h2 class="card-title" style="padding: 20px 25px 5px 25px;">Detalhamento dos Impostos</h2> <!-- Add padding to title -->
-                <div id="summary-table">
-                    <!-- Table will be generated by JS -->
-                </div>
-            </div>
-        </section>
+      <!-- Charts Section 3 (Difference Chart + Table) -->
+      <section class="grid-container">
+        <div class="card">
+          <h2 class="card-title">Diferença (Presumido - Real)</h2>
+          <div id="difference-bar-chart"></div>
+        </div>
+        <!-- Table wrapped in its own container -->
+        <div class="card table-container">
+          <!-- Use card style for table container -->
+          <h2 class="card-title" style="padding: 20px 25px 5px 25px">
+            Detalhamento dos Impostos
+          </h2>
+          <!-- Add padding to title -->
+          <div id="summary-table">
+            <!-- Table will be generated by JS -->
+          </div>
+        </div>
+      </section>
 
-        <footer>
-             <p>Dashboard Tributário Usilider - <span id="generation-date"></span></p>
-        </footer>
+      <footer>
+        <p>
+          Dashboard Tributário Usilider - <span id="generation-date"></span>
+        </p>
+      </footer>
     </div>
 
     <script>
-        // --- Data CORRECTED ---
-        const parseBrazilianNumber = (numStr) => parseFloat(numStr.replace(/\./g, '').replace(',', '.'));
+      // --- Data CORRECTED ---
+      const parseBrazilianNumber = (numStr) =>
+        parseFloat(numStr.replace(/\./g, "").replace(",", "."));
 
-        const taxes = {
-            categories: ['IRPJ', 'CSLL', 'PIS', 'COFINS'],
-            lucroReal: {
-                IRPJ: parseBrazilianNumber('94.228,70'),
-                CSLL: parseBrazilianNumber('106.873,20'),
-                PIS: parseBrazilianNumber('75.626,07'),
-                COFINS: parseBrazilianNumber('346.636,34'),
-                TOTAL: parseBrazilianNumber('623.364,31')
-            },
-            lucroPresumido: {
-                IRPJ: parseBrazilianNumber('351.563,90'),
-                CSLL: parseBrazilianNumber('174.556,68'),
-                PIS: parseBrazilianNumber('71.055,25'),
-                COFINS: parseBrazilianNumber('327.947,30'),
-                TOTAL: parseBrazilianNumber('925.123,13')
-            }
-            // Prejuizo Fiscal is static, no need to add here unless it becomes dynamic
-        };
+      const taxes = {
+        categories: ["IRPJ", "CSLL", "PIS", "COFINS"],
+        lucroReal: {
+          IRPJ: parseBrazilianNumber("94.228,70"),
+          CSLL: parseBrazilianNumber("106.873,20"),
+          PIS: parseBrazilianNumber("75.626,07"),
+          COFINS: parseBrazilianNumber("346.636,34"),
+          TOTAL: parseBrazilianNumber("623.364,31"),
+        },
+        lucroPresumido: {
+          IRPJ: parseBrazilianNumber("351.563,90"),
+          CSLL: parseBrazilianNumber("174.556,68"),
+          PIS: parseBrazilianNumber("71.055,25"),
+          COFINS: parseBrazilianNumber("327.947,30"),
+          TOTAL: parseBrazilianNumber("925.123,13"),
+        },
+        // Prejuizo Fiscal is static, no need to add here unless it becomes dynamic
+      };
 
-        // --- Calculate Differences ---
-        const difference = {
-             IRPJ: taxes.lucroPresumido.IRPJ - taxes.lucroReal.IRPJ,
-             CSLL: taxes.lucroPresumido.CSLL - taxes.lucroReal.CSLL,
-             PIS: taxes.lucroPresumido.PIS - taxes.lucroReal.PIS, // Will be negative
-             COFINS: taxes.lucroPresumido.COFINS - taxes.lucroReal.COFINS, // Will be negative
-             TOTAL: taxes.lucroPresumido.TOTAL - taxes.lucroReal.TOTAL
-        };
+      // --- Calculate Differences ---
+      const difference = {
+        IRPJ: taxes.lucroPresumido.IRPJ - taxes.lucroReal.IRPJ,
+        CSLL: taxes.lucroPresumido.CSLL - taxes.lucroReal.CSLL,
+        PIS: taxes.lucroPresumido.PIS - taxes.lucroReal.PIS, // Will be negative
+        COFINS: taxes.lucroPresumido.COFINS - taxes.lucroReal.COFINS, // Will be negative
+        TOTAL: taxes.lucroPresumido.TOTAL - taxes.lucroReal.TOTAL,
+      };
 
-        // --- Helper Functions ---
-        const formatCurrency = (value) => {
-            if (isNaN(value) || value === undefined || value === null) {
-                 return 'N/A';
-            }
-             const formatted = Math.abs(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 });
-             return value < 0 ? `- ${formatted}` : formatted;
-        };
-
-        // --- Update KPIs ---
-        document.getElementById('total-real').textContent = formatCurrency(taxes.lucroReal.TOTAL);
-        document.getElementById('total-presumido').textContent = formatCurrency(taxes.lucroPresumido.TOTAL);
-        const totalDifferenceElement = document.getElementById('total-difference');
-        totalDifferenceElement.textContent = formatCurrency(difference.TOTAL);
-
-        // Update difference detail text and class
-        const diffDetail = document.getElementById('difference-detail');
-        totalDifferenceElement.classList.remove('positive', 'negative'); // Clear existing classes
-        if (difference.TOTAL > 0) {
-            diffDetail.textContent = `(Lucro Presumido é ${formatCurrency(difference.TOTAL)} mais caro)`;
-            totalDifferenceElement.classList.add('positive'); // Use success color
-        } else if (difference.TOTAL < 0) {
-            diffDetail.textContent = `(Lucro Real é ${formatCurrency(Math.abs(difference.TOTAL))} mais caro)`;
-             totalDifferenceElement.classList.add('negative'); // Use danger color if Real is more expensive
-        } else {
-            diffDetail.textContent = '(Valores totais iguais)';
+      // --- Helper Functions ---
+      const formatCurrency = (value) => {
+        if (isNaN(value) || value === undefined || value === null) {
+          return "N/A";
         }
+        const formatted = Math.abs(value).toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+        return value < 0 ? `- ${formatted}` : formatted;
+      };
 
+      // --- Update KPIs ---
+      document.getElementById("total-real").textContent = formatCurrency(
+        taxes.lucroReal.TOTAL
+      );
+      document.getElementById("total-presumido").textContent = formatCurrency(
+        taxes.lucroPresumido.TOTAL
+      );
+      const totalDifferenceElement =
+        document.getElementById("total-difference");
+      totalDifferenceElement.textContent = formatCurrency(difference.TOTAL);
 
-        // --- Chart Colors (Hex codes from CSS variables) ---
-        const colorPrimary = '#8b5cf6';
-        const colorSecondary = '#ec4899';
-        const colorTertiary = '#6366f1';
-        const colorSuccess = '#10b981';
-        const colorWarning = '#f59e0b';
-        const colorDanger = '#ef4444';
-        const colorTextMuted = '#94a3b8';
-        const colorBorder = '#334155';
-        const colorText = '#f8fafc';
+      // Update difference detail text and class
+      const diffDetail = document.getElementById("difference-detail");
+      totalDifferenceElement.classList.remove("positive", "negative"); // Clear existing classes
+      if (difference.TOTAL > 0) {
+        diffDetail.textContent = `(Lucro Presumido é ${formatCurrency(
+          difference.TOTAL
+        )} mais caro)`;
+        totalDifferenceElement.classList.add("positive"); // Use success color
+      } else if (difference.TOTAL < 0) {
+        diffDetail.textContent = `(Lucro Real é ${formatCurrency(
+          Math.abs(difference.TOTAL)
+        )} mais caro)`;
+        totalDifferenceElement.classList.add("negative"); // Use danger color if Real is more expensive
+      } else {
+        diffDetail.textContent = "(Valores totais iguais)";
+      }
 
-        // Colors for comparison charts (Real vs Presumido)
-        const regimeColors = [colorPrimary, colorSecondary]; // Purple, Pink
-        // Colors for Pie/Donut charts (4 categories)
-        const pieChartColors = [colorPrimary, colorSecondary, colorTertiary, colorSuccess]; // Purple, Pink, Indigo, Green
+      // --- Chart Colors (Hex codes from CSS variables) ---
+      const colorPrimary = "#8b5cf6";
+      const colorSecondary = "#ec4899";
+      const colorTertiary = "#6366f1";
+      const colorSuccess = "#10b981";
+      const colorWarning = "#f59e0b";
+      const colorDanger = "#ef4444";
+      const colorTextMuted = "#94a3b8";
+      const colorBorder = "#334155";
+      const colorText = "#f8fafc";
 
+      // Colors for comparison charts (Real vs Presumido)
+      const regimeColors = [colorPrimary, colorSecondary]; // Purple, Pink
+      // Colors for Pie/Donut charts (4 categories)
+      const pieChartColors = [
+        colorPrimary,
+        colorSecondary,
+        colorTertiary,
+        colorSuccess,
+      ]; // Purple, Pink, Indigo, Green
 
-        // --- Chart Options Templates ---
-        const commonChartOptions = {
-             chart: {
-                type: 'bar',
-                height: 350,
-                toolbar: { show: false }, // Hide toolbar to match example's cleaner look
-                foreColor: colorTextMuted // Use text muted color for general text
+      // --- Chart Options Templates ---
+      const commonChartOptions = {
+        chart: {
+          type: "bar",
+          height: 350,
+          toolbar: { show: false }, // Hide toolbar to match example's cleaner look
+          foreColor: colorTextMuted, // Use text muted color for general text
+        },
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: "55%",
+            borderRadius: 5, // Keep rounded bars
+          },
+        },
+        dataLabels: { enabled: false },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ["transparent"],
+        },
+        xaxis: {
+          categories: taxes.categories,
+          labels: { style: { colors: colorTextMuted } },
+          axisBorder: { show: false }, // Cleaner look
+          axisTicks: { show: false }, // Cleaner look
+        },
+        yaxis: {
+          labels: {
+            style: { colors: colorTextMuted },
+            formatter: function (val) {
+              return formatCurrency(val);
             },
-             plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: '55%',
-                    borderRadius: 5, // Keep rounded bars
-                },
+          },
+        },
+        fill: { opacity: 1 },
+        tooltip: {
+          theme: "dark", // Keep dark theme
+          style: {
+            fontSize: "12px",
+          },
+          y: {
+            formatter: function (val) {
+              return formatCurrency(val);
             },
-            dataLabels: { enabled: false },
-            stroke: {
+          },
+        },
+        legend: {
+          position: "top",
+          horizontalAlign: "center",
+          markers: { radius: 12 },
+          itemMargin: { horizontal: 10, vertical: 5 },
+          labels: { colors: colorTextMuted },
+        },
+        grid: {
+          borderColor: colorBorder, // Use border color
+          strokeDashArray: 4,
+          yaxis: { lines: { show: true } }, // Show Y axis lines only
+          xaxis: { lines: { show: false } }, // Hide X axis lines
+        },
+        theme: { mode: "dark" },
+      };
+
+      // --- Chart 1: Comparison Bar Chart ---
+      var optionsComparisonBar = {
+        ...commonChartOptions,
+        series: [
+          {
+            name: "Lucro Real",
+            data: [
+              taxes.lucroReal.IRPJ,
+              taxes.lucroReal.CSLL,
+              taxes.lucroReal.PIS,
+              taxes.lucroReal.COFINS,
+            ],
+            color: regimeColors[0], // Purple
+          },
+          {
+            name: "Lucro Presumido",
+            data: [
+              taxes.lucroPresumido.IRPJ,
+              taxes.lucroPresumido.CSLL,
+              taxes.lucroPresumido.PIS,
+              taxes.lucroPresumido.COFINS,
+            ],
+            color: regimeColors[1], // Pink
+          },
+        ],
+        plotOptions: {
+          bar: { horizontal: false, columnWidth: "60%", borderRadius: 5 },
+        },
+        xaxis: {
+          ...commonChartOptions.xaxis,
+          title: {
+            text: "Tipo de Imposto",
+            style: { color: colorTextMuted, fontWeight: 400 },
+          },
+        },
+      };
+      var chartComparisonBar = new ApexCharts(
+        document.querySelector("#comparison-bar-chart"),
+        optionsComparisonBar
+      );
+      chartComparisonBar.render();
+
+      // --- Chart 2: Total Comparison Bar Chart ---
+      var optionsTotalComparisonBar = {
+        ...commonChartOptions,
+        series: [
+          {
+            name: "Total Impostos",
+            data: [taxes.lucroReal.TOTAL, taxes.lucroPresumido.TOTAL],
+          },
+        ],
+        xaxis: {
+          categories: ["Lucro Real", "Lucro Presumido"],
+          labels: { style: { colors: colorTextMuted } },
+          axisBorder: { show: false },
+          axisTicks: { show: false },
+        },
+        colors: regimeColors,
+        legend: { show: false },
+        plotOptions: {
+          bar: {
+            distributed: true,
+            horizontal: false,
+            columnWidth: "40%",
+            borderRadius: 5,
+          },
+        },
+        dataLabels: {
+          enabled: true,
+          formatter: function (val) {
+            return formatCurrency(val);
+          },
+          offsetY: -25,
+          style: { fontSize: "12px", fontWeight: "bold", colors: [colorText] },
+        },
+      };
+      var chartTotalComparisonBar = new ApexCharts(
+        document.querySelector("#total-comparison-bar-chart"),
+        optionsTotalComparisonBar
+      );
+      chartTotalComparisonBar.render();
+
+      // --- Chart 3: Composition Pie - Lucro Real ---
+      var optionsPieReal = {
+        chart: { type: "donut", height: 380, foreColor: colorTextMuted },
+        series: [
+          taxes.lucroReal.IRPJ,
+          taxes.lucroReal.CSLL,
+          taxes.lucroReal.PIS,
+          taxes.lucroReal.COFINS,
+        ],
+        labels: taxes.categories,
+        colors: pieChartColors,
+        theme: { mode: "dark" },
+        plotOptions: {
+          pie: {
+            donut: {
+              size: "65%",
+              labels: {
                 show: true,
-                width: 2,
-                colors: ['transparent']
-            },
-            xaxis: {
-                categories: taxes.categories,
-                labels: { style: { colors: colorTextMuted } } ,
-                axisBorder: { show: false }, // Cleaner look
-                axisTicks: { show: false }, // Cleaner look
-            },
-            yaxis: {
-                 labels: {
-                     style: { colors: colorTextMuted },
-                     formatter: function (val) { return formatCurrency(val); }
+                total: {
+                  show: true,
+                  showAlways: true,
+                  label: "Total Real",
+                  fontSize: "18px",
+                  fontWeight: 600,
+                  color: colorPrimary,
+                  formatter: function (w) {
+                    const total = w.globals.seriesTotals.reduce(
+                      (a, b) => a + b,
+                      0
+                    );
+                    return formatCurrency(total);
+                  },
                 },
-            },
-            fill: { opacity: 1 },
-            tooltip: {
-                theme: 'dark', // Keep dark theme
-                style: {
-                    fontSize: '12px',
+                value: {
+                  show: true,
+                  fontSize: "16px",
+                  fontWeight: 400,
+                  color: colorText,
+                  offsetY: 5,
+                  formatter: function (val) {
+                    return formatCurrency(parseFloat(val));
+                  },
                 },
-                y: { formatter: function (val) { return formatCurrency(val) } }
+              },
             },
-             legend: {
-                 position: 'top',
-                 horizontalAlign: 'center',
-                 markers: { radius: 12 },
-                 itemMargin: { horizontal: 10, vertical: 5 },
-                 labels: { colors: colorTextMuted }
-             },
-              grid: {
-                 borderColor: colorBorder, // Use border color
-                 strokeDashArray: 4,
-                 yaxis: { lines: { show: true } }, // Show Y axis lines only
-                 xaxis: { lines: { show: false } } // Hide X axis lines
-             },
-             theme: { mode: 'dark' }
-        };
-
-        // --- Chart 1: Comparison Bar Chart ---
-        var optionsComparisonBar = {
-            ...commonChartOptions,
-            series: [{
-                name: 'Lucro Real',
-                data: [taxes.lucroReal.IRPJ, taxes.lucroReal.CSLL, taxes.lucroReal.PIS, taxes.lucroReal.COFINS],
-                color: regimeColors[0] // Purple
-             }, {
-                name: 'Lucro Presumido',
-                data: [taxes.lucroPresumido.IRPJ, taxes.lucroPresumido.CSLL, taxes.lucroPresumido.PIS, taxes.lucroPresumido.COFINS],
-                 color: regimeColors[1] // Pink
-            }],
-             plotOptions: { bar: { horizontal: false, columnWidth: '60%', borderRadius: 5 } },
-             xaxis: { ...commonChartOptions.xaxis, title: { text: 'Tipo de Imposto', style:{ color: colorTextMuted, fontWeight: 400 }}},
-        };
-        var chartComparisonBar = new ApexCharts(document.querySelector("#comparison-bar-chart"), optionsComparisonBar);
-        chartComparisonBar.render();
-
-
-         // --- Chart 2: Total Comparison Bar Chart ---
-         var optionsTotalComparisonBar = {
-              ...commonChartOptions,
-             series: [{
-                 name: 'Total Impostos',
-                 data: [taxes.lucroReal.TOTAL, taxes.lucroPresumido.TOTAL],
-             }],
-             xaxis: {
-                categories: ['Lucro Real', 'Lucro Presumido'],
-                labels: { style: { colors: colorTextMuted } },
-                axisBorder: { show: false },
-                axisTicks: { show: false },
+            expandOnClick: false,
+          },
+        },
+        dataLabels: {
+          enabled: true,
+          formatter: function (val, opts) {
+            return (
+              opts.w.globals.labels[opts.seriesIndex] +
+              ":  " +
+              val.toFixed(1) +
+              "%"
+            );
+          },
+          style: { fontSize: "11px", fontWeight: "bold", colors: [colorText] },
+          dropShadow: { enabled: false },
+        },
+        legend: {
+          position: "bottom",
+          horizontalAlign: "center",
+          labels: { colors: colorTextMuted },
+          markers: { fillColors: pieChartColors },
+        },
+        tooltip: {
+          theme: "dark",
+          y: {
+            formatter: function (val) {
+              return formatCurrency(val);
             },
-             colors: regimeColors,
-             legend: { show: false },
-             plotOptions: {
-                bar: { distributed: true, horizontal: false, columnWidth: '40%', borderRadius: 5 }
-             },
-               dataLabels: {
-                 enabled: true,
-                 formatter: function (val) { return formatCurrency(val); },
-                 offsetY: -25,
-                 style: { fontSize: '12px', fontWeight: 'bold', colors: [colorText] }
-             },
-         };
-         var chartTotalComparisonBar = new ApexCharts(document.querySelector("#total-comparison-bar-chart"), optionsTotalComparisonBar);
-         chartTotalComparisonBar.render();
+            title: { formatter: (seriesName) => seriesName },
+          },
+        },
+        stroke: { width: 2, colors: ["var(--card-bg)"] },
+      };
+      var chartPieReal = new ApexCharts(
+        document.querySelector("#composition-pie-real"),
+        optionsPieReal
+      );
+      chartPieReal.render();
 
-
-        // --- Chart 3: Composition Pie - Lucro Real ---
-        var optionsPieReal = {
-             chart: { type: 'donut', height: 380, foreColor: colorTextMuted },
-             series: [taxes.lucroReal.IRPJ, taxes.lucroReal.CSLL, taxes.lucroReal.PIS, taxes.lucroReal.COFINS],
-             labels: taxes.categories,
-             colors: pieChartColors,
-             theme: { mode: 'dark' },
-             plotOptions: {
-                pie: {
-                    donut: {
-                         size: '65%',
-                         labels: {
-                             show: true,
-                             total: {
-                                 show: true, showAlways: true, label: 'Total Real',
-                                 fontSize: '18px', fontWeight: 600, color: colorPrimary,
-                                 formatter: function (w) {
-                                      const total = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
-                                      return formatCurrency(total);
-                                 }
-                             },
-                              value: {
-                                show: true, fontSize: '16px', fontWeight: 400,
-                                color: colorText, offsetY: 5,
-                                formatter: function(val) { return formatCurrency(parseFloat(val)) }
-                             }
-                         }
-                    },
-                    expandOnClick: false
-                }
+      // --- Chart 4: Composition Pie - Lucro Presumido ---
+      var optionsPiePresumido = {
+        ...optionsPieReal,
+        series: [
+          taxes.lucroPresumido.IRPJ,
+          taxes.lucroPresumido.CSLL,
+          taxes.lucroPresumido.PIS,
+          taxes.lucroPresumido.COFINS,
+        ],
+        plotOptions: {
+          pie: {
+            ...optionsPieReal.plotOptions.pie,
+            donut: {
+              ...optionsPieReal.plotOptions.pie.donut,
+              labels: {
+                ...optionsPieReal.plotOptions.pie.donut.labels,
+                total: {
+                  ...optionsPieReal.plotOptions.pie.donut.labels.total,
+                  label: "Total Presumido",
+                  color: colorSecondary,
+                  formatter: function (w) {
+                    const total = w.globals.seriesTotals.reduce(
+                      (a, b) => a + b,
+                      0
+                    );
+                    return formatCurrency(total);
+                  },
+                },
+              },
             },
-            dataLabels: {
-                enabled: true,
-                formatter: function (val, opts) { return opts.w.globals.labels[opts.seriesIndex] + ':  ' + val.toFixed(1) + '%' },
-                 style: { fontSize: '11px', fontWeight: 'bold', colors: [colorText] },
-                 dropShadow: { enabled: false }
+          },
+        },
+      };
+      var chartPiePresumido = new ApexCharts(
+        document.querySelector("#composition-pie-presumido"),
+        optionsPiePresumido
+      );
+      chartPiePresumido.render();
+
+      // --- Chart 5: Difference Bar Chart ---
+      var optionsDifferenceBar = {
+        ...commonChartOptions,
+        series: [
+          {
+            name: "Diferença (Presumido - Real)",
+            data: [
+              difference.IRPJ,
+              difference.CSLL,
+              difference.PIS,
+              difference.COFINS,
+            ],
+          },
+        ],
+        colors: [
+          // Assign colors based on positive/negative difference
+          difference.IRPJ >= 0 ? colorDanger : colorSuccess,
+          difference.CSLL >= 0 ? colorDanger : colorSuccess,
+          difference.PIS >= 0 ? colorDanger : colorSuccess,
+          difference.COFINS >= 0 ? colorDanger : colorSuccess,
+        ],
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: "50%",
+            borderRadius: 5,
+            distributed: true,
+          },
+        },
+        legend: { show: false },
+        dataLabels: {
+          enabled: true,
+          formatter: function (val) {
+            return formatCurrency(val);
+          },
+          offsetY: -20,
+          style: { fontSize: "11px", colors: [colorText] },
+        },
+        tooltip: {
+          theme: "dark",
+          y: {
+            formatter: function (val) {
+              let comparison =
+                val > 0 ? " (Presumido Maior)" : val < 0 ? " (Real Maior)" : "";
+              return formatCurrency(val) + comparison;
             },
-            legend: {
-                position: 'bottom', horizontalAlign: 'center',
-                labels: { colors: colorTextMuted },
-                markers: { fillColors: pieChartColors }
-            },
-             tooltip: {
-                 theme: 'dark',
-                 y: {
-                    formatter: function (val) { return formatCurrency(val); },
-                     title: { formatter: (seriesName) => seriesName }
-                 }
-            },
-             stroke: { width: 2, colors: ['var(--card-bg)'] }
-        };
-        var chartPieReal = new ApexCharts(document.querySelector("#composition-pie-real"), optionsPieReal);
-        chartPieReal.render();
+          },
+        },
+        xaxis: {
+          ...commonChartOptions.xaxis,
+          title: {
+            text: "Tipo de Imposto",
+            style: { color: colorTextMuted, fontWeight: 400 },
+          },
+        },
+      };
+      var chartDifferenceBar = new ApexCharts(
+        document.querySelector("#difference-bar-chart"),
+        optionsDifferenceBar
+      );
+      chartDifferenceBar.render();
 
-
-        // --- Chart 4: Composition Pie - Lucro Presumido ---
-        var optionsPiePresumido = {
-            ...optionsPieReal,
-             series: [taxes.lucroPresumido.IRPJ, taxes.lucroPresumido.CSLL, taxes.lucroPresumido.PIS, taxes.lucroPresumido.COFINS],
-              plotOptions: {
-                pie: {
-                     ...optionsPieReal.plotOptions.pie,
-                     donut: {
-                         ...optionsPieReal.plotOptions.pie.donut,
-                         labels: {
-                             ...optionsPieReal.plotOptions.pie.donut.labels,
-                             total: {
-                                 ...optionsPieReal.plotOptions.pie.donut.labels.total,
-                                 label: 'Total Presumido',
-                                 color: colorSecondary,
-                                 formatter: function (w) {
-                                      const total = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
-                                      return formatCurrency(total);
-                                 }
-                             },
-                         }
-                    }
-                }
-            },
-        };
-        var chartPiePresumido = new ApexCharts(document.querySelector("#composition-pie-presumido"), optionsPiePresumido);
-        chartPiePresumido.render();
-
-
-         // --- Chart 5: Difference Bar Chart ---
-         var optionsDifferenceBar = {
-             ...commonChartOptions,
-             series: [{
-                 name: 'Diferença (Presumido - Real)',
-                 data: [difference.IRPJ, difference.CSLL, difference.PIS, difference.COFINS],
-             }],
-             colors: [ // Assign colors based on positive/negative difference
-                 difference.IRPJ >= 0 ? colorDanger : colorSuccess,
-                 difference.CSLL >= 0 ? colorDanger : colorSuccess,
-                 difference.PIS >= 0 ? colorDanger : colorSuccess,
-                 difference.COFINS >= 0 ? colorDanger : colorSuccess
-             ],
-             plotOptions: {
-                 bar: { horizontal: false, columnWidth: '50%', borderRadius: 5, distributed: true }
-             },
-             legend: { show: false },
-             dataLabels: {
-                 enabled: true,
-                 formatter: function (val) { return formatCurrency(val); },
-                 offsetY: -20,
-                 style: { fontSize: '11px', colors: [colorText] }
-             },
-             tooltip: {
-                 theme: 'dark',
-                 y: {
-                     formatter: function (val) {
-                         let comparison = val > 0 ? ' (Presumido Maior)' : val < 0 ? ' (Real Maior)' : '';
-                         return formatCurrency(val) + comparison;
-                     }
-                 }
-             },
-              xaxis: { ...commonChartOptions.xaxis, title: { text: 'Tipo de Imposto', style:{ color: colorTextMuted, fontWeight: 400 }}},
-         };
-        var chartDifferenceBar = new ApexCharts(document.querySelector("#difference-bar-chart"), optionsDifferenceBar);
-        chartDifferenceBar.render();
-
-
-         // --- Generate Summary Table ---
-        const createTable = () => {
-            let tableHTML = `
+      // --- Generate Summary Table ---
+      const createTable = () => {
+        let tableHTML = `
                 <table class="summary-table">
                     <thead>
                         <tr>
@@ -658,47 +843,67 @@
                     <tbody>
             `;
 
-            taxes.categories.forEach(cat => {
-                 const realValue = taxes.lucroReal[cat];
-                 const presumidoValue = taxes.lucroPresumido[cat];
-                 const diffValue = difference[cat];
-                 // Determine class for difference color (Red/Danger if Presumido higher)
-                 let diffClass = diffValue > 0 ? 'negative' : (diffValue < 0 ? 'positive' : 'zero');
+        taxes.categories.forEach((cat) => {
+          const realValue = taxes.lucroReal[cat];
+          const presumidoValue = taxes.lucroPresumido[cat];
+          const diffValue = difference[cat];
+          // Determine class for difference color (Red/Danger if Presumido higher)
+          let diffClass =
+            diffValue > 0 ? "negative" : diffValue < 0 ? "positive" : "zero";
 
-                 tableHTML += `
+          tableHTML += `
                     <tr>
                         <td>${cat}</td>
                         <td class="real-col">${formatCurrency(realValue)}</td>
-                        <td class="presumido-col">${formatCurrency(presumidoValue)}</td>
-                        <td class="diff-col ${diffClass}">${formatCurrency(diffValue)}</td>
+                        <td class="presumido-col">${formatCurrency(
+                          presumidoValue
+                        )}</td>
+                        <td class="diff-col ${diffClass}">${formatCurrency(
+            diffValue
+          )}</td>
                     </tr>
                  `;
-            });
+        });
 
-            // Determine class for total difference (Red/Danger if Presumido higher)
-            let totalDiffClass = difference.TOTAL > 0 ? 'negative' : (difference.TOTAL < 0 ? 'positive' : 'zero');
+        // Determine class for total difference (Red/Danger if Presumido higher)
+        let totalDiffClass =
+          difference.TOTAL > 0
+            ? "negative"
+            : difference.TOTAL < 0
+            ? "positive"
+            : "zero";
 
-             tableHTML += `
+        tableHTML += `
                     </tbody>
                     <tfoot>
                          <tr>
                             <td>TOTAL</td>
-                            <td class="real-col">${formatCurrency(taxes.lucroReal.TOTAL)}</td>
-                            <td class="presumido-col">${formatCurrency(taxes.lucroPresumido.TOTAL)}</td>
-                            <td class="diff-col ${totalDiffClass}">${formatCurrency(difference.TOTAL)}</td>
+                            <td class="real-col">${formatCurrency(
+                              taxes.lucroReal.TOTAL
+                            )}</td>
+                            <td class="presumido-col">${formatCurrency(
+                              taxes.lucroPresumido.TOTAL
+                            )}</td>
+                            <td class="diff-col ${totalDiffClass}">${formatCurrency(
+          difference.TOTAL
+        )}</td>
                         </tr>
                     </tfoot>
                 </table>
              `;
 
-            document.getElementById('summary-table').innerHTML = tableHTML;
-        };
+        document.getElementById("summary-table").innerHTML = tableHTML;
+      };
 
-        createTable(); // Call function to build the table
+      createTable(); // Call function to build the table
 
-        // --- Update Footer Date ---
-        document.getElementById('generation-date').textContent = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric'});
-
+      // --- Update Footer Date ---
+      document.getElementById("generation-date").textContent =
+        new Date().toLocaleDateString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        });
     </script>
-</body>
+  </body>
 </html>
