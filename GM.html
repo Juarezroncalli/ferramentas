@@ -40,7 +40,7 @@
       }
 
       .dashboard-container {
-        max-width: 1200px;
+        max-width: 900px; /* Reduzi um pouco a largura máxima */
         margin: 0 auto;
         padding: 20px;
       }
@@ -79,9 +79,10 @@
 
       .grid-container {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        /* Ajustado para auto-fit, mas provavelmente ficará 1 ou 2 colunas */
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
         gap: 25px;
-        margin-top: 25px; /* Aumentei o gap do topo */
+        margin-top: 25px;
       }
 
       .card {
@@ -136,9 +137,7 @@
         border-bottom: 1px solid var(--border-color); /* Linha sutil entre rows */
       }
       tbody tr:nth-child(odd) {
-        background-color: var(
-          --table-row-odd-bg
-        ); /* Já é a cor do card */
+        background-color: var(--table-row-odd-bg); /* Já é a cor do card */
       }
       tbody tr:nth-child(even) {
         background-color: var(--table-row-even-bg);
@@ -153,15 +152,13 @@
         ); /* Hover um pouco mais visível */
       }
 
-      /* Estilos específicos para linhas importantes */
+      /* Estilos específicos para linhas importantes (Lucro e %) */
       tbody tr:nth-last-child(1), /* Última linha (% Lucro) */
-      tbody tr:nth-last-child(2), /* Penúltima linha (Lucro) */
-
+       tbody tr:nth-last-child(2) /* Penúltima linha (Lucro) */ {
         font-weight: bold;
       }
-      tbody tr:nth-last-child(1) td,
-      tbody tr:nth-last-child(2) td,
-      tbody tr:nth-last-child(5) td {
+      tbody tr:nth-last-child(1) td, /* Última linha (% Lucro) */
+       tbody tr:nth-last-child(2) td /* Penúltima linha (Lucro) */ {
         padding-top: 10px; /* Mais espaço acima das linhas de resultado */
         padding-bottom: 10px;
       }
@@ -170,36 +167,51 @@
 
       .negative-value {
         color: var(--color-negative); /* Usando a variável */
-        font-weight: bold;
+        font-weight: bold; /* Negativo sempre em negrito */
       }
 
       .chart-container {
         position: relative;
         height: 350px;
         width: 100%;
-        /* Removida a borda preta do container */
-        /* padding: 10px; */ /* Padding não é mais necessário para a borda do container */
-        /* border: 2px solid #000000; */ /* REMOVIDO */
-        /* border-radius: 4px; */ /* REMOVIDO */
         box-sizing: border-box;
       }
 
-      @media (max-width: 900px) {
+      @media (max-width: 768px) {
+        /* Ajuste para telas menores */
+        .dashboard-container {
+          padding: 10px;
+          max-width: 100%;
+        }
         .grid-container {
           grid-template-columns: 1fr;
+        } /* Força 1 coluna */
+        body {
+          padding: 10px;
         }
-      }
-
-      @media (max-width: 768px) {
-        body { padding: 10px; }
-        .dashboard-container { padding: 10px; }
-        h1 { font-size: 1.6em; }
-        .card { padding: 15px; }
-        th, td { padding: 6px 8px; font-size: 0.85em; }
-        .chart-container { height: 300px; /* padding: 8px; REMOVIDO */ }
-         .highlight-box { padding: 10px 15px; }
-         .highlight-box h3 { font-size: 1em; }
-         .highlight-box p { font-size: 0.9em; }
+        h1 {
+          font-size: 1.6em;
+        }
+        .card {
+          padding: 15px;
+        }
+        th,
+        td {
+          padding: 6px 8px;
+          font-size: 0.85em;
+        }
+        .chart-container {
+          height: 300px;
+        }
+        .highlight-box {
+          padding: 10px 15px;
+        }
+        .highlight-box h3 {
+          font-size: 1em;
+        }
+        .highlight-box p {
+          font-size: 0.9em;
+        }
       }
     </style>
   </head>
@@ -207,7 +219,7 @@
     <div class="dashboard-container">
       <h1>Dashboard Comparativo de Simulações MG</h1>
 
-      <!-- NOVO: Box de Destaque -->
+      <!-- Box de Destaque -->
       <div class="highlight-box">
         <h3>Pontos Importantes para Operação</h3>
         <p>
@@ -223,17 +235,16 @@
         </p>
       </div>
 
-      <!-- Tabela Comparativa -->
+      <!-- Tabela Comparativa (sem Revenda MG) -->
       <div class="card">
         <h2>Tabela Comparativa Detalhada</h2>
         <table>
           <thead>
             <tr>
               <th>Item</th>
-              <th>Venda Transportadora MG (Contribuinte)</th>
-              <!-- Nome ajustado -->
-              <th>Venda Pessoa Física MG</th>
-              <th>Venda Revenda MG</th>
+              <th>Transportadora MG (Contribuinte)</th>
+              <th>Transportadora MG (Não Contribuinte)</th>
+              <!-- Coluna Revenda MG Removida -->
             </tr>
           </thead>
           <tbody>
@@ -242,85 +253,83 @@
               <td>PREÇO DE VENDA</td>
               <td>R$ 1.800,00</td>
               <td>R$ 1.800,00</td>
-              <td>R$ 1.800,00</td>
+              <!-- Dado Revenda MG Removido -->
             </tr>
             <tr>
               <td>(-) IRPJ</td>
               <td>R$ 36,00</td>
               <td>R$ 36,00</td>
-              <td>R$ 36,00</td>
+              <!-- Dado Revenda MG Removido -->
             </tr>
             <tr>
               <td>(-) CSLL</td>
               <td>R$ 19,44</td>
               <td>R$ 19,44</td>
-              <td>R$ 19,44</td>
+              <!-- Dado Revenda MG Removido -->
             </tr>
             <tr>
               <td>(-) ICMS COMPETE</td>
               <td>R$ 20,52</td>
               <td>R$ 20,52</td>
-              <td>R$ 20,52</td>
+              <!-- Dado Revenda MG Removido -->
             </tr>
             <tr>
               <td>(-) DIFAL (Venda p/ Não Contr.)</td>
-              <!-- Rótulo ajustado -->
               <td>R$ 0,00</td>
               <td>R$ 307,32</td>
-              <td>R$ 0,00</td>
+              <!-- Dado Revenda MG Removido -->
             </tr>
             <tr>
               <td>(-) ICMS ST (Venda p/ Revenda)</td>
-              <!-- Rótulo ajustado -->
               <td>R$ 0,00</td>
               <td>R$ 0,00</td>
-              <td>R$ 428,71</td>
+              <!-- Dado Revenda MG Removido -->
             </tr>
             <!-- Resultado Bruto -->
             <tr>
               <td><strong>(=) RESULTADO BRUTO</strong></td>
               <td><strong>R$ 1.724,04</strong></td>
               <td><strong>R$ 1.416,72</strong></td>
-              <td><strong>R$ 1.295,33</strong></td>
+              <!-- Dado Revenda MG Removido -->
             </tr>
             <!-- Custos de Compra -->
             <tr>
               <td>(-) COMPRA PNEU</td>
+              <!-- Linha não está mais em negrito -->
               <td>R$ 1.200,00</td>
               <td>R$ 1.200,00</td>
-              <td>R$ 1.200,00</td>
+              <!-- Dado Revenda MG Removido -->
             </tr>
             <tr>
               <td>(-) CUSTO ADICIONAL ES</td>
-              <!-- Rótulo ajustado -->
               <td>R$ 106,00</td>
               <td>R$ 106,00</td>
-              <td>R$ 106,00</td>
+              <!-- Dado Revenda MG Removido -->
             </tr>
             <tr>
               <td>(-) ICMS ST (COMPRA)</td>
               <td>R$ 65,28</td>
               <td>R$ 65,28</td>
-              <td>R$ 65,28</td>
+              <!-- Dado Revenda MG Removido -->
             </tr>
             <!-- Lucro e % -->
             <tr>
               <td><strong>(=) LUCRO LÍQUIDO</strong></td>
               <td><strong>R$ 352,76</strong></td>
               <td><strong>R$ 45,44</strong></td>
-              <td><strong class="negative-value">-R$ 75,95</strong></td>
+              <!-- Dado Revenda MG Removido -->
             </tr>
             <tr>
               <td><strong>% LUCRO LÍQUIDO</strong></td>
               <td><strong>19,60%</strong></td>
               <td><strong>2,52%</strong></td>
-              <td><strong class="negative-value">-4,22%</strong></td>
+              <!-- Dado Revenda MG Removido -->
             </tr>
           </tbody>
         </table>
       </div>
 
-      <!-- Grid para os Gráficos -->
+      <!-- Grid para os Gráficos (sem Revenda MG) -->
       <div class="grid-container">
         <!-- Gráfico de Lucro -->
         <div class="card">
@@ -343,31 +352,27 @@
     <!-- Script para criar os gráficos -->
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        // --- Dados das Simulações ---
-        const labels = [
-          "Transp. MG (Contr.)",
-          "Pessoa Física MG",
-          "Revenda MG",
-        ]; // Label ajustado
-        const lucroData = [352.76, 45.44, -75.95];
-        const percentLucroData = [19.6, 2.52, -4.22];
+        // --- Dados das Simulações (SEM Revenda MG) ---
+        const labels = ["Transp. MG (Contr.)", "Pessoa Física MG"]; // Label Revenda Removido
+        const lucroData = [352.76, 45.44]; // Dado Revenda Removido
+        const percentLucroData = [19.6, 2.52]; // Dado Revenda Removido
 
-        // --- Novas Cores Vibrantes ---
+        // --- Cores Vibrantes ---
         const colorBlue = "#00aaff"; // Azul elétrico
-        const colorLime = "#50fa7b"; // Verde limão (mantido, já é vibrante)
-        const colorOrange = "#ffaa00"; // Laranja vibrante
+        const colorLime = "#50fa7b"; // Verde limão
+        // const colorOrange = "#ffaa00"; // Laranja não é mais necessário com 2 itens
         const colorRedNegative = "#ff5555"; // Vermelho para negativos
         const colorText = "#f0f0f0";
         const colorBorder = "#44475a";
         const barBorderColor = "#000000"; // Cor preta para a borda da BARRA
-        const barBorderWidth = 1.5; // Espessura da borda da BARRA (ajuste se necessário)
+        const barBorderWidth = 1.5; // Espessura da borda da BARRA
 
-        // Array de cores base para os gráficos
-        const vibrantChartColors = [colorBlue, colorLime, colorOrange];
+        // Array de cores base (apenas 2 agora)
+        const vibrantChartColors = [colorBlue, colorLime];
 
         // --- Configurações Globais Chart.js ---
         Chart.defaults.color = colorText;
-        Chart.defaults.borderColor = colorBorder; // Cor padrão para linhas de grade, etc.
+        Chart.defaults.borderColor = colorBorder;
         Chart.defaults.font.family =
           '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif';
 
@@ -385,12 +390,10 @@
           return `${value.toFixed(2).replace(".", ",")}%`;
         }
 
-        // --- Funções para gerar cores dinâmicas (positivo/negativo) ---
-        // Esta função agora é APENAS para a cor de fundo (fill)
+        // --- Funções para gerar cores de fundo (positivo/negativo) ---
         function getBackgroundColors(data, baseColors) {
-          return data.map(
-            (val, index) =>
-              val < 0 ? colorRedNegative : baseColors[index % baseColors.length] // Cicla pelas cores base
+          return data.map((val, index) =>
+            val < 0 ? colorRedNegative : baseColors[index % baseColors.length]
           );
         }
 
@@ -406,37 +409,33 @@
               labels: labels,
               datasets: [
                 {
-                  label: "Lucro Líquido (R$)", // Ajustado
+                  label: "Lucro Líquido (R$)",
                   data: lucroData,
                   backgroundColor: getBackgroundColors(
                     lucroData,
                     vibrantChartColors
                   ),
-                  borderColor: barBorderColor, // COR DA BORDA DA BARRA
-                  borderWidth: barBorderWidth, // ESPESSURA DA BORDA DA BARRA
+                  borderColor: barBorderColor,
+                  borderWidth: barBorderWidth,
                 },
               ],
             },
             options: {
               responsive: true,
               maintainAspectRatio: false,
-              indexAxis: "y", // Barras Horizontais
+              indexAxis: "y",
               scales: {
                 x: {
-                  beginAtZero: false, // Permite eixos negativos
+                  beginAtZero: false,
                   title: { display: true, text: "Valor (R$)" },
                   ticks: { callback: (value) => formatCurrency(value) },
-                  grid: { color: colorBorder }, // Cor da grade X
+                  grid: { color: colorBorder },
                 },
-                y: {
-                  grid: { display: false }, // Sem grade Y
-                },
+                y: { grid: { display: false } },
               },
               plugins: {
                 legend: { display: false },
-                title: {
-                  display: false, // Título já está no Card H2
-                },
+                title: { display: false },
                 tooltip: {
                   backgroundColor: "rgba(0, 0, 0, 0.8)",
                   titleColor: colorText,
@@ -461,19 +460,19 @@
           if (!ctxPercentLucro)
             throw new Error("Canvas 'percentLucroChart' não encontrado.");
           new Chart(ctxPercentLucro.getContext("2d"), {
-            type: "bar", // Barras Verticais para variar
+            type: "bar",
             data: {
               labels: labels,
               datasets: [
                 {
-                  label: "% Lucro Líquido", // Ajustado
+                  label: "% Lucro Líquido",
                   data: percentLucroData,
                   backgroundColor: getBackgroundColors(
                     percentLucroData,
                     vibrantChartColors
                   ),
-                  borderColor: barBorderColor, // COR DA BORDA DA BARRA
-                  borderWidth: barBorderWidth, // ESPESSURA DA BORDA DA BARRA
+                  borderColor: barBorderColor,
+                  borderWidth: barBorderWidth,
                 },
               ],
             },
@@ -482,20 +481,16 @@
               maintainAspectRatio: false,
               scales: {
                 y: {
-                  beginAtZero: false, // Permite eixos negativos
+                  beginAtZero: false,
                   title: { display: true, text: "Percentual (%)" },
                   ticks: { callback: (value) => formatPercent(value) },
-                  grid: { color: colorBorder }, // Cor da grade Y
+                  grid: { color: colorBorder },
                 },
-                x: {
-                  grid: { display: false }, // Sem grade X
-                },
+                x: { grid: { display: false } },
               },
               plugins: {
                 legend: { display: false },
-                title: {
-                  display: false, // Título já está no Card H2
-                },
+                title: { display: false },
                 tooltip: {
                   backgroundColor: "rgba(0, 0, 0, 0.8)",
                   titleColor: colorText,
