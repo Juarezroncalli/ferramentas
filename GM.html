@@ -1,386 +1,424 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard Comparativo de Simulações</title>
     <!-- 1. Incluir Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* --- Estilos CSS (Dark Mode e Layout) --- */
-        :root {
-            --bg-color: #1e1e2f; /* Dark blue/purple */
-            --card-bg-color: #27293d; /* Slightly lighter dark */
-            --text-color: #f0f0f0; /* Light grey */
-            --header-color: #bb86fc; /* Vibrant purple */
-            --border-color: #44475a; /* Greyish */
-            /* Cores Vibrantes (mantidas aqui para referência, mas definidas no JS para os gráficos) */
-            --color1: #ff79c6; /* Pink */
-            --color2: #50fa7b; /* Green */
-            --color3: #8be9fd; /* Cyan */
-            --color-negative: #ff5555; /* Red for negative values */
-        }
+      /* --- Estilos CSS (Dark Mode e Layout) --- */
+      :root {
+        --bg-color: #1e1e2f; /* Dark blue/purple */
+        --card-bg-color: #27293d; /* Slightly lighter dark */
+        --text-color: #f0f0f0; /* Light grey */
+        --header-color: #bb86fc; /* Vibrant purple */
+        --border-color: #44475a; /* Greyish */
+        /* Cores Vibrantes (mantidas aqui para referência, mas definidas no JS para os gráficos) */
+        --color1: #ff79c6; /* Pink */
+        --color2: #50fa7b; /* Green */
+        --color3: #8be9fd; /* Cyan */
+        --color-negative: #ff5555; /* Red for negative values */
+      }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            line-height: 1.6;
-        }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        margin: 0;
+        padding: 20px;
+        line-height: 1.6;
+      }
 
-        .dashboard-container {
-            max-width: 1200px; /* Pode ajustar se necessário */
-            margin: 0 auto;
-            padding: 20px;
-        }
+      .dashboard-container {
+        max-width: 1200px; /* Pode ajustar se necessário */
+        margin: 0 auto;
+        padding: 20px;
+      }
 
-        h1 {
-            color: var(--header-color);
-            text-align: center;
-            margin-bottom: 30px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-        }
+      h1 {
+        color: var(--header-color);
+        text-align: center;
+        margin-bottom: 30px;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+      }
 
+      .grid-container {
+        display: grid;
+        /* Ajustado para 2 colunas em telas maiores, ou 1 em menores */
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 25px;
+        margin-top: 20px;
+      }
+
+      .card {
+        background-color: var(--card-bg-color);
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--border-color);
+        overflow-x: auto; /* For table responsiveness */
+      }
+
+      .card h2 {
+        color: var(--header-color);
+        margin-top: 0;
+        margin-bottom: 15px;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 10px;
+        font-size: 1.3em;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+      }
+
+      th,
+      td {
+        padding: 12px 10px;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      th {
+        background-color: rgba(187, 134, 252, 0.15);
+        color: var(--header-color);
+        font-weight: 600;
+      }
+
+      td:nth-child(n + 2) {
+        text-align: right;
+      }
+
+      tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+
+      .negative-value {
+        color: #ff5555; /* Usando a cor diretamente aqui também */
+        font-weight: bold;
+      }
+
+      .chart-container {
+        position: relative;
+        height: 350px; /* Aumentei um pouco a altura */
+        width: 100%;
+      }
+
+      @media (max-width: 900px) {
+        /* Ajuste breakpoint para quando virar 1 coluna */
         .grid-container {
-            display: grid;
-            /* Ajustado para 2 colunas em telas maiores, ou 1 em menores */
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 25px;
-            margin-top: 20px;
+          grid-template-columns: 1fr;
         }
+      }
 
-        .card {
-            background-color: var(--card-bg-color);
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-color);
-            overflow-x: auto; /* For table responsiveness */
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 1.8em;
         }
-
-        .card h2 {
-            color: var(--header-color);
-            margin-top: 0;
-            margin-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-            font-size: 1.3em;
+        th,
+        td {
+          padding: 8px 5px;
+          font-size: 0.9em;
         }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        th, td {
-            padding: 12px 10px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        th {
-            background-color: rgba(187, 134, 252, 0.15);
-            color: var(--header-color);
-            font-weight: 600;
-        }
-
-        td:nth-child(n+2) {
-           text-align: right;
-        }
-
-        tbody tr:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-
-        .negative-value {
-            color: #ff5555; /* Usando a cor diretamente aqui também */
-            font-weight: bold;
-        }
-
         .chart-container {
-            position: relative;
-            height: 350px; /* Aumentei um pouco a altura */
-            width: 100%;
+          height: 300px; /* Reduz altura em telas menores */
         }
-
-        @media (max-width: 900px) { /* Ajuste breakpoint para quando virar 1 coluna */
-             .grid-container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 1.8em;
-            }
-            th, td {
-                padding: 8px 5px;
-                font-size: 0.9em;
-            }
-             .chart-container {
-                 height: 300px; /* Reduz altura em telas menores */
-            }
-        }
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
     <div class="dashboard-container">
-        <h1>Dashboard Comparativo de Simulações MG</h1>
+      <h1>Dashboard Comparativo de Simulações MG</h1>
 
-        <!-- Tabela Comparativa -->
+      <!-- Tabela Comparativa -->
+      <div class="card">
+        <h2>Tabela Comparativa Detalhada</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Venda Transportadora MG</th>
+              <th>Venda Pessoa Física MG</th>
+              <th>Venda Revenda MG</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>PREÇO DE VENDA</td>
+              <td>R$ 1.800,00</td>
+              <td>R$ 1.800,00</td>
+              <td>R$ 1.800,00</td>
+            </tr>
+            <tr>
+              <td>IRPJ</td>
+              <td>R$ 36,00</td>
+              <td>R$ 36,00</td>
+              <td>R$ 36,00</td>
+            </tr>
+            <tr>
+              <td>CSLL</td>
+              <td>R$ 19,44</td>
+              <td>R$ 19,44</td>
+              <td>R$ 19,44</td>
+            </tr>
+            <tr>
+              <td>ICMS COMPETE</td>
+              <td>R$ 20,52</td>
+              <td>R$ 20,52</td>
+              <td>R$ 20,52</td>
+            </tr>
+            <tr>
+              <td>DIFAL</td>
+              <td>R$ 0,00</td>
+              <td>R$ 307,32</td>
+              <td>R$ 0,00</td>
+            </tr>
+            <tr>
+              <td>ICMS ST (VENDA)</td>
+              <td>R$ 0,00</td>
+              <td>R$ 0,00</td>
+              <td>R$ 428,71</td>
+            </tr>
+            <tr>
+              <td><strong>RESULTADO BRUTO</strong></td>
+              <td><strong>R$ 1.724,04</strong></td>
+              <td><strong>R$ 1.416,72</strong></td>
+              <td><strong>R$ 1.295,33</strong></td>
+            </tr>
+            <tr>
+              <td>COMPRA PNEU</td>
+              <td>R$ 1.200,00</td>
+              <td>R$ 1.200,00</td>
+              <td>R$ 1.200,00</td>
+            </tr>
+            <tr>
+              <td>CUSTO ES</td>
+              <td>R$ 106,00</td>
+              <td>R$ 106,00</td>
+              <td>R$ 106,00</td>
+            </tr>
+            <tr>
+              <td>ICMS ST (COMPRA)</td>
+              <td>R$ 65,28</td>
+              <td>R$ 65,28</td>
+              <td>R$ 65,28</td>
+            </tr>
+            <tr>
+              <td><strong>LUCRO</strong></td>
+              <td><strong>R$ 352,76</strong></td>
+              <td><strong>R$ 45,44</strong></td>
+              <td><strong class="negative-value">-R$ 75,95</strong></td>
+            </tr>
+            <tr>
+              <td><strong>% LUCRO</strong></td>
+              <td><strong>19,60%</strong></td>
+              <td><strong>2,52%</strong></td>
+              <td><strong class="negative-value">-4,22%</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Grid para os Gráficos (agora com 2) -->
+      <div class="grid-container">
+        <!-- Gráfico de Lucro -->
         <div class="card">
-            <h2>Tabela Comparativa Detalhada</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Item</th>
-                        <th>Venda Transportadora MG</th>
-                        <th>Venda Pessoa Física MG</th>
-                        <th>Venda Revenda MG</th>
-                    </tr>
-                </thead>
-                <tbody>
-                     <tr>
-                        <td>PREÇO DE VENDA</td>
-                        <td>R$ 1.800,00</td>
-                        <td>R$ 1.800,00</td>
-                        <td>R$ 1.800,00</td>
-                    </tr>
-                    <tr>
-                        <td>IRPJ</td>
-                        <td>R$ 36,00</td>
-                        <td>R$ 36,00</td>
-                        <td>R$ 36,00</td>
-                    </tr>
-                    <tr>
-                        <td>CSLL</td>
-                        <td>R$ 19,44</td>
-                        <td>R$ 19,44</td>
-                        <td>R$ 19,44</td>
-                    </tr>
-                    <tr>
-                        <td>ICMS COMPETE</td>
-                        <td>R$ 20,52</td>
-                        <td>R$ 20,52</td>
-                        <td>R$ 20,52</td>
-                    </tr>
-                     <tr>
-                        <td>DIFAL</td>
-                        <td>R$ 0,00</td>
-                        <td>R$ 307,32</td>
-                        <td>R$ 0,00</td>
-                    </tr>
-                    <tr>
-                        <td>ICMS ST (VENDA)</td>
-                        <td>R$ 0,00</td>
-                        <td>R$ 0,00</td>
-                        <td>R$ 428,71</td>
-                    </tr>
-                    <tr>
-                        <td><strong>RESULTADO BRUTO</strong></td>
-                        <td><strong>R$ 1.724,04</strong></td>
-                        <td><strong>R$ 1.416,72</strong></td>
-                        <td><strong>R$ 1.295,33</strong></td>
-                    </tr>
-                    <tr>
-                        <td>COMPRA PNEU</td>
-                        <td>R$ 1.200,00</td>
-                        <td>R$ 1.200,00</td>
-                        <td>R$ 1.200,00</td>
-                    </tr>
-                    <tr>
-                        <td>CUSTO ES</td>
-                        <td>R$ 106,00</td>
-                        <td>R$ 106,00</td>
-                        <td>R$ 106,00</td>
-                    </tr>
-                    <tr>
-                        <td>ICMS ST</td>
-                        <td>R$ 65,28</td>
-                        <td>R$ 65,28</td>
-                        <td>R$ 65,28</td>
-                    </tr>
-                    <tr>
-                        <td><strong>LUCRO</strong></td>
-                        <td><strong>R$ 352,76</strong></td>
-                        <td><strong>R$ 45,44</strong></td>
-                        <td><strong class="negative-value">-R$ 75,95</strong></td>
-                    </tr>
-                     <tr>
-                        <td><strong>% LUCRO</strong></td>
-                        <td><strong>19,60%</strong></td>
-                        <td><strong>2,52%</strong></td>
-                        <td><strong class="negative-value">-4,22%</strong></td>
-                    </tr>
-                </tbody>
-            </table>
+          <h2>Comparativo de Lucro (R$)</h2>
+          <div class="chart-container">
+            <canvas id="lucroChart"></canvas>
+            <!-- Canvas para o gráfico -->
+          </div>
         </div>
 
-        <!-- Grid para os Gráficos (agora com 2) -->
-        <div class="grid-container">
-            <!-- Gráfico de Lucro -->
-            <div class="card">
-                <h2>Comparativo de Lucro (R$)</h2>
-                <div class="chart-container">
-                    <canvas id="lucroChart"></canvas> <!-- Canvas para o gráfico -->
-                </div>
-            </div>
-
-            <!-- Gráfico de % Lucro -->
-            <div class="card">
-                <h2>Comparativo de % Lucro</h2>
-                <div class="chart-container">
-                    <canvas id="percentLucroChart"></canvas>
-                </div>
-            </div>
-
-            <!-- GRÁFICO DE RESULTADO BRUTO REMOVIDO -->
-
-            <!-- GRÁFICO DE CUSTOS VARIÁVEIS REMOVIDO -->
+        <!-- Gráfico de % Lucro -->
+        <div class="card">
+          <h2>Comparativo de % Lucro</h2>
+          <div class="chart-container">
+            <canvas id="percentLucroChart"></canvas>
+          </div>
         </div>
+
+        <!-- GRÁFICO DE RESULTADO BRUTO REMOVIDO -->
+
+        <!-- GRÁFICO DE CUSTOS VARIÁVEIS REMOVIDO -->
+      </div>
     </div>
 
     <!-- 2. Script para criar os gráficos (APÓS o HTML dos canvas) -->
     <script>
-        // Espera o HTML carregar completamente antes de rodar o script
-        document.addEventListener('DOMContentLoaded', function() {
+      // Espera o HTML carregar completamente antes de rodar o script
+      document.addEventListener("DOMContentLoaded", function () {
+        // --- Dados das Simulações (Apenas os necessários) ---
+        const labels = ["Transportadora MG", "Pessoa Física MG", "Revenda MG"];
+        const lucroData = [352.76, 45.44, -75.95];
+        const percentLucroData = [19.6, 2.52, -4.22];
+        // const resultadoBrutoData = [1724.04, 1416.72, 1295.33]; // Removido
+        // const custosVariaveisData = [ 0.00, 307.32, 428.71 ]; // Removido
 
-            // --- Dados das Simulações (Apenas os necessários) ---
-            const labels = ['Transportadora MG', 'Pessoa Física MG', 'Revenda MG'];
-            const lucroData = [352.76, 45.44, -75.95];
-            const percentLucroData = [19.60, 2.52, -4.22];
-            // const resultadoBrutoData = [1724.04, 1416.72, 1295.33]; // Removido
-            // const custosVariaveisData = [ 0.00, 307.32, 428.71 ]; // Removido
+        // --- Cores Vibrantes (Definidas diretamente no JS) ---
+        const colorPink = "#ff79c6";
+        const colorGreen = "#50fa7b";
+        const colorCyan = "#8be9fd";
+        // const colorYellow = '#f1fa8c'; // Não mais usado
+        // const colorOrange = '#ffb86c'; // Não mais usado
+        const colorRedNegative = "#ff5555"; // Cor para valores negativos
+        const colorText = "#f0f0f0"; // Cor do texto dos eixos/legendas
+        const colorBorder = "#44475a"; // Cor das linhas de grade
 
-            // --- Cores Vibrantes (Definidas diretamente no JS) ---
-            const colorPink = '#ff79c6';
-            const colorGreen = '#50fa7b';
-            const colorCyan = '#8be9fd';
-            // const colorYellow = '#f1fa8c'; // Não mais usado
-            // const colorOrange = '#ffb86c'; // Não mais usado
-            const colorRedNegative = '#ff5555'; // Cor para valores negativos
-            const colorText = '#f0f0f0';       // Cor do texto dos eixos/legendas
-            const colorBorder = '#44475a';     // Cor das linhas de grade
+        const baseChartColors = [colorPink, colorGreen, colorCyan];
 
-            const baseChartColors = [colorPink, colorGreen, colorCyan];
+        // --- Configurações Globais Chart.js para Dark Mode ---
+        Chart.defaults.color = colorText;
+        Chart.defaults.borderColor = colorBorder;
 
-            // --- Configurações Globais Chart.js para Dark Mode ---
-            Chart.defaults.color = colorText;
-            Chart.defaults.borderColor = colorBorder;
+        // --- Funções Auxiliares de Formatação ---
+        function formatCurrency(value) {
+          if (isNaN(value) || value === null) return "R$ 0,00";
+          return `R$ ${value
+            .toFixed(2)
+            .replace(".", ",")
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+        }
 
-            // --- Funções Auxiliares de Formatação ---
-            function formatCurrency(value) {
-                 if (isNaN(value) || value === null) return 'R$ 0,00';
-                return `R$ ${value.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
-            }
+        function formatPercent(value) {
+          if (isNaN(value) || value === null) return "0,00%";
+          return `${value.toFixed(2).replace(".", ",")}%`;
+        }
 
-            function formatPercent(value) {
-                 if (isNaN(value) || value === null) return '0,00%';
-                return `${value.toFixed(2).replace('.', ',')}%`;
-            }
+        // --- Criação dos Gráficos ---
 
-             // --- Criação dos Gráficos ---
+        // 1. Gráfico de Lucro
+        try {
+          const ctxLucro = document.getElementById("lucroChart");
+          if (!ctxLucro) throw new Error("Canvas 'lucroChart' não encontrado.");
+          new Chart(ctxLucro.getContext("2d"), {
+            type: "bar",
+            data: {
+              labels: labels,
+              datasets: [
+                {
+                  label: "Lucro (R$)",
+                  data: lucroData,
+                  backgroundColor: lucroData.map((val, index) =>
+                    val < 0
+                      ? colorRedNegative
+                      : baseChartColors[index % baseChartColors.length]
+                  ), // Corrigido para usar index
+                  borderColor: lucroData.map((val, index) =>
+                    val < 0
+                      ? colorRedNegative
+                      : baseChartColors[index % baseChartColors.length]
+                  ), // Corrigido para usar index
+                  borderWidth: 1,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              indexAxis: "y",
+              scales: {
+                x: {
+                  beginAtZero: false,
+                  title: { display: true, text: "Valor (R$)" },
+                  ticks: { callback: (value) => formatCurrency(value) },
+                },
+                y: { grid: { display: false } },
+              },
+              plugins: {
+                legend: { display: false },
+                title: {
+                  display: true,
+                  text: "Lucro Líquido por Simulação",
+                  padding: { bottom: 15 },
+                  color: colorText,
+                },
+                tooltip: {
+                  callbacks: {
+                    label: (context) => `Lucro: ${formatCurrency(context.raw)}`,
+                  },
+                },
+              },
+            },
+          });
+        } catch (error) {
+          console.error("Erro ao criar gráfico de Lucro:", error);
+          const canvas = document.getElementById("lucroChart");
+          if (canvas)
+            canvas.parentElement.innerHTML = `<p style='color:${colorRedNegative};'>Erro ao carregar gráfico: ${error.message}</p>`;
+        }
 
-            // 1. Gráfico de Lucro
-            try {
-                const ctxLucro = document.getElementById('lucroChart');
-                if (!ctxLucro) throw new Error("Canvas 'lucroChart' não encontrado.");
-                new Chart(ctxLucro.getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Lucro (R$)',
-                            data: lucroData,
-                            backgroundColor: lucroData.map((val, index) => val < 0 ? colorRedNegative : baseChartColors[index % baseChartColors.length]), // Corrigido para usar index
-                            borderColor: lucroData.map((val, index) => val < 0 ? colorRedNegative : baseChartColors[index % baseChartColors.length]), // Corrigido para usar index
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        indexAxis: 'y',
-                        scales: {
-                            x: {
-                                beginAtZero: false,
-                                title: { display: true, text: 'Valor (R$)' },
-                                ticks: { callback: (value) => formatCurrency(value) }
-                            },
-                            y: { grid: { display: false } }
-                        },
-                        plugins: {
-                            legend: { display: false },
-                            title: { display: true, text: 'Lucro Líquido por Simulação', padding: { bottom: 15 }, color: colorText },
-                            tooltip: {
-                                callbacks: {
-                                    label: (context) => `Lucro: ${formatCurrency(context.raw)}`
-                                }
-                            }
-                        }
-                    }
-                });
-            } catch (error) {
-                console.error("Erro ao criar gráfico de Lucro:", error);
-                const canvas = document.getElementById('lucroChart');
-                if(canvas) canvas.parentElement.innerHTML = `<p style='color:${colorRedNegative};'>Erro ao carregar gráfico: ${error.message}</p>`;
-            }
+        // 2. Gráfico de % Lucro
+        try {
+          const ctxPercentLucro = document.getElementById("percentLucroChart");
+          if (!ctxPercentLucro)
+            throw new Error("Canvas 'percentLucroChart' não encontrado.");
+          new Chart(ctxPercentLucro.getContext("2d"), {
+            type: "bar",
+            data: {
+              labels: labels,
+              datasets: [
+                {
+                  label: "% Lucro",
+                  data: percentLucroData,
+                  backgroundColor: percentLucroData.map((val, index) =>
+                    val < 0
+                      ? colorRedNegative
+                      : baseChartColors[index % baseChartColors.length]
+                  ), // Corrigido para usar index
+                  borderColor: percentLucroData.map((val, index) =>
+                    val < 0
+                      ? colorRedNegative
+                      : baseChartColors[index % baseChartColors.length]
+                  ), // Corrigido para usar index
+                  borderWidth: 1,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              // Mudei para barras verticais para variar
+              scales: {
+                y: {
+                  beginAtZero: false,
+                  title: { display: true, text: "Percentual (%)" },
+                  ticks: { callback: (value) => formatPercent(value) },
+                },
+                x: { grid: { display: false } },
+              },
+              plugins: {
+                legend: { display: false },
+                title: {
+                  display: true,
+                  text: "Percentual de Lucro por Simulação",
+                  padding: { bottom: 15 },
+                  color: colorText,
+                },
+                tooltip: {
+                  callbacks: {
+                    label: (context) =>
+                      `% Lucro: ${formatPercent(context.raw)}`,
+                  },
+                },
+              },
+            },
+          });
+        } catch (error) {
+          console.error("Erro ao criar gráfico de % Lucro:", error);
+          const canvas = document.getElementById("percentLucroChart");
+          if (canvas)
+            canvas.parentElement.innerHTML = `<p style='color:${colorRedNegative};'>Erro ao carregar gráfico: ${error.message}</p>`;
+        }
 
-            // 2. Gráfico de % Lucro
-             try {
-                const ctxPercentLucro = document.getElementById('percentLucroChart');
-                 if (!ctxPercentLucro) throw new Error("Canvas 'percentLucroChart' não encontrado.");
-                new Chart(ctxPercentLucro.getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: '% Lucro',
-                            data: percentLucroData,
-                            backgroundColor: percentLucroData.map((val, index) => val < 0 ? colorRedNegative : baseChartColors[index % baseChartColors.length]), // Corrigido para usar index
-                            borderColor: percentLucroData.map((val, index) => val < 0 ? colorRedNegative : baseChartColors[index % baseChartColors.length]), // Corrigido para usar index
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                         // Mudei para barras verticais para variar
-                        scales: {
-                            y: {
-                                beginAtZero: false,
-                                title: { display: true, text: 'Percentual (%)' },
-                                ticks: { callback: (value) => formatPercent(value) }
-                            },
-                            x: { grid: { display: false } }
-                        },
-                        plugins: {
-                            legend: { display: false },
-                            title: { display: true, text: 'Percentual de Lucro por Simulação', padding: { bottom: 15 }, color: colorText },
-                            tooltip: {
-                                callbacks: {
-                                    label: (context) => `% Lucro: ${formatPercent(context.raw)}`
-                                }
-                            }
-                        }
-                    }
-                });
-             } catch (error) {
-                console.error("Erro ao criar gráfico de % Lucro:", error);
-                 const canvas = document.getElementById('percentLucroChart');
-                if(canvas) canvas.parentElement.innerHTML = `<p style='color:${colorRedNegative};'>Erro ao carregar gráfico: ${error.message}</p>`;
-            }
+        // CÓDIGO DO GRÁFICO DE RESULTADO BRUTO REMOVIDO
 
-            // CÓDIGO DO GRÁFICO DE RESULTADO BRUTO REMOVIDO
-
-            // CÓDIGO DO GRÁFICO DE CUSTOS VARIÁVEIS REMOVIDO
-
-        });
+        // CÓDIGO DO GRÁFICO DE CUSTOS VARIÁVEIS REMOVIDO
+      });
     </script>
-
-</body>
+  </body>
 </html>
