@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Simples Nacional</title>
+    <!-- Include SheetJS library from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        /* --- CSS Styles --- */
+        :root {
+            --primary-color: #4f0072; /* Purple */
+            --accent-color: #fb0a5e;  /* Pink */
+            --background-color: #ffffff;
+            --form-bg-color: #f9f9f9;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
+            --text-color-light: #ffffff;
+            --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+            --transicao: all 0.3s ease;
+            --border-radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align container to top */
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--background-color);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--sombra);
+            width: 100%;
+            max-width: 900px; /* Limit maximum width */
+            transition: var(--transicao);
+        }
+
+        h1, h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .section {
+            background-color: var(--form-bg-color);
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+        }
+
+        /* File Handling Section */
+        .file-handling {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            gap: 15px; /* Space between items */
+            align-items: center; /* Vertically align items */
+            justify-content: space-between; /* Distribute space */
+            margin-bottom: 20px;
+        }
+
+        .file-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-grow: 1; /* Allow it to take available space */
+            min-width: 250px; /* Ensure minimum width */
+        }
+
+        label { /* General label styling */
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        input[type="file"] {
+            display: none; /* Hide default file input */
+        }
+
+        /* Custom File Upload Button */
+        .custom-file-upload {
+            border: 1px solid var(--primary-color);
+            display: inline-block;
+            padding: 8px 15px;
+            cursor: pointer;
+            background-color: var(--background-color);
+            color: var(--primary-color);
+            border-radius: var(--border-radius);
+            transition: var(--transicao);
+            font-weight: bold;
+            text-align: center;
+            white-space: nowrap; /* Prevent text wrapping */
+        }
+
+        .custom-file-upload:hover {
+            background-color: var(--primary-color);
+            color: var(--text-color-light);
+        }
+
+        #fileName {
+            font-style: italic;
+            color: var(--text-color);
+            margin-left: 10px;
+            flex-shrink: 1; /* Allow shrinking if filename is long */
+            overflow: hidden;
+            text-overflow: ellipsis; /* Add ... if too long */
+            white-space: nowrap;
+        }
+
+        /* General Button Styling */
+        .button {
+            background-color: var(--accent-color);
+            color: var(--text-color-light);
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: var(--transicao);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+             white-space: nowrap;
+        }
+
+        .button:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--sombra);
+        }
+
+        .button:disabled {
+            background-color: #cccccc;
+            color: #666666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .button.secondary {
+             background-color: var(--primary-color);
+        }
+         .button.secondary:hover {
+             background-color: var(--accent-color);
+         }
+
+
+        /* Data Preview Table */
+        #dataDisplayArea {
+             margin-top: 15px;
+        }
+        #dataDisplayArea h3 {
+            margin-bottom: 10px;
+             color: var(--primary-color);
+             font-size: 1.1rem;
+        }
+
+        .data-display {
+            max-height: 300px; /* Limit height and add scroll */
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+             background-color: var(--background-color); /* White background for table area */
+        }
+
+        #dataTable {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        #dataTable th, #dataTable td {
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            text-align: left;
+             white-space: nowrap; /* Prevent cell content wrapping */
+        }
+
+        #dataTable th {
+            background-color: var(--primary-color);
+            color: var(--text-color-light);
+            position: sticky; /* Keep header visible when scrolling */
+            top: 0;
+            z-index: 1; /* Ensure header is above content */
+        }
+
+        #dataTable tbody tr:nth-child(even) {
+            background-color: #f8f0fc; /* Lighter purple for zebra striping */
+        }
+        #dataTable tbody tr:hover {
+            background-color: #e8d4f5; /* Slightly darker purple hover */
+        }
+
+        /* Error Message Area */
+        #errorMessage {
+            color: var(--accent-color); /* Use accent color for errors */
+            margin-top: 10px;
+            font-weight: bold;
+            padding: 10px;
+            background-color: #ffebee; /* Light pink background for error */
+            border: 1px solid var(--accent-color);
+            border-radius: var(--border-radius);
+             display: none; /* Initially hidden */
+        }
+         #errorMessage:not(:empty) {
+             display: block; /* Show only when it has content */
+         }
+
+
+        /* Tabs */
+        .tab-container {
+            display: flex;
+            flex-wrap: wrap; /* Allow tabs to wrap on small screens */
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background-color: transparent;
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            transition: var(--transicao);
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px; /* Overlap container border for active state */
+             flex-grow: 1; /* Allow tabs to take equal space */
+             text-align: center;
+        }
+
+        .tab-button:hover {
+            color: var(--accent-color);
+        }
+
+        .tab-button.active {
+            color: var(--accent-color);
+            border-bottom-color: var(--accent-color);
+        }
+
+        /* Results Output Area */
+        #resultsOutput {
+            background-color: #e9ecef; /* Light grey background */
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            margin-top: 20px;
+            min-height: 150px;
+            font-family: 'Courier New', Courier, monospace; /* Monospace for better alignment */
+            white-space: pre-wrap; /* Preserve whitespace and wrap lines */
+            word-wrap: break-word;
+            border-radius: var(--border-radius);
+            overflow-y: auto;
+            max-height: 400px; /* Limit height */
+            font-size: 0.9rem;
+            color: var(--text-color); /* Ensure text color contrasts with background */
+             line-height: 1.4; /* Slightly adjust line height for readability */
+        }
+
+         /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            .file-handling {
+                flex-direction: column;
+                align-items: stretch; /* Make items full width */
+            }
+            .file-input-wrapper {
+                 margin-bottom: 10px;
+                 justify-content: center; /* Center file input elements */
+            }
+             #fileName {
+                 text-align: center; /* Center file name text */
+                 margin-left: 0;
+             }
+            .button { /* Make buttons potentially full width */
+                /* width: 100%; */ /* Uncomment if full width buttons are desired */
+                 margin-bottom: 10px;
+            }
+            .file-handling .button { /* Revert width for file/download buttons */
+                 width: auto;
+                 margin-bottom: 0;
+            }
+            .tab-button {
+                flex-basis: 50%; /* Two tabs per row approx */
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+             h2 {
+                font-size: 1.2rem;
+            }
+        }
+         @media (max-width: 480px) {
+             .tab-button {
+                flex-basis: 100%; /* One tab per row */
+            }
+             .button {
+                 width: 100%; /* Force buttons to full width on very small screens */
+                 margin-bottom: 10px;
+             }
+             .file-handling .button {
+                 width: 100%; /* Also make file buttons full width here */
+             }
+             .file-input-wrapper {
+                 flex-direction: column; /* Stack label and filename vertically */
+                 align-items: center;
+             }
+             .custom-file-upload {
+                 width: 100%; /* Make file upload button full width */
+             }
+             #fileName {
+                  margin-top: 5px;
+             }
+             .data-display {
+                 max-height: 250px; /* Reduce table height */
+             }
+             #resultsOutput {
+                 max-height: 300px; /* Reduce results height */
+             }
+         }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora Simples Nacional</h1>
+
+        <!-- Section 1: File Upload and Preview -->
+        <div class="section">
+            <h2>1. Carregar Planilha</h2>
+            <div class="file-handling">
+                <div class="file-input-wrapper">
+                     <!-- File input trigger -->
+                     <label for="excelFile" class="custom-file-upload button">Escolher Arquivo (.xlsx)</label>
+                     <!-- Hidden actual file input -->
+                     <input type="file" id="excelFile" accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                     <!-- Display selected file name -->
+                     <span id="fileName">Nenhum arquivo selecionado</span>
+                </div>
+                 <!-- Template download button -->
+                 <button id="downloadTemplate" class="button secondary">Baixar Modelo</button>
+            </div>
+            <!-- Area to display errors -->
+            <div id="errorMessage"></div>
+            <!-- Area to display loaded data table (initially hidden) -->
+            <div id="dataDisplayArea" style="display: none;">
+                <h3>Dados Carregados (Pré-visualização):</h3>
+                <div class="data-display">
+                    <table id="dataTable">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Anexo Selection and Calculation Trigger -->
+        <div class="section">
+            <h2>2. Selecionar Anexo e Calcular</h2>
+            <!-- Tabs for Anexo selection -->
+            <div class="tab-container">
+                <button class="tab-button active" data-anexo="I">Anexo I</button>
+                <button class="tab-button" data-anexo="II">Anexo II</button>
+                <button class="tab-button" data-anexo="III">Anexo III</button>
+                <button class="tab-button" data-anexo="V">Anexo V</button>
+            </div>
+            <!-- Calculate button (initially disabled) -->
+            <button id="calculateButton" class="button" disabled>Calcular Simples Nacional</button>
+        </div>
+
+        <!-- Section 3: Results Display -->
+        <div class="section">
+            <h2>3. Resultados</h2>
+            <div id="resultsOutput">
+                Aguardando carregamento da planilha e cálculo...
+            </div>
+        </div>
+    </div>
+
+    <!-- --- JavaScript Logic --- -->
+    <script>
+        // Global variable to store parsed data
+        let excelData = null;
+        let activeAnexo = 'I'; // Default Anexo
+
+        // Get references to HTML elements
+        const fileInput = document.getElementById('excelFile');
+        const fileNameDisplay = document.getElementById('fileName');
+        const dataDisplayArea = document.getElementById('dataDisplayArea');
+        const dataTableBody = document.getElementById('dataTable').querySelector('tbody');
+        const dataTableHeader = document.getElementById('dataTable').querySelector('thead');
+        const calculateButton = document.getElementById('calculateButton');
+        const resultsOutput = document.getElementById('resultsOutput');
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const downloadTemplateButton = document.getElementById('downloadTemplate');
+        const errorMessageDiv = document.getElementById('errorMessage');
+
+        // --- Helper Functions ---
+
+        /**
+         * Formats a number into Brazilian Real currency format (R$ 1.234.567,89).
+         * Ensures input is treated as a proper number before formatting.
+         * @param {number|string} value - The number or string to format.
+         * @returns {string} Formatted currency string or the original value if not convertible.
+         */
+        function formatCurrency(value) {
+            let numValue;
+
+            if (typeof value === 'number') {
+                numValue = value;
+            } else if (typeof value === 'string') {
+                // Attempt to parse string, removing BR thousands separators (.) and replacing BR decimal comma (,) with standard period (.)
+                const cleanedString = value.trim().replace(/\./g, '').replace(',', '.');
+                numValue = parseFloat(cleanedString);
+            } else {
+                 // If not number or string, cannot format
+                 return String(value); // Return as string representation
+            }
+
+            // Check if parsing resulted in a valid number
+            if (isNaN(numValue)) {
+                return String(value); // Return original value if parsing failed
+            }
+
+            // Format the valid number using pt-BR locale for currency
+            return numValue.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        /**
+         * Formats a number into a percentage string with Brazilian decimal format (XX,XX%).
+         * @param {number} value - The percentage value (e.g., 4.5 for 4.5%).
+         * @returns {string} Formatted percentage string or the original value if not a number.
+         */
+        function formatPercentage(value) {
+             if (typeof value !== 'number' || isNaN(value)) {
+                 return String(value); // Return original if not a valid number
+             }
+             // Use 'pt-BR' for decimal comma, show 2 decimal places.
+             const formattedNumber = value.toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+             });
+             return `${formattedNumber}%`; // Append the % sign
+        }
+
+        /**
+         * Attempts to format a value as MM/YYYY. Handles JS Date objects and Excel date serial numbers.
+         * @param {Date|number|string} date - The date value to format.
+         * @returns {string} Formatted date string (MM/YYYY) or original value/placeholder.
+         */
+        function formatDateMMYYYY(date) {
+            // 1. Handle valid JS Date objects
+            if (date instanceof Date && !isNaN(date)) {
+                 const month = (date.getUTCMonth() + 1).toString().padStart(2, '0'); // Use UTC
+                 const year = date.getUTCFullYear();
+                 return `${month}/${year}`;
+            }
+            // 2. Handle potential Excel date serial numbers
+            if (typeof date === 'number' && date > 25568 && date < 2958466) { // Plausible Excel date range
+                 try {
+                    const utcMillis = (date - 25569) * 86400000; // Days to milliseconds since JS epoch
+                    const jsDate = new Date(utcMillis);
+                    if (!isNaN(jsDate)) {
+                         const month = (jsDate.getUTCMonth() + 1).toString().padStart(2, '0');
+                         const year = jsDate.getUTCFullYear();
+                         return `${month}/${year}`;
+                    }
+                 } catch (e) { console.warn("Error converting Excel date number:", date, e); }
+             }
+             // 3. Handle strings that might look like dates (basic check)
+             if (typeof date === 'string') {
+                 // You might add more robust string date parsing here if needed
+                 return date; // Return original string for now
+             }
+             // 4. Fallback
+             return 'Data inválida';
+        }
+
+        /**
+         * Formats a date value for display in the preview table (more flexible format).
+         * @param {Date|number|string} date - The date value.
+         * @returns {string} Formatted date/time string or original value.
+         */
+         function formatDateTimeForTable(date) {
+             // 1. Valid JS Date
+             if (date instanceof Date && !isNaN(date)) {
+                 return date.toLocaleString('pt-BR'); // Use locale string
+             }
+             // 2. Excel date number conversion
+             if (typeof date === 'number' && date > 25568 && date < 2958466) {
+                 try {
+                     const utcMillis = (date - 25569) * 86400000;
+                     const jsDate = new Date(utcMillis);
+                     if (!isNaN(jsDate)) {
+                         return jsDate.toLocaleString('pt-BR');
+                     }
+                 } catch (e) { /* ignore conversion error */ }
+             }
+            // 3. Fallback for strings or other types
+            return (date !== null && typeof date !== 'undefined') ? String(date) : '';
+         }
+
+        /** Clears status messages, results, table, and resets button states. */
+        function clearStatus() {
+            errorMessageDiv.textContent = '';
+            errorMessageDiv.style.display = 'none';
+            resultsOutput.textContent = 'Aguardando carregamento da planilha e cálculo...';
+            dataTableBody.innerHTML = '';
+            dataTableHeader.innerHTML = '';
+            dataDisplayArea.style.display = 'none';
+            calculateButton.disabled = true;
+            excelData = null;
+        }
+
+        /** Displays an error message in the designated area. */
+        function displayError(message) {
+            errorMessageDiv.textContent = message;
+            errorMessageDiv.style.display = 'block';
+            console.error(message);
+        }
+
+        // --- Event Listeners ---
+
+        // File Input Change Event
+        fileInput.addEventListener('change', (event) => {
+            clearStatus();
+            const file = event.target.files[0];
+
+            if (file) {
+                fileNameDisplay.textContent = file.name;
+                const reader = new FileReader();
+
+                reader.onload = (e) => {
+                    try {
+                        const fileData = new Uint8Array(e.target.result);
+                        // **Correction:** Prioritize using { raw: true } to get raw cell values.
+                        // This avoids potential misinterpretations based on Excel's visual formatting.
+                        // Use cellDates: true to attempt automatic date parsing by SheetJS where possible.
+                        const workbook = XLSX.read(fileData, { type: 'array', cellDates: true });
+
+                        const firstSheetName = workbook.SheetNames[0];
+                        if (!firstSheetName) {
+                            throw new Error("Nenhuma planilha encontrada no arquivo.");
+                        }
+                        const worksheet = workbook.Sheets[firstSheetName];
+
+                        // **Correction:** Use raw: true primarily.
+                        excelData = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+
+                        if (!excelData || excelData.length === 0) {
+                            throw new Error("Planilha está vazia ou não foi possível ler os dados.");
+                        }
+
+                        // Validation: Check for essential columns (case-insensitive)
+                        const firstRowKeys = Object.keys(excelData[0]).map(k => k.toUpperCase());
+                        const hasData = firstRowKeys.includes('DATA');
+                        const hasAcumulado = firstRowKeys.includes('ACUMULADO');
+
+                        if (!hasData || !hasAcumulado) {
+                             const dataKeyFound = Object.keys(excelData[0]).find(k => k.toUpperCase() === 'DATA') || "'DATA' (não encontrada)";
+                             const acumuladoKeyFound = Object.keys(excelData[0]).find(k => k.toUpperCase() === 'ACUMULADO') || "'ACUMULADO' (não encontrada)";
+                             throw new Error(`Colunas essenciais não encontradas: ${dataKeyFound}, ${acumuladoKeyFound}. Verifique nomes/existência.`);
+                        }
+
+                        // **Crucial Step**: Pre-process ACUMULADO to ensure it's a number *before* display/calculation
+                        // Find the actual key name for ACUMULADO
+                         const acumuladoKeyActual = Object.keys(excelData[0]).find(k => k.toUpperCase() === 'ACUMULADO');
+                         excelData = excelData.map(row => {
+                             const rawValue = row[acumuladoKeyActual];
+                             let numValue = NaN; // Default to Not-a-Number
+
+                             if (typeof rawValue === 'number') {
+                                 numValue = rawValue; // Already a number, use it directly
+                             } else if (typeof rawValue === 'string') {
+                                 // Clean string: remove spaces, BR thousands separator (.), replace BR decimal (,) with standard (.)
+                                 const cleaned = rawValue.trim().replace(/\./g, '').replace(',', '.');
+                                 // Attempt to parse the cleaned string
+                                 numValue = parseFloat(cleaned);
+                             }
+                             // Store the processed numeric value (or NaN) back into the row
+                             // Using null for invalid values might be cleaner depending on how you want to handle them later
+                             row[acumuladoKeyActual] = isNaN(numValue) ? null : numValue;
+                             return row;
+                         });
+
+                        // Now display data using the pre-processed numeric values
+                        displayDataInTable(excelData);
+                        calculateButton.disabled = false; // Enable calculate button
+
+                    } catch (error) {
+                        displayError(`Erro ao processar Excel: ${error.message}`);
+                        fileNameDisplay.textContent = 'Erro ao ler arquivo';
+                        excelData = null;
+                        calculateButton.disabled = true;
+                        clearStatus(); // Reset UI
+                    }
+                };
+
+                reader.onerror = () => {
+                     displayError('Erro do navegador ao ler o arquivo.');
+                     fileNameDisplay.textContent = 'Erro de leitura';
+                     clearStatus();
+                };
+
+                reader.readAsArrayBuffer(file);
+
+            } else {
+                fileNameDisplay.textContent = 'Nenhum arquivo selecionado';
+                clearStatus();
+            }
+        });
+
+        // Tab Button Click Events
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                activeAnexo = button.getAttribute('data-anexo');
+                if (excelData) {
+                    resultsOutput.textContent = `Anexo ${activeAnexo} selecionado. Clique em Calcular.`;
+                } else {
+                    resultsOutput.textContent = `Anexo ${activeAnexo} selecionado. Carregue a planilha e Calcular.`;
+                }
+            });
+        });
+
+        // Calculate Button Click Event
+        calculateButton.addEventListener('click', () => {
+            if (!excelData) {
+                displayError("Nenhuma planilha carregada. Por favor, carregue um arquivo .xlsx.");
+                return;
+            }
+            performCalculation();
+        });
+
+        // Download Template Button Click Event
+        downloadTemplateButton.addEventListener('click', () => {
+            const templateData = [ // Ensure numbers are used here
+                { DATA: '01/01/2024', ACUMULADO: 15000.50 },
+                { DATA: '01/02/2024', ACUMULADO: 35000.00 },
+                { DATA: '01/03/2024', ACUMULADO: 200000.00 },
+                { DATA: '01/04/2024', ACUMULADO: 321609.00 }, // Example causing issues previously
+                { DATA: '01/05/2024', ACUMULADO: 4500000.99 },
+            ];
+            const ws = XLSX.utils.json_to_sheet(templateData);
+             ws['!cols'] = [ { wch: 12 }, { wch: 18 } ]; // Column widths
+             // Apply Excel BRL format to ACUMULADO column
+             Object.keys(ws).forEach(cellRef => {
+                 if (cellRef.startsWith('B') && cellRef !== 'B1') { // Target ACUMULADO column, skip header
+                     if (ws[cellRef].t === 'n') { // If it's a number
+                         ws[cellRef].z = 'R$ #,##0.00'; // BRL format string for Excel
+                     }
+                 }
+            });
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "BaseSimples");
+            // Trigger download
+            XLSX.writeFile(wb, "modelo_base_simples.xlsx", { bookType: 'xlsx', type: 'binary' });
+        });
+
+        // --- Core Logic ---
+
+        /** Displays the parsed Excel data in the HTML preview table. */
+        function displayDataInTable(data) {
+            dataTableBody.innerHTML = '';
+            dataTableHeader.innerHTML = '';
+
+             if (!data || data.length === 0) {
+                dataDisplayArea.style.display = 'none';
+                 return;
+            }
+
+            // Get headers and find actual keys for DATA/ACUMULADO
+            const headers = Object.keys(data[0]);
+            const dataHeaderKey = headers.find(h => h.toUpperCase() === 'DATA') || headers[0];
+            const acumuladoHeaderKey = headers.find(h => h.toUpperCase() === 'ACUMULADO') || headers[1];
+
+            // Create table header row
+            const headerRow = document.createElement('tr');
+            headers.forEach(headerText => {
+                const th = document.createElement('th');
+                th.textContent = headerText;
+                headerRow.appendChild(th);
+            });
+            dataTableHeader.appendChild(headerRow);
+
+            // Create table body rows
+            data.forEach((row, rowIndex) => {
+                const tr = document.createElement('tr');
+                 headers.forEach(header => {
+                    const td = document.createElement('td');
+                    // Get cell value (ACUMULADO should be number or null after pre-processing)
+                     let cellValue = row[header];
+
+                     if (header === dataHeaderKey) {
+                         td.textContent = formatDateTimeForTable(cellValue);
+                     } else if (header === acumuladoHeaderKey) {
+                         // Format the number using the corrected formatCurrency
+                         // It handles null/NaN gracefully now
+                         td.textContent = formatCurrency(cellValue);
+                     } else {
+                         // Handle other columns
+                         td.textContent = cellValue !== null && typeof cellValue !== 'undefined' ? String(cellValue) : '';
+                     }
+                    tr.appendChild(td);
+                });
+                dataTableBody.appendChild(tr);
+            });
+            dataDisplayArea.style.display = 'block'; // Show table
+        }
+
+
+        /** Orchestrates the calculation process for all rows based on the selected Anexo. */
+        function performCalculation() {
+             resultsOutput.textContent = 'Calculando...';
+             let results = [];
+             errorMessageDiv.textContent = ''; // Clear previous errors
+             errorMessageDiv.style.display = 'none';
+
+             // Find actual keys for data access
+             let dataKey, acumuladoKey;
+             if (excelData && excelData.length > 0) {
+                 const firstRowKeys = Object.keys(excelData[0]);
+                 dataKey = firstRowKeys.find(k => k.toUpperCase() === 'DATA');
+                 acumuladoKey = firstRowKeys.find(k => k.toUpperCase() === 'ACUMULADO');
+             }
+
+             // Critical check if keys weren't found
+             if (!dataKey || !acumuladoKey) {
+                 displayError("Erro crítico: Colunas DATA ou ACUMULADO não encontradas nos dados internos. Verifique a planilha.");
+                 resultsOutput.textContent = 'Erro ao identificar colunas para cálculo.';
+                 return;
+             }
+
+             // Process each row
+             try {
+                 excelData.forEach((row, index) => {
+                    // Get pre-processed values
+                    const acumulado = row[acumuladoKey]; // Should be number or null
+                     let dataValue = row[dataKey];
+                     const linhaNum = index + 2; // Excel row number for messages
+
+                    // --- Data Validation for Calculation ---
+                    // Check if 'acumulado' is a usable number
+                    if (acumulado === null || typeof acumulado !== 'number' || isNaN(acumulado)) {
+                        results.push(`Linha ${linhaNum}: Valor ACUMULADO inválido ou não numérico (${row[acumuladoKey]}). Cálculo pulado.`);
+                        return; // Skip this row
+                    }
+                    // Check for negative value
+                     if (acumulado < 0) {
+                         results.push(`Linha ${linhaNum}: Valor ACUMULADO (${formatCurrency(acumulado)}) é negativo. Cálculo pulado.`);
+                        return; // Skip this row
+                     }
+
+                    // --- Perform Calculation ---
+                     let dataFormatada = formatDateMMYYYY(dataValue); // Format date for output
+                     let resultLine = '';
+
+                     // Call the appropriate calculation function
+                     switch (activeAnexo) {
+                         case 'I': resultLine = calculateAnexoI(acumulado, dataFormatada, linhaNum); break;
+                         case 'II': resultLine = calculateAnexoII(acumulado, dataFormatada, linhaNum); break;
+                         case 'III': resultLine = calculateAnexoIII(acumulado, dataFormatada, linhaNum); break;
+                         case 'V': resultLine = calculateAnexoV(acumulado, dataFormatada, linhaNum); break;
+                         default: resultLine = `Linha ${linhaNum}: Anexo ${activeAnexo} inválido selecionado.`;
+                     }
+                     results.push(resultLine); // Add result to list
+                 });
+
+                 // Display all results
+                 resultsOutput.textContent = results.join('\n');
+
+             } catch (error) {
+                 // Catch unexpected errors during the loop
+                 displayError(`Erro inesperado durante cálculo: ${error.message}`);
+                 resultsOutput.textContent = 'Erro durante cálculo. Verifique dados e console (F12).';
+                 console.error("Calculation Loop Error:", error);
+             }
+        }
+
+        // --- Calculation Functions (No changes needed here, they expect correct numbers) ---
+
+        function calculateAnexoI(acumulado, data, linha) {
+            let aliquota, deducao, aliquota_simples;
+            const displayData = data || 'Data Indisponível';
+            if (acumulado === 0) {
+                 aliquota_simples = 4.00;
+                 return `Linha ${linha}: RBT12 R$0,00 em ${displayData}. Alíquota nominal inicial: ${formatPercentage(aliquota_simples)} (Anexo I).`;
+            }
+            if (acumulado <= 180000) { aliquota = 0.04; deducao = 0.00; }
+            else if (acumulado <= 360000) { aliquota = 0.073; deducao = 5940; }
+            else if (acumulado <= 720000) { aliquota = 0.095; deducao = 13860; }
+            else if (acumulado <= 1800000) { aliquota = 0.1070; deducao = 22500; }
+            else if (acumulado <= 3600000) { aliquota = 0.1430; deducao = 87300; }
+            else if (acumulado <= 4800000) {
+                aliquota = 0.19; deducao = 378000;
+                let aliquota_efetiva_faixa6 = ((acumulado * aliquota - deducao) / acumulado) * 100;
+                let aliquota_ref = 0.1430, deducao_ref = 87300;
+                let calc_extra = (((acumulado * aliquota_ref - deducao_ref) / acumulado) * 100) * 0.335; // VERIFY THIS LOGIC
+                let aliquota_final_combinada = aliquota_efetiva_faixa6 + calc_extra;
+                 return `Linha ${linha}: R$${formatCurrency(acumulado)} em ${displayData}. Alíquota Efetiva*: ${formatPercentage(aliquota_final_combinada)} (Anexo I - Faixa 6*). *Verificar regras específicas.`;
+            } else { return `Linha ${linha}: RBT12 ${formatCurrency(acumulado)} em ${displayData} excede o limite de R$4.800.000,00.`; }
+            aliquota_simples = ((acumulado * aliquota - deducao) / acumulado) * 100;
+            return `Linha ${linha}: R$${formatCurrency(acumulado)} em ${displayData}. Alíquota Efetiva: ${formatPercentage(aliquota_simples)} (Anexo I).`;
+        }
+
+        function calculateAnexoII(acumulado, data, linha) {
+             let aliquota, deducao, aliquota_simples;
+             const displayData = data || 'Data Indisponível';
+             if (acumulado === 0) { aliquota_simples = 4.50; return `Linha ${linha}: RBT12 R$0,00 em ${displayData}. Alíquota nominal inicial: ${formatPercentage(aliquota_simples)} (Anexo II).`; }
+             if (acumulado <= 180000) { aliquota = 0.045; deducao = 0.00; }
+             else if (acumulado <= 360000) { aliquota = 0.078; deducao = 5940; }
+             else if (acumulado <= 720000) { aliquota = 0.10; deducao = 13860; }
+             else if (acumulado <= 1800000) { aliquota = 0.1120; deducao = 22500; }
+             else if (acumulado <= 3600000) { aliquota = 0.1470; deducao = 85500; }
+             else if (acumulado <= 4800000) {
+                aliquota = 0.30; deducao = 720000;
+                let aliquota_efetiva_faixa6 = ((acumulado * aliquota - deducao) / acumulado) * 100;
+                let aliquota_ref = 0.1470, deducao_ref = 85500;
+                let calc_extra = (((acumulado * aliquota_ref - deducao_ref) / acumulado) * 100) * 0.32; // VERIFY THIS LOGIC
+                let aliquota_final_combinada = aliquota_efetiva_faixa6 + calc_extra;
+                return `Linha ${linha}: R$${formatCurrency(acumulado)} em ${displayData}. Alíquota Efetiva*: ${formatPercentage(aliquota_final_combinada)} (Anexo II - Faixa 6*). *Verificar regras específicas.`;
+             } else { return `Linha ${linha}: RBT12 ${formatCurrency(acumulado)} em ${displayData} excede o limite de R$4.800.000,00.`; }
+             aliquota_simples = ((acumulado * aliquota - deducao) / acumulado) * 100;
+             return `Linha ${linha}: R$${formatCurrency(acumulado)} em ${displayData}. Alíquota Efetiva: ${formatPercentage(aliquota_simples)} (Anexo II).`;
+        }
+
+         function calculateAnexoIII(acumulado, data, linha) {
+             let aliquota, deducao, aliquota_simples;
+             const displayData = data || 'Data Indisponível';
+              if (acumulado === 0) { aliquota_simples = 6.00; return `Linha ${linha}: RBT12 R$0,00 em ${displayData}. Alíquota nominal inicial: ${formatPercentage(aliquota_simples)} (Anexo III).`; }
+             if (acumulado <= 180000) { aliquota = 0.06; deducao = 0.00; }
+             else if (acumulado <= 360000) { aliquota = 0.1120; deducao = 9360; }
+             else if (acumulado <= 720000) { aliquota = 0.1350; deducao = 17640; }
+             else if (acumulado <= 1800000) { aliquota = 0.16; deducao = 35640; }
+             else if (acumulado <= 3600000) { aliquota = 0.21; deducao = 125640; }
+             else if (acumulado <= 4800000) {
+                 aliquota = 0.33; deducao = 648000;
+                 let aliquota_efetiva_faixa6 = ((acumulado * aliquota - deducao) / acumulado) * 100;
+                 let aliquota_ref = 0.21, deducao_ref = 125640;
+                 let calc_extra = (((acumulado * aliquota_ref - deducao_ref) / acumulado) * 100) * 0.335; // VERIFY THIS LOGIC
+                 let aliquota_final_combinada = aliquota_efetiva_faixa6 + calc_extra;
+                 return `Linha ${linha}: R$${formatCurrency(acumulado)} em ${displayData}. Alíquota Efetiva*: ${formatPercentage(aliquota_final_combinada)} (Anexo III - Faixa 6*). *Verificar regras específicas.`;
+             } else { return `Linha ${linha}: RBT12 ${formatCurrency(acumulado)} em ${displayData} excede o limite de R$4.800.000,00.`; }
+             aliquota_simples = ((acumulado * aliquota - deducao) / acumulado) * 100;
+             return `Linha ${linha}: R$${formatCurrency(acumulado)} em ${displayData}. Alíquota Efetiva: ${formatPercentage(aliquota_simples)} (Anexo III).`;
+         }
+
+         function calculateAnexoV(acumulado, data, linha) {
+             let aliquota, deducao, aliquota_simples;
+             const displayData = data || 'Data Indisponível';
+             if (acumulado === 0) { aliquota_simples = 15.50; return `Linha ${linha}: RBT12 R$0,00 em ${displayData}. Alíquota nominal inicial: ${formatPercentage(aliquota_simples)} (Anexo V - Fator R não considerado).`; }
+             if (acumulado <= 180000) { aliquota = 0.1550; deducao = 0.00; }
+             else if (acumulado <= 360000) { aliquota = 0.18; deducao = 4500; }
+             else if (acumulado <= 720000) { aliquota = 0.1950; deducao = 9900; }
+             else if (acumulado <= 1800000) { aliquota = 0.2050; deducao = 17100; }
+             else if (acumulado <= 3600000) { aliquota = 0.23; deducao = 62100; }
+             else if (acumulado <= 4800000) {
+                 aliquota = 0.305; deducao = 540000;
+                 let aliquota_efetiva_faixa6 = ((acumulado * aliquota - deducao) / acumulado) * 100;
+                 let aliquota_ref = 0.21, deducao_ref = 125640; // Needs verification for Anexo V
+                 let calc_extra = (((acumulado * aliquota_ref - deducao_ref) / acumulado) * 100) * 0.335; // Needs verification for Anexo V
+                 let aliquota_final_combinada = aliquota_efetiva_faixa6 + calc_extra;
+                 return `Linha ${linha}: R$${formatCurrency(acumulado)} em ${displayData}. Alíquota Efetiva*: ${formatPercentage(aliquota_final_combinada)} (Anexo V - Faixa 6*). *Verificar regras específicas e Fator R.`;
+             } else { return `Linha ${linha}: RBT12 ${formatCurrency(acumulado)} em ${displayData} excede o limite de R$4.800.000,00.`; }
+             aliquota_simples = ((acumulado * aliquota - deducao) / acumulado) * 100;
+             return `Linha ${linha}: R$${formatCurrency(acumulado)} em ${displayData}. Alíquota Efetiva: ${formatPercentage(aliquota_simples)} (Anexo V - Fator R não considerado).`;
+         }
+
+    </script>
+
+</body>
+</html>
