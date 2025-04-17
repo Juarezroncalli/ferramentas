@@ -1,0 +1,2085 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadora IRPJ + CSLL (Lucro Presumido)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- jsPDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- html2canvas Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+      :root {
+        --primary-color: #4f0072; /* Roxo escuro original */
+        --primary-light: #7b2fa0; /* Versão mais clara do roxo */
+        --primary-dark: #3a0054; /* Versão mais escura do roxo */
+        --accent-color: #fb0a5e; /* Rosa vibrante original */
+        --accent-light: #ff4d8d; /* Versão mais clara do rosa */
+        --accent-dark: #d10046; /* Versão mais escura do rosa */
+        --background-color: #ffffff; /* Branco original */
+        --surface-color: #f9f9f9; /* Cinza muito claro original */
+        --card-color: #ffffff; /* Branco para cartões */
+        --text-primary: #333333; /* Cinza escuro original */
+        --text-secondary: #555555; /* Versão mais clara do texto */
+        --text-tertiary: #777777; /* Versão ainda mais clara do texto */
+        --border-color: #e0e0e0; /* Cinza claro original */
+        --input-bg: #f2e6f9; /* Lavanda claro para inputs */
+        --input-focus-ring: rgba(79, 0, 114, 0.2); /* Roxo com transparência */
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --radius-sm: 0.25rem;
+        --radius-md: 0.375rem;
+        --radius-lg: 0.5rem;
+        --radius-xl: 0.75rem;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        font-size: 13px;
+        line-height: 1.5;
+        color: var(--text-primary);
+        background-color: var(--surface-color);
+        min-height: 100vh;
+        padding: 2rem 1rem;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .calculator-card {
+        background-color: var(--card-color);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+        margin-bottom: 2rem;
+      }
+
+      .calculator-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--primary-dark)
+        );
+        padding: 1.5rem;
+        color: white;
+        position: relative;
+      }
+
+      .calculator-header::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(
+          90deg,
+          var(--accent-color),
+          var(--primary-light)
+        );
+      }
+
+      .calculator-title {
+        font-family: "Poppins", sans-serif;
+        font-weight: 600;
+        font-size: 1.75rem;
+        margin-bottom: 0.25rem;
+        text-align: center;
+      }
+
+      .calculator-subtitle {
+        font-weight: 400;
+        font-size: 1rem;
+        opacity: 0.9;
+        text-align: center;
+      }
+
+      .calculator-body {
+        padding: 1.5rem;
+      }
+
+      .company-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      @media (max-width: 768px) {
+        .company-info {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .input-group {
+        position: relative;
+      }
+
+      .input-group label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+        color: var(--text-secondary);
+      }
+
+      .input-field {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        font-size: 0.9rem;
+        background-color: var(--input-bg);
+        color: var(--text-primary);
+        transition: all 0.2s ease;
+      }
+
+      .input-field:focus {
+        outline: none;
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 3px var(--input-focus-ring);
+      }
+
+      .table-container {
+        overflow-x: auto;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 1.5rem;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+
+      thead {
+        background-color: var(--primary-color);
+        color: white;
+        position: sticky; /* Keep sticky for usability if table scrolls vertically */
+        top: 0;
+        z-index: 10;
+      }
+
+      th {
+        padding: 0.5rem 0.75rem;
+        text-align: center;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+
+      th:first-child {
+        text-align: left;
+        padding-left: 1rem;
+      }
+
+      td {
+        padding: 0.35rem 0.75rem;
+        border-bottom: 1px solid var(--border-color);
+        text-align: right;
+      }
+
+      td:first-child {
+        text-align: left;
+        padding-left: 1rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+      }
+
+      tbody tr:hover {
+        background-color: rgba(243, 244, 246, 0.5);
+      }
+
+      tbody tr:last-child td {
+        border-bottom: none;
+      }
+
+      .section-title td {
+        background: linear-gradient(
+          to right,
+          var(--primary-light),
+          var(--primary-color)
+        );
+        color: white;
+        font-weight: 600;
+        text-align: center;
+        padding: 0.4rem;
+        font-size: 0.95rem;
+        border-bottom: none;
+      }
+
+      .month-select {
+        width: 100%;
+        padding: 0.35rem;
+        border: none;
+        background-color: transparent;
+        color: white;
+        font-weight: 500;
+        font-size: 0.85rem;
+        cursor: pointer;
+        text-align: center;
+        appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+        padding-right: 30px;
+      }
+
+      .month-select:focus {
+        outline: none;
+      }
+
+      .table-input {
+        width: 100%;
+        padding: 0.25rem;
+        text-align: right;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        background-color: var(--input-bg);
+        font-size: 0.85rem;
+        transition: all 0.2s ease;
+      }
+
+      .table-input:focus {
+        outline: none;
+        border-color: var(--primary-light);
+        box-shadow: 0 0 0 2px var(--input-focus-ring);
+      }
+
+      .calculated-field {
+        display: block; /* Ensures it takes full cell width */
+        padding: 0.25rem;
+        background-color: var(--surface-color);
+        border-radius: var(--radius-sm);
+        font-weight: 500;
+        min-height: calc(0.85rem + 0.5rem + 2px); /* Match input height roughly */
+        text-align: right; /* Explicitly set text-align */
+      }
+
+
+      .total-row td {
+        background-color: var(--surface-color);
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+      /* Ensure calculated fields in total rows match background */
+      .total-row .calculated-field {
+         background-color: var(--surface-color);
+      }
+
+      .final-total-row td {
+        background-color: var(--primary-dark);
+        color: white;
+        font-weight: 600;
+        border-bottom: none;
+      }
+
+      .final-total-label {
+        text-align: right !important;
+        padding-right: 1rem !important;
+      }
+
+      .final-total-value {
+        background-color: var(--accent-color);
+        color: white;
+        padding: 0.35rem 0.75rem;
+        border-radius: var(--radius-md);
+        display: inline-block;
+        font-weight: 600;
+        min-width: 120px;
+        text-align: right;
+      }
+
+      .codigo-receita {
+        font-size: 0.75rem;
+        opacity: 0.9;
+        margin-left: 0.5rem;
+        font-weight: normal;
+      }
+
+      .actions {
+        display: flex;
+        justify-content: center;
+        margin-top: 1.5rem;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.6rem 1.25rem;
+        border-radius: var(--radius-md);
+        font-weight: 500;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+      }
+
+      .btn-primary {
+        background: linear-gradient(
+          to right,
+          var(--primary-color),
+          var(--primary-dark)
+        );
+        color: white;
+        box-shadow: var(--shadow-md);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+
+      .btn-primary:disabled {
+        background: #cbd5e1;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .btn-icon {
+        margin-right: 0.5rem;
+      }
+
+      /* Print styles */
+      @media print {
+        body {
+          padding: 0;
+          background-color: white;
+          font-size: 10pt; /* Adjust font size for print if needed */
+        }
+
+        .container {
+          max-width: 100%;
+          margin: 0;
+          padding: 0;
+        }
+
+        .calculator-card {
+          box-shadow: none;
+          margin: 0;
+          border-radius: 0;
+          border: 1px solid #ccc; /* Optional border for print */
+        }
+
+        .actions {
+          display: none;
+        }
+
+        .calculator-header,
+        thead,
+        .section-title td,
+        .final-total-row td,
+        .final-total-value {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+
+        /* Ensure header background prints */
+        .calculator-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)) !important;
+            color: white !important;
+        }
+        .calculator-header::after { /* Ensure gradient bar prints */
+            background: linear-gradient(90deg, var(--accent-color), var(--primary-light)) !important;
+        }
+
+
+        /* Ensure table header background and text prints */
+        thead {
+            background-color: var(--primary-color) !important;
+            color: white !important;
+        }
+        th {
+           background-color: var(--primary-color) !important; /* Force background for each cell */
+           color: white !important;
+           border: 1px solid #ddd; /* Add borders for clarity */
+        }
+        /* Ensure select replacement text is white */
+        th span.month-text-print {
+            color: white !important;
+        }
+
+        td {
+            border: 1px solid #eee; /* Add light borders to table cells */
+        }
+        td:first-child {
+            color: var(--text-secondary) !important; /* Ensure first col text color */
+        }
+
+
+        .table-input {
+          border: 1px solid #ccc !important;
+          background-color: #f0f0f0 !important; /* Light gray background for inputs */
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+           color: var(--text-primary) !important; /* Ensure text color */
+           box-shadow: none !important; /* Remove focus shadow */
+        }
+
+        .calculated-field {
+          border: 1px solid transparent; /* Keep border or make it light gray */
+          background-color: var(--surface-color) !important; /* Keep surface color */
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+          color: var(--text-primary) !important; /* Ensure text color */
+        }
+
+        /* Ensure total row backgrounds print */
+        .total-row td {
+             background-color: var(--surface-color) !important;
+             font-weight: 600 !important;
+             color: var(--text-primary) !important;
+        }
+        .total-row .calculated-field {
+            background-color: var(--surface-color) !important;
+        }
+
+        /* Ensure section title backgrounds print */
+        .section-title td {
+            background: linear-gradient( to right, var(--primary-light), var(--primary-color) ) !important;
+            color: white !important;
+            font-weight: 600 !important;
+            font-size: 0.95rem !important;
+        }
+
+        /* Ensure final total backgrounds print */
+        .final-total-row td {
+            background-color: var(--primary-dark) !important;
+            color: white !important;
+        }
+        .final-total-value {
+            background-color: var(--accent-color) !important;
+            color: white !important;
+        }
+        .codigo-receita {
+            color: white !important; /* Ensure code is visible */
+            opacity: 0.9 !important;
+        }
+
+        .table-container {
+           overflow-x: visible; /* Prevent clipping in print */
+           box-shadow: none;
+        }
+
+        table {
+           width: 100%;
+           font-size: 0.8rem; /* Slightly smaller for print if needed */
+        }
+         input, span {
+             padding: 2px 4px; /* Reduce padding slightly for print */
+         }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="calculator-card" id="calculatorToPrint">
+        <div class="calculator-header">
+          <h1 class="calculator-title">Calculadora IRPJ + CSLL</h1>
+          <p class="calculator-subtitle">
+            Regime de Tributação: Lucro Presumido
+          </p>
+        </div>
+
+        <div class="calculator-body">
+          <div class="company-info">
+            <div class="input-group">
+              <label for="empresa">Empresa</label>
+              <input
+                type="text"
+                id="empresa"
+                class="input-field"
+                placeholder="Nome da empresa"
+              />
+            </div>
+            <div class="input-group">
+              <label for="cnpj">CNPJ</label>
+              <input
+                type="text"
+                id="cnpj"
+                class="input-field"
+                placeholder="00.000.000/0000-00"
+              />
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table id="calc-table">
+              <thead>
+                <tr>
+                  <th>Descrição</th>
+                  <th>
+                    <select id="month1" class="month-select">
+                      <option value="jan">JANEIRO</option>
+                      <option value="feb">FEVEREIRO</option>
+                      <option value="mar">MARÇO</option>
+                      <option value="apr">ABRIL</option>
+                      <option value="may">MAIO</option>
+                      <option value="jun">JUNHO</option>
+                      <option value="jul">JULHO</option>
+                      <option value="aug">AGOSTO</option>
+                      <option value="sep">SETEMBRO</option>
+                      <option value="oct">OUTUBRO</option>
+                      <option value="nov">NOVEMBRO</option>
+                      <option value="dec">DEZEMBRO</option>
+                    </select>
+                  </th>
+                  <th>
+                    <select id="month2" class="month-select">
+                      <option value="jan">JANEIRO</option>
+                      <option value="feb" selected>FEVEREIRO</option>
+                      <option value="mar">MARÇO</option>
+                      <option value="apr">ABRIL</option>
+                      <option value="may">MAIO</option>
+                      <option value="jun">JUNHO</option>
+                      <option value="jul">JULHO</option>
+                      <option value="aug">AGOSTO</option>
+                      <option value="sep">SETEMBRO</option>
+                      <option value="oct">OUTUBRO</option>
+                      <option value="nov">NOVEMBRO</option>
+                      <option value="dec">DEZEMBRO</option>
+                    </select>
+                  </th>
+                  <th>
+                    <select id="month3" class="month-select">
+                      <option value="jan">JANEIRO</option>
+                      <option value="feb">FEVEREIRO</option>
+                      <option value="mar" selected>MARÇO</option>
+                      <option value="apr">ABRIL</option>
+                      <option value="may">MAIO</option>
+                      <option value="jun">JUNHO</option>
+                      <option value="jul">JULHO</option>
+                      <option value="aug">AGOSTO</option>
+                      <option value="sep">SETEMBRO</option>
+                      <option value="oct">OUTUBRO</option>
+                      <option value="nov">NOVEMBRO</option>
+                      <option value="dec">DEZEMBRO</option>
+                    </select>
+                  </th>
+                  <th>ACUMULADO</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Faturamento -->
+                <tr>
+                  <td>Tributado a 1,6%</td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="fat_1_6_col1"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="fat_1_6_col2"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="fat_1_6_col3"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <span id="fat_1_6_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td>Tributado a 8%</td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="fat_8_col1"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="fat_8_col2"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="fat_8_col3"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <span id="fat_8_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td>Tributado a 16%</td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="fat_16_col1"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="fat_16_col2"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="fat_16_col3"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <span id="fat_16_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td>Tributado a 32%</td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="fat_32_col1"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="fat_32_col2"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="fat_32_col3"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <span id="fat_32_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+                <tr class="total-row">
+                  <td>TOTAL FATURAMENTO</td>
+                  <td>
+                    <span id="total_fat_col1" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="total_fat_col2" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="total_fat_col3" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="total_fat_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+
+                <!-- Outras Receitas -->
+                <tr>
+                  <td>Receitas Financeiras</td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="rec_fin_col1"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="rec_fin_col2"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="rec_fin_col3"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <span id="rec_fin_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td>Outras Rec. Operacionais</td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="rec_ope_col1"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="rec_ope_col2"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="rec_ope_col3"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <span id="rec_ope_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td>Receitas Não Operacionais</td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="rec_nao_ope_col1"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="rec_nao_ope_col2"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="rec_nao_ope_col3"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <span id="rec_nao_ope_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+                <tr class="total-row">
+                  <td>TOTAL DE OUTRAS RECEITAS</td>
+                  <td>
+                    <span id="total_outras_rec_col1" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="total_outras_rec_col2" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="total_outras_rec_col3" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="total_outras_rec_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+                <tr class="total-row">
+                  <td>TOTAL GERAL</td>
+                  <td>
+                    <span id="total_geral_col1" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="total_geral_col2" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="total_geral_col3" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="total_geral_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+
+                <!-- IRPJ -->
+                <tr class="section-title">
+                  <td colspan="5">IRPJ</td>
+                </tr>
+                <tr>
+                  <td>Lucro sobre Fat. A 1,6%</td>
+                  <td>
+                    <span id="irpj_base_1_6_col1" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="irpj_base_1_6_col2" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="irpj_base_1_6_col3" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="irpj_base_1_6_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td>Lucro sobre Fat. A 8%</td>
+                  <td>
+                    <span id="irpj_base_8_col1" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="irpj_base_8_col2" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="irpj_base_8_col3" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="irpj_base_8_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td>Lucro sobre Fat. A 16%</td>
+                  <td>
+                    <span id="irpj_base_16_col1" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="irpj_base_16_col2" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="irpj_base_16_col3" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="irpj_base_16_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td>Lucro sobre Fat. A 32%</td>
+                  <td>
+                    <span id="irpj_base_32_col1" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="irpj_base_32_col2" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="irpj_base_32_col3" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="irpj_base_32_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td>Total de Outras Receitas</td>
+                  <td>
+                    <span id="irpj_base_outras_col1" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="irpj_base_outras_col2" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="irpj_base_outras_col3" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="irpj_base_outras_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+                <tr class="total-row">
+                  <td>IRPJ - BASE TOTAL</td>
+                  <td>
+                    <span id="irpj_base_total_col1" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="irpj_base_total_col2" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="irpj_base_total_col3" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="irpj_base_total_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td>IRPJ Devido (15%)</td>
+                  <td>
+                    <span id="irpj_devido_15_col1" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="irpj_devido_15_col2" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="irpj_devido_15_col3" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="irpj_devido_15_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td>(-) IRRF</td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="irrf_col1"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="irrf_col2"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="irrf_col3"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <span id="irrf_acum" class="calculated-field">R$ 0,00</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>(-) Compensações e Retenções</td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="irpj_comp_col1"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="irpj_comp_col2"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="irpj_comp_col3"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <span id="irpj_comp_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+                <!-- IRPJ A PAGAR Row: Display adjusted for quarterly calculation -->
+                <tr class="total-row">
+                  <td>IRPJ A PAGAR (antes Adic.)</td>
+                  <td><span id="irpj_pagar_col1" class="calculated-field">---</span></td> <!-- Hide monthly -->
+                  <td><span id="irpj_pagar_col2" class="calculated-field">---</span></td> <!-- Hide monthly -->
+                  <td><span id="irpj_pagar_col3" class="calculated-field">---</span></td> <!-- Hide monthly -->
+                  <td><span id="irpj_pagar_acum" class="calculated-field">R$ 0,00</span></td> <!-- Show Accumulated -->
+                </tr>
+                <tr>
+                  <td>Adicional Imposto de Renda (10%)</td>
+                  <td><span class="calculated-field">---</span></td>
+                  <td><span class="calculated-field">---</span></td>
+                  <td><span class="calculated-field">---</span></td>
+                  <td>
+                    <span id="irpj_adicional_10" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+                <tr class="final-total-row">
+                  <td colspan="3" class="final-total-label">TOTAL IRPJ A PAGAR</td>
+                  <td colspan="2">
+                    <span id="total_irpj" class="final-total-value"
+                      >R$ 0,00</span
+                    >
+                    <span class="codigo-receita">Código Receita 2089</span>
+                  </td>
+                </tr>
+
+                <!-- CSLL -->
+                <tr class="section-title">
+                  <td colspan="5">CSLL</td>
+                </tr>
+                <tr>
+                  <td>CSLL - Base s/ Receita Bruta (12%)</td>
+                  <td>
+                    <span id="csll_base_12_col1" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="csll_base_12_col2" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="csll_base_12_col3" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="csll_base_12_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td>CSLL - Base s/ Receita Bruta (32%)</td>
+                  <td>
+                    <span id="csll_base_32_col1" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="csll_base_32_col2" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="csll_base_32_col3" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="csll_base_32_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td>Outras Bases (Financ/Operac/Não Operac)</td> <!-- Updated Label -->
+                  <td>
+                    <span id="csll_base_outras_col1" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="csll_base_outras_col2" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="csll_base_outras_col3" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="csll_base_outras_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+                <tr class="total-row">
+                  <td>CSLL - Base Total</td>
+                  <td>
+                    <span id="csll_base_total_col1" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="csll_base_total_col2" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="csll_base_total_col3" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="csll_base_total_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td>CSLL Devida (9%)</td>
+                  <td>
+                    <span id="csll_devida_9_col1" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="csll_devida_9_col2" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="csll_devida_9_col3" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                  <td>
+                    <span id="csll_devida_9_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td>(-) Compensações e Retenções</td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="csll_comp_col1"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="csll_comp_col2"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      inputmode="decimal"
+                      id="csll_comp_col3"
+                      class="table-input"
+                      value="R$ 0,00"
+                    />
+                  </td>
+                  <td>
+                    <span id="csll_comp_acum" class="calculated-field"
+                      >R$ 0,00</span
+                    >
+                  </td>
+                </tr>
+                 <!-- CSLL A PAGAR Row: Display adjusted for quarterly calculation -->
+                <tr class="total-row">
+                  <td>CSLL A PAGAR</td>
+                  <td><span id="csll_pagar_col1" class="calculated-field">---</span></td> <!-- Hide monthly -->
+                  <td><span id="csll_pagar_col2" class="calculated-field">---</span></td> <!-- Hide monthly -->
+                  <td><span id="csll_pagar_col3" class="calculated-field">---</span></td> <!-- Hide monthly -->
+                  <td><span id="csll_pagar_acum" class="calculated-field">R$ 0,00</span></td> <!-- Show Accumulated -->
+                </tr>
+                <tr class="final-total-row">
+                  <td colspan="3" class="final-total-label">TOTAL CSLL A PAGAR</td>
+                  <td colspan="2">
+                    <span id="total_csll" class="final-total-value"
+                      >R$ 0,00</span
+                    >
+                    <span class="codigo-receita">Código Receita 2372</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="printPdfButton" class="btn btn-primary">
+          <svg
+            class="btn-icon"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path
+              d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"
+            ></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          Gerar PDF (A4)
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // --- Library Instantiation ---
+      const { jsPDF } = window.jspdf;
+
+      // --- Helper Functions ---
+
+      /**
+       * Gets the numeric value from an input field or span, parsing pt-BR format (R$ 1.234,56).
+       * Tolerates R$, whitespace, and uses comma as decimal separator.
+       * @param {string} id - The ID of the input element.
+       * @returns {number} - The parsed numeric value, or 0 if invalid.
+       */
+      function getValue(id) {
+        const element = document.getElementById(id);
+        if (!element) {
+          console.warn("Element not found:", id);
+          return 0;
+        }
+        // Check if it's an input or another element (like span)
+        const value = element.tagName === 'INPUT' ? element.value : element.textContent;
+
+        if (typeof value !== "string") {
+          return 0;
+        }
+        // 1. Remove "R$" symbol and any leading/trailing whitespace
+        let cleanedValue = value.replace(/R\$\s*/g, "").trim();
+         // Handle potential "---" placeholder
+        if (cleanedValue === '---') {
+            return 0;
+        }
+        // 2. Remove thousand separators (.)
+        cleanedValue = cleanedValue.replace(/\./g, "");
+        // 3. Replace decimal comma (,) with period (.)
+        cleanedValue = cleanedValue.replace(",", ".");
+        // 4. Parse
+        const number = parseFloat(cleanedValue);
+        // 5. Return number or 0 if invalid/NaN
+        return isNaN(number) ? 0 : number;
+      }
+
+      /**
+       * Sets the formatted value (pt-BR currency style: R$ 1.234,56) to an element.
+       * Handles both input fields (setting value) and span/td (setting textContent).
+       * @param {string} id - The ID of the target element.
+       * @param {number | string} value - The numeric value to format and set, or '---' string.
+       * @param {boolean} isInput - True if the target is an input field, false otherwise.
+       */
+      function setFormattedValue(id, value, isInput = false) {
+        const element = document.getElementById(id);
+        if (element) {
+            let formattedValue;
+
+            if (value === '---') {
+                formattedValue = '---';
+            } else {
+                const numericValue = typeof value === 'number' ? value : parseFloat(String(value).replace(/[^0-9,-]/g, '').replace(',', '.')) || 0;
+
+                if (isNaN(numericValue)) {
+                     formattedValue = "R$ 0,00";
+                } else {
+                    // Format to pt-BR currency standard
+                    formattedValue = numericValue.toLocaleString("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    });
+                }
+            }
+
+
+          // Set value for inputs, textContent for others
+          if (isInput && element.tagName === "INPUT") {
+            element.value = formattedValue;
+          } else if (!isInput && element.tagName !== "INPUT") {
+            element.textContent = formattedValue;
+          } else {
+            // Fallback or log error if type mismatch
+            element.textContent = formattedValue; // Default to textContent
+             if (isInput && element.tagName !== "INPUT") {
+                 console.warn(`setFormattedValue called for input ID '${id}', but element is not an INPUT.`);
+             } else if (!isInput && element.tagName === "INPUT") {
+                  console.warn(`setFormattedValue called for non-input ID '${id}', but element is an INPUT.`);
+             }
+          }
+        } else {
+          console.error("Element not found:", id);
+        }
+      }
+
+      // --- Main Calculation Logic ---
+      function calculateAll() {
+        // --- Read Inputs ---
+        const fat_1_6_col1 = getValue("fat_1_6_col1");
+        const fat_1_6_col2 = getValue("fat_1_6_col2");
+        const fat_1_6_col3 = getValue("fat_1_6_col3");
+        const fat_8_col1 = getValue("fat_8_col1");
+        const fat_8_col2 = getValue("fat_8_col2");
+        const fat_8_col3 = getValue("fat_8_col3");
+        const fat_16_col1 = getValue("fat_16_col1");
+        const fat_16_col2 = getValue("fat_16_col2");
+        const fat_16_col3 = getValue("fat_16_col3");
+        const fat_32_col1 = getValue("fat_32_col1");
+        const fat_32_col2 = getValue("fat_32_col2");
+        const fat_32_col3 = getValue("fat_32_col3");
+        const rec_fin_col1 = getValue("rec_fin_col1");
+        const rec_fin_col2 = getValue("rec_fin_col2");
+        const rec_fin_col3 = getValue("rec_fin_col3");
+        const rec_ope_col1 = getValue("rec_ope_col1");
+        const rec_ope_col2 = getValue("rec_ope_col2");
+        const rec_ope_col3 = getValue("rec_ope_col3");
+        const rec_nao_ope_col1 = getValue("rec_nao_ope_col1");
+        const rec_nao_ope_col2 = getValue("rec_nao_ope_col2");
+        const rec_nao_ope_col3 = getValue("rec_nao_ope_col3");
+        const irrf_col1 = getValue("irrf_col1");
+        const irrf_col2 = getValue("irrf_col2");
+        const irrf_col3 = getValue("irrf_col3");
+        const irpj_comp_col1 = getValue("irpj_comp_col1");
+        const irpj_comp_col2 = getValue("irpj_comp_col2");
+        const irpj_comp_col3 = getValue("irpj_comp_col3");
+        const csll_comp_col1 = getValue("csll_comp_col1");
+        const csll_comp_col2 = getValue("csll_comp_col2");
+        const csll_comp_col3 = getValue("csll_comp_col3");
+
+        // --- Calculate Accumulated ---
+        const fat_1_6_acum = fat_1_6_col1 + fat_1_6_col2 + fat_1_6_col3;
+        const fat_8_acum = fat_8_col1 + fat_8_col2 + fat_8_col3;
+        const fat_16_acum = fat_16_col1 + fat_16_col2 + fat_16_col3;
+        const fat_32_acum = fat_32_col1 + fat_32_col2 + fat_32_col3;
+        const rec_fin_acum = rec_fin_col1 + rec_fin_col2 + rec_fin_col3;
+        const rec_ope_acum = rec_ope_col1 + rec_ope_col2 + rec_ope_col3;
+        const rec_nao_ope_acum =
+          rec_nao_ope_col1 + rec_nao_ope_col2 + rec_nao_ope_col3;
+        const irrf_acum = irrf_col1 + irrf_col2 + irrf_col3;
+        const irpj_comp_acum = irpj_comp_col1 + irpj_comp_col2 + irpj_comp_col3;
+        const csll_comp_acum = csll_comp_col1 + csll_comp_col2 + csll_comp_col3;
+
+        // --- Set Accumulated (Formatted Spans) ---
+        setFormattedValue("fat_1_6_acum", fat_1_6_acum);
+        setFormattedValue("fat_8_acum", fat_8_acum);
+        setFormattedValue("fat_16_acum", fat_16_acum);
+        setFormattedValue("fat_32_acum", fat_32_acum);
+        setFormattedValue("rec_fin_acum", rec_fin_acum);
+        setFormattedValue("rec_ope_acum", rec_ope_acum);
+        setFormattedValue("rec_nao_ope_acum", rec_nao_ope_acum);
+        setFormattedValue("irrf_acum", irrf_acum);
+        setFormattedValue("irpj_comp_acum", irpj_comp_acum);
+        setFormattedValue("csll_comp_acum", csll_comp_acum);
+
+        // --- Monthly Totals ---
+        const total_fat_col1 =
+          fat_1_6_col1 + fat_8_col1 + fat_16_col1 + fat_32_col1;
+        const total_fat_col2 =
+          fat_1_6_col2 + fat_8_col2 + fat_16_col2 + fat_32_col2;
+        const total_fat_col3 =
+          fat_1_6_col3 + fat_8_col3 + fat_16_col3 + fat_32_col3;
+        const total_fat_acum = total_fat_col1 + total_fat_col2 + total_fat_col3;
+
+        const total_outras_rec_col1 =
+          rec_fin_col1 + rec_ope_col1 + rec_nao_ope_col1;
+        const total_outras_rec_col2 =
+          rec_fin_col2 + rec_ope_col2 + rec_nao_ope_col2;
+        const total_outras_rec_col3 =
+          rec_fin_col3 + rec_ope_col3 + rec_nao_ope_col3;
+        const total_outras_rec_acum =
+          total_outras_rec_col1 + total_outras_rec_col2 + total_outras_rec_col3;
+
+        const total_geral_col1 = total_fat_col1 + total_outras_rec_col1;
+        const total_geral_col2 = total_fat_col2 + total_outras_rec_col2;
+        const total_geral_col3 = total_fat_col3 + total_outras_rec_col3;
+        const total_geral_acum =
+          total_geral_col1 + total_geral_col2 + total_geral_col3;
+
+        // --- Set Totals (Formatted Spans) ---
+        setFormattedValue("total_fat_col1", total_fat_col1);
+        setFormattedValue("total_fat_col2", total_fat_col2);
+        setFormattedValue("total_fat_col3", total_fat_col3);
+        setFormattedValue("total_fat_acum", total_fat_acum);
+
+        setFormattedValue("total_outras_rec_col1", total_outras_rec_col1);
+        setFormattedValue("total_outras_rec_col2", total_outras_rec_col2);
+        setFormattedValue("total_outras_rec_col3", total_outras_rec_col3);
+        setFormattedValue("total_outras_rec_acum", total_outras_rec_acum);
+
+        setFormattedValue("total_geral_col1", total_geral_col1);
+        setFormattedValue("total_geral_col2", total_geral_col2);
+        setFormattedValue("total_geral_col3", total_geral_col3);
+        setFormattedValue("total_geral_acum", total_geral_acum);
+
+        // --- IRPJ Base ---
+        const irpj_base_1_6_col1 = fat_1_6_col1 * 0.016;
+        const irpj_base_1_6_col2 = fat_1_6_col2 * 0.016;
+        const irpj_base_1_6_col3 = fat_1_6_col3 * 0.016;
+        const irpj_base_1_6_acum =
+          irpj_base_1_6_col1 + irpj_base_1_6_col2 + irpj_base_1_6_col3;
+
+        const irpj_base_8_col1 = fat_8_col1 * 0.08;
+        const irpj_base_8_col2 = fat_8_col2 * 0.08;
+        const irpj_base_8_col3 = fat_8_col3 * 0.08;
+        const irpj_base_8_acum =
+          irpj_base_8_col1 + irpj_base_8_col2 + irpj_base_8_col3;
+
+        const irpj_base_16_col1 = fat_16_col1 * 0.16;
+        const irpj_base_16_col2 = fat_16_col2 * 0.16;
+        const irpj_base_16_col3 = fat_16_col3 * 0.16;
+        const irpj_base_16_acum =
+          irpj_base_16_col1 + irpj_base_16_col2 + irpj_base_16_col3;
+
+        const irpj_base_32_col1 = fat_32_col1 * 0.32;
+        const irpj_base_32_col2 = fat_32_col2 * 0.32;
+        const irpj_base_32_col3 = fat_32_col3 * 0.32;
+        const irpj_base_32_acum =
+          irpj_base_32_col1 + irpj_base_32_col2 + irpj_base_32_col3;
+
+        // This IS the total of other revenues (Fin + Ope + Nao Ope)
+        const irpj_base_outras_col1 = total_outras_rec_col1;
+        const irpj_base_outras_col2 = total_outras_rec_col2;
+        const irpj_base_outras_col3 = total_outras_rec_col3;
+        const irpj_base_outras_acum = total_outras_rec_acum; // Use pre-calculated accumulated sum
+
+
+        const irpj_base_total_col1 =
+          irpj_base_1_6_col1 +
+          irpj_base_8_col1 +
+          irpj_base_16_col1 +
+          irpj_base_32_col1 +
+          irpj_base_outras_col1;
+        const irpj_base_total_col2 =
+          irpj_base_1_6_col2 +
+          irpj_base_8_col2 +
+          irpj_base_16_col2 +
+          irpj_base_32_col2 +
+          irpj_base_outras_col2;
+        const irpj_base_total_col3 =
+          irpj_base_1_6_col3 +
+          irpj_base_8_col3 +
+          irpj_base_16_col3 +
+          irpj_base_32_col3 +
+          irpj_base_outras_col3;
+        const irpj_base_total_acum =
+          irpj_base_total_col1 + irpj_base_total_col2 + irpj_base_total_col3;
+
+        // --- Set IRPJ Base (Formatted Spans) ---
+        setFormattedValue("irpj_base_1_6_col1", irpj_base_1_6_col1);
+        setFormattedValue("irpj_base_1_6_col2", irpj_base_1_6_col2);
+        setFormattedValue("irpj_base_1_6_col3", irpj_base_1_6_col3);
+        setFormattedValue("irpj_base_1_6_acum", irpj_base_1_6_acum);
+
+        setFormattedValue("irpj_base_8_col1", irpj_base_8_col1);
+        setFormattedValue("irpj_base_8_col2", irpj_base_8_col2);
+        setFormattedValue("irpj_base_8_col3", irpj_base_8_col3);
+        setFormattedValue("irpj_base_8_acum", irpj_base_8_acum);
+
+        setFormattedValue("irpj_base_16_col1", irpj_base_16_col1);
+        setFormattedValue("irpj_base_16_col2", irpj_base_16_col2);
+        setFormattedValue("irpj_base_16_col3", irpj_base_16_col3);
+        setFormattedValue("irpj_base_16_acum", irpj_base_16_acum);
+
+        setFormattedValue("irpj_base_32_col1", irpj_base_32_col1);
+        setFormattedValue("irpj_base_32_col2", irpj_base_32_col2);
+        setFormattedValue("irpj_base_32_col3", irpj_base_32_col3);
+        setFormattedValue("irpj_base_32_acum", irpj_base_32_acum);
+
+        setFormattedValue("irpj_base_outras_col1", irpj_base_outras_col1);
+        setFormattedValue("irpj_base_outras_col2", irpj_base_outras_col2);
+        setFormattedValue("irpj_base_outras_col3", irpj_base_outras_col3);
+        setFormattedValue("irpj_base_outras_acum", irpj_base_outras_acum);
+
+        setFormattedValue("irpj_base_total_col1", irpj_base_total_col1);
+        setFormattedValue("irpj_base_total_col2", irpj_base_total_col2);
+        setFormattedValue("irpj_base_total_col3", irpj_base_total_col3);
+        setFormattedValue("irpj_base_total_acum", irpj_base_total_acum);
+
+        // --- IRPJ Due & Payable ---
+        const irpj_devido_15_col1 = irpj_base_total_col1 * 0.15;
+        const irpj_devido_15_col2 = irpj_base_total_col2 * 0.15;
+        const irpj_devido_15_col3 = irpj_base_total_col3 * 0.15;
+        const irpj_devido_15_acum = irpj_base_total_acum * 0.15;
+
+        setFormattedValue("irpj_devido_15_col1", irpj_devido_15_col1);
+        setFormattedValue("irpj_devido_15_col2", irpj_devido_15_col2);
+        setFormattedValue("irpj_devido_15_col3", irpj_devido_15_col3);
+        setFormattedValue("irpj_devido_15_acum", irpj_devido_15_acum);
+
+        // Calculate the accumulated payable amount before additional tax
+        const irpj_pagar_acum_real = Math.max(
+          0,
+          irpj_devido_15_acum - irrf_acum - irpj_comp_acum
+        );
+
+        // Update display: Hide monthly payable (use '---'), show accumulated payable
+        setFormattedValue("irpj_pagar_col1", '---');
+        setFormattedValue("irpj_pagar_col2", '---');
+        setFormattedValue("irpj_pagar_col3", '---');
+        setFormattedValue("irpj_pagar_acum", irpj_pagar_acum_real); // Correctly display accumulated amount
+
+
+        // --- IRPJ Adicional & Total ---
+        const limite_mensal_irpj = 20000;
+        const meses_no_periodo = 3; // Assuming quarterly calculation
+        const limite_periodo_irpj = limite_mensal_irpj * meses_no_periodo; // R$ 60.000
+        const base_excedente_irpj = Math.max(
+          0,
+          irpj_base_total_acum - limite_periodo_irpj
+        );
+        const irpj_adicional_10 = base_excedente_irpj * 0.1;
+
+        setFormattedValue("irpj_adicional_10", irpj_adicional_10);
+
+        // Total IRPJ is the main payable + additional
+        const total_irpj = irpj_pagar_acum_real + irpj_adicional_10;
+        setFormattedValue("total_irpj", total_irpj);
+
+        // --- CSLL Base ---
+        // Base 12%: Applies to revenues with IRPJ presumption of 1.6%, 8%, 16%
+        const fat_base_12_col1 = fat_1_6_col1 + fat_8_col1 + fat_16_col1;
+        const fat_base_12_col2 = fat_1_6_col2 + fat_8_col2 + fat_16_col2;
+        const fat_base_12_col3 = fat_1_6_col3 + fat_8_col3 + fat_16_col3;
+
+        const csll_base_12_col1 = fat_base_12_col1 * 0.12;
+        const csll_base_12_col2 = fat_base_12_col2 * 0.12;
+        const csll_base_12_col3 = fat_base_12_col3 * 0.12;
+        const csll_base_12_acum =
+          csll_base_12_col1 + csll_base_12_col2 + csll_base_12_col3;
+
+        // Base 32%: Applies to revenues with IRPJ presumption of 32%
+        const csll_base_32_col1 = fat_32_col1 * 0.32;
+        const csll_base_32_col2 = fat_32_col2 * 0.32;
+        const csll_base_32_col3 = fat_32_col3 * 0.32;
+        const csll_base_32_acum =
+          csll_base_32_col1 + csll_base_32_col2 + csll_base_32_col3;
+
+        // --- MODIFICATION START ---
+        // Change: CSLL Base for "Outras Receitas" should mirror the IRPJ base for "Outras Receitas"
+        // which already correctly sums Fin + Ope + Nao Ope for IRPJ purposes.
+        // CSLL base for these other revenues is 100% of their value.
+        const csll_base_outras_col1 = irpj_base_outras_col1; // Value = Total Outras Receitas Col 1
+        const csll_base_outras_col2 = irpj_base_outras_col2; // Value = Total Outras Receitas Col 2
+        const csll_base_outras_col3 = irpj_base_outras_col3; // Value = Total Outras Receitas Col 3
+        const csll_base_outras_acum = irpj_base_outras_acum; // Value = Total Outras Receitas Acum
+        // --- MODIFICATION END ---
+
+
+        const csll_base_total_col1 =
+          csll_base_12_col1 + csll_base_32_col1 + csll_base_outras_col1;
+        const csll_base_total_col2 =
+          csll_base_12_col2 + csll_base_32_col2 + csll_base_outras_col2;
+        const csll_base_total_col3 =
+          csll_base_12_col3 + csll_base_32_col3 + csll_base_outras_col3;
+        const csll_base_total_acum =
+          csll_base_total_col1 + csll_base_total_col2 + csll_base_total_col3;
+
+        // --- Set CSLL Base (Formatted Spans) ---
+        setFormattedValue("csll_base_12_col1", csll_base_12_col1);
+        setFormattedValue("csll_base_12_col2", csll_base_12_col2);
+        setFormattedValue("csll_base_12_col3", csll_base_12_col3);
+        setFormattedValue("csll_base_12_acum", csll_base_12_acum);
+
+        setFormattedValue("csll_base_32_col1", csll_base_32_col1);
+        setFormattedValue("csll_base_32_col2", csll_base_32_col2);
+        setFormattedValue("csll_base_32_col3", csll_base_32_col3);
+        setFormattedValue("csll_base_32_acum", csll_base_32_acum);
+
+        setFormattedValue("csll_base_outras_col1", csll_base_outras_col1);
+        setFormattedValue("csll_base_outras_col2", csll_base_outras_col2);
+        setFormattedValue("csll_base_outras_col3", csll_base_outras_col3);
+        setFormattedValue("csll_base_outras_acum", csll_base_outras_acum);
+
+        setFormattedValue("csll_base_total_col1", csll_base_total_col1);
+        setFormattedValue("csll_base_total_col2", csll_base_total_col2);
+        setFormattedValue("csll_base_total_col3", csll_base_total_col3);
+        setFormattedValue("csll_base_total_acum", csll_base_total_acum);
+
+        // --- CSLL Due & Payable ---
+        const csll_devida_9_col1 = csll_base_total_col1 * 0.09;
+        const csll_devida_9_col2 = csll_base_total_col2 * 0.09;
+        const csll_devida_9_col3 = csll_base_total_col3 * 0.09;
+        const csll_devida_9_acum = csll_base_total_acum * 0.09;
+
+        setFormattedValue("csll_devida_9_col1", csll_devida_9_col1);
+        setFormattedValue("csll_devida_9_col2", csll_devida_9_col2);
+        setFormattedValue("csll_devida_9_col3", csll_devida_9_col3);
+        setFormattedValue("csll_devida_9_acum", csll_devida_9_acum);
+
+        // Calculate the final accumulated payable amount.
+        const csll_pagar_acum_real = Math.max(
+          0,
+          csll_devida_9_acum - csll_comp_acum
+        );
+
+        // Update the display - hide monthly payable, show accumulated total payable.
+        setFormattedValue("csll_pagar_col1", '---');
+        setFormattedValue("csll_pagar_col2", '---');
+        setFormattedValue("csll_pagar_col3", '---');
+        setFormattedValue("csll_pagar_acum", csll_pagar_acum_real);
+
+
+        // --- CSLL Total ---
+        // For CSLL Lucro Presumido, the total payable is the accumulated payable amount.
+        const total_csll = csll_pagar_acum_real;
+        setFormattedValue("total_csll", total_csll);
+      }
+
+      // --- PDF Generation ---
+      function generatePdf() {
+        const printButton = document.getElementById("printPdfButton");
+        printButton.textContent = "Gerando...";
+        printButton.disabled = true;
+
+        const elementToPrint = document.getElementById("calculatorToPrint");
+        const empresa = document.getElementById("empresa").value || "Empresa";
+        const cnpj = document.getElementById("cnpj").value || "CNPJ";
+        const filename = `Calculo_IRPJ_CSLL_${empresa.replace( /[^a-z0-9]/gi, "_" )}_${cnpj.replace(/[^0-9]/gi, "")}.pdf`;
+
+
+        // Options for html2canvas
+        const options = {
+          scale: 2, // Higher scale for better resolution
+          useCORS: true, // If loading external resources like fonts
+          logging: false,
+          backgroundColor: "#ffffff", // Ensure white background for PDF
+          scrollX: -window.scrollX, // Capture from the top-left
+          scrollY: -window.scrollY,
+          windowWidth: elementToPrint.scrollWidth, // Capture full width
+          windowHeight: elementToPrint.scrollHeight, // Capture full height
+          onclone: (documentClone) => {
+              const root = documentClone.documentElement;
+              // Copy computed styles for variables
+              const styles = getComputedStyle(document.documentElement);
+              const cssVariables = [
+                '--primary-color', '--primary-light', '--primary-dark',
+                '--accent-color', '--accent-light', '--accent-dark',
+                '--background-color', '--surface-color', '--card-color',
+                '--text-primary', '--text-secondary', '--text-tertiary',
+                '--border-color', '--input-bg', '--input-focus-ring'
+              ];
+              cssVariables.forEach(key => {
+                  root.style.setProperty(key, styles.getPropertyValue(key).trim());
+              });
+
+            // Force styles within the clone for accurate capture
+            const tableHeaderClone = documentClone.querySelector("#calc-table thead");
+             if (tableHeaderClone) {
+                tableHeaderClone.style.position = "static"; // Prevent sticky issues in capture
+                tableHeaderClone.style.top = "auto";
+                tableHeaderClone.style.backgroundColor = "var(--primary-color)";
+                const headerRow = tableHeaderClone.querySelector('tr');
+                 if(headerRow) {
+                    headerRow.style.backgroundColor = "var(--primary-color)";
+                 }
+
+                tableHeaderClone.querySelectorAll("th").forEach((th) => {
+                    th.style.color = "white";
+                    th.style.backgroundColor = "var(--primary-color)";
+                    th.style.webkitPrintColorAdjust = "exact";
+                    th.style.printColorAdjust = "exact";
+                    th.style.border = "1px solid #ddd"; // Add border for print clarity
+                 });
+            }
+
+            // Replace select dropdowns with static text in the clone for PDF
+            documentClone.querySelectorAll(".month-select").forEach((select) => {
+                const selectedOption = select.options[select.selectedIndex];
+                const text = selectedOption ? selectedOption.text : "";
+                const span = documentClone.createElement('span');
+                span.className = 'month-text-print'; // Add class for potential styling
+                span.textContent = text;
+                span.style.color = "white";
+                span.style.fontWeight = "500";
+                span.style.fontSize = "0.85rem";
+                span.style.textAlign = "center";
+                span.style.display = "block"; // Ensure it takes space
+                span.style.padding = "0.35rem"; // Match select padding roughly
+
+                const parentTh = select.parentNode;
+                parentTh.replaceChild(span, select);
+                parentTh.style.backgroundColor = "var(--primary-color)"; // Ensure TH background remains
+                parentTh.style.textAlign = "center"; // Ensure TH text align remains
+                parentTh.style.webkitPrintColorAdjust = "exact";
+                parentTh.style.printColorAdjust = "exact";
+              });
+
+
+            // Ensure input fields show their current value and have print-friendly styles
+            documentClone.querySelectorAll(".table-input").forEach((input) => {
+                input.setAttribute('value', input.value); // Crucial for html2canvas
+                input.style.backgroundColor = "var(--input-bg)";
+                input.style.color = "var(--text-primary)";
+                input.style.border = "1px solid var(--border-color)";
+                input.style.textAlign = "right";
+                input.style.padding = "0.25rem";
+                input.style.fontSize = "0.85rem";
+                input.style.borderRadius = "var(--radius-sm)";
+                input.style.width = "100%"; // Ensure full width in cell
+                input.style.boxSizing = "border-box"; // Include padding/border in width
+                input.style.webkitPrintColorAdjust = "exact";
+                input.style.printColorAdjust = "exact";
+                // Make read-only visually if needed, but value must be set
+                // input.setAttribute('readonly', 'true'); // Optional: prevents editing appearance
+            });
+
+            // Ensure calculated fields are visible and styled for print
+            documentClone.querySelectorAll(".calculated-field").forEach((span) => {
+                span.style.display = "block";
+                span.style.backgroundColor = "var(--surface-color)";
+                span.style.color = "var(--text-primary)";
+                span.style.border = "1px solid transparent"; // Keep transparent or add light border
+                span.style.padding = "0.25rem";
+                span.style.textAlign = "right";
+                span.style.borderRadius = "var(--radius-sm)";
+                span.style.fontWeight = "500";
+                span.style.minHeight = "calc(0.85rem + 0.5rem + 2px)"; // Match input height roughly
+                span.style.webkitPrintColorAdjust = "exact";
+                span.style.printColorAdjust = "exact";
+              });
+
+            // Force total row styles for print
+             documentClone.querySelectorAll(".total-row td").forEach(td => {
+                td.style.backgroundColor = "var(--surface-color)";
+                td.style.fontWeight = "600";
+                td.style.color = "var(--text-primary)";
+                td.style.webkitPrintColorAdjust = "exact";
+                td.style.printColorAdjust = "exact";
+                td.style.border = "1px solid #eee"; // Add light borders
+             });
+             // Ensure calculated fields within total rows also get the right background
+              documentClone.querySelectorAll(".total-row .calculated-field").forEach(span => {
+                 span.style.backgroundColor = "var(--surface-color)";
+                 span.style.webkitPrintColorAdjust = "exact";
+                 span.style.printColorAdjust = "exact";
+              });
+
+
+            // Force final total backgrounds and styles for print
+             documentClone.querySelectorAll(".final-total-row td").forEach(td => {
+                 td.style.backgroundColor = "var(--primary-dark)";
+                 td.style.color = "white";
+                 td.style.fontWeight = "600";
+                 td.style.borderBottom = "none";
+                 td.style.webkitPrintColorAdjust = "exact";
+                 td.style.printColorAdjust = "exact";
+                 if(td.classList.contains('final-total-label')) {
+                     td.style.textAlign = "right";
+                     td.style.paddingRight = "1rem";
+                 }
+             });
+
+            documentClone.querySelectorAll(".final-total-value").forEach((span) => {
+                span.style.backgroundColor = "var(--accent-color)";
+                span.style.color = "white";
+                span.style.display = "inline-block";
+                span.style.padding = "0.35rem 0.75rem";
+                span.style.borderRadius = "var(--radius-md)";
+                span.style.fontWeight = "600";
+                span.style.minWidth = "120px";
+                span.style.textAlign = "right";
+                span.style.webkitPrintColorAdjust = "exact";
+                span.style.printColorAdjust = "exact";
+              });
+
+             documentClone.querySelectorAll('.codigo-receita').forEach(span => {
+                 span.style.color = 'white'; // Make code visible on dark background
+                 span.style.opacity = '0.9';
+                 span.style.fontSize = '0.75rem';
+                 span.style.fontWeight = 'normal';
+             });
+
+            // Ensure section titles are visible and styled for print
+            documentClone.querySelectorAll(".section-title td").forEach((td) => {
+                td.style.background = "linear-gradient(to right, var(--primary-light), var(--primary-color))";
+                td.style.color = "white";
+                td.style.fontWeight = "600";
+                td.style.textAlign = "center";
+                td.style.padding = "0.4rem";
+                td.style.fontSize = "0.95rem";
+                td.style.borderBottom = "none";
+                td.style.webkitPrintColorAdjust = "exact";
+                td.style.printColorAdjust = "exact";
+              });
+
+            // Ensure body background is white for print
+            documentClone.body.style.backgroundColor = "#ffffff";
+            documentClone.body.style.padding = "0"; // Remove body padding for print
+            documentClone.body.style.margin = "0";
+
+            // Ensure container takes full width if needed
+            const containerClone = documentClone.querySelector('.container');
+            if(containerClone) {
+                containerClone.style.maxWidth = '100%';
+                containerClone.style.padding = '0';
+                containerClone.style.margin = '0';
+            }
+             const cardClone = documentClone.querySelector('.calculator-card');
+             if(cardClone){
+                 cardClone.style.boxShadow = 'none';
+                 cardClone.style.borderRadius = '0';
+                 cardClone.style.marginBottom = '0';
+                 cardClone.style.border = '1px solid #ccc'; // Optional border
+             }
+
+
+            // Hide action buttons in clone
+            const actionsClone = documentClone.querySelector('.actions');
+             if (actionsClone) {
+                actionsClone.style.display = 'none';
+             }
+          },
+        };
+
+        html2canvas(elementToPrint, options)
+          .then((canvas) => {
+            const imgData = canvas.toDataURL("image/png");
+            const imgWidth = canvas.width;
+            const imgHeight = canvas.height;
+
+            // A4 dimensions in mm
+            const pdfWidthMM = 210;
+            const pdfHeightMM = 297;
+            const marginMM = 10; // 10mm margin
+
+            const usablePdfWidthMM = pdfWidthMM - marginMM * 2;
+            const usablePdfHeightMM = pdfHeightMM - marginMM * 2;
+
+            // Convert px to mm (assuming 96 DPI, standard for web)
+            const mmPerPx = 25.4 / 96;
+            const imgWidthMM = imgWidth * mmPerPx;
+            const imgHeightMM = imgHeight * mmPerPx;
+
+            // Determine orientation needed
+            let orientation = 'portrait';
+            if (imgWidthMM > usablePdfWidthMM && imgWidthMM > imgHeightMM) {
+                 orientation = 'landscape';
+            }
+
+            const pdf = new jsPDF({
+              orientation: orientation,
+              unit: "mm",
+              format: "a4",
+            });
+
+            // Recalculate usable dimensions based on final orientation
+            const finalPdfWidthMM = pdf.internal.pageSize.getWidth();
+            const finalPdfHeightMM = pdf.internal.pageSize.getHeight();
+            const finalUsablePdfWidthMM = finalPdfWidthMM - marginMM * 2;
+            const finalUsablePdfHeightMM = finalPdfHeightMM - marginMM * 2;
+
+
+            // Calculate scale to fit image within usable area
+            const widthRatio = finalUsablePdfWidthMM / imgWidthMM;
+            const heightRatio = finalUsablePdfHeightMM / imgHeightMM;
+            const scale = Math.min(widthRatio, heightRatio, 1); // Fit completely, don't enlarge
+
+
+            const scaledWidthMM = imgWidthMM * scale;
+            const scaledHeightMM = imgHeightMM * scale;
+
+
+            // Calculate centering position
+            const xPosMM = (finalPdfWidthMM - scaledWidthMM) / 2;
+            const yPosMM = marginMM; // Start 10mm from top
+
+            pdf.addImage(imgData, "PNG", xPosMM, yPosMM, scaledWidthMM, scaledHeightMM);
+
+            pdf.save(filename);
+
+            printButton.textContent = "Gerar PDF (A4)";
+            printButton.disabled = false;
+          })
+          .catch((error) => {
+            console.error("Erro ao gerar PDF com html2canvas:", error);
+            alert(
+              "Ocorreu um erro ao gerar o PDF. Verifique o console para detalhes.\n" + error
+            );
+            printButton.textContent = "Gerar PDF (A4)";
+            printButton.disabled = false;
+          });
+      }
+
+      // --- Event Listeners ---
+      document.querySelectorAll(".table-input").forEach((input) => {
+        // Format on blur AND recalculate
+        input.addEventListener("blur", (event) => {
+          const value = getValue(event.target.id);
+          setFormattedValue(event.target.id, value, true);
+          calculateAll(); // Recalculate after formatting potentially changes interpretation
+        });
+        // Recalculate immediately on input for responsiveness
+        input.addEventListener("input", calculateAll);
+      });
+
+      document.querySelectorAll(".month-select").forEach((element) => {
+        element.addEventListener("change", calculateAll);
+      });
+
+      document
+        .getElementById("printPdfButton")
+        .addEventListener("click", generatePdf);
+
+      // --- Initial Setup ---
+      window.addEventListener("load", () => {
+          // Set initial default months (e.g., Jan, Feb, Mar for Q1)
+           const month1Select = document.getElementById('month1');
+           const month2Select = document.getElementById('month2');
+           const month3Select = document.getElementById('month3');
+           if (month1Select) month1Select.value = 'jan';
+           if (month2Select) month2Select.value = 'feb';
+           if (month3Select) month3Select.value = 'mar';
+
+
+        // Format all input fields with initial R$ 0,00 before first calculation
+        document.querySelectorAll(".table-input").forEach((input) => {
+          // Ensure the default "R$ 0,00" is actually parsed as 0
+          setFormattedValue(input.id, 0, true);
+        });
+        calculateAll(); // Then run the first calculation with 0s
+      });
+    </script>
+  </body>
+</html>
