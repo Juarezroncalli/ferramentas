@@ -25,10 +25,20 @@
       }
 
       body {
-        background-color: var(--background-color);
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--accent-color) 100%
+        );
         color: var(--text-color);
         line-height: 1.6;
         padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+        min-height: 100vh; /* <<--- ADICIONE ESTA LINHA */
+        background-repeat: no-repeat; /* <<--- Adicione esta também (opcional, mas recomendado) */
+        /* Garante que o corpo ocupe toda a altura da viewport */
+        /* e que o gradiente não tente repetir */
       }
 
       .container {
@@ -41,7 +51,10 @@
         margin-bottom: 30px;
       }
 
-      h1,
+      h1 {
+        color: var(--background-color);
+        margin-bottom: 10px;
+      }
       h2,
       h3 {
         color: var(--primary-color);
