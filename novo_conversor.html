@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Layout Contábil</title>
+    <!-- Inclui a biblioteca SheetJS (xlsx) a partir de um CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4f0072; /* Roxo */
+            --accent-color: #fb0a5e;  /* Rosa vibrante */
+            --background-color: #ffffff;
+            --form-bg-color: #f9f9f9;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
+            --text-color-light: #ffffff;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+            --warning-color: #ffc107; /* Amarelo para avisos */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Alinha no topo */
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+        }
+
+        .container {
+            background-color: var(--background-color);
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            transition: all 0.3s ease;
+            margin-bottom: 30px; /* Espaço inferior */
+        }
+
+        h1, h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        h2 {
+            margin-top: 30px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background-color: var(--form-bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+        .form-section:hover {
+            background-color: #f1f1f1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        input[type="file"],
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background-color: #fff; /* Garante fundo branco */
+            color: var(--text-color); /* Garante cor do texto */
+        }
+        input::placeholder {
+            color: #999;
+        }
+
+        input[type="file"] {
+            display: none; /* Esconde o input default */
+        }
+
+        .file-upload-label {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: var(--primary-color);
+            color: var(--text-color-light);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-bottom: 10px;
+            width: 100%; /* Faz ocupar a largura */
+        }
+
+        .file-upload-label:hover {
+            background-color: #6a009a; /* Tom mais escuro de roxo */
+            transform: translateY(-2px);
+        }
+
+        #file-name {
+            display: block;
+            margin-top: 5px;
+            font-style: italic;
+            color: #555;
+            font-size: 0.9em;
+            min-height: 1.5em; /* Garante espaço mesmo sem nome */
+            word-break: break-all;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 5px rgba(251, 10, 94, 0.3);
+        }
+
+        /* --- Estilos da Área de Mapeamento --- */
+        #mapping-section {
+            /* Mantém oculto inicialmente, o JS controla 'display: block' */
+            display: none;
+            transition: opacity 0.5s ease; /* Transição suave ao aparecer */
+        }
+
+        #mapping-area {
+            /* Container para as linhas de mapeamento */
+            margin-top: 15px;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: opacity 0.5s ease, max-height 0.5s ease, margin-top 0.5s ease;
+        }
+
+        #mapping-area.visible {
+             opacity: 1;
+             max-height: 1000px; /* Valor alto para permitir conteúdo */
+             margin-top: 15px; /* Garante margem quando visível */
+        }
+
+        .mapping-row {
+            display: flex;             /* Alinha label e select lado a lado */
+            justify-content: space-between; /* Máximo espaço entre eles */
+            align-items: center;       /* Alinha verticalmente no centro */
+            padding: 12px 15px;        /* Espaçamento interno */
+            margin-bottom: 10px;       /* Espaço entre as linhas */
+            background-color: #ffffff; /* Fundo branco para cada linha */
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            transition: box-shadow 0.3s ease;
+        }
+         .mapping-row:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .fixed-label {
+            font-weight: 600;          /* Texto em negrito */
+            color: var(--primary-color); /* Cor primária */
+            margin-right: 15px;        /* Espaço à direita do label */
+            flex-basis: 40%;           /* Define uma largura base para o label */
+            flex-shrink: 0;          /* Impede que o label encolha */
+            font-size: 0.95em;
+             white-space: nowrap; /* Evita quebra de linha */
+             overflow: hidden;
+             text-overflow: ellipsis; /* Adiciona "..." se o texto for muito longo */
+        }
+
+        .select-wrapper {
+            flex-basis: 55%; /* Define largura base para o select */
+            flex-grow: 1;    /* Permite que cresça se houver espaço */
+        }
+
+        .mapping-row select {
+            width: 100%;              /* O select ocupa todo o espaço do wrapper */
+            margin-bottom: 0;         /* Remove margem padrão inferior do select */
+        }
+        /* --- Fim dos Estilos da Área de Mapeamento --- */
+
+        #generate-btn {
+            background-color: var(--accent-color);
+            color: var(--text-color-light);
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            display: block;
+            width: 100%;
+            margin-top: 30px;
+            transition: background-color 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
+            opacity: 0.5; /* Começa mais opaco quando desabilitado */
+            cursor: not-allowed;
+        }
+
+        #generate-btn.enabled {
+            opacity: 1;
+            cursor: pointer;
+        }
+
+        #generate-btn:hover.enabled {
+            background-color: #d9004f; /* Tom mais escuro de rosa */
+            transform: translateY(-2px);
+        }
+
+        #message-area {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            display: none; /* Oculto inicialmente */
+            transition: opacity 0.3s ease;
+            border: 1px solid transparent; /* Borda base */
+        }
+
+        #message-area.success {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+            display: block;
+        }
+
+        #message-area.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+            display: block;
+        }
+         #message-area.warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border-color: #ffeeba;
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border-left-color: var(--accent-color);
+            animation: spin 1s ease infinite;
+            display: none; /* Oculto inicialmente */
+            margin: 10px auto; /* Centraliza */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Gerador de Layout Contábil</h1>
+
+        <!-- Seção 1: Upload do Arquivo -->
+        <div class="form-section">
+            <label for="file-input">1. Carregar Planilha Excel (.xlsx, .xls)</label>
+            <label for="file-input" class="file-upload-label">Escolher Arquivo</label>
+            <input type="file" id="file-input" accept=".xlsx, .xls, .csv"> <!-- Adicionado .csv por segurança -->
+             <span id="file-name">Nenhum arquivo selecionado</span>
+        </div>
+
+        <!-- Seção 2: Conta Contábil -->
+        <div class="form-section">
+             <label for="conta-contabil">2. Informar Conta Contábil do Fornecedor</label>
+             <input type="text" id="conta-contabil" placeholder="Digite o número da conta contábil">
+        </div>
+
+        <!-- Seção 3: Mapeamento (inicialmente oculta) -->
+        <div id="mapping-section" class="form-section">
+            <h2>3. Correlacionar Colunas</h2>
+            <p style="margin-bottom: 15px; text-align: center; color: #555;">Selecione a coluna da sua planilha que corresponde a cada campo obrigatório.</p>
+            <!-- Área onde as linhas de mapeamento serão inseridas pelo JS -->
+            <div id="mapping-area">
+                <!-- Exemplo (será gerado dinamicamente):
+                <div class="mapping-row">
+                    <span class="fixed-label" title="NOME FORNECEDOR">NOME FORNECEDOR</span>
+                    <div class="select-wrapper">
+                        <select data-target-field="NOME FORNECEDOR">
+                            <option value="">Selecione a coluna...</option>
+                            <option value="Nome Cliente">Nome Cliente</option>
+                            <option value="Razão Social">Razão Social</option>
+                        </select>
+                    </div>
+                </div>
+                 -->
+            </div>
+        </div>
+
+        <!-- Feedback Visual e Botão de Ação -->
+        <div class="spinner" id="loading-spinner"></div>
+        <button id="generate-btn" disabled>4. Gerar Arquivo TXT</button> <!-- Começa desabilitado -->
+
+        <!-- Área para mensagens de sucesso/erro/aviso -->
+        <div id="message-area"></div>
+    </div>
+
+    <script>
+        // --- Seletores de Elementos DOM ---
+        const fileInput = document.getElementById('file-input');
+        const fileNameDisplay = document.getElementById('file-name');
+        const contaContabilInput = document.getElementById('conta-contabil');
+        const mappingSection = document.getElementById('mapping-section'); // A seção inteira
+        const mappingArea = document.getElementById('mapping-area'); // O container das linhas (div)
+        const generateBtn = document.getElementById('generate-btn');
+        const messageArea = document.getElementById('message-area');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const fileUploadLabel = document.querySelector('.file-upload-label');
+
+        // --- Constantes e Estado Global ---
+        const fixedFields = [
+            "NOME FORNECEDOR",
+            "NUMERO DOCUMENTO",
+            "DATA PAGAMENTO",
+            "VALOR PAGO",
+            "BANCO"
+        ];
+        let excelHeaders = []; // Nomes das colunas lidas do Excel
+        let excelData = [];    // Dados lidos (array de objetos)
+        let currentMapping = {}; // Mapeamento: { "NOME FORNECEDOR": "HeaderEscolhido", ... }
+        let currentContaContabil = ''; // Conta contábil informada
+
+        // --- Funções Auxiliares ---
+
+        /** Exibe uma mensagem na área designada com um tipo (success, error, warning). */
+        function showMessage(message, type = 'info') {
+            messageArea.textContent = message;
+            messageArea.className = 'message-area'; // Limpa classes antigas
+            if (type === 'success' || type === 'error' || type === 'warning') {
+                messageArea.classList.add(type);
+            }
+            messageArea.style.display = 'block'; // Torna visível
+        }
+
+        /** Limpa a área de mensagens. */
+        function clearMessage() {
+            messageArea.textContent = '';
+            messageArea.className = 'message-area';
+            messageArea.style.display = 'none'; // Esconde
+        }
+
+        /** Controla a exibição do spinner e o estado do botão Gerar durante o processamento. */
+        function setLoading(isLoading) {
+            if (isLoading) {
+                loadingSpinner.style.display = 'block';
+                generateBtn.disabled = true;
+                generateBtn.classList.remove('enabled');
+                generateBtn.textContent = 'Processando...';
+            } else {
+                loadingSpinner.style.display = 'none';
+                // A habilitação/desabilitação é controlada por updateGenerateButtonState
+                updateGenerateButtonState(); // Garante que o estado do botão seja reavaliado
+                generateBtn.textContent = '4. Gerar Arquivo TXT';
+            }
+        }
+
+        /**
+         * Formata uma data (Número serial Excel, Objeto Date JS, String) para DD/MM/YYYY.
+         * Tenta ser robusto, mas formatos de string muito exóticos podem falhar.
+         * Retorna string vazia se a entrada for nula/vazia.
+         * Retorna a string original se a conversão falhar ou resultar em data inválida.
+         */
+        function formatDate(dateInput) {
+            if (!dateInput) return '';
+
+            let date;
+            try {
+                // Se for número (provável data serial do Excel)
+                if (typeof dateInput === 'number') {
+                    // Correção para bug de 1900 no Excel (considera 1900 bissexto erradamente)
+                    // Esta correção é necessária para datas antes de 1 de Março de 1900, mas SheetJS pode já tratar.
+                    // Testar se a conversão direta do SheetJS (com cellDates:true) já funciona.
+                    // Se cellDates:true não converteu para Date, tentamos manual:
+                    if (dateInput > 0) {
+                        const excelEpoch = Date.UTC(1899, 11, 30); // Epoch do Excel (dia 0)
+                        const millisecondsPerDay = 86400000;
+                        // Adiciona um pequeno offset para evitar erros de ponto flutuante
+                        const dateInMillis = excelEpoch + (dateInput * millisecondsPerDay) + (1/millisecondsPerDay); // Offset mínimo
+                        date = new Date(dateInMillis);
+
+                        // Validação extra: Se o número for muito baixo (ex: < 10000), pode não ser uma data Excel válida
+                         if (dateInput < 30000 && (date.getUTCFullYear() < 1980 || date.getUTCFullYear() > 2050)) {
+                             console.warn(`Número ${dateInput} resultou em data suspeita: ${date.toISOString()}. Tratando como não-data.`);
+                             return String(dateInput);
+                         }
+                    } else {
+                        return String(dateInput); // Números <= 0 não são datas Excel válidas
+                    }
+                }
+                // Se for objeto Date do JS (SheetJS com cellDates:true pode retornar isso)
+                else if (dateInput instanceof Date && !isNaN(dateInput)) {
+                    date = dateInput;
+                }
+                // Se for string, tenta converter (formatos ISO, YYYY/MM/DD, MM/DD/YYYY podem funcionar)
+                else if (typeof dateInput === 'string') {
+                    // Remove espaços extras e normaliza separadores se possível
+                    const cleanedDateStr = dateInput.trim().replace(/[.\/]/g, '-');
+                    // Tenta padrões comuns antes do parse genérico
+                     let parts;
+                     if ((parts = cleanedDateStr.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/))) { // DD-MM-YYYY ou MM-DD-YYYY
+                        let p1 = parseInt(parts[1]), p2 = parseInt(parts[2]), p3 = parseInt(parts[3]);
+                        // Heurística: Se p1 > 12, assume DD-MM-YYYY
+                        if (p1 > 12) date = new Date(Date.UTC(p3, p2 - 1, p1));
+                        else date = new Date(Date.UTC(p3, p2 - 1, p1)); // Assume MM-DD se ambíguo, mas pode errar
+                     } else if ((parts = cleanedDateStr.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/))) { // YYYY-MM-DD
+                         date = new Date(Date.UTC(parseInt(parts[1]), parseInt(parts[2]) - 1, parseInt(parts[3])));
+                     } else {
+                         // Tenta parse direto da string original (menos confiável)
+                         date = new Date(dateInput);
+                         // Se parse direto funcionou mas ano é 1899 (comum em erros de data Excel como texto), invalida
+                         if (date && !isNaN(date) && date.getUTCFullYear() === 1899) {
+                             date = new Date(NaN); // Invalida
+                         }
+                     }
+                } else {
+                    return String(dateInput); // Retorna como string se tipo não reconhecido
+                }
+
+                // Se 'date' não é um objeto Date válido após as tentativas, retorna original
+                if (!(date instanceof Date) || isNaN(date.getTime())) {
+                    console.warn("Não foi possível converter para data válida:", dateInput);
+                    return String(dateInput);
+                }
+
+                // Formata para DD/MM/YYYY usando UTC para evitar problemas de fuso
+                const day = String(date.getUTCDate()).padStart(2, '0');
+                const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Mês é base 0
+                const year = date.getUTCFullYear();
+
+                // Validação final do ano (evita anos absurdos)
+                if (year < 1900 || year > 2100) {
+                    console.warn("Ano da data parece inválido após conversão:", year, "Input original:", dateInput);
+                    return String(dateInput); // Retorna original
+                }
+                return `${day}/${month}/${year}`;
+
+            } catch (error) {
+                console.error("Erro inesperado na formatação de data:", error, "Input:", dateInput);
+                return String(dateInput); // Retorna original em caso de erro
+            }
+        }
+
+        /** Formata um valor numérico para string com padrão pt-BR (vírgula decimal). */
+        function formatValue(valueInput) {
+            if (valueInput === null || valueInput === undefined || String(valueInput).trim() === '') return '0,00';
+            // Tenta limpar a string removendo separadores de milhar (pontos) e trocando vírgula decimal por ponto
+            let numStr = String(valueInput)
+                            .replace(/\.(?=.*\.)/g, '') // Remove pontos que NÃO sejam o último (milhar)
+                            .replace(',', '.');        // Troca a vírgula decimal por ponto
+
+            let num = Number(numStr);
+            if (isNaN(num)) {
+                console.warn("Valor não numérico encontrado para VALOR PAGO:", valueInput);
+                return '0,00'; // Retorna zero formatado se não for número
+            }
+            // Formata usando toLocaleString
+            return num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        /** Salva o mapeamento atual e a conta contábil no localStorage. */
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem('contabilMapping', JSON.stringify(currentMapping));
+                localStorage.setItem('contabilConta', currentContaContabil);
+            } catch (e) {
+                console.error("Erro ao salvar no localStorage:", e);
+                showMessage("Não foi possível salvar as configurações no navegador.", "warning");
+            }
+        }
+
+        /** Carrega o mapeamento e a conta contábil do localStorage. */
+        function loadFromLocalStorage() {
+            try {
+                const savedMapping = localStorage.getItem('contabilMapping');
+                const savedConta = localStorage.getItem('contabilConta');
+
+                if (savedMapping) {
+                    currentMapping = JSON.parse(savedMapping);
+                } else {
+                    currentMapping = {}; // Inicia vazio se não houver nada salvo
+                }
+
+                if (savedConta) {
+                    currentContaContabil = savedConta;
+                    contaContabilInput.value = currentContaContabil; // Preenche o campo
+                } else {
+                    currentContaContabil = '';
+                }
+            } catch (e) {
+                console.error("Erro ao carregar do localStorage:", e);
+                showMessage("Não foi possível carregar configurações salvas.", "warning");
+                currentMapping = {}; // Reseta em caso de erro
+                currentContaContabil = '';
+            }
+        }
+
+        /** Atualiza o estado (habilitado/desabilitado) do botão "Gerar TXT". */
+        function updateGenerateButtonState() {
+            const fileLoaded = excelHeaders.length > 0;
+            const contaEntered = currentContaContabil.trim() !== '';
+            // Verifica se TODOS os campos fixos têm um mapeamento válido (não vazio)
+            const allMapped = fixedFields.every(field => currentMapping[field] && currentMapping[field] !== "");
+
+            if (fileLoaded && contaEntered && allMapped) {
+                generateBtn.disabled = false;
+                generateBtn.classList.add('enabled');
+            } else {
+                generateBtn.disabled = true;
+                generateBtn.classList.remove('enabled');
+            }
+        }
+
+        // --- Funções de Manipulação de UI ---
+
+        /** Cria e exibe a interface de mapeamento (Labels Fixos | Selects com Headers do Excel). */
+        function displayMappingUI() {
+            mappingArea.innerHTML = ''; // Limpa área antes de recriar
+
+            if (excelHeaders.length === 0) {
+                mappingSection.style.display = 'none';
+                mappingArea.classList.remove('visible');
+                return; // Sai se não há cabeçalhos
+            }
+
+            mappingSection.style.display = 'block'; // Mostra a seção
+
+            // Cria as linhas de mapeamento
+            fixedFields.forEach(fixedField => {
+                const row = document.createElement('div');
+                row.className = 'mapping-row';
+
+                // Label Fixo (Esquerda)
+                const label = document.createElement('span');
+                label.className = 'fixed-label';
+                label.textContent = fixedField;
+                label.title = fixedField; // Tooltip para nomes longos
+                row.appendChild(label);
+
+                // Wrapper e Select (Direita)
+                const selectWrapper = document.createElement('div');
+                selectWrapper.className = 'select-wrapper';
+
+                const select = document.createElement('select');
+                select.dataset.targetField = fixedField; // Vincula ao campo fixo
+
+                // Opção padrão "Selecione..."
+                const defaultOption = document.createElement('option');
+                defaultOption.value = ""; // Valor vazio é crucial
+                defaultOption.textContent = "Selecione a coluna da planilha...";
+                select.appendChild(defaultOption);
+
+                // Preenche com os cabeçalhos lidos do Excel
+                excelHeaders.forEach(header => {
+                    if (header && String(header).trim() !== '') { // Ignora headers vazios
+                        const option = document.createElement('option');
+                        option.value = header;
+                        option.textContent = header;
+                        select.appendChild(option);
+                    }
+                });
+
+                // Tenta pré-selecionar com base no mapeamento salvo (localStorage)
+                const savedHeader = currentMapping[fixedField];
+                if (savedHeader && excelHeaders.includes(savedHeader)) {
+                    select.value = savedHeader;
+                } else {
+                    // Se o mapeamento salvo não é válido ou não existe nos headers atuais, reseta
+                    if (savedHeader) {
+                        console.warn(`Mapeamento salvo para "${fixedField}" ("${savedHeader}") não encontrado nos cabeçalhos atuais. Resetando.`);
+                    }
+                    currentMapping[fixedField] = ""; // Garante que está resetado no estado
+                    select.value = ""; // Garante que a seleção visual é o placeholder
+                }
+
+                selectWrapper.appendChild(select);
+                row.appendChild(selectWrapper);
+                mappingArea.appendChild(row); // Adiciona a linha completa
+            });
+
+            // Força reflow antes de adicionar a classe para garantir a transição CSS
+             mappingArea.offsetHeight; // eslint-disable-line no-unused-expressions
+             mappingArea.classList.add('visible'); // Torna a área visível com transição
+
+            // Atualiza o estado do botão e salva o estado atual do mapeamento (incluindo resets)
+            updateGenerateButtonState();
+            saveToLocalStorage();
+        }
+
+        /** Limpa a interface de mapeamento e esconde a seção. */
+        function clearMappingUI() {
+            mappingArea.innerHTML = '';
+            mappingSection.style.display = 'none';
+            mappingArea.classList.remove('visible');
+            // Opcional: Resetar mapeamento ao limpar? Mantendo por enquanto.
+            // currentMapping = {};
+            // saveToLocalStorage();
+        }
+
+        // --- Manipuladores de Eventos ---
+
+        /** Chamado quando um arquivo é selecionado no input. */
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            // Limpa estado anterior ao carregar novo arquivo
+            clearMessage();
+            excelHeaders = [];
+            excelData = [];
+            clearMappingUI(); // Limpa a UI de mapeamento antiga
+
+            if (!file) {
+                fileNameDisplay.textContent = 'Nenhum arquivo selecionado';
+                updateGenerateButtonState(); // Atualiza botão (deve desabilitar)
+                return;
+            }
+
+            fileNameDisplay.textContent = `Arquivo: ${file.name}`;
+            setLoading(true);
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const fileData = new Uint8Array(e.target.result);
+                    // Tenta ler com cellDates:true para o SheetJS tentar converter datas para objetos Date
+                    const workbook = XLSX.read(fileData, { type: 'array', cellDates: true, cellNF: false, cellStyles: false });
+
+                    const firstSheetName = workbook.SheetNames[0];
+                    if (!firstSheetName) throw new Error("Nenhuma planilha encontrada no arquivo.");
+                    const worksheet = workbook.Sheets[firstSheetName];
+
+                    // Extrai cabeçalhos (primeira linha)
+                    const headerJson = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: null });
+                    if (!headerJson || headerJson.length === 0) throw new Error("Planilha parece vazia ou sem cabeçalho.");
+                    // Filtra nulos/vazios e converte para string
+                    excelHeaders = headerJson[0].map(h => String(h || '').trim()).filter(h => h !== '');
+
+                    if (excelHeaders.length === 0) throw new Error("Nenhum cabeçalho válido encontrado na primeira linha.");
+
+                    // Extrai dados (a partir da segunda linha)
+                    // Usa raw:false para obter valores como interpretados (datas como Date, números como Number)
+                    excelData = XLSX.utils.sheet_to_json(worksheet, {
+                         header: excelHeaders, // Usa os headers que encontramos
+                         range: 1,            // Pula a linha do cabeçalho
+                         defval: null,        // Representa células vazias como null
+                         raw: false
+                    });
+
+                    // Remove linhas completamente vazias (onde todos os valores são null ou string vazia)
+                    excelData = excelData.filter(row =>
+                        Object.values(row).some(val => val !== null && String(val).trim() !== '')
+                    );
+
+                    if (excelData.length === 0) {
+                        showMessage("A planilha contém cabeçalhos, mas nenhuma linha de dados foi encontrada.", "warning");
+                    }
+
+                    console.log("Cabeçalhos Encontrados:", excelHeaders);
+                    // console.log("Dados Encontrados (primeiras 5 linhas):", excelData.slice(0, 5));
+
+                    displayMappingUI(); // Constrói a interface de mapeamento com os novos headers
+                    // updateGenerateButtonState() é chamado dentro de displayMappingUI
+
+                } catch (error) {
+                    console.error("Erro ao processar o arquivo Excel:", error);
+                    showMessage(`Erro ao ler a planilha: ${error.message || 'Erro desconhecido.'}`, 'error');
+                    clearMappingUI(); // Limpa UI em caso de erro
+                    excelHeaders = []; // Reseta estado
+                    excelData = [];
+                    updateGenerateButtonState(); // Garante que botão está desabilitado
+                } finally {
+                    setLoading(false); // Esconde spinner
+                    // Limpa o valor do input para permitir selecionar o mesmo arquivo novamente
+                    fileInput.value = '';
+                }
+            };
+
+            reader.onerror = (e) => {
+                console.error("Erro ao ler o arquivo:", e);
+                showMessage("Não foi possível ler o arquivo selecionado.", 'error');
+                clearMappingUI();
+                excelHeaders = [];
+                excelData = [];
+                setLoading(false);
+                updateGenerateButtonState();
+                 fileInput.value = ''; // Limpa o input
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        /** Chamado quando o valor da Conta Contábil muda. */
+        function handleContaInput(event) {
+            currentContaContabil = event.target.value.trim();
+            saveToLocalStorage();
+            updateGenerateButtonState();
+        }
+
+        /** Chamado quando um select de mapeamento muda (usando delegação de evento). */
+        function handleMappingChange(event) {
+            if (event.target.tagName === 'SELECT' && event.target.dataset.targetField) {
+                const targetField = event.target.dataset.targetField;
+                const selectedHeader = event.target.value; // Valor "" se for "Selecione..."
+                currentMapping[targetField] = selectedHeader;
+                saveToLocalStorage();
+                updateGenerateButtonState();
+                // console.log("Mapeamento atualizado:", currentMapping);
+            }
+        }
+
+        /** Chamado quando o botão "Gerar Arquivo TXT" é clicado. */
+        function generateTxtFile() {
+            clearMessage();
+
+            // Revalidação rápida (embora o botão deva estar desabilitado se inválido)
+            if (generateBtn.disabled) {
+                showMessage("Verifique se um arquivo foi carregado, a conta contábil foi informada e todas as colunas foram mapeadas.", 'warning');
+                return;
+            }
+            if (excelData.length === 0 && excelHeaders.length > 0) {
+                 showMessage("Não há linhas de dados na planilha para processar.", 'warning');
+                 return;
+            }
+
+            setLoading(true);
+
+            // Processa de forma assíncrona para não travar a UI
+            setTimeout(() => {
+                try {
+                    let txtContent = '';
+                    let linesProcessed = 0;
+                    let errorsInFormatting = []; // Array para detalhes dos erros
+
+                    excelData.forEach((row, index) => {
+                        const lineNumber = index + 2; // Linha na planilha original
+                        let lineHasError = false;
+                        let errorDetails = [];
+
+                        // Obter dados usando o mapeamento
+                        const nomeFornecedor = String(row[currentMapping["NOME FORNECEDOR"]] ?? '').trim();
+                        const numDocumento = String(row[currentMapping["NUMERO DOCUMENTO"]] ?? '').trim();
+                        const dataPagamentoRaw = row[currentMapping["DATA PAGAMENTO"]]; // Passa raw para formatDate
+                        const valorPagoRaw = row[currentMapping["VALOR PAGO"]]; // Passa raw para formatValue
+                        const banco = String(row[currentMapping["BANCO"]] ?? '').trim();
+
+                        // Formatar e validar dados essenciais
+                        const dataPagamentoFmt = formatDate(dataPagamentoRaw);
+                        if (!dataPagamentoFmt || !/^\d{2}\/\d{2}\/\d{4}$/.test(dataPagamentoFmt)) {
+                            errorDetails.push(`Data Pagamento inválida (Original: '${dataPagamentoRaw}')`);
+                            lineHasError = true;
+                        }
+
+                        const valorPagoFmt = formatValue(valorPagoRaw);
+                        // Validação opcional: verificar se valor é zero ou negativo, se necessário
+                        // if (parseFloat(valorPagoFmt.replace('.', '').replace(',', '.')) <= 0) { ... }
+
+                        // Validar campos de texto obrigatórios para o histórico
+                         if (!nomeFornecedor) {
+                             errorDetails.push("Nome Fornecedor ausente");
+                             // Decidir se isso impede a linha ou é só aviso
+                             // lineHasError = true;
+                         }
+                         if (!numDocumento) {
+                             errorDetails.push("Numero Documento ausente");
+                             // lineHasError = true;
+                         }
+
+                        // Se houver erro crítico, registrar e pular linha
+                        if (lineHasError) {
+                            errorsInFormatting.push({ line: lineNumber, errors: errorDetails, rowData: row });
+                            console.warn(`Erro na linha ${lineNumber}:`, errorDetails.join('; '), "| Dados:", row);
+                            return; // Próxima iteração do forEach
+                        }
+
+                        // Montar histórico
+                        const historico = `VALOR PAGO A ${nomeFornecedor.toUpperCase()}, REF. ${numDocumento.toUpperCase()}`;
+
+                        // Montar linha TXT: DATA;CONTA;BANCO;VALOR;;HISTORICO;;;;
+                        const txtLine = `${dataPagamentoFmt};${currentContaContabil};${banco};${valorPagoFmt};;${historico};;;;`;
+                        txtContent += txtLine + '\r\n'; // Usa CRLF para compatibilidade Windows
+                        linesProcessed++;
+                    }); // Fim do forEach
+
+                    // Verificar se algo foi processado
+                    if (linesProcessed === 0 && excelData.length > 0) {
+                         if(errorsInFormatting.length > 0) {
+                             throw new Error(`Nenhuma linha pôde ser processada devido a erros (${errorsInFormatting.length} linha(s) com problemas). Verifique o console.`);
+                         } else {
+                            throw new Error("Nenhuma linha válida encontrada nos dados para gerar o arquivo.");
+                         }
+                    } else if (linesProcessed === 0 && excelData.length === 0) {
+                         throw new Error("Não há dados carregados para gerar o arquivo.");
+                    }
+
+                    // Criar Blob e link de download
+                    const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    const today = new Date().toISOString().slice(0, 10).replace(/-/g, ''); // YYYYMMDD
+                    link.download = `layout_contabil_${today}.txt`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(link.href); // Liberar memória
+
+                    // Mensagem final
+                    let finalMessage = `Arquivo TXT gerado com ${linesProcessed} linha(s).`;
+                    if (errorsInFormatting.length > 0) {
+                        finalMessage += ` ${errorsInFormatting.length} linha(s) foram ignoradas devido a erros (ver console).`;
+                        showMessage(finalMessage, 'warning');
+                    } else {
+                        showMessage(finalMessage, 'success');
+                    }
+
+                } catch (error) {
+                    console.error("Erro GERAL ao gerar o arquivo TXT:", error);
+                    showMessage(`Erro ao gerar TXT: ${error.message || 'Ocorreu um erro inesperado.'}`, 'error');
+                } finally {
+                    setLoading(false); // Garante que o spinner para e o botão é reavaliado
+                }
+            }, 50); // Pequeno delay para UI atualizar
+        }
+
+        // --- Inicialização e Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFromLocalStorage(); // Carrega conta e mapeamento salvos
+            // Não exibe mapeamento ainda, pois não há arquivo
+            updateGenerateButtonState(); // Define estado inicial do botão (desabilitado)
+
+            // Adiciona listeners principais
+            fileInput.addEventListener('change', handleFileUpload);
+            contaContabilInput.addEventListener('input', handleContaInput);
+            // Listener para o mapeamento (delegação de evento no container)
+            mappingArea.addEventListener('change', handleMappingChange);
+            generateBtn.addEventListener('click', () => {
+                // Verifica novamente se não está desabilitado antes de gerar
+                if (!generateBtn.disabled) {
+                    generateTxtFile();
+                }
+            });
+
+            // Trigger para abrir seleção de arquivo ao clicar no label personalizado
+            fileUploadLabel.addEventListener('click', (e) => {
+                e.preventDefault(); // Previne comportamento padrão do label se houver
+                fileInput.click();
+            });
+        });
+
+    </script>
+
+</body>
+</html>
