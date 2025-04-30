@@ -1,9 +1,11 @@
+--- START OF FILE calculadora_simples_mensal_note.html ---
+
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calculadora Simples Nacional por Anexo</title>
+    <title>Calculadora Simples Nacional por Anexo (Mensal)</title>
     <style>
       /* --- CSS Styles --- */
       :root {
@@ -103,6 +105,14 @@
         margin-top: 4px;
       }
 
+      /* Added specific style for the calculation note */
+      .calculation-note {
+        font-size: 0.85em; /* Slightly larger than hint */
+        color: #666; /* Slightly darker than hint */
+        margin-top: 12px; /* Space above */
+        font-style: italic;
+      }
+
       /* General Button Styling */
       .button {
         background-color: var(--accent-color);
@@ -175,7 +185,7 @@
         color: var(--primary-color);
         text-align: center;
       }
-      /* Make the RBT12 value stand out more in the intro */
+      /* Make the values stand out more in the intro */
       #resultsOutput .results-intro strong {
         color: var(--accent-color);
         font-size: 1.1em;
@@ -269,15 +279,15 @@
     <div class="container">
       <h1>Calculadora Simples Nacional</h1>
 
-      <!-- Section 1: Input RBT12 -->
+      <!-- Section 1: Input Monthly Revenue -->
       <div class="section">
-        <h2>1. Informar RBT12</h2>
+        <h2>1. Informar Faturamento Mensal</h2>
         <div class="input-group">
-          <label for="rbt12Input">Valor da RBT12 (últimos 12 meses):</label>
+          <label for="monthlyRevenueInput">Valor do Faturamento Mensal:</label>
           <input
             type="text"
-            id="rbt12Input"
-            placeholder="Ex: 150000,50 ou 1.250.000"
+            id="monthlyRevenueInput"
+            placeholder="Ex: 10500,00"
             inputmode="decimal"
             <!--
             Hint
@@ -289,6 +299,12 @@
 
           <p class="input-hint">Use vírgula (,) como separador decimal.</p>
         </div>
+        <!-- New note added here, outside input-group but within the section -->
+        <p class="calculation-note">
+          * Para este cálculo, o sistema simula o RBT12 multiplicando o
+          Faturamento Mensal informado por 12.
+        </p>
+
         <button id="calculateButton" class="button">Calcular Alíquotas</button>
         <div id="errorMessage"></div>
       </div>
@@ -297,15 +313,18 @@
       <div class="section">
         <h2>2. Resultados por Anexo</h2>
         <div id="resultsOutput">
-          Informe o valor da RBT12 e clique em "Calcular Alíquotas".
+          Informe o valor do Faturamento Mensal e clique em "Calcular
+          Alíquotas".
         </div>
       </div>
     </div>
 
     <!-- --- JavaScript Logic --- -->
     <script>
-      // Get references to HTML elements
-      const rbt12Input = document.getElementById("rbt12Input");
+      // Get references to HTML elements (Updated ID)
+      const monthlyRevenueInput = document.getElementById(
+        "monthlyRevenueInput"
+      );
       const calculateButton = document.getElementById("calculateButton");
       const resultsOutput = document.getElementById("resultsOutput");
       const errorMessageDiv = document.getElementById("errorMessage");
@@ -385,7 +404,7 @@
         errorMessageDiv.textContent = "";
         errorMessageDiv.style.display = "none";
         resultsOutput.innerHTML =
-          '<p>Informe o valor da RBT12 e clique em "Calcular Alíquotas".</p>';
+          '<p>Informe o valor do Faturamento Mensal e clique em "Calcular Alíquotas".</p>';
       }
 
       /** Displays an error message. */
@@ -400,48 +419,52 @@
       // --- Event Listeners ---
 
       // Format input on blur (losing focus)
-      rbt12Input.addEventListener("blur", () => {
-        const currentValue = rbt12Input.value;
+      monthlyRevenueInput.addEventListener("blur", () => {
+        const currentValue = monthlyRevenueInput.value;
         const numericValue = parseCurrencyInput(currentValue);
 
         if (numericValue !== null) {
           // If parsing was successful, format and update the input field
-          rbt12Input.value = formatCurrency(numericValue);
+          monthlyRevenueInput.value = formatCurrency(numericValue);
         } else if (currentValue.trim() !== "") {
           // Optional: Clear if input is invalid but not empty
-          // rbt12Input.value = '';
+          // monthlyRevenueInput.value = '';
           // console.warn('Invalid input cleared on blur:', currentValue);
         }
         // If it's just empty, leave it empty
       });
 
       calculateButton.addEventListener("click", () => {
-        // IMPORTANT: Always parse the CURRENT value from the input for calculation
-        const rbt12String = rbt12Input.value;
-        const rbt12Value = parseCurrencyInput(rbt12String); // Use parser to handle formatted/unformatted input
+        // Get the user's monthly revenue input
+        const monthlyRevenueString = monthlyRevenueInput.value;
+        // Parse the monthly revenue value
+        const monthlyRevenueValue = parseCurrencyInput(monthlyRevenueString);
 
-        if (rbt12Value === null) {
+        if (monthlyRevenueValue === null) {
           clearStatus();
           displayError(
-            "Valor da RBT12 inválido. Por favor, insira um número válido (ex: R$ 150.000,50)." // Updated example
+            "Valor do Faturamento Mensal inválido. Por favor, insira um número válido (ex: R$ 12.500,00)."
           );
-          // Focus back on the input field might be helpful
-          rbt12Input.focus();
+          monthlyRevenueInput.focus();
           return;
         }
 
-        if (rbt12Value < 0) {
+        if (monthlyRevenueValue < 0) {
           clearStatus();
-          displayError("O valor da RBT12 não pode ser negativo.");
-          rbt12Input.focus();
+          displayError("O Faturamento Mensal não pode ser negativo.");
+          monthlyRevenueInput.focus();
           return;
         }
+
+        // Calculate RBT12 (Faturamento Bruto dos Últimos 12 Meses)
+        const rbt12Value = monthlyRevenueValue * 12;
 
         clearStatus(); // Clear previous results/prompt
-        performCalculation(rbt12Value);
+        // Pass BOTH monthly and calculated RBT12 to the calculation function for display
+        performCalculation(monthlyRevenueValue, rbt12Value);
       });
 
-      rbt12Input.addEventListener("input", () => {
+      monthlyRevenueInput.addEventListener("input", () => {
         // Clear error message when user starts typing again
         if (errorMessageDiv.style.display === "block") {
           errorMessageDiv.textContent = "";
@@ -482,22 +505,26 @@
         return container;
       }
 
-      /** Orchestrates calculation and result display. */
-      function performCalculation(rbt12Value) {
+      /** Orchestrates calculation and result display.
+       * @param {number} monthlyRevenueValue - The raw numeric monthly revenue value.
+       * @param {number} rbt12Value - The calculated RBT12 value (monthly * 12).
+       */
+      function performCalculation(monthlyRevenueValue, rbt12Value) {
         resultsOutput.innerHTML = ""; // Clear the results area completely
         errorMessageDiv.style.display = "none";
 
-        // Use the formatted currency value for display in the intro
-        const formattedRBT12ForDisplay = formatCurrency(rbt12Value);
+        // Use the formatted currency values for display in the intro
+        const formattedMonthly = formatCurrency(monthlyRevenueValue);
+        const formattedRBT12 = formatCurrency(rbt12Value);
 
         const intro = document.createElement("p");
         intro.className = "results-intro";
-        // Display the formatted value here
-        intro.innerHTML = `Resultados para RBT12 = <strong>${formattedRBT12ForDisplay}</strong>:`;
+        // Display both the monthly input and the calculated RBT12
+        intro.innerHTML = `Para Faturamento Mensal = <strong>${formattedMonthly}</strong><br>(RBT12 calculado = <strong>${formattedRBT12}</strong>):`;
         resultsOutput.appendChild(intro);
 
         try {
-          // Calculation functions receive the raw numeric value (rbt12Value)
+          // The calculation functions will receive the CALCULATED rbt12Value
           // --- Anexo I ---
           const resultI = calculateAnexoI(rbt12Value);
           const blockI = createResultBlock("Anexo I (Comércio)", "", resultI);
@@ -542,10 +569,24 @@
         }
       }
 
-      // --- Calculation Functions (Receive raw number, return formatted string) ---
+      // --- Calculation Functions (Receive raw RBT12 number, return formatted string) ---
+      // NOTE: These functions remain the same as they operate based on RBT12 tiers.
+      // The only change is that the input 'acumulado' now represents the *calculated* RBT12.
 
       function calculateAnexoI(acumulado) {
         let aliquota, deducao, aliquota_simples;
+        // Simples Nacional limit is R$ 4,800,000.00 per year (RBT12)
+        const limiteSimples = 4800000;
+
+        if (acumulado > limiteSimples) {
+          // Show the calculated RBT12 exceeding the limit
+          return `RBT12 (${formatCurrency(
+            acumulado
+          )}) excede o limite do Simples Nacional (${formatCurrency(
+            limiteSimples
+          )}).`;
+        }
+
         if (acumulado === 0) {
           aliquota_simples = 4.0;
           return `Alíquota nominal inicial: ${formatPercentage(
@@ -568,22 +609,34 @@
           aliquota = 0.143;
           deducao = 87300;
         } else if (acumulado <= 4800000) {
+          // This is the effective rate calculation for the top band
           aliquota = 0.19;
           deducao = 378000;
+          // Aliquota Efetiva = (RBT12 * Aliquota Nominal - Parcela a Deduzir) / RBT12 * 100
           aliquota_simples =
             ((acumulado * aliquota - deducao) / acumulado) * 100;
           return `Alíquota Efetiva (Faixa 6): ${formatPercentage(
             aliquota_simples
           )}.`;
-        } else {
-          return `RBT12 excede o limite (${formatCurrency(4800000)}).`; // Show formatted limit
         }
+
+        // Aliquota Efetiva = (RBT12 * Aliquota Nominal - Parcela a Deduzir) / RBT12 * 100
         aliquota_simples = ((acumulado * aliquota - deducao) / acumulado) * 100;
         return `Alíquota Efetiva: ${formatPercentage(aliquota_simples)}.`;
       }
 
       function calculateAnexoII(acumulado) {
         let aliquota, deducao, aliquota_simples;
+        const limiteSimples = 4800000;
+
+        if (acumulado > limiteSimples) {
+          return `RBT12 (${formatCurrency(
+            acumulado
+          )}) excede o limite do Simples Nacional (${formatCurrency(
+            limiteSimples
+          )}).`;
+        }
+
         if (acumulado === 0) {
           aliquota_simples = 4.5;
           return `Alíquota nominal inicial: ${formatPercentage(
@@ -613,8 +666,6 @@
           return `Alíquota Efetiva (Faixa 6): ${formatPercentage(
             aliquota_simples
           )}.`;
-        } else {
-          return `RBT12 excede o limite (${formatCurrency(4800000)}).`;
         }
         aliquota_simples = ((acumulado * aliquota - deducao) / acumulado) * 100;
         return `Alíquota Efetiva: ${formatPercentage(aliquota_simples)}.`;
@@ -622,6 +673,16 @@
 
       function calculateAnexoIII(acumulado) {
         let aliquota, deducao, aliquota_simples;
+        const limiteSimples = 4800000;
+
+        if (acumulado > limiteSimples) {
+          return `RBT12 (${formatCurrency(
+            acumulado
+          )}) excede o limite do Simples Nacional (${formatCurrency(
+            limiteSimples
+          )}).`;
+        }
+
         if (acumulado === 0) {
           aliquota_simples = 6.0;
           return `Alíquota nominal inicial: ${formatPercentage(
@@ -651,8 +712,6 @@
           return `Alíquota Efetiva (Faixa 6): ${formatPercentage(
             aliquota_simples
           )}.`;
-        } else {
-          return `RBT12 excede o limite (${formatCurrency(4800000)}).`;
         }
         aliquota_simples = ((acumulado * aliquota - deducao) / acumulado) * 100;
         return `Alíquota Efetiva: ${formatPercentage(aliquota_simples)}.`;
@@ -660,6 +719,16 @@
 
       function calculateAnexoIV(acumulado) {
         let aliquota, deducao, aliquota_simples;
+        const limiteSimples = 4800000;
+
+        if (acumulado > limiteSimples) {
+          return `RBT12 (${formatCurrency(
+            acumulado
+          )}) excede o limite do Simples Nacional (${formatCurrency(
+            limiteSimples
+          )}).`;
+        }
+
         if (acumulado === 0) {
           aliquota_simples = 4.5;
           return `Alíquota nominal inicial: ${formatPercentage(
@@ -689,8 +758,6 @@
           return `Alíquota Efetiva (Faixa 6): ${formatPercentage(
             aliquota_simples
           )}.`;
-        } else {
-          return `RBT12 excede o limite (${formatCurrency(4800000)}).`;
         }
         aliquota_simples = ((acumulado * aliquota - deducao) / acumulado) * 100;
         return `Alíquota Efetiva: ${formatPercentage(aliquota_simples)}.`;
@@ -698,6 +765,16 @@
 
       function calculateAnexoV(acumulado) {
         let aliquota, deducao, aliquota_simples;
+        const limiteSimples = 4800000;
+
+        if (acumulado > limiteSimples) {
+          return `RBT12 (${formatCurrency(
+            acumulado
+          )}) excede o limite do Simples Nacional (${formatCurrency(
+            limiteSimples
+          )}).`;
+        }
+
         if (acumulado === 0) {
           aliquota_simples = 15.5;
           return `Alíquota nominal inicial: ${formatPercentage(
@@ -727,8 +804,6 @@
           return `Alíquota Efetiva (Faixa 6): ${formatPercentage(
             aliquota_simples
           )}.`;
-        } else {
-          return `RBT12 excede o limite (${formatCurrency(4800000)}).`;
         }
         aliquota_simples = ((acumulado * aliquota - deducao) / acumulado) * 100;
         return `Alíquota Efetiva: ${formatPercentage(aliquota_simples)}.`;
