@@ -1,509 +1,598 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Analisador de Duplicidades Contábeis</title>
 
     <!-- Inclui a biblioteca SheetJS (xlsx) para ler arquivos Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
-        /* Definição das variáveis de cor */
-        :root {
-            --primary-color: #4f0072;
-            --accent-color: #fb0a5e;
-            --background-color: #ffffff;
-            --form-bg-color: #f9f9f9;
-            --text-color: #333333;
-            --border-color: #e0e0e0;
-            --text-color-light: #ffffff;
-            --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
-            --transicao: all 0.3s ease;
-        }
+      /* Definição das variáveis de cor */
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease;
+      }
 
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.6;
-        }
+      body {
+        font-family: "Arial", sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--accent-color) 100%
+        );
+        color: var(--text-color);
+        line-height: 1.6;
+      }
 
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            background-color: var(--background-color);
-            padding: 30px;
-            box-shadow: var(--sombra);
-            border-radius: 8px;
-        }
+      .container {
+        max-width: 800px;
+        margin: 20px auto;
+        background-color: var(--background-color);
+        padding: 30px;
+        box-shadow: var(--sombra);
+        border-radius: 8px;
+      }
 
-        h1, h2 {
-            color: var(--primary-color);
-            text-align: center;
-            margin-bottom: 20px;
-        }
+      h1,
+      h2 {
+        color: var(--primary-color);
+        text-align: center;
+        margin-bottom: 20px;
+      }
 
-        .form-section {
-            background-color: var(--form-bg-color);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            border: 1px solid var(--border-color);
-        }
+      .form-section {
+        background-color: var(--form-bg-color);
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        border: 1px solid var(--border-color);
+      }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: var(--primary-color);
+      }
 
-        input[type="file"],
-        textarea {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 1rem;
-            transition: border-color var(--transicao);
-        }
+      input[type="file"],
+      textarea {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 1rem;
+        transition: border-color var(--transicao);
+      }
 
-        input[type="file"]:focus,
-        textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 5px rgba(79, 0, 114, 0.3);
-        }
+      input[type="file"]:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 5px rgba(79, 0, 114, 0.3);
+      }
 
-        textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
+      textarea {
+        min-height: 100px;
+        resize: vertical;
+      }
 
-        button {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            background-color: var(--accent-color);
-            color: var(--text-color-light);
-            border: none;
-            border-radius: 4px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: background-color var(--transicao), opacity var(--transicao);
-        }
+      button {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        background-color: var(--accent-color);
+        color: var(--text-color-light);
+        border: none;
+        border-radius: 4px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background-color var(--transicao), opacity var(--transicao);
+      }
 
-        button:hover:not(:disabled) {
-            background-color: #d9074c;
-        }
+      button:hover:not(:disabled) {
+        background-color: #d9074c;
+      }
 
-        button:disabled {
-            background-color: var(--border-color);
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
+      button:disabled {
+        background-color: var(--border-color);
+        cursor: not-allowed;
+        opacity: 0.7;
+      }
 
-        .results-section {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-        }
+      .results-section {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border-color);
+      }
 
-        #loading {
-            text-align: center;
-            color: var(--primary-color);
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
+      #loading {
+        text-align: center;
+        color: var(--primary-color);
+        font-weight: bold;
+        margin-bottom: 15px;
+      }
 
-        #results ul {
-            list-style: none;
-            padding: 0;
-        }
+      #results ul {
+        list-style: none;
+        padding: 0;
+      }
 
-        /* Estilo para cada grupo de duplicidades */
-        #results li {
-            background-color: var(--form-bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 10px 15px; /* Condensado */
-            margin-bottom: 10px; /* Condensado */
-            word-break: break-word;
-        }
+      /* Estilo para cada grupo de duplicidades */
+      #results li {
+        background-color: var(--form-bg-color);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 10px 15px; /* Condensado */
+        margin-bottom: 10px; /* Condensado */
+        word-break: break-word;
+      }
 
-        #results li strong {
-            color: var(--primary-color);
-        }
+      #results li strong {
+        color: var(--primary-color);
+      }
 
-        /* Estilo para a lista interna de lançamentos de um grupo */
-        #results li ul {
-            margin-top: 8px; /* Condensado */
-            padding-left: 15px; /* Condensado */
-        }
+      /* Estilo para a lista interna de lançamentos de um grupo */
+      #results li ul {
+        margin-top: 8px; /* Condensado */
+        padding-left: 15px; /* Condensado */
+      }
 
-        /* Estilo para cada lançamento dentro de um grupo */
-        #results li ul li {
-            background-color: transparent;
-            border: none;
-            padding: 3px 0; /* Condensado */
-            margin-bottom: 3px; /* Condensado */
-            line-height: 1.4; /* Condensado */
-        }
+      /* Estilo para cada lançamento dentro de um grupo */
+      #results li ul li {
+        background-color: transparent;
+        border: none;
+        padding: 3px 0; /* Condensado */
+        margin-bottom: 3px; /* Condensado */
+        line-height: 1.4; /* Condensado */
+      }
 
-        /* Novo estilo para destacar valores */
-        .highlight-value {
-            color: var(--accent-color);
-            font-weight: bold;
-        }
+      /* Novo estilo para destacar valores */
+      .highlight-value {
+        color: var(--accent-color);
+        font-weight: bold;
+      }
 
-        .error-message {
-            color: var(--accent-color);
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 15px;
-        }
+      .error-message {
+        color: var(--accent-color);
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 15px;
+      }
 
-        .info-message {
-            color: var(--primary-color);
-            text-align: center;
-        }
-
+      .info-message {
+        color: var(--primary-color);
+        text-align: center;
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
     <div class="container">
-        <h1>Analisador de Duplicidades Contábeis</h1>
+      <h1>Analisador de Duplicidades Contábeis</h1>
 
-        <div class="form-section">
-            <p>Carregue um arquivo Excel (.xlsx ou .xls), informe as contas desejadas e analise duplicidades (mesma Data e Valor) **apenas** nos lançamentos que envolvem essas contas.</p>
+      <div class="form-section">
+        <p>
+          Carregue um arquivo Excel (.xlsx ou .xls), informe as contas desejadas
+          e analise duplicidades (mesma Data e Valor) **apenas** nos lançamentos
+          que envolvem essas contas.
+        </p>
 
-            <label for="excelFile">Escolha o arquivo Excel:</label>
-            <input type="file" id="excelFile" accept=".xlsx, .xls">
+        <label for="excelFile">Escolha o arquivo Excel:</label>
+        <input type="file" id="excelFile" accept=".xlsx, .xls" />
 
-            <label for="accountList">Contas a Analisar (separadas por vírgula ou quebra de linha):</label>
-            <textarea id="accountList" placeholder="Ex: 1000, 2000, 101.01, 202.05"></textarea>
+        <label for="accountList"
+          >Contas a Analisar (separadas por vírgula ou quebra de linha):</label
+        >
+        <textarea
+          id="accountList"
+          placeholder="Ex: 1000, 2000, 101.01, 202.05"
+        ></textarea>
 
-            <button id="analyzeButton" disabled>Analisar Duplicidades</button>
+        <button id="analyzeButton" disabled>Analisar Duplicidades</button>
+      </div>
+
+      <div class="results-section">
+        <h2>Resultados da Análise</h2>
+        <p id="loading" style="display: none">Analisando o arquivo...</p>
+        <div id="results">
+          <p class="info-message">
+            Carregue um arquivo e informe as contas para iniciar a análise.
+          </p>
         </div>
-
-        <div class="results-section">
-            <h2>Resultados da Análise</h2>
-            <p id="loading" style="display: none;">Analisando o arquivo...</p>
-            <div id="results">
-                <p class="info-message">Carregue um arquivo e informe as contas para iniciar a análise.</p>
-            </div>
-        </div>
+      </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const fileInput = document.getElementById('excelFile');
-            const accountListTextarea = document.getElementById('accountList');
-            const analyzeButton = document.getElementById('analyzeButton');
-            const resultsDiv = document.getElementById('results');
-            const loadingIndicator = document.getElementById('loading');
+      document.addEventListener("DOMContentLoaded", () => {
+        const fileInput = document.getElementById("excelFile");
+        const accountListTextarea = document.getElementById("accountList");
+        const analyzeButton = document.getElementById("analyzeButton");
+        const resultsDiv = document.getElementById("results");
+        const loadingIndicator = document.getElementById("loading");
 
-            const updateButtonState = () => {
-                 const fileSelected = fileInput.files.length > 0;
-                 const accountsEntered = accountListTextarea.value.trim() !== '';
-                 analyzeButton.disabled = !(fileSelected && accountsEntered);
-            };
+        const updateButtonState = () => {
+          const fileSelected = fileInput.files.length > 0;
+          const accountsEntered = accountListTextarea.value.trim() !== "";
+          analyzeButton.disabled = !(fileSelected && accountsEntered);
+        };
 
-            fileInput.addEventListener('change', updateButtonState);
-            accountListTextarea.addEventListener('input', updateButtonState);
+        fileInput.addEventListener("change", updateButtonState);
+        accountListTextarea.addEventListener("input", updateButtonState);
 
-            analyzeButton.addEventListener('click', async () => { // Use async for potential future use, currently not strictly needed
-                const file = fileInput.files[0];
-                const accountListRaw = accountListTextarea.value;
+        analyzeButton.addEventListener("click", async () => {
+          // Use async for potential future use, currently not strictly needed
+          const file = fileInput.files[0];
+          const accountListRaw = accountListTextarea.value;
 
-                if (!file) { displayError('Por favor, selecione um arquivo Excel.'); return; }
-                if (!accountListRaw.trim()) { displayError('Por favor, informe as contas a serem analisadas.'); return; }
+          if (!file) {
+            displayError("Por favor, selecione um arquivo Excel.");
+            return;
+          }
+          if (!accountListRaw.trim()) {
+            displayError("Por favor, informe as contas a serem analisadas.");
+            return;
+          }
 
-                loadingIndicator.style.display = 'block';
-                resultsDiv.innerHTML = '';
-                displayInfo('Lendo arquivo Excel...');
+          loadingIndicator.style.display = "block";
+          resultsDiv.innerHTML = "";
+          displayInfo("Lendo arquivo Excel...");
 
-                const reader = new FileReader();
+          const reader = new FileReader();
 
-                reader.onload = async (event) => { // Use async here if needing awaits inside
-                    try {
-                        const data = new Uint8Array(event.target.result);
-                        // Usando raw: true para manter valores originais
-                        const workbook = XLSX.read(data, { type: 'array', raw: true });
+          reader.onload = async (event) => {
+            // Use async here if needing awaits inside
+            try {
+              const data = new Uint8Array(event.target.result);
+              // Usando raw: true para manter valores originais
+              const workbook = XLSX.read(data, { type: "array", raw: true });
 
-                        const firstSheetName = workbook.SheetNames[0];
-                        const worksheet = workbook.Sheets[firstSheetName];
+              const firstSheetName = workbook.SheetNames[0];
+              const worksheet = workbook.Sheets[firstSheetName];
 
-                        // Usando raw: true para ter acesso aos valores brutos
-                        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: true });
+              // Usando raw: true para ter acesso aos valores brutos
+              const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+                header: 1,
+                raw: true,
+              });
 
-                        if (!jsonData || jsonData.length < 2) {
-                            displayInfo('O arquivo Excel está vazio ou não contém dados.');
-                            loadingIndicator.style.display = 'none';
-                            return;
+              if (!jsonData || jsonData.length < 2) {
+                displayInfo("O arquivo Excel está vazio ou não contém dados.");
+                loadingIndicator.style.display = "none";
+                return;
+              }
+
+              const header = jsonData[0];
+              const rows = jsonData.slice(1);
+
+              // Encontra os índices das colunas
+              const findColumnIndex = (headerRow, columnName) => {
+                if (!headerRow || headerRow.length === 0) return -1;
+                const lowerColumnName = columnName.toLowerCase().trim();
+                let index = -1;
+                headerRow.some((cell, i) => {
+                  if (
+                    cell !== null &&
+                    cell !== undefined &&
+                    typeof cell.toString === "function" &&
+                    cell.toString().toLowerCase().trim() === lowerColumnName
+                  ) {
+                    index = i;
+                    return true;
+                  }
+                  return false;
+                });
+                return index;
+              };
+
+              const dateColIndex = findColumnIndex(header, "data");
+              const debitColIndex = findColumnIndex(header, "cta. débito");
+              const creditColIndex = findColumnIndex(header, "cta. crédito");
+              const valueColIndex = findColumnIndex(header, "valor");
+
+              if (
+                dateColIndex === -1 ||
+                debitColIndex === -1 ||
+                creditColIndex === -1 ||
+                valueColIndex === -1
+              ) {
+                const missing = [];
+                if (dateColIndex === -1) missing.push('"Data"');
+                if (debitColIndex === -1) missing.push('"Cta. Débito"');
+                if (creditColIndex === -1) missing.push('"Cta. Crédito"');
+                if (valueColIndex === -1) missing.push('"Valor"');
+                displayError(
+                  `Colunas obrigatórias não encontradas: ${missing.join(
+                    ", "
+                  )}. Verifique os nomes exatos no cabeçalho.`
+                );
+                loadingIndicator.style.display = "none";
+                return;
+              }
+
+              const targetAccounts = new Set(
+                accountListRaw
+                  .split(/[\s,]+/)
+                  .map((acc) => acc.trim())
+                  .filter((acc) => acc !== "")
+              );
+
+              if (targetAccounts.size === 0) {
+                displayError("Nenhuma conta válida foi informada.");
+                loadingIndicator.style.display = "none";
+                return;
+              }
+
+              displayInfo(
+                `Filtrando lançamentos para ${targetAccounts.size} conta(s)...`
+              );
+
+              // --- Passo 1: Filtrar os lançamentos pelas contas informadas ---
+              const filteredEntries = [];
+
+              for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const originalRowIndex = i + 2;
+
+                const date = row[dateColIndex];
+                const debitAccount = row[debitColIndex];
+                const creditAccount = row[creditColIndex];
+                const value = row[valueColIndex]; // Valor bruto
+
+                const debitAccString = String(debitAccount || "").trim();
+                const creditAccString = String(creditAccount || "").trim();
+
+                const isRelevantAccount =
+                  targetAccounts.has(debitAccString) ||
+                  targetAccounts.has(creditAccString);
+
+                if (isRelevantAccount) {
+                  // --- Normaliza Data ---
+                  let dateString = null;
+                  if (date instanceof Date && !isNaN(date)) {
+                    dateString = date.toISOString().split("T")[0]; // YYYY-MM-DD
+                  } else if (typeof date === "string") {
+                    // Check if it's already YYYY-MM-DD or attempt parsing
+                    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+                    if (dateRegex.test(date)) {
+                      dateString = date;
+                    } else {
+                      try {
+                        const parsedDate = new Date(date);
+                        if (!isNaN(parsedDate.getTime())) {
+                          dateString = parsedDate.toISOString().split("T")[0];
                         }
-
-                        const header = jsonData[0];
-                        const rows = jsonData.slice(1);
-
-                        // Encontra os índices das colunas
-                        const findColumnIndex = (headerRow, columnName) => {
-                            if (!headerRow || headerRow.length === 0) return -1;
-                            const lowerColumnName = columnName.toLowerCase().trim();
-                            let index = -1;
-                            headerRow.some((cell, i) => {
-                                if (cell !== null && cell !== undefined && typeof cell.toString === 'function' && cell.toString().toLowerCase().trim() === lowerColumnName) {
-                                    index = i;
-                                    return true;
-                                }
-                                return false;
-                            });
-                            return index;
-                        };
-
-                        const dateColIndex = findColumnIndex(header, 'data');
-                        const debitColIndex = findColumnIndex(header, 'cta. débito');
-                        const creditColIndex = findColumnIndex(header, 'cta. crédito');
-                        const valueColIndex = findColumnIndex(header, 'valor');
-
-                        if (dateColIndex === -1 || debitColIndex === -1 || creditColIndex === -1 || valueColIndex === -1) {
-                            const missing = [];
-                            if (dateColIndex === -1) missing.push('"Data"');
-                            if (debitColIndex === -1) missing.push('"Cta. Débito"');
-                            if (creditColIndex === -1) missing.push('"Cta. Crédito"');
-                            if (valueColIndex === -1) missing.push('"Valor"');
-                            displayError(`Colunas obrigatórias não encontradas: ${missing.join(', ')}. Verifique os nomes exatos no cabeçalho.`);
-                            loadingIndicator.style.display = 'none';
-                            return;
-                        }
-
-                        const targetAccounts = new Set(
-                            accountListRaw.split(/[\s,]+/)
-                                       .map(acc => acc.trim())
-                                       .filter(acc => acc !== '')
-                        );
-
-                        if (targetAccounts.size === 0) {
-                             displayError('Nenhuma conta válida foi informada.');
-                             loadingIndicator.style.display = 'none';
-                             return;
-                        }
-
-                        displayInfo(`Filtrando lançamentos para ${targetAccounts.size} conta(s)...`);
-
-                        // --- Passo 1: Filtrar os lançamentos pelas contas informadas ---
-                        const filteredEntries = [];
-
-                        for (let i = 0; i < rows.length; i++) {
-                            const row = rows[i];
-                            const originalRowIndex = i + 2;
-
-                            const date = row[dateColIndex];
-                            const debitAccount = row[debitColIndex];
-                            const creditAccount = row[creditColIndex];
-                            const value = row[valueColIndex]; // Valor bruto
-
-                            const debitAccString = String(debitAccount || '').trim();
-                            const creditAccString = String(creditAccount || '').trim();
-
-                            const isRelevantAccount = targetAccounts.has(debitAccString) || targetAccounts.has(creditAccString);
-
-                            if (isRelevantAccount) {
-                                // --- Normaliza Data ---
-                                let dateString = null;
-                                if (date instanceof Date && !isNaN(date)) {
-                                    dateString = date.toISOString().split('T')[0]; // YYYY-MM-DD
-                                } else if (typeof date === 'string') {
-                                     // Check if it's already YYYY-MM-DD or attempt parsing
-                                    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-                                     if(dateRegex.test(date)) {
-                                         dateString = date;
-                                     } else {
-                                        try { 
-                                            const parsedDate = new Date(date); 
-                                            if (!isNaN(parsedDate.getTime())) { 
-                                                dateString = parsedDate.toISOString().split('T')[0]; 
-                                            } 
-                                        } catch (e) {}
-                                     }
-                                } else if (typeof date === 'number') {
-                                    try { 
-                                        const dateObj = XLSX.SSF.parse_date_code(date); 
-                                        if (dateObj && !isNaN(dateObj.y) && !isNaN(dateObj.m) && !isNaN(dateObj.d)) { 
-                                            dateString = `${dateObj.y}-${String(dateObj.m).padStart(2, '0')}-${String(dateObj.d).padStart(2, '0')}`; 
-                                        } 
-                                    } catch (e) {}
-                                }
-
-                                // --- CORREÇÃO: Melhor processamento para o Valor ---
-                                let numericValue; // Valor numérico real (para comparação > 100 e ordenação)
-                                let valueStringForComparison = null; // String XX.YY (para chave do mapa)
-                                let valueStringForDisplay = 'Inválido'; // String XX,YY (para exibição)
-
-                                // Log para debug
-                                console.log(`Linha ${originalRowIndex}: Valor original:`, value, `(Tipo: ${typeof value})`);
-
-                                // Processo de conversão de valor com correção para evitar perda de casas decimais
-                                if (typeof value === 'number' && !isNaN(value)) {
-                                    // Se já é número, usamos diretamente
-                                    numericValue = value;
-                                    console.log(`Linha ${originalRowIndex}: Valor numérico direto: ${numericValue}`);
-                                } else if (typeof value === 'string') {
-                                    // Se for string, primeiro tentar formato brasileiro (vírgula como decimal)
-                                    let cleanValue = value.trim();
-                                    
-                                    // Se contém vírgula, assume formato brasileiro
-                                    if (cleanValue.includes(',')) {
-                                        // Formato brasileiro: remove pontos (separadores de milhar) e substitui , por .
-                                        cleanValue = cleanValue.replace(/\./g, '').replace(',', '.');
-                                    } else if (cleanValue.includes('.')) {
-                                        // Já está no formato com ponto, manter como está
-                                        cleanValue = cleanValue;
-                                    }
-                                    
-                                    // Remover quaisquer caracteres não-numéricos exceto o ponto decimal
-                                    cleanValue = cleanValue.replace(/[^\d.]/g, '');
-                                    
-                                    numericValue = parseFloat(cleanValue);
-                                    console.log(`Linha ${originalRowIndex}: Valor string "${value}" convertido para: ${numericValue}`);
-                                } else {
-                                    // Outro tipo de dado, inválido
-                                    numericValue = NaN;
-                                    console.log(`Linha ${originalRowIndex}: Tipo de valor inválido: ${typeof value}`);
-                                }
-
-                                // Formatação final do valor para comparação e exibição
-                                if (!isNaN(numericValue)) {
-                                    // Use toFixed(2) para garantir duas casas decimais
-                                    valueStringForComparison = numericValue.toFixed(2); // "15000.00"
-                                    // Formata para exibição no padrão brasileiro
-                                    valueStringForDisplay = numericValue.toLocaleString('pt-BR', {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2
-                                    }); // "15.000,00"
-                                } else {
-                                    console.warn(`Linha ${originalRowIndex}: Valor numérico inválido após processamento.`);
-                                }
-
-                                console.log(`Linha ${originalRowIndex}: Valores finais - Numérico: ${numericValue}, Comparação: "${valueStringForComparison}", Exibição: "${valueStringForDisplay}"`);
-
-                                // Adiciona à lista filtrada se Data e Valor são válidos
-                                if (dateString && valueStringForComparison !== null) {
-                                     filteredEntries.push({
-                                        originalRow: originalRowIndex,
-                                        data: dateString,
-                                        ctaDebito: debitAccString,
-                                        ctaCredito: creditAccString,
-                                        valorFormattedForComparison: valueStringForComparison,
-                                        valorFormattedForDisplay: valueStringForDisplay,
-                                        valorNumeric: numericValue,
-                                        originalRowData: row
-                                    });
-                                } else {
-                                     console.warn(`Linha ${originalRowIndex} ignorada por Data ou Valor inválido.`);
-                                }
-                            }
-                        }
-
-                        if (filteredEntries.length === 0) {
-                            displayInfo('Nenhum lançamento encontrado envolvendo as contas informadas, ou os lançamentos encontrados tinham problemas de Data/Valor.');
-                            loadingIndicator.style.display = 'none';
-                            return;
-                        }
-
-                        displayInfo(`Analisando ${filteredEntries.length} lançamentos filtrados para duplicidades...`);
-
-                        // --- Passo 2: Analisar duplicidades DENTRO dos lançamentos filtrados ---
-                        const potentialDuplicates = new Map();
-
-                        filteredEntries.forEach(entry => {
-                            const key = `${entry.data}|${entry.valorFormattedForComparison}`; // Chave: Data|Valor (formato XX.YY)
-                            if (!potentialDuplicates.has(key)) {
-                                potentialDuplicates.set(key, []);
-                            }
-                            potentialDuplicates.get(key).push(entry);
-                        });
-
-                        // --- Identifica e Exibe os Grupos de Duplicidades ---
-                        const duplicateGroups = [];
-                        potentialDuplicates.forEach(entriesInGroup => {
-                            if (entriesInGroup.length > 1) {
-                                entriesInGroup.sort((a, b) => a.originalRow - b.originalRow); // Ordena por linha para consistência
-                                duplicateGroups.push(entriesInGroup);
-                            }
-                        });
-
-                        loadingIndicator.style.display = 'none';
-
-                        if (duplicateGroups.length === 0) {
-                            displayInfo(`Nenhuma duplicidade (mesma Data e Valor) encontrada entre os ${filteredEntries.length} lançamentos das contas informadas.`);
-                        } else {
-                            const ul = document.createElement('ul');
-                            // Ordena os grupos por valor crescente (do menor para o maior)
-                            duplicateGroups.sort((a, b) => {
-                                // Primeiro critério: ordenar pelo valor numérico (crescente)
-                                const valA = a[0].valorNumeric;
-                                const valB = b[0].valorNumeric;
-                                if (!isNaN(valA) && !isNaN(valB)) { // Compara números se ambos são válidos
-                                    if (valA < valB) return -1;
-                                    if (valA > valB) return 1;
-                                }
-                                
-                                // Segundo critério (em caso de empate no valor): ordenar por data
-                                if (a[0].data < b[0].data) return -1;
-                                if (a[0].data > b[0].data) return 1;
-                                
-                                // Terceiro critério (em caso de empate no valor e data): ordenar por linha original
-                                return a[0].originalRow - b[0].originalRow;
-                            });
-
-                            duplicateGroups.forEach(group => {
-                                const li = document.createElement('li');
-                                const groupValueNumeric = group[0].valorNumeric;
-                                // Formata o valor para exibição e aplica destaque se > 100
-                                const valueDisplayHTML = !isNaN(groupValueNumeric) && groupValueNumeric > 100 ?
-                                                     `<span class="highlight-value">${group[0].valorFormattedForDisplay}</span>` :
-                                                     group[0].valorFormattedForDisplay;
-
-                                li.innerHTML = `<strong>Duplicidade Encontrada (${group.length}x):</strong> Data: ${group[0].data}, Valor: ${valueDisplayHTML}<br>
-                                                Detalhes dos lançamentos neste grupo:<ul>`;
-                                group.forEach(item => {
-                                    li.innerHTML += `<li>Linha ${item.originalRow}: Cta. Débito: ${item.ctaDebito || ''}, Cta. Crédito: ${item.ctaCredito || ''}</li>`;
-                                });
-                                li.innerHTML += `</ul>`;
-                                ul.appendChild(li);
-                            });
-                            resultsDiv.appendChild(ul);
-                        }
-
-                    } catch (e) {
-                        loadingIndicator.style.display = 'none';
-                        displayError(`Erro ao processar o arquivo: ${e.message}. Verifique o formato do arquivo, os nomes das colunas ("Data", "Cta. Débito", "Cta. Crédito", "Valor") e se os dados nas colunas estão no formato esperado.`);
-                        console.error(e);
+                      } catch (e) {}
                     }
-                };
+                  } else if (typeof date === "number") {
+                    try {
+                      const dateObj = XLSX.SSF.parse_date_code(date);
+                      if (
+                        dateObj &&
+                        !isNaN(dateObj.y) &&
+                        !isNaN(dateObj.m) &&
+                        !isNaN(dateObj.d)
+                      ) {
+                        dateString = `${dateObj.y}-${String(dateObj.m).padStart(
+                          2,
+                          "0"
+                        )}-${String(dateObj.d).padStart(2, "0")}`;
+                      }
+                    } catch (e) {}
+                  }
 
-                reader.onerror = (error) => {
-                    loadingIndicator.style.display = 'none';
-                    displayError('Erro ao ler o arquivo.');
-                    console.error(error);
-                };
+                  // --- CORREÇÃO: Melhor processamento para o Valor ---
+                  let numericValue; // Valor numérico real (para comparação > 100 e ordenação)
+                  let valueStringForComparison = null; // String XX.YY (para chave do mapa)
+                  let valueStringForDisplay = "Inválido"; // String XX,YY (para exibição)
 
-                reader.readAsArrayBuffer(file);
-            });
+                  // Log para debug
+                  console.log(
+                    `Linha ${originalRowIndex}: Valor original:`,
+                    value,
+                    `(Tipo: ${typeof value})`
+                  );
 
-            function displayError(message) { resultsDiv.innerHTML = `<p class="error-message">${message}</p>`; loadingIndicator.style.display = 'none'; }
-            function displayInfo(message) { resultsDiv.innerHTML = `<p class="info-message">${message}</p>`; }
+                  // Processo de conversão de valor com correção para evitar perda de casas decimais
+                  if (typeof value === "number" && !isNaN(value)) {
+                    // Se já é número, usamos diretamente
+                    numericValue = value;
+                    console.log(
+                      `Linha ${originalRowIndex}: Valor numérico direto: ${numericValue}`
+                    );
+                  } else if (typeof value === "string") {
+                    // Se for string, primeiro tentar formato brasileiro (vírgula como decimal)
+                    let cleanValue = value.trim();
 
+                    // Se contém vírgula, assume formato brasileiro
+                    if (cleanValue.includes(",")) {
+                      // Formato brasileiro: remove pontos (separadores de milhar) e substitui , por .
+                      cleanValue = cleanValue
+                        .replace(/\./g, "")
+                        .replace(",", ".");
+                    } else if (cleanValue.includes(".")) {
+                      // Já está no formato com ponto, manter como está
+                      cleanValue = cleanValue;
+                    }
+
+                    // Remover quaisquer caracteres não-numéricos exceto o ponto decimal
+                    cleanValue = cleanValue.replace(/[^\d.]/g, "");
+
+                    numericValue = parseFloat(cleanValue);
+                    console.log(
+                      `Linha ${originalRowIndex}: Valor string "${value}" convertido para: ${numericValue}`
+                    );
+                  } else {
+                    // Outro tipo de dado, inválido
+                    numericValue = NaN;
+                    console.log(
+                      `Linha ${originalRowIndex}: Tipo de valor inválido: ${typeof value}`
+                    );
+                  }
+
+                  // Formatação final do valor para comparação e exibição
+                  if (!isNaN(numericValue)) {
+                    // Use toFixed(2) para garantir duas casas decimais
+                    valueStringForComparison = numericValue.toFixed(2); // "15000.00"
+                    // Formata para exibição no padrão brasileiro
+                    valueStringForDisplay = numericValue.toLocaleString(
+                      "pt-BR",
+                      {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      }
+                    ); // "15.000,00"
+                  } else {
+                    console.warn(
+                      `Linha ${originalRowIndex}: Valor numérico inválido após processamento.`
+                    );
+                  }
+
+                  console.log(
+                    `Linha ${originalRowIndex}: Valores finais - Numérico: ${numericValue}, Comparação: "${valueStringForComparison}", Exibição: "${valueStringForDisplay}"`
+                  );
+
+                  // Adiciona à lista filtrada se Data e Valor são válidos
+                  if (dateString && valueStringForComparison !== null) {
+                    filteredEntries.push({
+                      originalRow: originalRowIndex,
+                      data: dateString,
+                      ctaDebito: debitAccString,
+                      ctaCredito: creditAccString,
+                      valorFormattedForComparison: valueStringForComparison,
+                      valorFormattedForDisplay: valueStringForDisplay,
+                      valorNumeric: numericValue,
+                      originalRowData: row,
+                    });
+                  } else {
+                    console.warn(
+                      `Linha ${originalRowIndex} ignorada por Data ou Valor inválido.`
+                    );
+                  }
+                }
+              }
+
+              if (filteredEntries.length === 0) {
+                displayInfo(
+                  "Nenhum lançamento encontrado envolvendo as contas informadas, ou os lançamentos encontrados tinham problemas de Data/Valor."
+                );
+                loadingIndicator.style.display = "none";
+                return;
+              }
+
+              displayInfo(
+                `Analisando ${filteredEntries.length} lançamentos filtrados para duplicidades...`
+              );
+
+              // --- Passo 2: Analisar duplicidades DENTRO dos lançamentos filtrados ---
+              const potentialDuplicates = new Map();
+
+              filteredEntries.forEach((entry) => {
+                const key = `${entry.data}|${entry.valorFormattedForComparison}`; // Chave: Data|Valor (formato XX.YY)
+                if (!potentialDuplicates.has(key)) {
+                  potentialDuplicates.set(key, []);
+                }
+                potentialDuplicates.get(key).push(entry);
+              });
+
+              // --- Identifica e Exibe os Grupos de Duplicidades ---
+              const duplicateGroups = [];
+              potentialDuplicates.forEach((entriesInGroup) => {
+                if (entriesInGroup.length > 1) {
+                  entriesInGroup.sort((a, b) => a.originalRow - b.originalRow); // Ordena por linha para consistência
+                  duplicateGroups.push(entriesInGroup);
+                }
+              });
+
+              loadingIndicator.style.display = "none";
+
+              if (duplicateGroups.length === 0) {
+                displayInfo(
+                  `Nenhuma duplicidade (mesma Data e Valor) encontrada entre os ${filteredEntries.length} lançamentos das contas informadas.`
+                );
+              } else {
+                const ul = document.createElement("ul");
+                // Ordena os grupos por valor crescente (do menor para o maior)
+                duplicateGroups.sort((a, b) => {
+                  // Primeiro critério: ordenar pelo valor numérico (crescente)
+                  const valA = a[0].valorNumeric;
+                  const valB = b[0].valorNumeric;
+                  if (!isNaN(valA) && !isNaN(valB)) {
+                    // Compara números se ambos são válidos
+                    if (valA < valB) return -1;
+                    if (valA > valB) return 1;
+                  }
+
+                  // Segundo critério (em caso de empate no valor): ordenar por data
+                  if (a[0].data < b[0].data) return -1;
+                  if (a[0].data > b[0].data) return 1;
+
+                  // Terceiro critério (em caso de empate no valor e data): ordenar por linha original
+                  return a[0].originalRow - b[0].originalRow;
+                });
+
+                duplicateGroups.forEach((group) => {
+                  const li = document.createElement("li");
+                  const groupValueNumeric = group[0].valorNumeric;
+                  // Formata o valor para exibição e aplica destaque se > 100
+                  const valueDisplayHTML =
+                    !isNaN(groupValueNumeric) && groupValueNumeric > 100
+                      ? `<span class="highlight-value">${group[0].valorFormattedForDisplay}</span>`
+                      : group[0].valorFormattedForDisplay;
+
+                  li.innerHTML = `<strong>Duplicidade Encontrada (${group.length}x):</strong> Data: ${group[0].data}, Valor: ${valueDisplayHTML}<br>
+                                                Detalhes dos lançamentos neste grupo:<ul>`;
+                  group.forEach((item) => {
+                    li.innerHTML += `<li>Linha ${
+                      item.originalRow
+                    }: Cta. Débito: ${item.ctaDebito || ""}, Cta. Crédito: ${
+                      item.ctaCredito || ""
+                    }</li>`;
+                  });
+                  li.innerHTML += `</ul>`;
+                  ul.appendChild(li);
+                });
+                resultsDiv.appendChild(ul);
+              }
+            } catch (e) {
+              loadingIndicator.style.display = "none";
+              displayError(
+                `Erro ao processar o arquivo: ${e.message}. Verifique o formato do arquivo, os nomes das colunas ("Data", "Cta. Débito", "Cta. Crédito", "Valor") e se os dados nas colunas estão no formato esperado.`
+              );
+              console.error(e);
+            }
+          };
+
+          reader.onerror = (error) => {
+            loadingIndicator.style.display = "none";
+            displayError("Erro ao ler o arquivo.");
+            console.error(error);
+          };
+
+          reader.readAsArrayBuffer(file);
         });
-    </script>
 
-</body>
+        function displayError(message) {
+          resultsDiv.innerHTML = `<p class="error-message">${message}</p>`;
+          loadingIndicator.style.display = "none";
+        }
+        function displayInfo(message) {
+          resultsDiv.innerHTML = `<p class="info-message">${message}</p>`;
+        }
+      });
+    </script>
+  </body>
 </html>
