@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gerador de Layout TXT</title>
+    <title>Gerador de Layout TXT (com Persistência)</title>
     <style>
       /* Define as cores como variáveis CSS */
       :root {
@@ -22,9 +22,14 @@
         font-family: sans-serif;
         margin: 0;
         padding: 20px;
-        background-color: var(--background-color);
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--accent-color) 100%
+        );
         color: var(--text-color);
         line-height: 1.6;
+        min-height: 100vh;
       }
 
       #app {
@@ -135,11 +140,12 @@
         box-shadow: 0 0 8px rgba(240, 173, 78, 0.3);
       }
       /* Reset background for inputs inside duplicate row unless they are also invalid */
-      .input-row.duplicate-error input:not(:invalid) {
+      .input-row.duplicate-error input:not(:invalid):not(.manual-error) {
         background-color: #fff; /* Garante fundo branco normal para inputs válidos na linha duplicada */
       }
-      .input-row.duplicate-error input:invalid {
-        /* Mantém o estilo de inválido se for inválido E duplicado */
+      .input-row.duplicate-error input:invalid,
+      .input-row.duplicate-error input.manual-error {
+        /* Mantém o estilo de inválido/erro se for E duplicado */
         border-color: var(--error-color) !important;
         background-color: #fff0f0;
       }
@@ -191,8 +197,6 @@
         border-radius: 3px;
         font-size: 0.8em;
         line-height: 1; /* Ajusta altura */
-        /* margin: auto 0; Não necessário com align-items center no pai */
-        /* align-self: center; Não necessário com align-items center no pai */
         border: none;
         cursor: pointer;
       }
@@ -257,7 +261,7 @@
       }
       #modal.modal-warning {
         border-top-color: var(--warning-color);
-      } /* Para duplicatas */
+      }
 
       #modal h2 {
         margin-top: 0;
@@ -288,7 +292,7 @@
       }
 
       #modal-ok-btn {
-        background-color: var(--primary-color); /* Botão OK na cor primária */
+        background-color: var(--primary-color);
         color: var(--button-text-color);
         padding: 10px 30px;
         font-size: 1em;
@@ -333,7 +337,7 @@
         .input-row {
           flex-direction: column;
           border-bottom: 2px solid var(--primary-color);
-          padding: 15px; /* Ajuste padding */
+          padding: 15px;
           margin-bottom: 20px;
           align-items: stretch;
         }
@@ -391,7 +395,7 @@
         </div>
 
         <div id="input-rows">
-          <!-- Linha de Exemplo (será clonada) -->
+          <!-- Linha de Exemplo (será clonada ou populada) -->
           <div class="input-row">
             <div>
               <label for="especie-0">Espécie</label>
@@ -466,7 +470,6 @@
                 min="0.01"
                 required
               />
-              <!-- min="0.01" para valor > 0 -->
             </div>
             <div>
               <label for="irrf-0">Valor IRRF</label>
@@ -525,7 +528,7 @@
       const addRowBtn = document.getElementById("add-row-btn");
       const generateBtn = document.getElementById("generate-btn");
       const form = document.getElementById("data-form");
-      let rowIndex = 1;
+      let rowIndex = 1; // Will be updated during load if necessary
 
       // --- Elementos do Modal ---
       const modalOverlay = document.getElementById("modal-overlay");
@@ -535,21 +538,23 @@
       const modalCloseBtnTop = document.getElementById("modal-close-btn-top");
       const modalOkBtn = document.getElementById("modal-ok-btn");
 
-      // --- Funções do Modal ---
+      // --- Chave para localStorage ---
+      const STORAGE_KEY = "nfGeneratorFormData"; // Define a key for storage
+
+      // --- Funções do Modal (sem alterações) ---
       function showModal(message, type = "info", title = "Aviso") {
-        modalMessage.innerHTML = message; // Use innerHTML se precisar formatar msg
+        modalMessage.innerHTML = message;
         modalTitle.textContent = title;
-        modal.className = "modal"; // Reset classes
+        modal.className = "modal";
         modal.classList.add(`modal-${type}`);
         modalOverlay.classList.add("visible");
       }
 
       function hideModal() {
         modalOverlay.classList.remove("visible");
-        // Não limpa mais os erros dos inputs aqui, fazemos no início da geração
       }
 
-      // --- Event Listeners do Modal ---
+      // --- Event Listeners do Modal (sem alterações) ---
       modalCloseBtnTop.addEventListener("click", hideModal);
       modalOkBtn.addEventListener("click", hideModal);
       modalOverlay.addEventListener("click", (event) => {
@@ -558,46 +563,214 @@
         }
       });
 
+      // --- Funções de Persistência ---
+
+      /**
+       * Salva os dados atuais do formulário no localStorage.
+       */
+      function saveDataToLocalStorage() {
+        const rows = inputRowsContainer.querySelectorAll(".input-row");
+        const dataToSave = [];
+        rows.forEach((row) => {
+          const rowData = {};
+          const inputs = row.querySelectorAll("input[name]"); // Get only named inputs
+          inputs.forEach((input) => {
+            rowData[input.name] = input.value;
+          });
+          dataToSave.push(rowData);
+        });
+
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+          // console.log('Data saved to localStorage:', dataToSave); // For debugging
+        } catch (error) {
+          console.error("Erro ao salvar dados no localStorage:", error);
+          // Optionally show a modal message if storage fails (e.g., quota exceeded)
+          // showModal("Não foi possível salvar os dados localmente. O limite de armazenamento pode ter sido excedido.", "error", "Erro de Armazenamento");
+        }
+      }
+
+      /**
+       * Carrega os dados do localStorage e popula o formulário.
+       */
+      function loadDataFromLocalStorage() {
+        const savedDataJson = localStorage.getItem(STORAGE_KEY);
+        if (!savedDataJson) {
+          // console.log('No saved data found.'); // For debugging
+          initializeFirstRowListeners(); // Ensure listeners are added even if no data loads
+          return; // No saved data
+        }
+
+        try {
+          const savedData = JSON.parse(savedDataJson);
+          // console.log('Loading data from localStorage:', savedData); // For debugging
+
+          if (!Array.isArray(savedData) || savedData.length === 0) {
+            initializeFirstRowListeners();
+            return; // Data is invalid or empty
+          }
+
+          // Remove all rows except the first one (which will serve as a template)
+          const firstRow = inputRowsContainer.querySelector(".input-row");
+          if (!firstRow) {
+            // Safety check if template row somehow got removed
+            console.error("Template row not found.");
+            return;
+          }
+          while (inputRowsContainer.children.length > 1) {
+            inputRowsContainer.removeChild(inputRowsContainer.lastChild);
+          }
+
+          rowIndex = 0; // Reset row index before populating
+
+          savedData.forEach((rowData, index) => {
+            let currentRow;
+            if (index === 0) {
+              currentRow = firstRow; // Use the existing first row
+            } else {
+              currentRow = firstRow.cloneNode(true); // Clone the template row
+              // Update IDs and ensure delete button is visible
+              currentRow.querySelectorAll("input").forEach((input) => {
+                const oldId = input.id;
+                if (oldId) {
+                  const baseId = oldId.substring(0, oldId.lastIndexOf("-"));
+                  const newId = `${baseId}-${index}`;
+                  input.id = newId;
+                  const label = currentRow.querySelector(
+                    `label[for="${oldId}"]`
+                  );
+                  if (label) {
+                    label.setAttribute("for", newId);
+                  } else {
+                    // Attempt to find label based on name if ID failed (responsive view)
+                    const potentialLabel = currentRow.querySelector(
+                      `label[for="${baseId}-0"]`
+                    );
+                    if (potentialLabel)
+                      potentialLabel.setAttribute("for", newId);
+                  }
+                }
+                input.classList.remove("manual-error", "duplicate-error"); // Clear potential error states
+                input.setCustomValidity("");
+              });
+              const deleteBtn = currentRow.querySelector(".delete-row-btn");
+              if (deleteBtn) {
+                deleteBtn.style.display = "inline-block"; // Make sure delete is visible
+              }
+              inputRowsContainer.appendChild(currentRow);
+            }
+
+            // Populate the fields of the current row
+            Object.keys(rowData).forEach((inputName) => {
+              const input = currentRow.querySelector(
+                `input[name="${inputName}"]`
+              );
+              if (input) {
+                input.value = rowData[inputName] || ""; // Set value, default to empty string if null/undefined
+              }
+            });
+
+            // Add event listener to the inputs of the newly populated/created row
+            addInputListenersToRow(currentRow);
+
+            rowIndex = index + 1; // Update the global row index
+          });
+
+          // If only one row was loaded, ensure its delete button is hidden
+          if (inputRowsContainer.children.length === 1) {
+            const firstRowDeleteBtn = firstRow.querySelector(".delete-row-btn");
+            if (firstRowDeleteBtn) firstRowDeleteBtn.style.display = "none";
+          }
+        } catch (error) {
+          console.error(
+            "Erro ao carregar ou processar dados do localStorage:",
+            error
+          );
+          localStorage.removeItem(STORAGE_KEY); // Clear corrupted data
+          initializeFirstRowListeners(); // Ensure first row still works
+        }
+      }
+
+      /**
+       * Adiciona listeners de 'change' aos inputs de uma linha específica para salvar dados.
+       */
+      function addInputListenersToRow(rowElement) {
+        rowElement.querySelectorAll("input[name]").forEach((input) => {
+          // Use 'change' which fires after value is committed (e.g., on blur or selection)
+          input.removeEventListener("change", saveDataToLocalStorage); // Remove existing listener to prevent duplicates
+          input.addEventListener("change", saveDataToLocalStorage);
+        });
+      }
+
+      /**
+       * Adiciona listeners aos inputs da primeira linha (chamada se não houver dados salvos).
+       */
+      function initializeFirstRowListeners() {
+        const firstRow = inputRowsContainer.querySelector(".input-row");
+        if (firstRow) {
+          addInputListenersToRow(firstRow);
+        }
+      }
+
       // --- Adicionar Linha ---
       addRowBtn.addEventListener("click", () => {
-        const lastRow = inputRowsContainer.querySelector(
-          ".input-row:last-child"
+        // Clone the *first* row as a template
+        const firstRowTemplate = inputRowsContainer.querySelector(
+          ".input-row:first-child"
         );
-        const newRow = lastRow.cloneNode(true);
+        if (!firstRowTemplate) return; // Safety check
 
-        newRow.classList.remove("duplicate-error"); // Remove highlight de erro ao clonar
+        const newRow = firstRowTemplate.cloneNode(true);
+
+        newRow.classList.remove("duplicate-error");
         newRow.querySelectorAll("input").forEach((input) => {
           input.value = "";
           const oldId = input.id;
           if (oldId) {
             const baseId = oldId.substring(0, oldId.lastIndexOf("-"));
-            const newId = `${baseId}-${rowIndex}`;
+            const newId = `${baseId}-${rowIndex}`; // Use current global rowIndex
             input.id = newId;
             const label = newRow.querySelector(`label[for="${oldId}"]`);
-            if (label) label.setAttribute("for", newId);
+            if (label) {
+              label.setAttribute("for", newId);
+            } else {
+              const potentialLabel = newRow.querySelector(
+                `label[for="${baseId}-0"]`
+              );
+              if (potentialLabel) potentialLabel.setAttribute("for", newId);
+            }
           }
           input.classList.remove("manual-error");
           input.setCustomValidity("");
-          // Garante que a validação 'min' seja aplicada corretamente ao clonar
-          if (input.name === "valor" && !input.value) {
-            input.setCustomValidity(""); // Limpa validação inicial
+          if (input.name === "valor") {
+            input.setCustomValidity("");
           }
         });
 
+        // Add listeners to the new inputs *before* appending
+        addInputListenersToRow(newRow);
+
         const deleteBtn = newRow.querySelector(".delete-row-btn");
         if (deleteBtn) {
-          deleteBtn.style.display = "inline-block";
+          deleteBtn.style.display = "inline-block"; // Ensure delete is visible
         }
 
         inputRowsContainer.appendChild(newRow);
-        rowIndex++;
+        rowIndex++; // Increment index for the *next* row
+        saveDataToLocalStorage(); // Save after adding row
       });
 
       // --- Remover Linha ---
       inputRowsContainer.addEventListener("click", (event) => {
         if (event.target.classList.contains("delete-row-btn")) {
           if (inputRowsContainer.querySelectorAll(".input-row").length > 1) {
-            event.target.closest(".input-row").remove();
+            // Before removing, remove listeners if necessary (though GC should handle it)
+            const rowToRemove = event.target.closest(".input-row");
+            // rowToRemove.querySelectorAll('input[name]').forEach(input => {
+            //     input.removeEventListener('change', saveDataToLocalStorage);
+            // });
+            rowToRemove.remove();
+            saveDataToLocalStorage(); // Save after removing row
           } else {
             showModal(
               "É necessário manter pelo menos uma linha.",
@@ -608,9 +781,9 @@
         }
       });
 
-      // --- Gerar Arquivo TXT ---
+      // --- Gerar Arquivo TXT (lógica interna sem alterações, só as chamadas e validações) ---
       generateBtn.addEventListener("click", () => {
-        // 1. Limpar erros visuais anteriores (validação e duplicatas)
+        // 1. Limpar erros visuais anteriores
         form
           .querySelectorAll(".manual-error")
           .forEach((el) => el.classList.remove("manual-error"));
@@ -641,7 +814,8 @@
         let isValid = true;
         let hasDuplicates = false;
         const rows = inputRowsContainer.querySelectorAll(".input-row");
-        const duplicateRowsIndexes = []; // Guarda índices das linhas duplicadas
+        const duplicateRowsIndexes = [];
+        const firstOccurrenceMap = new Map(); // To find the original row index of a duplicate
 
         // 4. Loop para validação específica, checagem de duplicatas e coleta
         for (const [index, row] of rows.entries()) {
@@ -669,7 +843,7 @@
               "error",
               "Erro de Validação"
             );
-            break; // Para no primeiro erro de validação
+            break;
           }
           // Validação manual Valor > 0 (reforço)
           const valorNum = parseFloat(valorInput.value);
@@ -684,150 +858,187 @@
               "error",
               "Erro de Validação"
             );
-            break; // Para no primeiro erro de validação
+            break;
           }
 
-          // Criar assinatura da linha (usando valores trimados)
+          // Criar assinatura da linha
           const signatureParts = [
             especieInput.value.trim(),
             cnpjInput.value.trim(),
             acumuladorInput.value.trim(),
             cfopInput.value.trim(),
             nfInput.value.trim(),
-            dataEntradaInput.value, // Data não precisa de trim
+            dataEntradaInput.value,
             valorInput.value.trim(),
             irrfInput.value.trim(),
             csrfInput.value.trim(),
           ];
-          const rowSignature = signatureParts.join("|||"); // Separador robusto
+          const rowSignature = signatureParts.join("|||");
 
           // Verificar duplicatas
           if (uniqueRowSignatures.has(rowSignature)) {
-            isValid = false; // Impede geração, mas continua para marcar todas as duplicatas
+            isValid = false; // Mark overall validity as false
             hasDuplicates = true;
-            row.classList.add("duplicate-error");
-            duplicateRowsIndexes.push(index + 1); // Adiciona o número da linha (base 1)
-            // Não mostra modal ainda, acumula os erros
+            row.classList.add("duplicate-error"); // Mark this specific duplicate row
+            duplicateRowsIndexes.push(index + 1); // Add index of the duplicate
+
+            // Mark the first occurrence as well if not already marked
+            if (firstOccurrenceMap.has(rowSignature)) {
+              const firstIndex = firstOccurrenceMap.get(rowSignature);
+              const firstRowElement = rows[firstIndex];
+              if (
+                firstRowElement &&
+                !firstRowElement.classList.contains("duplicate-error")
+              ) {
+                firstRowElement.classList.add("duplicate-error");
+              }
+            }
           } else {
             uniqueRowSignatures.add(rowSignature);
-          }
+            firstOccurrenceMap.set(rowSignature, index); // Store index of first occurrence
 
-          // Se não for duplicado E a validação geral ainda é válida, processa dados
-          if (!row.classList.contains("duplicate-error") && isValid) {
-            // Formata Data (DD/MM/YYYY)
-            const dataEntradaRaw = dataEntradaInput.value;
-            let dataEntradaFormatada = "";
-            if (dataEntradaRaw) {
-              const parts = dataEntradaRaw.split("-");
-              if (parts.length === 3 && parts[0].length === 4) {
-                dataEntradaFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
+            // Proceed only if overall validation holds AND this row isn't a duplicate found *later*
+            if (isValid) {
+              // Check overall isValid flag
+              // Formata Data (DD/MM/YYYY)
+              const dataEntradaRaw = dataEntradaInput.value;
+              let dataEntradaFormatada = "";
+              if (dataEntradaRaw) {
+                const parts = dataEntradaRaw.split("-");
+                if (parts.length === 3 && parts[0].length === 4) {
+                  dataEntradaFormatada = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                } else {
+                  isValid = false;
+                  dataEntradaInput.classList.add("manual-error");
+                  showModal(
+                    `Erro na linha ${index + 1}: Data inválida.`,
+                    "error",
+                    "Erro de Validação"
+                  );
+                  break;
+                }
               } else {
-                // Segurança, embora type=date ajude
-                isValid = false; // Marca como inválido
+                // Should be caught by 'required' but good to double-check
+                isValid = false;
                 dataEntradaInput.classList.add("manual-error");
                 showModal(
-                  `Erro na linha ${index + 1}: Data inválida.`,
+                  `Erro na linha ${index + 1}: Data de Entrada é obrigatória.`,
                   "error",
                   "Erro de Validação"
                 );
-                break; // Para processamento
+                break;
               }
-            } // 'required' já garante que existe
 
-            // Formata Valores (vírgula, 2 casas)
-            const formatValue = (valueStr) => {
-              if (
-                valueStr === null ||
-                valueStr === undefined ||
-                valueStr.trim() === ""
-              )
-                return "0,00";
-              const num = parseFloat(valueStr);
-              return isNaN(num) ? "0,00" : num.toFixed(2).replace(".", ",");
-            };
+              // Formata Valores (vírgula, 2 casas)
+              const formatValue = (valueStr) => {
+                if (
+                  valueStr === null ||
+                  valueStr === undefined ||
+                  valueStr.trim() === ""
+                )
+                  return "0,00";
+                const num = parseFloat(valueStr);
+                return isNaN(num) ? "0,00" : num.toFixed(2).replace(".", ",");
+              };
 
-            const valorFormatado = formatValue(valorInput.value);
-            const valorIRRFFormatado = formatValue(irrfInput.value);
-            const valorCSRFFormatado = formatValue(csrfInput.value);
+              const valorFormatado = formatValue(valorInput.value);
+              const valorIRRFFormatado = formatValue(irrfInput.value);
+              const valorCSRFFormatado = formatValue(csrfInput.value);
 
-            // Gera linha |1000|
-            const linha1000 = `|1000|${signatureParts[0]}|${signatureParts[1]}||${signatureParts[2]}|${signatureParts[3]}||${signatureParts[4]}|U||${dataEntradaFormatada}|${dataEntradaFormatada}|${valorFormatado}||||||||||||||||||||||||||${valorFormatado}||||||||||||||||||||||||||||||||||||||||||||||||||||||||||`;
-            txtContent += linha1000 + "\n";
+              // Gera linha |1000|
+              const linha1000 = `|1000|${signatureParts[0]}|${signatureParts[1]}||${signatureParts[2]}|${signatureParts[3]}||${signatureParts[4]}|U||${dataEntradaFormatada}|${dataEntradaFormatada}|${valorFormatado}||||||||||||||||||||||||||${valorFormatado}||||||||||||||||||||||||||||||||||||||||||||||||||||||||||`;
+              txtContent += linha1000 + "\n";
 
-            // Gera linha |1020| IRRF (se valor > 0)
-            const valorIRRFNum = parseFloat(irrfInput.value);
-            if (!isNaN(valorIRRFNum) && valorIRRFNum > 0) {
-              const codigoRecolhimentoIRRF = "1708"; // Ajuste se necessário
-              const linha1020_IRRF = `|1020|16||${valorFormatado}|1,50|${valorIRRFFormatado}|||||${valorFormatado}|${codigoRecolhimentoIRRF}||||`;
-              txtContent += linha1020_IRRF + "\n";
-            }
+              // Gera linha |1020| IRRF
+              const valorIRRFNum = parseFloat(irrfInput.value);
+              if (!isNaN(valorIRRFNum) && valorIRRFNum > 0) {
+                const codigoRecolhimentoIRRF = "170806";
+                const linha1020_IRRF = `|1020|16||${valorFormatado}|1,50|${valorIRRFFormatado}|||||${valorFormatado}|${codigoRecolhimentoIRRF}||||`;
+                txtContent += linha1020_IRRF + "\n";
+              }
 
-            // Gera linha |1020| CSRF (se valor > 0)
-            const valorCSRFNum = parseFloat(csrfInput.value);
-            if (!isNaN(valorCSRFNum) && valorCSRFNum > 0) {
-              const codigoRecolhimentoCSRF = "5952"; // Ajuste se necessário
-              const linha1020_CSRF = `|1020|25||${valorFormatado}|4,65|${valorCSRFFormatado}|||||${valorFormatado}|${codigoRecolhimentoCSRF}||||`;
-              txtContent += linha1020_CSRF + "\n";
-            }
-          }
+              // Gera linha |1020| CSRF
+              const valorCSRFNum = parseFloat(csrfInput.value);
+              if (!isNaN(valorCSRFNum) && valorCSRFNum > 0) {
+                const codigoRecolhimentoCSRF = "595207";
+                const linha1020_CSRF = `|1020|25||${valorFormatado}|4,65|${valorCSRFFormatado}|||||${valorFormatado}|${codigoRecolhimentoCSRF}||||`;
+                txtContent += linha1020_CSRF + "\n";
+              }
+            } // end if(isValid) block for processing
+          } // end else (not duplicate)
         } // Fim do loop for...of
 
         // 5. Verificação final e Geração do Arquivo
         if (!isValid) {
           if (hasDuplicates) {
-            // Encontra a primeira linha original que tem uma duplicata
-            let firstOccurrenceIndex = -1;
-            const firstDuplicateSignature = [...uniqueRowSignatures].find(
-              (sig) => {
-                let count = 0;
-                for (const r of rows) {
-                  const sigParts = [
-                    /* extrair valores de r */
-                    r.querySelector('input[name="especie"]').value.trim(),
-                    r.querySelector('input[name="cnpj"]').value.trim(),
-                    r.querySelector('input[name="acumulador"]').value.trim(),
-                    r.querySelector('input[name="cfop"]').value.trim(),
-                    r.querySelector('input[name="nf"]').value.trim(),
-                    r.querySelector('input[name="data_entrada"]').value,
-                    r.querySelector('input[name="valor"]').value.trim(),
-                    r.querySelector('input[name="irrf"]').value.trim(),
-                    r.querySelector('input[name="csrf"]').value.trim(),
-                  ].join("|||");
-                  if (sigParts === sig) count++;
+            // Find the *first* original row index that has duplicates
+            let firstOriginalDuplicateIndex = -1;
+            for (const [sig, firstIndex] of firstOccurrenceMap.entries()) {
+              let isDuplicateSig = false;
+              for (const dupIdx of duplicateRowsIndexes) {
+                const dupRowElement = rows[dupIdx - 1];
+                if (!dupRowElement) continue; // Should not happen, but safety check
+                const dupSigParts = [
+                  dupRowElement
+                    .querySelector('input[name="especie"]')
+                    ?.value.trim() ?? "",
+                  dupRowElement
+                    .querySelector('input[name="cnpj"]')
+                    ?.value.trim() ?? "",
+                  dupRowElement
+                    .querySelector('input[name="acumulador"]')
+                    ?.value.trim() ?? "",
+                  dupRowElement
+                    .querySelector('input[name="cfop"]')
+                    ?.value.trim() ?? "",
+                  dupRowElement
+                    .querySelector('input[name="nf"]')
+                    ?.value.trim() ?? "",
+                  dupRowElement.querySelector('input[name="data_entrada"]')
+                    ?.value ?? "",
+                  dupRowElement
+                    .querySelector('input[name="valor"]')
+                    ?.value.trim() ?? "",
+                  dupRowElement
+                    .querySelector('input[name="irrf"]')
+                    ?.value.trim() ?? "",
+                  dupRowElement
+                    .querySelector('input[name="csrf"]')
+                    ?.value.trim() ?? "",
+                ];
+                const dupSig = dupSigParts.join("|||");
+                if (dupSig === sig) {
+                  isDuplicateSig = true;
+                  break;
                 }
-                return count > 1;
               }
-            );
-            // Encontra o índice da primeira ocorrência da primeira assinatura duplicada
-            for (const [i, r] of rows.entries()) {
-              const sigParts = [
-                /* extrair valores de r */
-                r.querySelector('input[name="especie"]').value.trim(),
-                r.querySelector('input[name="cnpj"]').value.trim(),
-                r.querySelector('input[name="acumulador"]').value.trim(),
-                r.querySelector('input[name="cfop"]').value.trim(),
-                r.querySelector('input[name="nf"]').value.trim(),
-                r.querySelector('input[name="data_entrada"]').value,
-                r.querySelector('input[name="valor"]').value.trim(),
-                r.querySelector('input[name="irrf"]').value.trim(),
-                r.querySelector('input[name="csrf"]').value.trim(),
-              ].join("|||");
-              if (sigParts === firstDuplicateSignature) {
-                firstOccurrenceIndex = i + 1;
-                r.classList.add("duplicate-error"); // Marca a original também
-                break;
+              if (isDuplicateSig) {
+                firstOriginalDuplicateIndex = firstIndex + 1; // Use 1-based index
+                // Ensure the first occurrence row is marked visually
+                const firstRowElement = rows[firstIndex];
+                if (
+                  firstRowElement &&
+                  !firstRowElement.classList.contains("duplicate-error")
+                ) {
+                  firstRowElement.classList.add("duplicate-error");
+                }
+                break; // Found the first one
               }
             }
 
             showModal(
-              `Foram encontradas linhas duplicadas (marcadas em amarelo). A linha ${duplicateRowsIndexes.join(
+              `Foram encontradas linhas duplicadas (marcadas em amarelo). A(s) linha(s) ${duplicateRowsIndexes.join(
                 ", "
-              )} é/são idêntica(s) à linha ${firstOccurrenceIndex} ou outra anterior. Remova as duplicatas.`,
+              )} é/são idêntica(s) ${
+                firstOriginalDuplicateIndex > 0
+                  ? `à linha ${firstOriginalDuplicateIndex}`
+                  : "a outra(s) linha(s)"
+              }. Remova ou corrija as duplicatas.`,
               "warning",
               "Erro de Duplicidade"
             );
           }
-          // Se o erro não foi de duplicidade, o modal de validação já foi exibido.
+          // Se não for duplicidade, o modal de validação já foi mostrado no loop.
           return; // Impede a geração
         }
 
@@ -862,6 +1073,10 @@
           );
         }
       });
+
+      // --- Inicialização ---
+      // Adiciona um listener para carregar os dados quando o DOM estiver pronto
+      document.addEventListener("DOMContentLoaded", loadDataFromLocalStorage);
     </script>
   </body>
 </html>

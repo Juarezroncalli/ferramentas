@@ -67,17 +67,35 @@
         padding-bottom: 10px; /* Mantém padding inferior */
       }
 
+      /* Estilos para as divs dentro do cabeçalho (flex items) */
       .input-row-header div {
         font-weight: bold;
         color: var(--primary-color);
-        flex: 1; /* Distribui espaço igualmente */
-        min-width: 100px; /* Largura mínima para evitar aperto */
-        text-align: center; /* Centraliza texto do cabeçalho */
+        flex: 1; /* Distribui espaço igualmente (default) */
+        min-width: 100px; /* Largura mínima padrão */
+        text-align: center;
         font-size: 0.9em;
         display: flex;
-        align-items: center; /* Centraliza verticalmente o texto do header */
-        justify-content: center; /* Centraliza horizontalmente */
+        align-items: center;
+        justify-content: center;
       }
+
+      /* Estilos para as divs dentro das linhas de dados (flex items) */
+      .input-row div {
+        flex: 1; /* Distribui espaço igualmente (default) */
+        min-width: 100px; /* Largura mínima padrão */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      /* --- NOVAS REGRAS PARA A COLUNA CNPJ (MAIS LARGA) --- */
+      .input-row-header .col-cnpj,
+      .input-row .col-cnpj {
+        min-width: 150px; /* Aumente a largura mínima para acomodar 14 dígitos */
+        /* flex: 1; (Pode manter flex: 1 ou aumentar (ex: flex: 1.5) se quiser que ocupe mais espaço relativo) */
+      }
+      /* --- FIM NOVAS REGRAS CNPJ --- */
 
       /* Ajusta a largura da coluna de Ação */
       .input-row-header .col-action,
@@ -87,14 +105,6 @@
         display: flex; /* Para alinhar o botão dentro */
         align-items: center; /* Centraliza botão verticalmente */
         justify-content: center; /* Centraliza botão horizontalmente */
-      }
-
-      .input-row div {
-        flex: 1;
-        min-width: 100px;
-        display: flex; /* Para alinhar input/label dentro da div se necessário */
-        flex-direction: column;
-        justify-content: center; /* Centraliza conteúdo verticalmente na div */
       }
 
       .input-row label {
@@ -305,7 +315,12 @@
       @media (max-width: 992px) {
         .input-row-header div,
         .input-row div {
-          min-width: 80px;
+          min-width: 80px; /* Default min width on smaller screens */
+        }
+        /* ADICIONA O AJUSTE PARA O CNPJ NESTE BREAKPOINT */
+        .input-row-header .col-cnpj,
+        .input-row .col-cnpj {
+          min-width: 120px; /* Ajusta o min-width do CNPJ para este breakpoint */
         }
         .input-row-header .col-action,
         .input-row .col-action {
@@ -342,7 +357,7 @@
           align-items: stretch;
         }
         .input-row div {
-          min-width: 100%;
+          min-width: 100%; /* Na versão empilhada, ocupa 100% */
           margin-bottom: 10px;
         }
         .input-row .col-action {
@@ -383,7 +398,8 @@
         <!-- Cabeçalho das Colunas -->
         <div class="input-row-header">
           <div>Espécie</div>
-          <div>CNPJ (14 dígitos)</div>
+          <div class="col-cnpj">CNPJ (14 dígitos)</div>
+          <!-- ADICIONADO class="col-cnpj" -->
           <div>Acumulador</div>
           <div>CFOP</div>
           <div>NF</div>
@@ -407,7 +423,8 @@
                 required
               />
             </div>
-            <div>
+            <div class="col-cnpj">
+              <!-- ADICIONADO class="col-cnpj" -->
               <label for="cnpj-0">CNPJ (14 dígitos)</label>
               <input
                 type="text"
@@ -1077,6 +1094,10 @@
       // --- Inicialização ---
       // Adiciona um listener para carregar os dados quando o DOM estiver pronto
       document.addEventListener("DOMContentLoaded", loadDataFromLocalStorage);
+
+      // Garante que a primeira linha tenha listeners, mesmo que não haja dados salvos
+      // Isso é chamado dentro de loadDataFromLocalStorage caso não encontre dados.
+      // addInputListenersToRow(inputRowsContainer.querySelector(".input-row")); // Não precisa chamar aqui, loadDataFromLocalStorage já faz isso
     </script>
   </body>
 </html>
