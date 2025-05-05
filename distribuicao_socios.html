@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Distribuidor de Lucros para Sócios</title>
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <style>
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--accent-color) 100%
+        );
+        color: var(--text-color);
+        line-height: 1.6;
+        padding: 20px;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      h1 {
+        color: var(--form-bg-color);
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 2.2rem;
+      }
+
+      .card {
+        background-color: var(--form-bg-color);
+        border-radius: 10px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: var(--sombra);
+        transition: var(--transicao);
+      }
+
+      .card h2 {
+        color: var(--primary-color);
+        margin-bottom: 15px;
+        font-size: 1.5rem;
+        border-bottom: 2px solid var(--accent-color);
+        padding-bottom: 8px;
+        display: inline-block;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--primary-color);
+      }
+
+      input[type="file"],
+      input[type="text"],
+      input[type="number"] {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        font-size: 16px;
+        transition: var(--transicao);
+      }
+
+      input[type="file"]:hover,
+      input[type="text"]:hover,
+      input[type="number"]:hover {
+        border-color: var(--primary-color);
+      }
+
+      input[type="file"]:focus,
+      input[type="text"]:focus,
+      input[type="number"]:focus {
+        outline: none;
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 2px rgba(251, 10, 94, 0.2);
+      }
+
+      button {
+        background-color: var(--primary-color);
+        color: var(--text-color-light);
+        border: none;
+        padding: 12px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        transition: var(--transicao);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      button:hover {
+        background-color: var(--accent-color);
+        transform: translateY(-2px);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      button + button {
+        margin-left: 10px;
+      }
+
+      .btn-accent {
+        background-color: var(--accent-color);
+      }
+
+      .btn-accent:hover {
+        background-color: #d9094e;
+      }
+
+      .socios-container {
+        margin-bottom: 20px;
+      }
+
+      .socio-item {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+        align-items: center;
+      }
+
+      .socio-item input {
+        flex: 1;
+      }
+
+      .socio-item button {
+        background-color: #ff3b3b;
+        padding: 8px 12px;
+      }
+
+      .socio-item button:hover {
+        background-color: #e62e2e;
+      }
+
+      .actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+      }
+
+      .preview {
+        margin-top: 20px;
+        background-color: #f0f0f0;
+        padding: 15px;
+        border-radius: 5px;
+        white-space: pre-wrap;
+        font-family: monospace;
+        max-height: 300px;
+        overflow-y: auto;
+        display: none;
+      }
+
+      .alert {
+        padding: 12px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        font-weight: 500;
+      }
+
+      .alert-error {
+        background-color: #ffebee;
+        color: #c62828;
+        border-left: 4px solid #c62828;
+      }
+
+      .alert-success {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+        border-left: 4px solid #2e7d32;
+      }
+
+      .alert-warning {
+        background-color: #fff8e1;
+        color: #f57f17;
+        border-left: 4px solid #f57f17;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .total-percentual {
+        font-weight: bold;
+        margin-top: 10px;
+        color: var(--primary-color);
+      }
+
+      .resultado-container {
+        margin-top: 30px;
+      }
+
+      @media (max-width: 768px) {
+        .socio-item {
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .actions {
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        button {
+          width: 100%;
+        }
+
+        button + button {
+          margin-left: 0;
+          margin-top: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Distribuidor de Lucros para Sócios</h1>
+
+      <div class="card">
+        <h2>Importar Planilha Excel</h2>
+        <div class="form-group">
+          <label for="excel-file">Selecione o arquivo Excel:</label>
+          <input type="file" id="excel-file" accept=".xlsx, .xls" />
+        </div>
+        <div id="file-alert" class="alert alert-warning hidden">
+          Por favor, selecione um arquivo Excel válido.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Cadastro de Sócios</h2>
+        <div id="socios-container" class="socios-container">
+          <div class="socio-item">
+            <input type="text" placeholder="Nome do Sócio" class="socio-nome" />
+            <input
+              type="number"
+              placeholder="Percentual (%)"
+              min="0"
+              max="100"
+              step="0.01"
+              class="socio-percentual"
+            />
+            <button type="button" class="remover-socio">Remover</button>
+          </div>
+        </div>
+
+        <div class="total-percentual">
+          Total: <span id="total-percentual">0</span>%
+        </div>
+
+        <div id="percentual-alert" class="alert alert-error hidden">
+          A soma dos percentuais deve ser igual a 100%.
+        </div>
+
+        <div class="actions">
+          <button type="button" id="adicionar-socio" class="btn-accent">
+            Adicionar Sócio
+          </button>
+          <button type="button" id="processar">
+            Processar e Gerar Arquivo
+          </button>
+        </div>
+      </div>
+
+      <div id="resultado-container" class="card resultado-container hidden">
+        <h2>Resultado</h2>
+        <div id="preview" class="preview"></div>
+        <div class="actions">
+          <button type="button" id="download">Baixar Arquivo TXT</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Elementos do DOM
+      const excelFileInput = document.getElementById("excel-file");
+      const sociosContainer = document.getElementById("socios-container");
+      const adicionarSocioBtn = document.getElementById("adicionar-socio");
+      const processarBtn = document.getElementById("processar");
+      const downloadBtn = document.getElementById("download");
+      const previewElement = document.getElementById("preview");
+      const resultadoContainer = document.getElementById("resultado-container");
+      const totalPercentualSpan = document.getElementById("total-percentual");
+      const percentualAlert = document.getElementById("percentual-alert");
+      const fileAlert = document.getElementById("file-alert");
+
+      // Dados da planilha
+      let dadosPlanilha = null;
+
+      // Adicionar evento para remover sócio
+      document.addEventListener("click", function (e) {
+        if (e.target.classList.contains("remover-socio")) {
+          if (document.querySelectorAll(".socio-item").length > 1) {
+            e.target.closest(".socio-item").remove();
+            atualizarTotalPercentual();
+          } else {
+            alert("É necessário ter pelo menos um sócio.");
+          }
+        }
+      });
+
+      // Adicionar evento para atualizar o total de percentual
+      document.addEventListener("input", function (e) {
+        if (e.target.classList.contains("socio-percentual")) {
+          atualizarTotalPercentual();
+        }
+      });
+
+      // Adicionar sócio
+      adicionarSocioBtn.addEventListener("click", function () {
+        const socioItem = document.createElement("div");
+        socioItem.className = "socio-item";
+        socioItem.innerHTML = `
+                <input type="text" placeholder="Nome do Sócio" class="socio-nome">
+                <input type="number" placeholder="Percentual (%)" min="0" max="100" step="0.01" class="socio-percentual">
+                <button type="button" class="remover-socio">Remover</button>
+            `;
+        sociosContainer.appendChild(socioItem);
+      });
+
+      // Atualizar total de percentual
+      function atualizarTotalPercentual() {
+        const percentuais = Array.from(
+          document.querySelectorAll(".socio-percentual")
+        ).map((input) => parseFloat(input.value) || 0);
+
+        const total = percentuais.reduce((sum, val) => sum + val, 0);
+        totalPercentualSpan.textContent = total.toFixed(2);
+
+        if (Math.abs(total - 100) > 0.01) {
+          percentualAlert.classList.remove("hidden");
+        } else {
+          percentualAlert.classList.add("hidden");
+        }
+      }
+
+      // Processar arquivo Excel
+      excelFileInput.addEventListener("change", function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: "array" });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            const json = XLSX.utils.sheet_to_json(worksheet);
+
+            // Verificar se as colunas necessárias existem
+            if (json.length > 0) {
+              const primeiraLinha = json[0];
+              if (
+                !("Data" in primeiraLinha) ||
+                !("Cta. Crédito" in primeiraLinha) ||
+                !("Valor" in primeiraLinha)
+              ) {
+                throw new Error(
+                  "A planilha deve conter as colunas: Data, Cta. Crédito e Valor"
+                );
+              }
+            } else {
+              throw new Error("A planilha está vazia");
+            }
+
+            dadosPlanilha = json;
+            fileAlert.classList.add("hidden");
+          } catch (error) {
+            console.error("Erro ao processar o arquivo:", error);
+            fileAlert.textContent = `Erro: ${error.message}`;
+            fileAlert.classList.remove("hidden");
+            dadosPlanilha = null;
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      });
+
+      // Processar e gerar arquivo
+      processarBtn.addEventListener("click", function () {
+        // Verificar se o arquivo foi carregado
+        if (!dadosPlanilha) {
+          fileAlert.textContent =
+            "Por favor, selecione um arquivo Excel válido.";
+          fileAlert.classList.remove("hidden");
+          return;
+        }
+
+        // Verificar se o total de percentual é 100%
+        atualizarTotalPercentual();
+        if (
+          Math.abs(parseFloat(totalPercentualSpan.textContent) - 100) > 0.01
+        ) {
+          percentualAlert.classList.remove("hidden");
+          return;
+        }
+
+        // Obter dados dos sócios
+        const socios = Array.from(document.querySelectorAll(".socio-item")).map(
+          (item) => {
+            return {
+              nome: item.querySelector(".socio-nome").value.trim(),
+              percentual:
+                parseFloat(item.querySelector(".socio-percentual").value) || 0,
+            };
+          }
+        );
+
+        // Validar dados dos sócios
+        const sociosInvalidos = socios.filter(
+          (socio) => !socio.nome || socio.percentual <= 0
+        );
+        if (sociosInvalidos.length > 0) {
+          alert("Todos os sócios devem ter nome e percentual maior que zero.");
+          return;
+        }
+
+        // Gerar o conteúdo do arquivo
+        const linhasArquivo = [];
+
+        dadosPlanilha.forEach((linha) => {
+          const data = linha["Data"];
+          const contaCredito = linha["Cta. Crédito"];
+          const valorTotal = parseFloat(linha["Valor"]);
+
+          if (isNaN(valorTotal)) return;
+
+          // Calcular valores para cada sócio
+          let valoresSocios = socios.map((socio) => {
+            const valorCalculado = (valorTotal * socio.percentual) / 100;
+            return {
+              ...socio,
+              valorCalculado: Math.floor(valorCalculado * 100) / 100, // Arredonda para baixo com 2 casas decimais
+            };
+          });
+
+          // Calcular a soma dos valores arredondados
+          const somaValoresArredondados = valoresSocios.reduce(
+            (sum, socio) => sum + socio.valorCalculado,
+            0
+          );
+
+          // Ajustar o centavo se necessário
+          const diferenca = valorTotal - somaValoresArredondados;
+          if (diferenca > 0) {
+            // Adicionar a diferença ao primeiro sócio
+            valoresSocios[0].valorCalculado += diferenca;
+          }
+
+          // Gerar linhas para cada sócio
+          valoresSocios.forEach((socio) => {
+            const valorFormatado = socio.valorCalculado
+              .toFixed(2)
+              .replace(".", ",");
+
+            // Formatar a data para DD/MM/YYYY
+            let dataFormatada = data;
+            if (typeof data === "number") {
+              // Se for um número serial do Excel, converter para data
+              const dataExcel = new Date(
+                Math.round((data - 25569) * 86400 * 1000)
+              );
+              const dia = String(dataExcel.getDate()).padStart(2, "0");
+              const mes = String(dataExcel.getMonth() + 1).padStart(2, "0");
+              const ano = dataExcel.getFullYear();
+              dataFormatada = `${dia}/${mes}/${ano}`;
+            } else if (typeof data === "string" && data.includes("-")) {
+              // Se for uma string no formato YYYY-MM-DD
+              const partes = data.split("-");
+              if (partes.length === 3) {
+                dataFormatada = `${partes[2].substring(0, 2)}/${partes[1]}/${
+                  partes[0]
+                }`;
+              }
+            } else if (typeof data === "string" && data.includes("/")) {
+              // Verificar se já está no formato correto DD/MM/YYYY
+              const partes = data.split("/");
+              if (partes.length === 3) {
+                const dia = partes[0].padStart(2, "0");
+                const mes = partes[1].padStart(2, "0");
+                dataFormatada = `${dia}/${mes}/${partes[2]}`;
+              }
+            }
+
+            // Remover as aspas do nome do sócio
+            const linha = `${dataFormatada};961;${contaCredito};${valorFormatado};;VALOR PAGO AO SOCIO ${socio.nome}, REF. LUCROS DISTRIBUIDOS;;;;`;
+            linhasArquivo.push(linha);
+          });
+        });
+
+        // Exibir preview
+        previewElement.textContent = linhasArquivo.join("\n");
+        previewElement.style.display = "block";
+        resultadoContainer.classList.remove("hidden");
+
+        // Armazenar o conteúdo para download
+        previewElement.dataset.content = linhasArquivo.join("\n");
+      });
+
+      // Download do arquivo
+      downloadBtn.addEventListener("click", function () {
+        const conteudo = previewElement.dataset.content;
+        if (!conteudo) return;
+
+        const blob = new Blob([conteudo], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "distribuicao_lucros.txt";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    </script>
+  </body>
+</html>
