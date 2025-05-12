@@ -303,8 +303,8 @@
             Selecione a planilha com todos os lançamentos efetuado no período
           </p>
           <p>
-            <strong>Nota:</strong> Registros onde Cta. Débito = 82 serão
-            automaticamente desconsiderados.
+            <strong>Nota:</strong> Registros onde Cta. Débito = 82 ou Cta. Débito = 27 serão
+            automaticamente desconsiderados. <!-- MODIFIED LINE -->
           </p>
           <div class="file-input-container">
             <input
@@ -503,11 +503,15 @@
         noResultsElement.style.display = "none";
 
         setTimeout(() => {
-          // Filtrar a Base Geral para excluir registros onde Cta. Débito seja 82
-          const filteredBaseGeral = baseGeralData.filter(
-            (item) =>
-              item["Cta. Débito"] !== 82 && String(item["Cta. Débito"]) !== "82"
-          );
+          // Filtrar a Base Geral para excluir registros onde Cta. Débito seja 82 ou 27
+          // START OF MODIFICATION
+          const filteredBaseGeral = baseGeralData.filter((item) => {
+            const debitoValue = item["Cta. Débito"];
+            const debitoString = String(debitoValue); // Compare as string for safety
+            return debitoValue !== 82 && debitoString !== "82" &&
+                   debitoValue !== 27 && debitoString !== "27";
+          });
+          // END OF MODIFICATION
 
           // Agrupar resultados por valor da primeira planilha
           const groupedResults = {};
@@ -614,23 +618,42 @@
           // Converter número serial do Excel para data JavaScript
           // O Excel conta dias a partir de 1/1/1900 (para Windows)
           const excelEpoch = new Date(1899, 11, 30);
+          // Adjust for potential leap year bug in Excel (1900)
+          const daysToAdd = dateValue > 59 ? dateValue - 1 : dateValue;
           const resultDate = new Date(
-            excelEpoch.getTime() + dateValue * 24 * 60 * 60 * 1000
+             excelEpoch.getTime() + daysToAdd * 24 * 60 * 60 * 1000
           );
-          return resultDate.toLocaleDateString("pt-BR");
+          // Set UTC time to avoid timezone issues during conversion if numbers represent UTC dates
+          resultDate.setMinutes(resultDate.getMinutes() + resultDate.getTimezoneOffset());
+          if (!isNaN(resultDate.getTime())) {
+             return resultDate.toLocaleDateString("pt-BR", { timeZone: 'UTC' });
+          }
         }
 
         // Se já for uma string de data, tentar formatá-la
         try {
-          const date = new Date(dateValue);
-          if (!isNaN(date.getTime())) {
+            // Handle potential string formats like DD/MM/YYYY or YYYY-MM-DD
+            let date;
+            if (String(dateValue).includes('/')) {
+                const parts = String(dateValue).split('/');
+                // Assume DD/MM/YYYY
+                if (parts.length === 3) {
+                   date = new Date(parts[2], parts[1] - 1, parts[0]);
+                }
+            } else {
+                 date = new Date(dateValue);
+            }
+
+          if (date && !isNaN(date.getTime())) {
             return date.toLocaleDateString("pt-BR");
           }
-          return dateValue;
+          // Return original value if parsing fails
+          return String(dateValue);
         } catch (e) {
-          return dateValue;
+          return String(dateValue); // Return original value on error
         }
       }
+
 
       // Função para formatar valor monetário
       function formatCurrency(value) {
@@ -639,10 +662,10 @@
         // Converter para número se for string
         const numValue =
           typeof value === "string"
-            ? parseFloat(value.replace(/[^\d,-]/g, "").replace(",", "."))
+            ? parseFloat(value.replace(/[^\d,.-]/g, "").replace(",", ".")) // Handle negative sign and dots as thousand separators
             : value;
 
-        if (isNaN(numValue)) return value;
+        if (isNaN(numValue)) return String(value); // Return original value if not a number
 
         // Formatar como moeda brasileira
         return numValue.toLocaleString("pt-BR", {
@@ -674,25 +697,25 @@
                     --border-color: #e0e0e0;
                     --text-color-light: #ffffff;
                 }
-                
+
                 body {
                     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                     background-color: var(--background-color);
                     color: var(--text-color);
                     padding: 20px;
                 }
-                
+
                 .container {
                     max-width: 1200px;
                     margin: 0 auto;
                 }
-                
+
                 h1 {
                     color: var(--primary-color);
                     text-align: center;
                     margin-bottom: 30px;
                 }
-                
+
                 .group-header {
                     background-color: var(--primary-color);
                     color: var(--text-color-light);
@@ -700,16 +723,16 @@
                     border-radius: 8px 8px 0 0;
                     margin-top: 30px;
                 }
-                
+
                 .group-header:first-child {
                     margin-top: 0;
                 }
-                
+
                 .group-info h3 {
                     margin-bottom: 5px;
                     font-size: 1.2rem;
                 }
-                
+
                 .matches-table {
                     width: 100%;
                     border-collapse: collapse;
@@ -719,39 +742,100 @@
                     overflow: hidden;
                     box-shadow: 0 4px 12px rgba(79, 0, 114, 0.15);
                 }
-                
+
                 .matches-table th {
                     background-color: #6b2b8c;
                     color: var(--text-color-light);
                     padding: 12px 15px;
                     text-align: left;
+                    font-size: 0.9em; /* Slightly smaller header text */
                 }
-                
+
                 .matches-table tr:nth-child(even) {
                     background-color: #f2f2f2;
                 }
-                
+
                 .matches-table tr:nth-child(odd) {
                     background-color: #fff;
                 }
-                
+
                 .matches-table td {
-                    padding: 12px 15px;
+                    padding: 10px 15px; /* Adjust padding */
                     border-bottom: 1px solid var(--border-color);
+                    font-size: 0.85em; /* Slightly smaller cell text */
+                    word-wrap: break-word; /* Wrap long text */
+                    max-width: 250px; /* Limit max width of cells if needed */
                 }
-                
+
+                .matches-table th:nth-child(1), .matches-table td:nth-child(1) { /* Data */
+                   width: 10%;
+                }
+                .matches-table th:nth-child(2), .matches-table td:nth-child(2) { /* Cta. Debito */
+                   width: 10%;
+                }
+                .matches-table th:nth-child(3), .matches-table td:nth-child(3) { /* Cta. Credito */
+                   width: 10%;
+                }
+                .matches-table th:nth-child(4), .matches-table td:nth-child(4) { /* Valor */
+                   width: 15%;
+                   text-align: right;
+                }
+                .matches-table th:nth-child(5), .matches-table td:nth-child(5) { /* Historico */
+                   width: 55%;
+                }
+
+
                 .matches-table tr:last-child td {
                     border-bottom: none;
                 }
-                
+
                 .group-spacer {
                     height: 20px;
                 }
-                
+
                 .footer {
                     text-align: center;
                     margin-top: 30px;
                     color: #666;
+                }
+                @media print {
+                    body {
+                       -webkit-print-color-adjust: exact; /* Chrome, Safari */
+                       color-adjust: exact; /* Firefox */
+                       padding: 5px;
+                    }
+                    .container {
+                        max-width: none;
+                        box-shadow: none;
+                    }
+                     .group-header, .matches-table th {
+                        background-color: var(--primary-color) !important; /* Ensure background prints */
+                        color: white !important;
+                     }
+                     .matches-table th {
+                        background-color: #6b2b8c !important;
+                     }
+                     .matches-table tr:nth-child(even) {
+                         background-color: #f2f2f2 !important;
+                     }
+                     .btn, .footer {
+                         display: none;
+                     }
+                     .group-spacer {
+                        height: 5px;
+                     }
+                     .matches-table {
+                         page-break-inside: auto;
+                     }
+                     .matches-table tr {
+                         page-break-inside: avoid;
+                         page-break-after: auto;
+                     }
+                     .group-header {
+                         page-break-before: auto;
+                         page-break-after: avoid;
+                     }
+
                 }
             </style>
         </head>
