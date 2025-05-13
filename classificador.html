@@ -87,6 +87,58 @@
         border-color: var(--primary-color);
       }
 
+      .filter-section {
+        background-color: #fff;
+        border-radius: 6px;
+        padding: 15px;
+        margin-top: 20px;
+        border: 1px solid var(--border-color);
+      }
+
+      .filter-section h3 {
+        color: var(--primary-color);
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+      }
+
+      .filter-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 15px;
+      }
+
+      .filter-field {
+        flex: 1;
+        min-width: 250px;
+      }
+
+      .filter-field label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+
+      .filter-field input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        font-size: 14px;
+      }
+
+      .filter-field input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(79, 0, 114, 0.1);
+      }
+
+      .filter-help {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+      }
+
       .btn {
         background-color: var(--primary-color);
         color: var(--text-color-light);
@@ -270,6 +322,18 @@
       .group-spacer {
         height: 20px;
       }
+
+      .filter-summary {
+        background-color: rgba(79, 0, 114, 0.05);
+        padding: 10px 15px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        font-size: 14px;
+      }
+
+      .filter-summary strong {
+        color: var(--primary-color);
+      }
     </style>
   </head>
   <body>
@@ -282,10 +346,7 @@
       <section class="upload-section">
         <div class="file-upload">
           <h3>Valores a Classificar</h3>
-          <p>
-            Selecione a planilha com os lançamentos da conta "Valores a
-            Classificar"
-          </p>
+          <p>Selecione a planilha de Valores a Classificar</p>
           <div class="file-input-container">
             <input
               type="file"
@@ -299,13 +360,7 @@
 
         <div class="file-upload">
           <h3>Base Geral</h3>
-          <p>
-            Selecione a planilha com todos os lançamentos efetuado no período
-          </p>
-          <p>
-            <strong>Nota:</strong> Registros onde Cta. Débito = 82 ou Cta. Débito = 27 serão
-            automaticamente desconsiderados. <!-- MODIFIED LINE -->
-          </p>
+          <p>Selecione a planilha com todos os lançamentos contábeis</p>
           <div class="file-input-container">
             <input
               type="file"
@@ -315,6 +370,41 @@
             />
           </div>
           <div id="baseGeralStatus" class="status-message"></div>
+        </div>
+
+        <div class="filter-section">
+          <h3>Filtros de Contas</h3>
+          <p>Informe as contas que deseja desconsiderar na comparação:</p>
+
+          <div class="filter-row">
+            <div class="filter-field">
+              <label for="contasDebito"
+                >Contas de Débito a desconsiderar:</label
+              >
+              <input
+                type="text"
+                id="contasDebito"
+                placeholder="Ex: 82, 90, 123"
+              />
+              <div class="filter-help">
+                Para múltiplas contas, separe por vírgulas
+              </div>
+            </div>
+
+            <div class="filter-field">
+              <label for="contasCredito"
+                >Contas de Crédito a desconsiderar:</label
+              >
+              <input
+                type="text"
+                id="contasCredito"
+                placeholder="Ex: 45, 67, 89"
+              />
+              <div class="filter-help">
+                Para múltiplas contas, separe por vírgulas
+              </div>
+            </div>
+          </div>
         </div>
 
         <button id="compareBtn" class="btn" disabled>Comparar Planilhas</button>
@@ -327,6 +417,7 @@
 
       <section id="resultsSection" class="results-section">
         <h2>Resultados da Comparação</h2>
+        <div id="filterSummary" class="filter-summary"></div>
         <div id="resultsContainer">
           <div id="resultsTable" class="results-table">
             <!-- Os resultados agrupados serão inseridos aqui -->
@@ -351,12 +442,14 @@
       const baseGeralFileInput = document.getElementById("baseGeralFile");
       const compareBtn = document.getElementById("compareBtn");
       const resultsSection = document.getElementById("resultsSection");
-      const resultsBody = document.getElementById("resultsBody");
       const exportBtn = document.getElementById("exportBtn");
       const loadingElement = document.getElementById("loading");
       const noResultsElement = document.getElementById("noResults");
       const valoresStatus = document.getElementById("valoresStatus");
       const baseGeralStatus = document.getElementById("baseGeralStatus");
+      const contasDebitoInput = document.getElementById("contasDebito");
+      const contasCreditoInput = document.getElementById("contasCredito");
+      const filterSummary = document.getElementById("filterSummary");
 
       // Função para verificar se os arquivos foram carregados
       function checkFilesLoaded() {
@@ -494,6 +587,39 @@
         }
       });
 
+      // Função para processar as contas a serem desconsideradas
+      function processarContasDesconsideradas(inputValue) {
+        if (!inputValue || inputValue.trim() === "") {
+          return [];
+        }
+
+        // Dividir por vírgulas e processar cada valor
+        return inputValue
+          .split(",")
+          .map((conta) => conta.trim())
+          .filter((conta) => conta !== "")
+          .map((conta) => {
+            // Tentar converter para número se possível
+            const numConta = Number(conta);
+            return isNaN(numConta) ? conta : numConta;
+          });
+      }
+
+      // Função para verificar se um valor está na lista de contas a desconsiderar
+      function contaDeveSerDesconsiderada(contaValor, contasDesconsideradas) {
+        if (!contasDesconsideradas || contasDesconsideradas.length === 0) {
+          return false;
+        }
+
+        // Converter o valor da conta para string para comparação
+        const contaStr = String(contaValor).trim();
+
+        // Verificar se o valor está na lista de contas a desconsiderar
+        return contasDesconsideradas.some(
+          (conta) => String(conta) === contaStr
+        );
+      }
+
       // Função para comparar os valores
       function compareData() {
         loadingElement.style.display = "block";
@@ -502,16 +628,52 @@
         document.getElementById("resultsTable").innerHTML = "";
         noResultsElement.style.display = "none";
 
+        // Processar contas a desconsiderar
+        const contasDebitoDesconsideradas = processarContasDesconsideradas(
+          contasDebitoInput.value
+        );
+        const contasCreditoDesconsideradas = processarContasDesconsideradas(
+          contasCreditoInput.value
+        );
+
+        // Atualizar resumo dos filtros
+        let filterSummaryText = "Filtros aplicados: ";
+        if (contasDebitoDesconsideradas.length > 0) {
+          filterSummaryText += `<strong>Contas de Débito desconsideradas:</strong> ${contasDebitoDesconsideradas.join(
+            ", "
+          )}. `;
+        }
+        if (contasCreditoDesconsideradas.length > 0) {
+          filterSummaryText += `<strong>Contas de Crédito desconsideradas:</strong> ${contasCreditoDesconsideradas.join(
+            ", "
+          )}.`;
+        }
+        if (
+          contasDebitoDesconsideradas.length === 0 &&
+          contasCreditoDesconsideradas.length === 0
+        ) {
+          filterSummaryText += "Nenhum filtro aplicado.";
+        }
+        filterSummary.innerHTML = filterSummaryText;
+
         setTimeout(() => {
-          // Filtrar a Base Geral para excluir registros onde Cta. Débito seja 82 ou 27
-          // START OF MODIFICATION
+          // Filtrar a Base Geral para excluir registros com contas a desconsiderar
           const filteredBaseGeral = baseGeralData.filter((item) => {
-            const debitoValue = item["Cta. Débito"];
-            const debitoString = String(debitoValue); // Compare as string for safety
-            return debitoValue !== 82 && debitoString !== "82" &&
-                   debitoValue !== 27 && debitoString !== "27";
+            // Verificar se a conta de débito deve ser desconsiderada
+            const debitoDeveDesconsiderar = contaDeveSerDesconsiderada(
+              item["Cta. Débito"],
+              contasDebitoDesconsideradas
+            );
+
+            // Verificar se a conta de crédito deve ser desconsiderada
+            const creditoDeveDesconsiderar = contaDeveSerDesconsiderada(
+              item["Cta. Crédito"],
+              contasCreditoDesconsideradas
+            );
+
+            // Manter apenas registros que não devem ser desconsiderados
+            return !debitoDeveDesconsiderar && !creditoDeveDesconsiderar;
           });
-          // END OF MODIFICATION
 
           // Agrupar resultados por valor da primeira planilha
           const groupedResults = {};
@@ -554,42 +716,42 @@
               const groupHeader = document.createElement("div");
               groupHeader.className = "group-header";
               groupHeader.innerHTML = `
-                    <div class="group-info">
-                        <h3>Data: ${group.valorData} | Valor: ${group.valor}</h3>
-                        <p>Histórico: ${group.valorHistorico}</p>
-                    </div>
-                `;
+                            <div class="group-info">
+                                <h3>Data: ${group.valorData} | Valor: ${group.valor}</h3>
+                                <p>Histórico: ${group.valorHistorico}</p>
+                            </div>
+                        `;
               resultsTable.appendChild(groupHeader);
 
               // Criar tabela para os registros correspondentes
               const matchesTable = document.createElement("table");
               matchesTable.className = "matches-table";
               matchesTable.innerHTML = `
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Cta. Débito</th>
-                            <th>Cta. Crédito</th>
-                            <th>Valor</th>
-                            <th>Histórico</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${group.matches
-                          .map(
-                            (match) => `
-                            <tr>
-                                <td>${match.baseData}</td>
-                                <td>${match.baseDebito}</td>
-                                <td>${match.baseCredito}</td>
-                                <td>${match.baseValor}</td>
-                                <td>${match.baseHistorico}</td>
-                            </tr>
-                        `
-                          )
-                          .join("")}
-                    </tbody>
-                `;
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Cta. Débito</th>
+                                    <th>Cta. Crédito</th>
+                                    <th>Valor</th>
+                                    <th>Histórico</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${group.matches
+                                  .map(
+                                    (match) => `
+                                    <tr>
+                                        <td>${match.baseData}</td>
+                                        <td>${match.baseDebito}</td>
+                                        <td>${match.baseCredito}</td>
+                                        <td>${match.baseValor}</td>
+                                        <td>${match.baseHistorico}</td>
+                                    </tr>
+                                `
+                                  )
+                                  .join("")}
+                            </tbody>
+                        `;
               resultsTable.appendChild(matchesTable);
 
               // Adicionar espaçador
@@ -618,42 +780,23 @@
           // Converter número serial do Excel para data JavaScript
           // O Excel conta dias a partir de 1/1/1900 (para Windows)
           const excelEpoch = new Date(1899, 11, 30);
-          // Adjust for potential leap year bug in Excel (1900)
-          const daysToAdd = dateValue > 59 ? dateValue - 1 : dateValue;
           const resultDate = new Date(
-             excelEpoch.getTime() + daysToAdd * 24 * 60 * 60 * 1000
+            excelEpoch.getTime() + dateValue * 24 * 60 * 60 * 1000
           );
-          // Set UTC time to avoid timezone issues during conversion if numbers represent UTC dates
-          resultDate.setMinutes(resultDate.getMinutes() + resultDate.getTimezoneOffset());
-          if (!isNaN(resultDate.getTime())) {
-             return resultDate.toLocaleDateString("pt-BR", { timeZone: 'UTC' });
-          }
+          return resultDate.toLocaleDateString("pt-BR");
         }
 
         // Se já for uma string de data, tentar formatá-la
         try {
-            // Handle potential string formats like DD/MM/YYYY or YYYY-MM-DD
-            let date;
-            if (String(dateValue).includes('/')) {
-                const parts = String(dateValue).split('/');
-                // Assume DD/MM/YYYY
-                if (parts.length === 3) {
-                   date = new Date(parts[2], parts[1] - 1, parts[0]);
-                }
-            } else {
-                 date = new Date(dateValue);
-            }
-
-          if (date && !isNaN(date.getTime())) {
+          const date = new Date(dateValue);
+          if (!isNaN(date.getTime())) {
             return date.toLocaleDateString("pt-BR");
           }
-          // Return original value if parsing fails
-          return String(dateValue);
+          return dateValue;
         } catch (e) {
-          return String(dateValue); // Return original value on error
+          return dateValue;
         }
       }
-
 
       // Função para formatar valor monetário
       function formatCurrency(value) {
@@ -662,10 +805,10 @@
         // Converter para número se for string
         const numValue =
           typeof value === "string"
-            ? parseFloat(value.replace(/[^\d,.-]/g, "").replace(",", ".")) // Handle negative sign and dots as thousand separators
+            ? parseFloat(value.replace(/[^\d,-]/g, "").replace(",", "."))
             : value;
 
-        if (isNaN(numValue)) return String(value); // Return original value if not a number
+        if (isNaN(numValue)) return value;
 
         // Formatar como moeda brasileira
         return numValue.toLocaleString("pt-BR", {
@@ -681,177 +824,131 @@
       exportBtn.addEventListener("click", function () {
         // Criar um novo documento HTML
         const htmlContent = `
-        <!DOCTYPE html>
-        <html lang="pt-BR">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Resultados da Comparação</title>
-            <style>
-                :root {
-                    --primary-color: #4f0072;
-                    --accent-color: #fb0a5e;
-                    --background-color: #ffffff;
-                    --form-bg-color: #f9f9f9;
-                    --text-color: #333333;
-                    --border-color: #e0e0e0;
-                    --text-color-light: #ffffff;
-                }
-
-                body {
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    background-color: var(--background-color);
-                    color: var(--text-color);
-                    padding: 20px;
-                }
-
-                .container {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                }
-
-                h1 {
-                    color: var(--primary-color);
-                    text-align: center;
-                    margin-bottom: 30px;
-                }
-
-                .group-header {
-                    background-color: var(--primary-color);
-                    color: var(--text-color-light);
-                    padding: 15px;
-                    border-radius: 8px 8px 0 0;
-                    margin-top: 30px;
-                }
-
-                .group-header:first-child {
-                    margin-top: 0;
-                }
-
-                .group-info h3 {
-                    margin-bottom: 5px;
-                    font-size: 1.2rem;
-                }
-
-                .matches-table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-bottom: 0;
-                    background-color: #fff;
-                    border-radius: 0 0 8px 8px;
-                    overflow: hidden;
-                    box-shadow: 0 4px 12px rgba(79, 0, 114, 0.15);
-                }
-
-                .matches-table th {
-                    background-color: #6b2b8c;
-                    color: var(--text-color-light);
-                    padding: 12px 15px;
-                    text-align: left;
-                    font-size: 0.9em; /* Slightly smaller header text */
-                }
-
-                .matches-table tr:nth-child(even) {
-                    background-color: #f2f2f2;
-                }
-
-                .matches-table tr:nth-child(odd) {
-                    background-color: #fff;
-                }
-
-                .matches-table td {
-                    padding: 10px 15px; /* Adjust padding */
-                    border-bottom: 1px solid var(--border-color);
-                    font-size: 0.85em; /* Slightly smaller cell text */
-                    word-wrap: break-word; /* Wrap long text */
-                    max-width: 250px; /* Limit max width of cells if needed */
-                }
-
-                .matches-table th:nth-child(1), .matches-table td:nth-child(1) { /* Data */
-                   width: 10%;
-                }
-                .matches-table th:nth-child(2), .matches-table td:nth-child(2) { /* Cta. Debito */
-                   width: 10%;
-                }
-                .matches-table th:nth-child(3), .matches-table td:nth-child(3) { /* Cta. Credito */
-                   width: 10%;
-                }
-                .matches-table th:nth-child(4), .matches-table td:nth-child(4) { /* Valor */
-                   width: 15%;
-                   text-align: right;
-                }
-                .matches-table th:nth-child(5), .matches-table td:nth-child(5) { /* Historico */
-                   width: 55%;
-                }
-
-
-                .matches-table tr:last-child td {
-                    border-bottom: none;
-                }
-
-                .group-spacer {
-                    height: 20px;
-                }
-
-                .footer {
-                    text-align: center;
-                    margin-top: 30px;
-                    color: #666;
-                }
-                @media print {
-                    body {
-                       -webkit-print-color-adjust: exact; /* Chrome, Safari */
-                       color-adjust: exact; /* Firefox */
-                       padding: 5px;
-                    }
-                    .container {
-                        max-width: none;
-                        box-shadow: none;
-                    }
-                     .group-header, .matches-table th {
-                        background-color: var(--primary-color) !important; /* Ensure background prints */
-                        color: white !important;
-                     }
-                     .matches-table th {
-                        background-color: #6b2b8c !important;
-                     }
-                     .matches-table tr:nth-child(even) {
-                         background-color: #f2f2f2 !important;
-                     }
-                     .btn, .footer {
-                         display: none;
-                     }
-                     .group-spacer {
-                        height: 5px;
-                     }
-                     .matches-table {
-                         page-break-inside: auto;
-                     }
-                     .matches-table tr {
-                         page-break-inside: avoid;
-                         page-break-after: auto;
-                     }
-                     .group-header {
-                         page-break-before: auto;
-                         page-break-after: avoid;
-                     }
-
-                }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <h1>Resultados da Comparação</h1>
-                ${document.getElementById("resultsTable").innerHTML}
-                <div class="footer">
-                    <p>Relatório gerado em ${new Date().toLocaleString(
-                      "pt-BR"
-                    )}</p>
-                </div>
-            </div>
-        </body>
-        </html>
-    `;
+                <!DOCTYPE html>
+                <html lang="pt-BR">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Resultados da Comparação</title>
+                    <style>
+                        :root {
+                            --primary-color: #4f0072;
+                            --accent-color: #fb0a5e;
+                            --background-color: #ffffff;
+                            --form-bg-color: #f9f9f9;
+                            --text-color: #333333;
+                            --border-color: #e0e0e0;
+                            --text-color-light: #ffffff;
+                        }
+                        
+                        body {
+                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                            background-color: var(--background-color);
+                            color: var(--text-color);
+                            padding: 20px;
+                        }
+                        
+                        .container {
+                            max-width: 1200px;
+                            margin: 0 auto;
+                        }
+                        
+                        h1 {
+                            color: var(--primary-color);
+                            text-align: center;
+                            margin-bottom: 30px;
+                        }
+                        
+                        .filter-summary {
+                            background-color: rgba(79, 0, 114, 0.05);
+                            padding: 10px 15px;
+                            border-radius: 4px;
+                            margin-bottom: 20px;
+                            font-size: 14px;
+                        }
+                        
+                        .filter-summary strong {
+                            color: var(--primary-color);
+                        }
+                        
+                        .group-header {
+                            background-color: var(--primary-color);
+                            color: var(--text-color-light);
+                            padding: 15px;
+                            border-radius: 8px 8px 0 0;
+                            margin-top: 30px;
+                        }
+                        
+                        .group-header:first-child {
+                            margin-top: 0;
+                        }
+                        
+                        .group-info h3 {
+                            margin-bottom: 5px;
+                            font-size: 1.2rem;
+                        }
+                        
+                        .matches-table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-bottom: 0;
+                            background-color: #fff;
+                            border-radius: 0 0 8px 8px;
+                            overflow: hidden;
+                            box-shadow: 0 4px 12px rgba(79, 0, 114, 0.15);
+                        }
+                        
+                        .matches-table th {
+                            background-color: #6b2b8c;
+                            color: var(--text-color-light);
+                            padding: 12px 15px;
+                            text-align: left;
+                        }
+                        
+                        .matches-table tr:nth-child(even) {
+                            background-color: #f2f2f2;
+                        }
+                        
+                        .matches-table tr:nth-child(odd) {
+                            background-color: #fff;
+                        }
+                        
+                        .matches-table td {
+                            padding: 12px 15px;
+                            border-bottom: 1px solid var(--border-color);
+                        }
+                        
+                        .matches-table tr:last-child td {
+                            border-bottom: none;
+                        }
+                        
+                        .group-spacer {
+                            height: 20px;
+                        }
+                        
+                        .footer {
+                            text-align: center;
+                            margin-top: 30px;
+                            color: #666;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <h1>Resultados da Comparação</h1>
+                        <div class="filter-summary">${
+                          filterSummary.innerHTML
+                        }</div>
+                        ${document.getElementById("resultsTable").innerHTML}
+                        <div class="footer">
+                            <p>Relatório gerado em ${new Date().toLocaleString(
+                              "pt-BR"
+                            )}</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
 
         // Criar um Blob com o conteúdo HTML
         const blob = new Blob([htmlContent], { type: "text/html" });
