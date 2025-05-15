@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadora de ICMS ST - Água Mineral</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        margin: 0;
+        padding: 20px;
+        background-color: #f5f7fa;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+      }
+      .container {
+        display: flex;
+        max-width: 1200px;
+        margin: 0 auto;
+        gap: 20px;
+        flex-direction: row;
+      }
+      @media (max-width: 768px) {
+        .container {
+          flex-direction: column;
+        }
+      }
+      .input-section {
+        flex: 1;
+        background-color: #fff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+      }
+      .receipt-section {
+        flex: 1;
+        background-color: #fff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        max-height: 80vh;
+        overflow-y: auto;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+      h1 {
+        text-align: center;
+        color: #2d3748;
+        margin-bottom: 30px;
+        font-weight: 600;
+        font-size: 2.2rem;
+      }
+      h2 {
+        color: #4f0072;
+        margin-bottom: 20px;
+        font-weight: 500;
+        font-size: 1.5rem;
+      }
+      .form-group {
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #4a5568;
+      }
+      input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: all 0.2s;
+        background-color: #f8fafc;
+      }
+      input:focus {
+        outline: none;
+        border-color: #4f0072;
+        box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.2);
+      }
+      button {
+        background-color: #4f0072;
+        color: white;
+        border: none;
+        padding: 14px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        width: 100%;
+        margin-top: 15px;
+        font-weight: 500;
+        transition: all 0.2s;
+      }
+      button:hover {
+        background-color: #a602e7;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+      button:active {
+        transform: translateY(0);
+      }
+      .print-button {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: auto;
+        padding: 8px 15px;
+        background-color: #4f0072;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 14px;
+      }
+      .print-button:hover {
+        background-color: #a602e7;
+      }
+      .print-icon {
+        width: 16px;
+        height: 16px;
+      }
+      .receipt {
+        font-family: "Courier New", Courier, monospace;
+        white-space: pre-line;
+        line-height: 1.1; /* Reduzido ainda mais o espaçamento entre linhas */
+        background-color: #f8fafc;
+        padding: 15px;
+        border-radius: 8px;
+      }
+      .receipt-header {
+        text-align: center;
+        border-bottom: 1px dashed #000;
+        padding-bottom: 6px;
+        margin-bottom: 6px;
+      }
+      .receipt-item {
+        border-bottom: 1px dashed #ccc;
+        padding-bottom: 6px;
+        margin-bottom: 6px;
+      }
+      .receipt-total {
+        font-size: 24px;
+        font-weight: bold;
+        text-align: right;
+        margin-top: 10px;
+        border-top: 2px solid #000;
+        padding-top: 8px;
+      }
+      .calculation-line {
+        margin: 1px 0; /* Reduzido ainda mais o espaçamento entre linhas */
+        font-size: 0.85rem;
+      }
+      .error {
+        color: #e53e3e;
+        font-size: 14px;
+        margin-top: 5px;
+        font-weight: 500;
+      }
+      .receipt-section::-webkit-scrollbar {
+        width: 8px;
+      }
+      .receipt-section::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+      .receipt-section::-webkit-scrollbar-thumb {
+        background: #cbd5e0;
+        border-radius: 10px;
+      }
+      .receipt-section::-webkit-scrollbar-thumb:hover {
+        background: #a0aec0;
+      }
+
+      /* Estilos específicos para impressão */
+      @media print {
+        body {
+          padding: 0;
+          margin: 0;
+          background: white;
+        }
+        .container {
+          display: block;
+          max-width: 100%;
+          margin: 0;
+          padding: 0;
+        }
+        .input-section,
+        .print-button,
+        h1 {
+          display: none !important;
+        }
+        .receipt-section {
+          box-shadow: none;
+          overflow: visible;
+          padding: 0;
+          margin: 0;
+          max-height: none;
+          width: 100%;
+          border-radius: 0;
+        }
+        .receipt {
+          padding: 5px;
+          font-size: 10pt;
+          line-height: 1;
+          background: none;
+        }
+        .receipt-header {
+          padding-bottom: 3px;
+          margin-bottom: 3px;
+        }
+        .receipt-header p:last-child {
+          font-size: 8pt !important;
+          margin-top: 1px !important;
+        }
+        .receipt-item {
+          padding-bottom: 3px;
+          margin-bottom: 3px;
+        }
+        .calculation-line {
+          margin: 0;
+          font-size: 9pt;
+        }
+        .receipt-total {
+          margin-top: 5px;
+          padding-top: 5px;
+          font-size: 12pt;
+        }
+        @page {
+          size: auto;
+          margin: 5mm;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Calculadora de ICMS (Água Mineral)</h1>
+
+    <div class="container">
+      <div class="input-section">
+        <h2>Dados da Nota Fiscal</h2>
+        <div class="form-group">
+          <label for="invoiceNumber">Número da Nota Fiscal:</label>
+          <input
+            type="text"
+            id="invoiceNumber"
+            placeholder="Digite o número da NF"
+          />
+        </div>
+        <div class="form-group">
+          <label for="waterQuantity">Quantidade de Água Mineral:</label>
+          <input
+            type="number"
+            id="waterQuantity"
+            placeholder="Digite a quantidade"
+            min="0"
+            step="0.01"
+          />
+        </div>
+        <div class="form-group">
+          <label for="invoiceValue">Valor Total da Nota Fiscal (R$):</label>
+          <input
+            type="number"
+            id="invoiceValue"
+            placeholder="Digite o valor"
+            min="0"
+            step="0.01"
+          />
+        </div>
+        <div id="errorMessage" class="error"></div>
+        <button id="addButton">Adicionar Cálculo</button>
+      </div>
+
+      <div class="receipt-section">
+        <button class="print-button" id="printButton">
+          <svg
+            class="print-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path
+              d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"
+            ></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          Imprimir
+        </button>
+        <div class="receipt">
+          <div class="receipt-header">
+            <h2>SUPERMERCADO FISCAL</h2>
+            <p>CNPJ: 00.000.000/0001-00</p>
+            <p>CUPOM FISCAL ELETRÔNICO</p>
+            <p>
+              Data: <span id="currentDate"></span> | Hora:
+              <span id="currentTime"></span>
+            </p>
+            <p style="font-style: italic; font-size: 0.8rem; margin-top: 3px">
+              Obs: Cálculo efetuado com base na pauta de R$ 12,75 para galões de
+              20 litros
+            </p>
+          </div>
+
+          <div id="receiptItems">
+            <!-- Os itens calculados serão adicionados aqui -->
+          </div>
+
+          <div class="receipt-total">
+            TOTAL A PAGAR: R$ <span id="totalAmount">0,00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Atualiza a data e hora atual
+      function updateDateTime() {
+        const now = new Date();
+        document.getElementById("currentDate").textContent =
+          now.toLocaleDateString("pt-BR");
+        document.getElementById("currentTime").textContent =
+          now.toLocaleTimeString("pt-BR");
+      }
+
+      updateDateTime();
+
+      // Formata números para moeda brasileira
+      function formatCurrency(value) {
+        return value.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+      }
+
+      let totalAmountToPay = 0;
+      let itemCount = 0;
+
+      // Função para imprimir o cupom
+      document
+        .getElementById("printButton")
+        .addEventListener("click", function () {
+          window.print();
+        });
+
+      document
+        .getElementById("addButton")
+        .addEventListener("click", function () {
+          const invoiceNumber = document.getElementById("invoiceNumber").value;
+          const waterQuantity = parseFloat(
+            document.getElementById("waterQuantity").value
+          );
+          const invoiceValue = parseFloat(
+            document.getElementById("invoiceValue").value
+          );
+          const errorElement = document.getElementById("errorMessage");
+
+          // Validação dos campos
+          if (!invoiceNumber || isNaN(waterQuantity) || isNaN(invoiceValue)) {
+            errorElement.textContent =
+              "Por favor, preencha todos os campos corretamente.";
+            return;
+          }
+
+          if (waterQuantity <= 0 || invoiceValue <= 0) {
+            errorElement.textContent =
+              "Quantidade e valor devem ser maiores que zero.";
+            return;
+          }
+
+          errorElement.textContent = "";
+
+          // Cálculos
+          const baseIcmsSt = waterQuantity * 12.75;
+          const reducedBaseIcmsSt = baseIcmsSt * (1 - 0.6111);
+          const icmsSt = reducedBaseIcmsSt * 0.18;
+
+          const reducedInvoiceValue = invoiceValue * (1 - 0.6111);
+          const icmsCredit = reducedInvoiceValue * 0.18;
+
+          const amountToPay = icmsSt - icmsCredit;
+
+          // Atualiza o total geral
+          totalAmountToPay += amountToPay;
+          itemCount++;
+
+          // Cria o item do recibo
+          const receiptItem = document.createElement("div");
+          receiptItem.className = "receipt-item";
+
+          // Layout mais condensado para a fita
+          receiptItem.innerHTML = `
+<div class="calculation-line"><strong>ITEM #${itemCount} - NF: ${invoiceNumber}</strong></div>
+<div class="calculation-line">Qtd: ${waterQuantity}un | Valor: R$${formatCurrency(
+            invoiceValue
+          )}</div>
+<div class="calculation-line">ICMS ST: ${waterQuantity}xR$12,75(Pauta)=${formatCurrency(
+            baseIcmsSt
+          )} | Red: ${formatCurrency(reducedBaseIcmsSt)} | 18%=${formatCurrency(
+            icmsSt
+          )}</div>
+<div class="calculation-line">Créd: ${formatCurrency(
+            invoiceValue
+          )}x38,89%=${formatCurrency(
+            reducedInvoiceValue
+          )} | 18%=${formatCurrency(icmsCredit)}</div>
+<div class="calculation-line"><strong>A Pagar: R$${formatCurrency(
+            amountToPay
+          )}</strong></div>`;
+
+          document.getElementById("receiptItems").appendChild(receiptItem);
+          document.getElementById("totalAmount").textContent =
+            formatCurrency(totalAmountToPay);
+
+          // Limpa os campos do formulário
+          document.getElementById("invoiceNumber").value = "";
+          document.getElementById("waterQuantity").value = "";
+          document.getElementById("invoiceValue").value = "";
+
+          // Rola para o final do recibo
+          const receiptSection = document.querySelector(".receipt-section");
+          receiptSection.scrollTop = receiptSection.scrollHeight;
+        });
+    </script>
+  </body>
+</html>
