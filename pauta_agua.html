@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Calculadora de ICMS ST - Água Mineral</title>
     <style>
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease;
+      }
+
       * {
         box-sizing: border-box;
         margin: 0;
@@ -13,9 +25,9 @@
       body {
         margin: 0;
         padding: 20px;
-        background-color: #f5f7fa;
+        background-color: var(--background-color);
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        color: #333;
+        color: var(--text-color);
       }
       .container {
         display: flex;
@@ -31,32 +43,32 @@
       }
       .input-section {
         flex: 1;
-        background-color: #fff;
+        background-color: var(--form-bg-color);
         padding: 25px;
         border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        transition: all 0.3s ease;
+        box-shadow: var(--sombra);
+        transition: var(--transicao);
       }
       .receipt-section {
         flex: 1;
-        background-color: #fff;
+        background-color: var(--background-color);
         padding: 25px;
         border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        box-shadow: var(--sombra);
         max-height: 80vh;
         overflow-y: auto;
-        transition: all 0.3s ease;
+        transition: var(--transicao);
         position: relative;
       }
       h1 {
         text-align: center;
-        color: #2d3748;
+        color: var(--primary-color);
         margin-bottom: 30px;
         font-weight: 600;
         font-size: 2.2rem;
       }
       h2 {
-        color: #4f0072;
+        color: var(--primary-color);
         margin-bottom: 20px;
         font-weight: 500;
         font-size: 1.5rem;
@@ -68,25 +80,25 @@
         display: block;
         margin-bottom: 8px;
         font-weight: 500;
-        color: #4a5568;
+        color: var(--text-color);
       }
       input {
         width: 100%;
         padding: 12px 15px;
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--border-color);
         border-radius: 8px;
         font-size: 16px;
-        transition: all 0.2s;
-        background-color: #f8fafc;
+        transition: var(--transicao);
+        background-color: var(--background-color);
       }
       input:focus {
         outline: none;
-        border-color: #4f0072;
-        box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.2);
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(79, 0, 114, 0.2);
       }
       button {
-        background-color: #4f0072;
-        color: white;
+        background-color: var(--primary-color);
+        color: var(--text-color-light);
         border: none;
         padding: 14px 20px;
         border-radius: 8px;
@@ -95,12 +107,12 @@
         width: 100%;
         margin-top: 15px;
         font-weight: 500;
-        transition: all 0.2s;
+        transition: var(--transicao);
       }
       button:hover {
-        background-color: #a602e7;
+        background-color: #3a0055; /* Versão mais escura da cor primária */
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--sombra);
       }
       button:active {
         transform: translateY(0);
@@ -111,7 +123,7 @@
         right: 15px;
         width: auto;
         padding: 8px 15px;
-        background-color: #4f0072;
+        background-color: var(--accent-color);
         z-index: 10;
         display: flex;
         align-items: center;
@@ -119,7 +131,7 @@
         font-size: 14px;
       }
       .print-button:hover {
-        background-color: #a602e7;
+        background-color: #d9084f; /* Versão mais escura da cor de destaque */
       }
       .print-icon {
         width: 16px;
@@ -128,19 +140,19 @@
       .receipt {
         font-family: "Courier New", Courier, monospace;
         white-space: pre-line;
-        line-height: 1.1; /* Reduzido ainda mais o espaçamento entre linhas */
-        background-color: #f8fafc;
+        line-height: 1.1;
+        background-color: var(--form-bg-color);
         padding: 15px;
         border-radius: 8px;
       }
       .receipt-header {
         text-align: center;
-        border-bottom: 1px dashed #000;
+        border-bottom: 1px dashed var(--text-color);
         padding-bottom: 6px;
         margin-bottom: 6px;
       }
       .receipt-item {
-        border-bottom: 1px dashed #ccc;
+        border-bottom: 1px dashed var(--border-color);
         padding-bottom: 6px;
         margin-bottom: 6px;
       }
@@ -149,15 +161,15 @@
         font-weight: bold;
         text-align: right;
         margin-top: 10px;
-        border-top: 2px solid #000;
+        border-top: 2px solid var(--text-color);
         padding-top: 8px;
       }
       .calculation-line {
-        margin: 1px 0; /* Reduzido ainda mais o espaçamento entre linhas */
+        margin: 1px 0;
         font-size: 0.85rem;
       }
       .error {
-        color: #e53e3e;
+        color: var(--accent-color);
         font-size: 14px;
         margin-top: 5px;
         font-weight: 500;
@@ -166,15 +178,16 @@
         width: 8px;
       }
       .receipt-section::-webkit-scrollbar-track {
-        background: #f1f1f1;
+        background: var(--form-bg-color);
         border-radius: 10px;
       }
       .receipt-section::-webkit-scrollbar-thumb {
-        background: #cbd5e0;
+        background: var(--primary-color);
         border-radius: 10px;
+        opacity: 0.7;
       }
       .receipt-section::-webkit-scrollbar-thumb:hover {
-        background: #a0aec0;
+        background: #3a0055; /* Versão mais escura da cor primária */
       }
 
       /* Estilos específicos para impressão */
@@ -236,10 +249,22 @@
           margin: 5mm;
         }
       }
+
+      /* Área de debug (oculta por padrão) */
+      .debug-area {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-family: monospace;
+        font-size: 12px;
+        display: none;
+      }
     </style>
   </head>
   <body>
-    <h1>Calculadora de ICMS (Água Mineral - 20 litros)</h1>
+    <h1>Calculadora de ICMS ST</h1>
 
     <div class="container">
       <div class="input-section">
@@ -298,7 +323,7 @@
         </button>
         <div class="receipt">
           <div class="receipt-header">
-            <h2>SUPERMERCADO MARQUES</h2>
+            <h2>SUPERMERCADO MARQUES & AVILA</h2>
             <p>CNPJ: 00.000.000/0001-00</p>
             <p>CUPOM FISCAL ELETRÔNICO</p>
             <p>
@@ -306,8 +331,7 @@
               <span id="currentTime"></span>
             </p>
             <p style="font-style: italic; font-size: 0.8rem; margin-top: 3px">
-              Obs: Cálculo efetuado com base na pauta de R$ 12,75 para galões de
-              20 litros
+              Obs: Valor de R$ 12,75 refere-se ao valor de Pauta da Água
             </p>
           </div>
 
@@ -319,6 +343,9 @@
             TOTAL A PAGAR: R$ <span id="totalAmount">0,00</span>
           </div>
         </div>
+
+        <!-- Área de debug (oculta por padrão) -->
+        <div class="debug-area" id="debugArea"></div>
       </div>
     </div>
 
@@ -334,15 +361,29 @@
 
       updateDateTime();
 
+      // Função para trabalhar com centavos (inteiros) em vez de reais (ponto flutuante)
+      function toCents(value) {
+        return Math.round(value * 100);
+      }
+
+      // Função para converter centavos de volta para reais
+      function fromCents(cents) {
+        return cents / 100;
+      }
+
       // Formata números para moeda brasileira
-      function formatCurrency(value) {
-        return value.toLocaleString("pt-BR", {
+      function formatCurrency(cents) {
+        // Converte centavos para reais
+        const reais = fromCents(cents);
+        return reais.toLocaleString("pt-BR", {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         });
       }
 
-      let totalAmountToPay = 0;
+      // Array para armazenar os valores em centavos de cada item
+      let items = [];
+      let totalCents = 0;
       let itemCount = 0;
 
       // Função para imprimir o cupom
@@ -379,47 +420,76 @@
 
           errorElement.textContent = "";
 
-          // Cálculos
-          const baseIcmsSt = waterQuantity * 12.75;
-          const reducedBaseIcmsSt = baseIcmsSt * (1 - 0.6111);
-          const icmsSt = reducedBaseIcmsSt * 0.18;
+          // Converte valores para centavos
+          const invoiceValueCents = toCents(invoiceValue);
 
-          const reducedInvoiceValue = invoiceValue * (1 - 0.6111);
-          const icmsCredit = reducedInvoiceValue * 0.18;
+          // Cálculos em centavos
+          const baseIcmsStCents = toCents(waterQuantity * 12.75);
+          const reducedBaseIcmsStCents = Math.round(
+            baseIcmsStCents * (1 - 0.6111)
+          );
+          const icmsStCents = Math.round(reducedBaseIcmsStCents * 0.18);
 
-          const amountToPay = icmsSt - icmsCredit;
+          const reducedInvoiceValueCents = Math.round(
+            invoiceValueCents * (1 - 0.6111)
+          );
+          const icmsCreditCents = Math.round(reducedInvoiceValueCents * 0.18);
 
-          // Atualiza o total geral
-          totalAmountToPay += amountToPay;
+          // Valor a pagar em centavos
+          const amountToPayCents = icmsStCents - icmsCreditCents;
+
+          // Armazena o item com valores em centavos
           itemCount++;
+          items.push({
+            id: itemCount,
+            invoiceNumber,
+            waterQuantity,
+            invoiceValueCents,
+            baseIcmsStCents,
+            reducedBaseIcmsStCents,
+            icmsStCents,
+            reducedInvoiceValueCents,
+            icmsCreditCents,
+            amountToPayCents,
+          });
+
+          // Atualiza o total em centavos
+          totalCents += amountToPayCents;
 
           // Cria o item do recibo
           const receiptItem = document.createElement("div");
           receiptItem.className = "receipt-item";
+          receiptItem.dataset.itemId = itemCount;
 
           // Layout mais condensado para a fita
           receiptItem.innerHTML = `
 <div class="calculation-line"><strong>ITEM #${itemCount} - NF: ${invoiceNumber}</strong></div>
-<div class="calculation-line">Qtd: ${waterQuantity}un | Valor: R$${formatCurrency(
-            invoiceValue
+<div class="calculation-line">Qtd: ${waterQuantity} un | Valor: R$ ${formatCurrency(
+            invoiceValueCents
           )}</div>
 <div class="calculation-line">ICMS ST: ${waterQuantity}xR$12,75(Pauta)=${formatCurrency(
-            baseIcmsSt
-          )} | Red: ${formatCurrency(reducedBaseIcmsSt)} | 18%=${formatCurrency(
-            icmsSt
-          )}</div>
+            baseIcmsStCents
+          )} | Red: ${formatCurrency(
+            reducedBaseIcmsStCents
+          )} | 18%=${formatCurrency(icmsStCents)}</div>
 <div class="calculation-line">Créd: ${formatCurrency(
-            invoiceValue
+            invoiceValueCents
           )}x38,89%=${formatCurrency(
-            reducedInvoiceValue
-          )} | 18%=${formatCurrency(icmsCredit)}</div>
+            reducedInvoiceValueCents
+          )} | 18%=${formatCurrency(icmsCreditCents)}</div>
 <div class="calculation-line"><strong>A Pagar: R$${formatCurrency(
-            amountToPay
+            amountToPayCents
           )}</strong></div>`;
 
           document.getElementById("receiptItems").appendChild(receiptItem);
+
+          // Atualiza o total
           document.getElementById("totalAmount").textContent =
-            formatCurrency(totalAmountToPay);
+            formatCurrency(totalCents);
+
+          // Debug - Verificar valores
+          const debugArea = document.getElementById("debugArea");
+          debugArea.innerHTML += `<div>Item #${itemCount}: ${amountToPayCents} centavos | Total: ${totalCents} centavos</div>`;
 
           // Limpa os campos do formulário
           document.getElementById("invoiceNumber").value = "";
@@ -430,6 +500,18 @@
           const receiptSection = document.querySelector(".receipt-section");
           receiptSection.scrollTop = receiptSection.scrollHeight;
         });
+
+      // Função para verificar a soma manual vs. total calculado (para debug)
+      function verifyTotal() {
+        const manualSum = items.reduce(
+          (sum, item) => sum + item.amountToPayCents,
+          0
+        );
+        console.log(
+          `Soma manual: ${manualSum} centavos | Total armazenado: ${totalCents} centavos`
+        );
+        return manualSum === totalCents;
+      }
     </script>
   </body>
 </html>
