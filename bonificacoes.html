@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Processador e Comparador de Planilhas</title>
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <style>
+      :root {
+        --primary-color: #4f0072;
+        --secondary-color: #3498db;
+        --accent-color: #fb0a5e; /* Cor principal dos botões de ação */
+        --download-color: #27ae60; /* Cor dos botões de download */
+        --background-color: #f0f2f5;
+        --form-bg-color: #ffffff;
+        --text-color: #333333;
+        --border-color: #d1d9e6;
+        --text-color-light: #ffffff;
+        --sombra: 0 6px 15px rgba(79, 0, 114, 0.1);
+        --transicao: all 0.3s ease;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: var(--background-color);
+        color: var(--text-color);
+        line-height: 1.6;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .main-container {
+        max-width: 900px;
+        width: 100%;
+        margin: 0 auto;
+        background-color: var(--form-bg-color);
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: var(--sombra);
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: var(--primary-color);
+        font-size: 2.2em;
+      }
+
+      .section {
+        margin-bottom: 30px;
+        padding: 20px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background-color: #fdfdff;
+      }
+
+      .section h2 {
+        color: var(--primary-color);
+        margin-bottom: 15px;
+        border-bottom: 2px solid var(--accent-color);
+        padding-bottom: 5px;
+        font-size: 1.5em;
+      }
+
+      .upload-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 25px;
+        border: 2px dashed var(--border-color);
+        border-radius: 8px;
+        margin-bottom: 15px;
+        transition: var(--transicao);
+      }
+
+      .upload-section:hover,
+      .upload-section.drag-over {
+        border-color: var(--secondary-color);
+        background-color: rgba(52, 152, 219, 0.05);
+      }
+
+      .file-input {
+        display: none;
+      }
+
+      .upload-btn,
+      .action-btn {
+        background-color: var(--accent-color); /* Padronizado */
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+        transition: background-color 0.3s;
+        font-weight: bold;
+      }
+
+      .upload-btn:hover,
+      .action-btn:hover {
+        background-color: #d90850; /* Escurecer no hover */
+      }
+
+      .action-btn:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+
+      .status,
+      .file-name-display {
+        margin-top: 10px;
+        text-align: center;
+        font-weight: bold;
+        min-height: 20px;
+      }
+      .status-success {
+        color: #27ae60;
+      }
+      .status-error {
+        color: #c62828;
+      }
+      .status-info {
+        color: var(--primary-color);
+      }
+
+      .download-btn {
+        display: none;
+        background-color: var(--download-color); /* Mantém cor de download */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 15px;
+        margin: 10px auto;
+        transition: background-color 0.3s;
+      }
+
+      .download-btn:hover {
+        background-color: #219653; /* Escurecer no hover */
+      }
+
+      .cfop-input-section {
+        margin-top: 20px;
+        padding: 15px;
+        text-align: center;
+      }
+      .cfop-input-section label {
+        font-weight: bold;
+        margin-right: 10px;
+        color: var(--primary-color);
+      }
+      .cfop-input-section input[type="text"] {
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid var(--border-color);
+        min-width: 200px;
+      }
+
+      .error-info,
+      .comparison-alerts-container {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #ffebee;
+        border-radius: 5px;
+        border: 1px solid #ffcdd2;
+        display: none;
+      }
+      .comparison-alerts-container {
+        background-color: #fff3e0;
+        border: 1px solid #ffe0b2;
+      }
+
+      .error-info h3,
+      .comparison-alerts-container h3 {
+        margin-bottom: 10px;
+        color: #c62828;
+      }
+      .comparison-alerts-container h3 {
+        color: #e65100;
+      }
+
+      .error-info pre {
+        background-color: #fff;
+        padding: 10px;
+        border-radius: 4px;
+        overflow-x: auto;
+        font-family: monospace;
+        font-size: 14px;
+        white-space: pre-wrap;
+      }
+
+      #alertTable {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+        font-size: 0.9em;
+      }
+      #alertTable th,
+      #alertTable td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      #alertTable th {
+        background-color: #f2f2f2;
+        color: var(--primary-color);
+      }
+      #alertTable td {
+        background-color: #fff;
+      }
+
+      @media (max-width: 700px) {
+        .main-container {
+          padding: 20px;
+        }
+        .section {
+          padding: 15px;
+        }
+        .upload-section {
+          padding: 20px;
+        }
+        .cfop-input-section input[type="text"] {
+          min-width: 150px;
+        }
+        #alertTable {
+          font-size: 0.8em;
+        }
+        #alertTable th,
+        #alertTable td {
+          padding: 5px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-container">
+      <h1>Processador e Comparador de Planilhas</h1>
+
+      <div class="section">
+        <h2>1. Planilha "Contas a Pagar"</h2>
+        <div class="upload-section" id="dropAreaContasAPagar">
+          <p>
+            Arraste e solte a planilha "Contas a Pagar" aqui ou clique para
+            selecionar.
+          </p>
+          <input
+            type="file"
+            id="fileInputContasAPagar"
+            class="file-input"
+            accept=".xlsx, .xls"
+          />
+          <button class="upload-btn" id="uploadBtnContasAPagar">
+            Selecionar Arquivo Contas a Pagar
+          </button>
+        </div>
+        <div class="file-name-display" id="fileNameContasAPagar">
+          Nenhum arquivo selecionado
+        </div>
+        <div class="status" id="statusContasAPagar"></div>
+        <button class="download-btn" id="downloadBtnContasAPagar">
+          Baixar "Contas a Pagar" Processada
+        </button>
+      </div>
+
+      <div class="section">
+        <h2>2. Planilha de Entradas (Acompanhamento>Entradas)</h2>
+        <div class="upload-section" id="dropAreaAgregada">
+          <p>
+            Arraste e solte a planilha para agregação aqui ou clique para
+            selecionar.
+          </p>
+          <input
+            type="file"
+            id="fileInputAgregada"
+            class="file-input"
+            accept=".xlsx, .xls"
+          />
+          <button class="upload-btn" id="uploadBtnAgregada">
+            Selecionar Arquivo para Agregação
+          </button>
+        </div>
+        <div class="file-name-display" id="fileNameAgregada">
+          Nenhum arquivo selecionado
+        </div>
+        <div class="status" id="statusAgregada"></div>
+        <button class="download-btn" id="downloadBtnAgregada">
+          Baixar Planilha Agregada
+        </button>
+      </div>
+
+      <div class="section">
+        <h2>3. Comparação e Alertas</h2>
+        <p style="text-align: center; font-style: italic; margin-bottom: 15px">
+          <strong>Atenção:</strong> Será analisado se foram criadas duplicatas
+          para os <strong>CFOPs</strong> informados abaixo.
+        </p>
+        <div class="cfop-input-section">
+          <label for="cfopInput"
+            >CFOP(s) para Verificação (separados por vírgula):</label
+          >
+          <input type="text" id="cfopInput" placeholder="Ex: 1910, 1949" />
+        </div>
+        <button class="action-btn" id="compareBtn" disabled>
+          Comparar Planilhas (Nota, Código, Valor)
+        </button>
+        <div class="status" id="statusComparison"></div>
+        <div class="comparison-alerts-container" id="comparisonAlertsContainer">
+          <h3>Alertas da Comparação:</h3>
+          <table id="alertTable">
+            <thead>
+              <tr>
+                <th>Nota/Documento (CAP)</th>
+                <th>Código (CAP)</th>
+                <th>CFOPs (Plan. Agregada)</th>
+                <th>CFOP Verificado</th>
+                <th>Fornecedor (Plan. Agregada)</th>
+                <th>Valor Contábil</th>
+              </tr>
+            </thead>
+            <tbody id="alertTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="error-info" id="generalErrorInfo">
+        <h3>Erro Geral / Detalhes</h3>
+        <div id="generalErrorDetails"></div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // --- Elementos DOM ---
+        const fileInputContasAPagar = document.getElementById(
+          "fileInputContasAPagar"
+        );
+        const uploadBtnContasAPagar = document.getElementById(
+          "uploadBtnContasAPagar"
+        );
+        const dropAreaContasAPagar = document.getElementById(
+          "dropAreaContasAPagar"
+        );
+        const statusContasAPagar =
+          document.getElementById("statusContasAPagar");
+        const fileNameContasAPagar = document.getElementById(
+          "fileNameContasAPagar"
+        );
+        const downloadBtnContasAPagar = document.getElementById(
+          "downloadBtnContasAPagar"
+        );
+
+        const fileInputAgregada = document.getElementById("fileInputAgregada");
+        const uploadBtnAgregada = document.getElementById("uploadBtnAgregada");
+        const dropAreaAgregada = document.getElementById("dropAreaAgregada");
+        const statusAgregada = document.getElementById("statusAgregada");
+        const fileNameAgregada = document.getElementById("fileNameAgregada");
+        const downloadBtnAgregada = document.getElementById(
+          "downloadBtnAgregada"
+        );
+
+        const cfopInput = document.getElementById("cfopInput");
+        const compareBtn = document.getElementById("compareBtn");
+        const statusComparison = document.getElementById("statusComparison");
+        const comparisonAlertsContainer = document.getElementById(
+          "comparisonAlertsContainer"
+        );
+        const alertTableBody = document.getElementById("alertTableBody");
+
+        const generalErrorInfo = document.getElementById("generalErrorInfo");
+        const generalErrorDetails = document.getElementById(
+          "generalErrorDetails"
+        );
+
+        // --- Estado da Aplicação ---
+        let processedDataContasAPagar = null;
+        let processedDataAgregada = null;
+        let originalFileNameContasAPagar = "Contas_a_Pagar";
+        let originalFileNameAgregada = "Planilha_Agregada";
+
+        // --- Funções Utilitárias ---
+        function setStatus(element, message, type = "info") {
+          element.textContent = message;
+          element.className = `status status-${type}`;
+        }
+
+        function showError(title, details) {
+          generalErrorDetails.innerHTML = `<p>${title}</p>`;
+          if (details) {
+            generalErrorDetails.innerHTML += `<pre>${escapeHtml(
+              details
+            )}</pre>`;
+          }
+          generalErrorInfo.style.display = "block";
+        }
+
+        function escapeHtml(unsafe) {
+          if (typeof unsafe !== "string") return unsafe;
+          return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+        }
+
+        function clearGeneralError() {
+          generalErrorDetails.innerHTML = "";
+          generalErrorInfo.style.display = "none";
+          comparisonAlertsContainer.style.display = "none";
+          alertTableBody.innerHTML = "";
+        }
+
+        function updateCompareButtonState() {
+          if (
+            processedDataContasAPagar &&
+            processedDataContasAPagar.length > 0 &&
+            processedDataAgregada &&
+            processedDataAgregada.length > 0 &&
+            cfopInput.value.trim() !== ""
+          ) {
+            compareBtn.disabled = false;
+          } else {
+            compareBtn.disabled = true;
+          }
+        }
+
+        function normalizeValor(value) {
+          if (value === null || value === undefined) return NaN;
+          if (typeof value === "number" && !isNaN(value)) return value;
+
+          let strValue = String(value).trim();
+          if (strValue === "") return NaN;
+
+          const hasComma = strValue.includes(",");
+          const hasDot = strValue.includes(".");
+
+          if (hasComma && hasDot) {
+            if (strValue.lastIndexOf(",") > strValue.lastIndexOf(".")) {
+              strValue = strValue.replace(/\./g, "");
+              strValue = strValue.replace(",", ".");
+            } else {
+              strValue = strValue.replace(/,/g, "");
+            }
+          } else if (hasComma) {
+            strValue = strValue.replace(",", ".");
+          } else if (hasDot) {
+            if ((strValue.match(/\./g) || []).length > 1) {
+              strValue = strValue.replace(/\./g, "");
+            }
+          }
+
+          const num = parseFloat(strValue);
+          return isNaN(num) ? NaN : num;
+        }
+
+        // --- Lógica Drag and Drop Genérica ---
+        function setupDragAndDrop(
+          dropAreaElement,
+          fileInputElement,
+          fileHandler
+        ) {
+          ["dragenter", "dragover", "dragleave", "drop"].forEach(
+            (eventName) => {
+              dropAreaElement.addEventListener(
+                eventName,
+                (e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                },
+                false
+              );
+            }
+          );
+          ["dragenter", "dragover"].forEach((eventName) => {
+            dropAreaElement.addEventListener(
+              eventName,
+              () => dropAreaElement.classList.add("drag-over"),
+              false
+            );
+          });
+          ["dragleave", "drop"].forEach((eventName) => {
+            dropAreaElement.addEventListener(
+              eventName,
+              () => dropAreaElement.classList.remove("drag-over"),
+              false
+            );
+          });
+          dropAreaElement.addEventListener(
+            "drop",
+            (e) => {
+              if (e.dataTransfer.files.length) {
+                fileInputElement.files = e.dataTransfer.files;
+                fileHandler({ target: fileInputElement });
+              }
+            },
+            false
+          );
+        }
+
+        // --- Processamento Planilha "Contas a Pagar" ---
+        uploadBtnContasAPagar.addEventListener("click", () =>
+          fileInputContasAPagar.click()
+        );
+        fileInputContasAPagar.addEventListener("change", (e) =>
+          handleFileContasAPagar(e.target.files[0])
+        );
+        setupDragAndDrop(dropAreaContasAPagar, fileInputContasAPagar, (e) =>
+          handleFileContasAPagar(e.target.files[0])
+        );
+
+        function handleFileContasAPagar(file) {
+          if (!file) {
+            fileNameContasAPagar.textContent = "Nenhum arquivo selecionado";
+            setStatus(statusContasAPagar, "");
+            downloadBtnContasAPagar.style.display = "none";
+            processedDataContasAPagar = null;
+            updateCompareButtonState();
+            return;
+          }
+          originalFileNameContasAPagar = file.name.replace(
+            /\.(xlsx|xls)$/i,
+            ""
+          );
+          fileNameContasAPagar.textContent = `Arquivo: ${file.name}`;
+          setStatus(
+            statusContasAPagar,
+            'Processando "Contas a Pagar"...',
+            "info"
+          );
+          clearGeneralError();
+          downloadBtnContasAPagar.style.display = "none";
+
+          const reader = new FileReader();
+          reader.onload = function (e_reader) {
+            try {
+              const data = new Uint8Array(e_reader.target.result);
+              let workbook = XLSX.read(data, { type: "array" });
+
+              if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
+                throw new Error(
+                  'A planilha "Contas a Pagar" não contém nenhuma folha de trabalho.'
+                );
+              }
+
+              const firstSheetName = workbook.SheetNames[0];
+              let worksheet = workbook.Sheets[firstSheetName];
+
+              if (!worksheet) {
+                throw new Error(
+                  `Não foi possível acessar a folha de trabalho "${firstSheetName}".`
+                );
+              }
+
+              worksheet = unmergeCellsCAP(worksheet).worksheet;
+              let jsonData = XLSX.utils.sheet_to_json(worksheet, {
+                header: 1,
+                defval: "",
+                rawNumbers: false,
+              });
+
+              if (!jsonData || jsonData.length === 0) {
+                throw new Error(
+                  'A planilha "Contas a Pagar" não contém dados.'
+                );
+              }
+
+              const columnIndices = findColumnIndicesCAP(jsonData);
+              processedDataContasAPagar = processDataCAP(
+                jsonData,
+                columnIndices
+              );
+
+              if (processedDataContasAPagar.length === 0) {
+                setStatus(
+                  statusContasAPagar,
+                  'Nenhum dado encontrado na "Contas a Pagar". Verifique a formatação.',
+                  "error"
+                );
+              } else {
+                downloadBtnContasAPagar.style.display = "block";
+                setStatus(
+                  statusContasAPagar,
+                  '"Contas a Pagar" processada com sucesso!',
+                  "success"
+                );
+              }
+            } catch (error) {
+              console.error('Erro ao processar "Contas a Pagar":', error);
+              showError(
+                'Erro ao processar "Contas a Pagar"',
+                error.stack || error.message
+              );
+              setStatus(
+                statusContasAPagar,
+                'Erro ao processar "Contas a Pagar".',
+                "error"
+              );
+              processedDataContasAPagar = null;
+            } finally {
+              updateCompareButtonState();
+            }
+          };
+          reader.onerror = function (e_reader) {
+            showError(
+              'Erro ao ler o arquivo "Contas a Pagar"',
+              e_reader.target.error.message
+            );
+            setStatus(
+              statusContasAPagar,
+              'Erro ao ler o arquivo "Contas a Pagar".',
+              "error"
+            );
+            processedDataContasAPagar = null;
+            updateCompareButtonState();
+          };
+          reader.readAsArrayBuffer(file);
+        }
+
+        function unmergeCellsCAP(worksheet) {
+          if (!worksheet) throw new Error("Planilha inválida para unmergeCAP");
+          if (worksheet["!merges"] && Array.isArray(worksheet["!merges"])) {
+            worksheet["!merges"].forEach((merge) => {
+              const topLeftCell = XLSX.utils.encode_cell({
+                r: merge.s.r,
+                c: merge.s.c,
+              });
+              const value = worksheet[topLeftCell]
+                ? worksheet[topLeftCell].v
+                : "";
+              for (let r = merge.s.r; r <= merge.e.r; r++) {
+                for (let c = merge.s.c; c <= merge.e.c; c++) {
+                  const cellAddress = XLSX.utils.encode_cell({ r: r, c: c });
+                  if (!worksheet[cellAddress])
+                    worksheet[cellAddress] = { t: "s", v: value };
+                  else if (cellAddress !== topLeftCell)
+                    worksheet[cellAddress].v = value;
+                }
+              }
+            });
+            delete worksheet["!merges"];
+          }
+          return { worksheet };
+        }
+
+        function findColumnIndicesCAP(data) {
+          const indices = {
+            fornecedor: -1,
+            documento: -1,
+            entrada: -1,
+            vParcela: -1,
+          };
+          for (let i = 0; i < Math.min(10, data.length); i++) {
+            const row = data[i];
+            if (!row) continue;
+            for (let j = 0; j < row.length; j++) {
+              const cell = row[j] ? String(row[j]).trim() : "";
+              if (cell === "Fornecedor" && indices.fornecedor === -1)
+                indices.fornecedor = j;
+              else if (
+                (cell === "Documento" || cell === "Nota") &&
+                indices.documento === -1
+              )
+                indices.documento = j;
+              else if (cell === "Entrada" && indices.entrada === -1)
+                indices.entrada = j;
+              else if (
+                (cell === "V. Parcela" ||
+                  cell === "V.Parcela" ||
+                  cell === "Valor Contábil") &&
+                indices.vParcela === -1
+              )
+                indices.vParcela = j;
+            }
+            if (
+              indices.fornecedor !== -1 &&
+              indices.documento !== -1 &&
+              indices.entrada !== -1 &&
+              indices.vParcela !== -1
+            )
+              break;
+          }
+          if (indices.fornecedor === -1) indices.fornecedor = 0;
+          if (indices.documento === -1)
+            indices.documento = indices.fornecedor + 1;
+          if (indices.entrada === -1) indices.entrada = indices.documento + 1;
+          if (indices.vParcela === -1) indices.vParcela = indices.entrada + 1;
+          return indices;
+        }
+
+        function processDataCAP(data, columnIndices) {
+          const result = [];
+          if (!data || data.length < 6) return result;
+
+          for (let i = 5; i < data.length; i++) {
+            const row = data[i];
+            if (
+              row &&
+              row.length > columnIndices.fornecedor &&
+              row[columnIndices.fornecedor]
+            ) {
+              const fornecedorValue = String(
+                row[columnIndices.fornecedor]
+              ).trim();
+              if (
+                fornecedorValue !== "" &&
+                !fornecedorValue.includes("Entrada:") &&
+                !fornecedorValue.includes("Fornecedor") &&
+                !fornecedorValue.includes("Emissão")
+              ) {
+                const documentoValue =
+                  row.length > columnIndices.documento
+                    ? row[columnIndices.documento]
+                      ? String(row[columnIndices.documento])
+                      : ""
+                    : "";
+                const entradaRaw =
+                  row.length > columnIndices.entrada
+                    ? row[columnIndices.entrada]
+                      ? row[columnIndices.entrada]
+                      : ""
+                    : "";
+                const vParcelaRaw =
+                  row.length > columnIndices.vParcela
+                    ? row[columnIndices.vParcela]
+                      ? row[columnIndices.vParcela]
+                      : ""
+                    : "";
+
+                let codigo = "";
+                let nomeFornecedor = fornecedorValue;
+                if (fornecedorValue.includes("-")) {
+                  const parts = fornecedorValue.split("-");
+                  codigo = parts[0].trim();
+                  nomeFornecedor = parts.slice(1).join("-").trim();
+                }
+
+                result.push({
+                  Código: codigo,
+                  Fornecedor: nomeFornecedor,
+                  Documento: documentoValue,
+                  Entrada: formatDateToStandardCAP(entradaRaw),
+                  "Valor Contábil": normalizeValor(vParcelaRaw),
+                });
+              }
+            }
+          }
+          return result;
+        }
+
+        function formatDateToStandardCAP(value) {
+          if (!value) return "";
+          if (typeof value === "number" && value > 1 && value < 2958466) {
+            try {
+              const date = XLSX.SSF.parse_date_code(value);
+              if (date && date.y && date.m && date.d) {
+                return `${String(date.d).padStart(2, "0")}/${String(
+                  date.m
+                ).padStart(2, "0")}/${date.y}`;
+              }
+            } catch (e) {
+              /* ignore parsing error */
+            }
+          }
+          if (typeof value === "string") {
+            let day, month, year;
+            if (value.includes("/")) {
+              const parts = value.split("/");
+              if (parts.length === 3) {
+                const p0 = parseInt(parts[0]),
+                  p1 = parseInt(parts[1]),
+                  p2 = parseInt(parts[2]);
+                if (p2 > 1000 && p2 < 3000) {
+                  year = p2;
+                  if (p0 > 0 && p0 <= 31 && p1 > 0 && p1 <= 12) {
+                    if (p0 > 12) {
+                      day = p0;
+                      month = p1;
+                    } else if (p1 > 12) {
+                      month = p0;
+                      day = p1;
+                    } else {
+                      day = p0;
+                      month = p1;
+                    }
+                  }
+                } else if (p2 >= 0 && p2 < 100) {
+                  year = p2 < 30 ? 2000 + p2 : 1900 + p2;
+                  if (p0 > 0 && p0 <= 31 && p1 > 0 && p1 <= 12) {
+                    if (p0 > 12) {
+                      day = p0;
+                      month = p1;
+                    } else if (p1 > 12) {
+                      month = p0;
+                      day = p1;
+                    } else {
+                      day = p0;
+                      month = p1;
+                    }
+                  }
+                }
+              }
+            } else if (value.includes("-")) {
+              const parts = value.split("-");
+              if (parts.length === 3) {
+                const p0 = parseInt(parts[0]),
+                  p1 = parseInt(parts[1]),
+                  p2 = parseInt(parts[2]);
+                if (
+                  p0 > 1000 &&
+                  p0 < 3000 &&
+                  p1 > 0 &&
+                  p1 <= 12 &&
+                  p2 > 0 &&
+                  p2 <= 31
+                ) {
+                  year = p0;
+                  month = p1;
+                  day = p2;
+                }
+              }
+            }
+            if (day && month && year) {
+              return `${String(day).padStart(2, "0")}/${String(month).padStart(
+                2,
+                "0"
+              )}/${year}`;
+            }
+            const dateObj = new Date(value);
+            if (!isNaN(dateObj.getTime()) && dateObj.getFullYear() > 1800) {
+              return `${dateObj.getDate().toString().padStart(2, "0")}/${(
+                dateObj.getMonth() + 1
+              )
+                .toString()
+                .padStart(2, "0")}/${dateObj.getFullYear()}`;
+            }
+          }
+          return String(value);
+        }
+
+        downloadBtnContasAPagar.addEventListener("click", () => {
+          if (
+            !processedDataContasAPagar ||
+            processedDataContasAPagar.length === 0
+          ) {
+            setStatus(statusContasAPagar, "Nenhum dado para baixar.", "error");
+            return;
+          }
+          try {
+            const ws = XLSX.utils.json_to_sheet(processedDataContasAPagar, {
+              header: [
+                "Código",
+                "Fornecedor",
+                "Documento",
+                "Entrada",
+                "Valor Contábil",
+              ],
+            });
+
+            const valueColumnLetter = "E";
+
+            Object.keys(ws).forEach((cellRef) => {
+              if (cellRef[0] === "!") return;
+              const colLetter = cellRef.replace(/[0-9]/g, "");
+              const rowNumber = parseInt(cellRef.replace(/[A-Z]/g, ""));
+              if (rowNumber > 1 && colLetter === valueColumnLetter) {
+                if (
+                  ws[cellRef] &&
+                  ws[cellRef].v !== undefined &&
+                  typeof ws[cellRef].v === "number"
+                ) {
+                  ws[cellRef].t = "n";
+                  ws[cellRef].z = "#,##0.00";
+                }
+              }
+            });
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Contas Pagar Processado");
+            XLSX.writeFile(
+              wb,
+              `${originalFileNameContasAPagar}_Processado.xlsx`
+            );
+          } catch (error) {
+            showError(
+              'Erro ao gerar "Contas a Pagar" para download',
+              error.message
+            );
+          }
+        });
+
+        // --- Processamento Planilha Agregada ---
+        uploadBtnAgregada.addEventListener("click", () =>
+          fileInputAgregada.click()
+        );
+        fileInputAgregada.addEventListener("change", (e) =>
+          handleFileAgregada(e.target.files[0])
+        );
+        setupDragAndDrop(dropAreaAgregada, fileInputAgregada, (e) =>
+          handleFileAgregada(e.target.files[0])
+        );
+
+        function handleFileAgregada(file) {
+          if (!file) {
+            fileNameAgregada.textContent = "Nenhum arquivo selecionado";
+            setStatus(statusAgregada, "");
+            downloadBtnAgregada.style.display = "none";
+            processedDataAgregada = null;
+            updateCompareButtonState();
+            return;
+          }
+          originalFileNameAgregada = file.name.replace(/\.(xlsx|xls)$/i, "");
+          fileNameAgregada.textContent = `Arquivo: ${file.name}`;
+          setStatus(
+            statusAgregada,
+            "Processando planilha para agregação...",
+            "info"
+          );
+          clearGeneralError();
+          downloadBtnAgregada.style.display = "none";
+          processedDataAgregada = null;
+
+          const reader = new FileReader();
+          reader.onload = function (e_reader) {
+            try {
+              const data = new Uint8Array(e_reader.target.result);
+              const workbook = XLSX.read(data, {
+                type: "array",
+                cellDates: true,
+              });
+              const firstSheetName = workbook.SheetNames[0];
+              const worksheet = workbook.Sheets[firstSheetName];
+
+              const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+                header: 1,
+                range: 5,
+                defval: "",
+              });
+
+              if (jsonData.length < 1) {
+                throw new Error(
+                  "Planilha agregada: sem cabeçalhos na linha 6 ou dados abaixo."
+                );
+              }
+
+              const headers = jsonData[0].map((h) =>
+                h && typeof h === "string" ? h.trim() : h ? String(h) : ""
+              );
+              const dataRows = jsonData.slice(1);
+
+              const K_INDEX = 10;
+              const colIndices = {
+                data: headers.indexOf("Data"),
+                nota: headers.indexOf("Nota"),
+                fornecedor: headers.indexOf("Fornecedor"),
+                cfop: headers.indexOf("CFOP"),
+                valorContabil: headers.indexOf("Valor Contábil"),
+                codigo: -1,
+              };
+
+              let missingHeadersMessages = [];
+              if (colIndices.data === -1) missingHeadersMessages.push("'Data'");
+              if (colIndices.nota === -1) missingHeadersMessages.push("'Nota'");
+              if (headers.length <= K_INDEX)
+                missingHeadersMessages.push("Coluna K ('Código') não existe.");
+              else if (String(headers[K_INDEX]).toLowerCase() !== "código")
+                missingHeadersMessages.push(
+                  `Coluna K deve ser 'Código' (encontrado: '${headers[K_INDEX]}').`
+                );
+              else colIndices.codigo = K_INDEX;
+              if (colIndices.fornecedor === -1)
+                missingHeadersMessages.push("'Fornecedor'");
+              if (colIndices.cfop === -1) missingHeadersMessages.push("'CFOP'");
+              if (colIndices.valorContabil === -1)
+                missingHeadersMessages.push("'Valor Contábil'");
+
+              if (missingHeadersMessages.length > 0) {
+                throw new Error(
+                  `Cabeçalho(s) não encontrado(s) na linha 6 da planilha agregada: ${missingHeadersMessages.join(
+                    ", "
+                  )}.`
+                );
+              }
+
+              const aggregatedData = {};
+              dataRows.forEach((row, rowIndex) => {
+                if (
+                  row.every(
+                    (cell) => cell === null || cell === "" || cell === undefined
+                  )
+                )
+                  return;
+
+                const rawDataValue = row[colIndices.data];
+                if (
+                  typeof rawDataValue === "string" &&
+                  rawDataValue.trim().toLowerCase() === "data"
+                )
+                  return;
+
+                const dataVal = formatDateAgregada(rawDataValue);
+                const notaVal = String(row[colIndices.nota] || "").trim();
+                const codigoVal = String(row[colIndices.codigo] || "").trim();
+
+                if (!dataVal || !notaVal || !codigoVal) return;
+                const aggregationKey = `${dataVal}_${notaVal}_${codigoVal}`;
+
+                let valorContabilNum = normalizeValor(
+                  row[colIndices.valorContabil]
+                );
+                if (isNaN(valorContabilNum)) valorContabilNum = 0;
+
+                const cfopAtual = String(row[colIndices.cfop] || "").trim();
+
+                if (!aggregatedData[aggregationKey]) {
+                  aggregatedData[aggregationKey] = {
+                    Data: dataVal,
+                    Nota: notaVal,
+                    Código: codigoVal,
+                    Fornecedor: String(row[colIndices.fornecedor] || "").trim(),
+                    CFOPs: new Set(),
+                    "Valor Contábil": 0,
+                  };
+                }
+                if (cfopAtual)
+                  aggregatedData[aggregationKey]["CFOPs"].add(cfopAtual);
+                aggregatedData[aggregationKey]["Valor Contábil"] +=
+                  valorContabilNum;
+              });
+
+              processedDataAgregada = Object.values(aggregatedData).map(
+                (item) => ({
+                  Data: item["Data"],
+                  Nota: item["Nota"],
+                  Código: item["Código"],
+                  Fornecedor: item["Fornecedor"],
+                  CFOP: Array.from(item["CFOPs"]).join(", "),
+                  "Valor Contábil": parseFloat(
+                    item["Valor Contábil"].toFixed(2)
+                  ),
+                })
+              );
+
+              if (processedDataAgregada.length === 0) {
+                setStatus(
+                  statusAgregada,
+                  "Nenhum dado válido encontrado na planilha agregada.",
+                  "info"
+                );
+              } else {
+                setStatus(
+                  statusAgregada,
+                  "Planilha agregada processada com sucesso!",
+                  "success"
+                );
+                downloadBtnAgregada.style.display = "inline-block";
+              }
+            } catch (error) {
+              console.error("Erro ao processar planilha agregada:", error);
+              showError(
+                "Erro ao processar planilha agregada",
+                error.stack || error.message
+              );
+              setStatus(
+                statusAgregada,
+                "Erro ao processar planilha agregada.",
+                "error"
+              );
+              processedDataAgregada = null;
+            } finally {
+              updateCompareButtonState();
+            }
+          };
+          reader.onerror = function (e_reader) {
+            showError(
+              "Erro ao ler arquivo para agregação",
+              e_reader.target.error.message
+            );
+            setStatus(
+              statusAgregada,
+              "Erro ao ler arquivo para agregação.",
+              "error"
+            );
+            processedDataAgregada = null;
+            updateCompareButtonState();
+          };
+          reader.readAsArrayBuffer(file);
+        }
+
+        function formatDateAgregada(excelDate) {
+          if (excelDate instanceof Date && !isNaN(excelDate)) {
+            return `${excelDate.getDate().toString().padStart(2, "0")}/${(
+              excelDate.getMonth() + 1
+            )
+              .toString()
+              .padStart(2, "0")}/${excelDate.getFullYear()}`;
+          }
+          if (typeof excelDate === "number") {
+            try {
+              const jsDate = XLSX.SSF.parse_date_code(excelDate);
+              if (jsDate && jsDate.y && jsDate.m && jsDate.d) {
+                return `${jsDate.d.toString().padStart(2, "0")}/${jsDate.m
+                  .toString()
+                  .padStart(2, "0")}/${jsDate.y}`;
+              }
+            } catch (e) {
+              /* ignore parsing error */
+            }
+          }
+          return excelDate ? String(excelDate) : "";
+        }
+
+        downloadBtnAgregada.addEventListener("click", () => {
+          if (!processedDataAgregada || processedDataAgregada.length === 0) {
+            setStatus(statusAgregada, "Nenhum dado para baixar.", "error");
+            return;
+          }
+          try {
+            const newWorksheet = XLSX.utils.json_to_sheet(
+              processedDataAgregada,
+              {
+                header: [
+                  "Data",
+                  "Nota",
+                  "Código",
+                  "Fornecedor",
+                  "CFOP",
+                  "Valor Contábil",
+                ],
+              }
+            );
+            Object.keys(newWorksheet).forEach((cellRef) => {
+              if (cellRef[0] === "!") return;
+              const cell = newWorksheet[cellRef];
+              const colLetter = cellRef.replace(/[0-9]/g, "");
+              const rowNumber = parseInt(cellRef.replace(/[A-Z]/g, ""));
+              if (rowNumber === 1) return;
+              if (colLetter === "F") {
+                cell.t = "n";
+                cell.z = "#,##0.00";
+              } else if (colLetter === "B" || colLetter === "C") {
+                cell.t = "s";
+              }
+            });
+            const newWorkbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(
+              newWorkbook,
+              newWorksheet,
+              "Dados Agregados"
+            );
+            XLSX.writeFile(
+              newWorkbook,
+              `${originalFileNameAgregada}_Processado.xlsx`
+            );
+          } catch (error) {
+            showError(
+              "Erro ao gerar Planilha Agregada para download",
+              error.message
+            );
+          }
+        });
+
+        // --- Lógica de Comparação ---
+        cfopInput.addEventListener("input", updateCompareButtonState);
+
+        compareBtn.addEventListener("click", () => {
+          clearGeneralError();
+          setStatus(statusComparison, "Comparando...", "info");
+          alertTableBody.innerHTML = "";
+          comparisonAlertsContainer.style.display = "none";
+
+          if (
+            !processedDataContasAPagar ||
+            processedDataContasAPagar.length === 0
+          ) {
+            setStatus(
+              statusComparison,
+              'Dados da "Contas a Pagar" não estão carregados.',
+              "error"
+            );
+            return;
+          }
+          if (!processedDataAgregada || processedDataAgregada.length === 0) {
+            setStatus(
+              statusComparison,
+              'Dados da "Planilha Agregada" não estão carregados.',
+              "error"
+            );
+            return;
+          }
+          const cfopsTargetRaw = cfopInput.value.trim();
+          if (!cfopsTargetRaw) {
+            setStatus(
+              statusComparison,
+              "Por favor, informe o(s) CFOP(s) para verificação.",
+              "error"
+            );
+            return;
+          }
+          const cfopsTargetList = cfopsTargetRaw
+            .split(",")
+            .map((cf) => cf.trim())
+            .filter((cf) => cf !== "");
+
+          if (cfopsTargetList.length === 0) {
+            setStatus(
+              statusComparison,
+              "Nenhum CFOP válido informado para verificação.",
+              "error"
+            );
+            return;
+          }
+
+          let alertsFound = 0;
+          const mapAgregada = new Map();
+          processedDataAgregada.forEach((rowAg) => {
+            const notaAg = String(rowAg["Nota"]).trim();
+            const codigoAg = String(rowAg["Código"]).trim();
+            const keyAg = `${notaAg}_${codigoAg}`;
+
+            if (!mapAgregada.has(keyAg)) {
+              mapAgregada.set(keyAg, []);
+            }
+            mapAgregada.get(keyAg).push(rowAg);
+          });
+
+          processedDataContasAPagar.forEach((rowCAP, indexCAP) => {
+            const notaCAP = String(rowCAP["Documento"]).trim();
+            const codigoCAP = String(rowCAP["Código"]).trim();
+            const valorCAP = rowCAP["Valor Contábil"];
+
+            if (isNaN(valorCAP)) {
+              return;
+            }
+
+            const keyCAP = `${notaCAP}_${codigoCAP}`;
+            const potentialMatchesAgregada = mapAgregada.get(keyCAP);
+
+            if (
+              potentialMatchesAgregada &&
+              potentialMatchesAgregada.length > 0
+            ) {
+              potentialMatchesAgregada.forEach((rowAgregadaMatch) => {
+                const valorAgregado = rowAgregadaMatch["Valor Contábil"];
+
+                if (Math.abs(valorCAP - valorAgregado) < 0.001) {
+                  const cfopsPlanilhaAgregadaString = String(
+                    rowAgregadaMatch["CFOP"] || ""
+                  );
+                  const cfopsPlanilhaAgregadaList = cfopsPlanilhaAgregadaString
+                    .split(",")
+                    .map((cf) => cf.trim())
+                    .filter((cf) => cf !== "");
+
+                  const cfopMatched = cfopsTargetList.find((targetCfop) =>
+                    cfopsPlanilhaAgregadaList.includes(targetCfop)
+                  );
+
+                  if (cfopMatched) {
+                    alertsFound++;
+                    const newRow = alertTableBody.insertRow();
+                    newRow.insertCell().textContent = notaCAP;
+                    newRow.insertCell().textContent = codigoCAP;
+                    newRow.insertCell().textContent =
+                      cfopsPlanilhaAgregadaString;
+                    newRow.insertCell().textContent = cfopMatched;
+                    newRow.insertCell().textContent =
+                      rowAgregadaMatch["Fornecedor"];
+                    newRow.insertCell().textContent = valorCAP.toLocaleString(
+                      "pt-BR",
+                      { style: "currency", currency: "BRL" }
+                    );
+                  }
+                }
+              });
+            }
+          });
+
+          if (alertsFound > 0) {
+            comparisonAlertsContainer.style.display = "block";
+            setStatus(
+              statusComparison,
+              `${alertsFound} alerta(s) encontrado(s). Veja detalhes abaixo.`,
+              "info"
+            );
+          } else {
+            setStatus(
+              statusComparison,
+              "Nenhum alerta gerado pela comparação com os CFOPs informados.",
+              "success"
+            );
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
