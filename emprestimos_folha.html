@@ -62,6 +62,7 @@
             box-shadow: var(--sombra);
             margin-bottom: 30px;
             transition: var(--transicao);
+            display: block; /* Garantir que esteja visível */
         }
 
         .upload-container {
@@ -313,6 +314,74 @@
             color: var(--accent-color);
         }
 
+        .report-datetime {
+            margin-top: 20px;
+            padding: 12px 15px;
+            background-color: var(--form-bg-color);
+            border-radius: 6px;
+            border-left: 4px solid var(--accent-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .datetime-value {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--accent-color);
+        }
+
+        .company-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: var(--form-bg-color);
+            border-radius: 6px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .company-name {
+            font-size: 18px;
+            margin-top: 5px;
+        }
+
+        .employees-list {
+            margin-top: 20px;
+        }
+
+        .employees-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .employees-names {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .employees-names li {
+            padding: 10px 10px 10px 35px;
+            margin-bottom: 8px;
+            background-color: var(--form-bg-color);
+            border-radius: 4px;
+            font-size: 15px;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .employees-names li::before {
+            content: "";
+            position: absolute;
+            left: 12px;
+            width: 12px;
+            height: 12px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+        }
+
         /* Estilos para impressão */
         @media print {
             header, .upload-section, .report-header, .pagination, .btn-group {
@@ -353,6 +422,10 @@
 
             .contract-info {
                 grid-template-columns: repeat(2, 1fr);
+            }
+
+            .employees-names {
+                /* remover a propriedade grid-template-columns */
             }
         }
 
@@ -447,6 +520,21 @@
                         <div class="summary-value accent" id="total-released-amount">R$ 0,00</div>
                     </div>
                 </div>
+                <div class="report-datetime">
+                    <div class="summary-label">Data e Hora de Geração</div>
+                    <div class="datetime-value" id="report-datetime">-</div>
+                </div>
+                <div class="company-info" id="company-info">
+                    <div class="summary-label">Empresa</div>
+                    <div class="summary-value company-name" id="company-name">-</div>
+                </div>
+
+                <div class="employees-list" id="employees-list">
+                    <h4 class="employees-title">Funcionários</h4>
+                    <ul class="employees-names" id="employees-names">
+                        <!-- Lista de funcionários será adicionada aqui -->
+                    </ul>
+                </div>
             </div>
 
             <div class="pagination" id="pagination">
@@ -465,6 +553,8 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('Página carregada. Verificando elementos de upload...');
+            
             // Elementos DOM
             const uploadArea = document.getElementById('upload-area');
             const fileInput = document.getElementById('file-input');
@@ -481,6 +571,11 @@
             const totalContracts = document.getElementById('total-contracts');
             const totalLoanAmount = document.getElementById('total-loan-amount');
             const totalReleasedAmount = document.getElementById('total-released-amount');
+            const reportDatetime = document.getElementById('report-datetime');
+            
+            console.log('Upload area:', uploadArea);
+            console.log('File input:', fileInput);
+            console.log('Upload button:', uploadBtn);
 
             // Configurações
             const contractsPerPage = 3;
@@ -497,10 +592,12 @@
 
             // Eventos de upload
             uploadArea.addEventListener('click', () => {
+                console.log('Área de upload clicada');
                 fileInput.click();
             });
 
             uploadBtn.addEventListener('click', () => {
+                console.log('Botão de upload clicado');
                 fileInput.click();
             });
 
@@ -526,6 +623,7 @@
             });
 
             fileInput.addEventListener('change', () => {
+                console.log('Arquivo selecionado:', fileInput.files);
                 if (fileInput.files.length) {
                     handleFile(fileInput.files[0]);
                 }
@@ -533,7 +631,8 @@
 
             // Função para processar o arquivo
             function handleFile(file) {
-                if (file.type !== 'application/json') {
+                console.log('Processando arquivo:', file.name, file.type);
+                if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
                     showError('Por favor, selecione um arquivo JSON válido.');
                     return;
                 }
@@ -543,7 +642,9 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     try {
+                        console.log('Arquivo lido com sucesso, analisando JSON...');
                         jsonData = JSON.parse(e.target.result);
+                        console.log('JSON analisado com sucesso:', jsonData.length, 'registros encontrados');
                         generateReport(jsonData);
                         hideLoader();
                     } catch (error) {
@@ -552,9 +653,10 @@
                         console.error('Erro ao processar JSON:', error);
                     }
                 };
-                reader.onerror = function() {
+                reader.onerror = function(e) {
                     hideLoader();
                     showError('Erro ao ler o arquivo. Tente novamente.');
+                    console.error('Erro ao ler o arquivo:', e);
                 };
                 reader.readAsText(file);
             }
@@ -573,6 +675,19 @@
 
                 // Atualizar resumo
                 updateSummary(data);
+
+                // Atualizar data e hora de geração
+                const now = new Date();
+                const formattedDateTime = now.toLocaleDateString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                }) + ' às ' + now.toLocaleTimeString('pt-BR', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                reportDatetime.textContent = formattedDateTime;
 
                 // Calcular número de páginas
                 const totalPages = Math.ceil(data.length / contractsPerPage);
@@ -781,15 +896,43 @@
                 
                 let totalLoan = 0;
                 let totalReleased = 0;
+                let employeeNames = new Set();
+                let companyName = '';
                 
                 data.forEach(contract => {
                     totalLoan += contract.valorEmprestimo || 0;
                     totalReleased += contract.valorLiberado || 0;
+                    
+                    // Adicionar nome do funcionário ao conjunto (evita duplicatas)
+                    if (contract.nomeTrabalhador) {
+                        employeeNames.add(contract.nomeTrabalhador);
+                    }
+                    
+                    // Pegar o nome da empresa (assumindo que é o mesmo em todos os contratos)
+                    if (!companyName && contract.nomeEmpregador) {
+                        companyName = contract.nomeEmpregador;
+                    }
                 });
                 
+                // Atualizar valores no resumo
                 totalContracts.textContent = totalContratsCount;
                 totalLoanAmount.textContent = `R$ ${totalLoan.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
                 totalReleasedAmount.textContent = `R$ ${totalReleased.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                
+                // Atualizar nome da empresa
+                const companyNameElement = document.getElementById('company-name');
+                companyNameElement.textContent = companyName || '-';
+                
+                // Atualizar lista de funcionários
+                const employeesNamesElement = document.getElementById('employees-names');
+                employeesNamesElement.innerHTML = '';
+
+                // Converter o Set para Array e ordenar alfabeticamente
+                Array.from(employeeNames).sort().forEach(name => {
+                    const li = document.createElement('li');
+                    li.textContent = name;
+                    employeesNamesElement.appendChild(li);
+                });
             }
 
             // Função para baixar o relatório
@@ -804,6 +947,8 @@
                         body { margin: 0; padding: 0; }
                         .report-page { display: block !important; page-break-after: always; }
                         .contract-card { page-break-inside: avoid; }
+                        .company-info { page-break-inside: avoid; }
+                        .employees-list { page-break-inside: avoid; }
                     }
                     @page { margin: 1.5cm; }
                 `;
@@ -887,6 +1032,10 @@
                     errorMessage.style.display = 'none';
                 }, 5000);
             }
+            
+            // Garantir que a seção de upload esteja visível
+            document.querySelector('.upload-section').style.display = 'block';
+            console.log('Seção de upload definida como visível');
         });
     </script>
 </body>
