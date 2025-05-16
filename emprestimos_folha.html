@@ -937,62 +937,249 @@
                 // Criar uma cópia do documento atual
                 const printContent = document.documentElement.cloneNode(true);
                 
-                // Adicionar estilos específicos para impressão
-                const style = printContent.querySelector('style');
-                style.textContent += `
-                    @media print {
-                        body { margin: 0; padding: 0; }
-                        .report-page { display: block !important; page-break-after: always; }
-                        .contract-card { page-break-inside: avoid; }
-                        .company-info { page-break-inside: avoid; }
-                        .employees-list { page-break-inside: avoid; }
-                    }
-                    @page { margin: 1.5cm; }
-                `;
+                // Adicionar estilos específicos para impressão (que já existem) e @page
+                const styleTag = printContent.querySelector('style'); // Deve haver uma tag style
+                if (styleTag) {
+                    styleTag.textContent += `
+                        @media print {
+                            body { margin: 0; padding: 0; } /* Base para impressão */
+                            .report-page { display: block !important; page-break-after: always; }
+                            .contract-card { page-break-inside: avoid; }
+                            .company-info { page-break-inside: avoid; }
+                            .employees-list { page-break-inside: avoid; }
+                            .summary-section { page-break-inside: avoid; } /* Tentar manter o resumo junto */
+                        }
+                        @page { 
+                            margin: 1.5cm; /* Margens da página A4 */
+                        }
+                    `;
+
+                    // Definir os estilos condensados para o arquivo baixado
+                    const condensedDownloadStyles = `
+                        /* Estilos condensados ESPECÍFICOS para o ARQUIVO BAIXADO */
+                        /* Aplicados via classe 'print-download-mode' no body */
+                        body.print-download-mode {
+                            font-size: 9pt; /* Fonte base reduzida */
+                            line-height: 1.25;
+                            background-color: #ffffff !important;
+                            color: #000000 !important;
+                            margin: 0 !important; 
+                            padding: 0 !important;
+                        }
+                        .print-download-mode .container { /* Container dentro do body do arquivo baixado */
+                            padding: 0 !important; 
+                            margin: 0 auto !important;
+                            width: 100% !important; 
+                            max-width: 100% !important; /* Ocupa área dentro das margens @page */
+                        }
+                        .print-download-mode h1 { /* Título principal do relatório */
+                            font-size: 16pt !important;
+                            font-weight: bold;
+                            text-align: center;
+                            margin-bottom: 8mm !important;
+                            color: #222222 !important;
+                        }
+                        .print-download-mode .summary-section {
+                            padding: 5mm !important;
+                            margin-top: 0 !important; /* Resumo logo após o título */
+                            margin-bottom: 8mm !important;
+                            border: 0.5pt solid #dddddd !important;
+                            box-shadow: none !important;
+                        }
+                        .print-download-mode .summary-title {
+                            font-size: 12pt !important;
+                            font-weight: bold;
+                            margin-bottom: 3mm !important;
+                            color: #333333 !important;
+                        }
+                        .print-download-mode .summary-grid {
+                            gap: 3mm !important;
+                            grid-template-columns: repeat(3, 1fr) !important;
+                        }
+                        .print-download-mode .summary-card {
+                            padding: 3mm !important;
+                            box-shadow: none !important;
+                            border: 0.25pt solid #eeeeee !important;
+                        }
+                        .print-download-mode .summary-label {
+                            font-size: 7.5pt !important;
+                            margin-bottom: 1.5mm !important;
+                            color: #555555 !important;
+                        }
+                        .print-download-mode .summary-value {
+                            font-size: 13pt !important;
+                            font-weight: bold;
+                            color: #333333 !important;
+                        }
+                        .print-download-mode .summary-value.accent {
+                            color: var(--accent-color, #fb0a5e) !important; 
+                        }
+                        .print-download-mode .report-datetime,
+                        .print-download-mode .company-info {
+                            padding: 2.5mm 4mm !important;
+                            margin-top: 4mm !important;
+                            font-size: 7.5pt !important;
+                            border-left-width: 2px !important;
+                        }
+                        .print-download-mode .datetime-value,
+                        .print-download-mode .company-name {
+                            font-size: 8.5pt !important;
+                            font-weight: bold;
+                        }
+                        .print-download-mode .company-name { color: #333333 !important; }
+                        .print-download-mode .datetime-value { color: var(--accent-color, #fb0a5e) !important;}
+
+                        .print-download-mode .employees-list {
+                            margin-top: 4mm !important;
+                        }
+                        .print-download-mode .employees-title {
+                            font-size: 10pt !important;
+                            font-weight: bold;
+                            margin-bottom: 2mm !important;
+                            color: #333333 !important;
+                        }
+                        .print-download-mode .employees-names li {
+                            padding: 1.5mm 1.5mm 1.5mm 6mm !important;
+                            font-size: 7.5pt !important;
+                            margin-bottom: 1mm !important;
+                            background-color: #f8f8f8 !important;
+                        }
+                        .print-download-mode .employees-names li::before {
+                            width: 2.5mm !important;
+                            height: 2.5mm !important;
+                            left: 2mm !important;
+                            background-color: var(--accent-color, #fb0a5e) !important;
+                        }
+
+                        .print-download-mode .report-content {
+                            box-shadow: none !important;
+                        }
+                        .print-download-mode .report-page { /* Cada página de contratos */
+                            padding: 0 !important; /* Sem padding extra, os cards têm o seu */
+                        }
+                        .print-download-mode .contract-card {
+                            padding: 6mm !important; /* Padding interno do card */
+                            margin-bottom: 7mm !important; /* Espaço entre cards, se couber mais de um na tela */
+                            border: 0.5pt solid #cccccc !important;
+                            box-shadow: none !important;
+                            page-break-inside: avoid !important; /* Crucial */
+                            background-color: #ffffff !important;
+                        }
+                        .print-download-mode .contract-header {
+                            margin-bottom: 4mm !important;
+                            padding-bottom: 2.5mm !important;
+                            border-bottom: 0.5pt solid #dddddd !important;
+                        }
+                        .print-download-mode .contract-title {
+                            font-size: 10pt !important;
+                            font-weight: bold;
+                            color: #333333 !important;
+                        }
+                        .print-download-mode .contract-number {
+                            font-size: 8.5pt !important;
+                            font-weight: bold;
+                            color: var(--accent-color, #fb0a5e) !important;
+                        }
+                        .print-download-mode .contract-info,
+                        .print-download-mode .financial-grid {
+                            gap: 2mm 3mm !important; /* row-gap column-gap */
+                        }
+                        .print-download-mode .contract-info {
+                            grid-template-columns: repeat(2, 1fr) !important;
+                        }
+                        .print-download-mode .financial-grid {
+                            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+                        }
+                        .print-download-mode .info-group {
+                            margin-bottom: 2mm !important;
+                        }
+                        .print-download-mode .info-label {
+                            font-size: 7pt !important;
+                            margin-bottom: 1mm !important;
+                            color: #444444 !important;
+                        }
+                        .print-download-mode .info-value {
+                            font-size: 8pt !important;
+                            color: #111111 !important;
+                            word-break: break-word;
+                        }
+                        .print-download-mode .financial-info {
+                            padding: 3mm !important;
+                            margin-top: 4mm !important;
+                            background-color: #fbfbfb !important;
+                            border-radius: 2px !important;
+                        }
+                        .print-download-mode .financial-title {
+                            font-size: 9.5pt !important;
+                            font-weight: bold;
+                            margin-bottom: 2.5mm !important;
+                            color: #333333 !important;
+                        }
+
+                        /* Ocultar elementos desnecessários no arquivo baixado */
+                        .print-download-mode header, 
+                        .print-download-mode .upload-section, 
+                        .print-download-mode .report-header, 
+                        .print-download-mode .pagination, 
+                        .print-download-mode #pagination, 
+                        .print-download-mode #pagination-bottom, 
+                        .print-download-mode .btn-group,
+                        .print-download-mode .loader-container,
+                        .print-download-mode .error-message,
+                        .print-download-mode #date-display {
+                            display: none !important;
+                        }
+                    `;
+                    styleTag.textContent += condensedDownloadStyles;
+                }
                 
-                // Remover elementos desnecessários
-                const elementsToRemove = [
+                // Remover elementos desnecessários para o arquivo de download/impressão
+                const elementsToRemoveSelectors = [
+                    'header', // O header original da página
                     '.upload-section', 
-                    '.report-header', 
-                    '.pagination',
-                    '#pagination',
-                    '#pagination-bottom',
+                    '.report-header', // O header da seção de relatório da página original
+                    '.pagination', // Ambos os elementos de paginação
+                    '.btn-group', // Grupo de botões abaixo do upload
+                    '#file-input', // O input de arquivo em si
+                    '.loader-container',
+                    '.error-message',
                     'script' // Remover scripts para a versão de download
                 ];
                 
-                elementsToRemove.forEach(selector => {
+                elementsToRemoveSelectors.forEach(selector => {
                     const elements = printContent.querySelectorAll(selector);
                     elements.forEach(el => el.remove());
                 });
                 
-                // Mostrar todas as páginas
-                const reportPages = printContent.querySelectorAll('.report-page');
-                reportPages.forEach(page => {
-                    page.style.display = 'block';
-                    page.classList.add('active'); // Garante que o conteúdo está visível
-                });
-                
-                // Garantir que report-section está visível
+                // Garantir que a seção de relatório e seu conteúdo estejam visíveis no clone
                 const reportSectionPrint = printContent.querySelector('.report-section');
                 if (reportSectionPrint) {
                     reportSectionPrint.style.display = 'block';
                 }
                 const reportContentPrint = printContent.querySelector('.report-content');
-                 if (reportContentPrint) {
+                if (reportContentPrint) {
                     reportContentPrint.style.display = 'block';
                 }
-
+                
+                // Mostrar todas as páginas de contrato no clone
+                const reportPages = printContent.querySelectorAll('.report-page');
+                reportPages.forEach(page => {
+                    page.style.display = 'block';
+                    page.classList.add('active'); 
+                });
+                
                 // Criar um novo documento HTML para download
+                // Adicionar a classe 'print-download-mode' ao body do HTML gerado
                 const htmlContent = `<!DOCTYPE html>
                     <html lang="pt-BR">
                     <head>
                         <meta charset="UTF-8">
                         <title>Relatório de Contratos - Impressão</title>
-                        <style>${printContent.querySelector('head style').innerHTML}</style>
+                        <style>${styleTag ? styleTag.innerHTML : ''}</style>
                     </head>
-                    <body>
+                    <body class="print-download-mode">
                         <div class="container">
-                            <h1 style="color: #4f0072; margin-bottom: 20px; text-align: center;">Relatório de Contratos</h1>
+                            <h1 style="color: var(--primary-color, #4f0072); margin-bottom: 20px; text-align: center;">Relatório de Contratos</h1>
                             ${printContent.querySelector('#summary-section') ? printContent.querySelector('#summary-section').outerHTML : ''}
                             ${printContent.querySelector('#report-content') ? printContent.querySelector('#report-content').outerHTML : ''}
                         </div>
@@ -1002,12 +1189,14 @@
                 const blob = new Blob([htmlContent], { type: 'text/html' });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
-                link.download = 'Relatorio_Contratos_' + new Date().toLocaleDateString('pt-BR').replace(/\//g, '-') + '.html';
+                const fileNameDate = currentDate.toLocaleDateString('pt-BR').replace(/\//g, '-');
+                link.download = `Relatorio_Contratos_${fileNameDate}.html`;
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
                 URL.revokeObjectURL(link.href);
             });
+
 
             // Função para imprimir o relatório
             printBtn.addEventListener('click', () => {
