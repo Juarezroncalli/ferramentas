@@ -152,6 +152,7 @@
         .report-actions {
             display: flex;
             gap: 15px;
+            justify-content: flex-end; /* Ajustado para alinhar o botão à direita */
         }
 
         .pagination {
@@ -382,7 +383,7 @@
             border-radius: 50%;
         }
 
-        /* Estilos para impressão */
+        /* Estilos para impressão (usados pelo arquivo baixado) */
         @media print {
             header, .upload-section, .report-header, .pagination, .btn-group {
                 display: none !important;
@@ -499,8 +500,8 @@
             <div class="report-header">
                 <h2 class="report-title">Relatório de Contratos</h2>
                 <div class="report-actions">
-                    <button class="btn" id="download-btn">Baixar para Impressão</button>
-                    <button class="btn btn-accent" id="print-btn">Imprimir</button>
+                    <button class="btn btn-accent" id="download-btn">Baixar Relatório</button>
+                    <!-- Botão de imprimir removido -->
                 </div>
             </div>
 
@@ -564,7 +565,7 @@
             const pagination = document.getElementById('pagination');
             const paginationBottom = document.getElementById('pagination-bottom');
             const downloadBtn = document.getElementById('download-btn');
-            const printBtn = document.getElementById('print-btn');
+            // const printBtn = document.getElementById('print-btn'); // Removido
             const dateDisplay = document.getElementById('date-display');
             const loaderContainer = document.querySelector('.loader-container');
             const errorMessage = document.getElementById('error-message');
@@ -1137,7 +1138,7 @@
                 const elementsToRemoveSelectors = [
                     'header', // O header original da página
                     '.upload-section', 
-                    '.report-header', // O header da seção de relatório da página original
+                    '.report-header', // O header da seção de relatório da página original (o do arquivo baixado é recriado no HTML)
                     '.pagination', // Ambos os elementos de paginação
                     '.btn-group', // Grupo de botões abaixo do upload
                     '#file-input', // O input de arquivo em si
@@ -1198,10 +1199,10 @@
             });
 
 
-            // Função para imprimir o relatório
-            printBtn.addEventListener('click', () => {
-                window.print();
-            });
+            // Função para imprimir o relatório (removida, pois o botão foi removido)
+            // printBtn.addEventListener('click', () => {
+            //     window.print();
+            // });
 
             // Funções auxiliares
             function formatCpf(cpfStr) { // Recebe string
