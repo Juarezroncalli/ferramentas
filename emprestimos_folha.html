@@ -728,13 +728,38 @@
                 card.className = 'contract-card';
 
                 // Formatar valores monetários
-                const formatCurrency = (value) => {
-                    return value ? `R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'N/A';
+                const formatCurrency = (valueStr) => {
+                    // valueStr já é string vindo do createInfoGroupHTML
+                    if (valueStr === null || valueStr === undefined) return 'N/A';
+                    const numValue = Number(valueStr);
+                    if (isNaN(numValue)) return 'N/A'; 
+                    return `R$ ${numValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
                 };
 
-                // Formatar datas
+                // Formatar datas (assume que já está no formato DD/MM/YYYY ou é string vazia/null)
                 const formatDate = (dateStr) => {
-                    return dateStr || 'N/A';
+                     // valueStr já é string vindo do createInfoGroupHTML
+                    return dateStr || 'N/A'; 
+                };
+                
+                // Helper para criar info-group, tratando valores nulos/undefined
+                const createInfoGroupHTML = (label, rawValue, formatter) => {
+                    let displayValue;
+                    // Converte para string para checar .trim(), mas preserva null/undefined
+                    const valueAsString = (rawValue === null || rawValue === undefined) ? null : String(rawValue);
+
+                    if (valueAsString !== null && valueAsString.trim() !== '') {
+                        displayValue = formatter ? formatter(valueAsString) : valueAsString;
+                    } else {
+                        displayValue = 'N/A';
+                    }
+                    
+                    return `
+                        <div class="info-group">
+                            <div class="info-label">${label}</div>
+                            <div class="info-value">${displayValue}</div>
+                        </div>
+                    `;
                 };
 
                 card.innerHTML = `
@@ -743,76 +768,48 @@
                         <div class="contract-number">Contrato: ${contract.contrato || 'N/A'}</div>
                     </div>
                     <div class="contract-info">
-                        <div class="info-group">
-                            <div class="info-label">Nome do Trabalhador</div>
-                            <div class="info-value">${contract.nomeTrabalhador || 'N/A'}</div>
-                        </div>
-                        <div class="info-group">
-                            <div class="info-label">CPF</div>
-                            <div class="info-value">${contract.cpf ? formatCpf(contract.cpf) : 'N/A'}</div>
-                        </div>
-                        <div class="info-group">
-                            <div class="info-label">Matrícula</div>
-                            <div class="info-value">${contract.matricula || 'N/A'}</div>
-                        </div>
-                        <div class="info-group">
-                            <div class="info-label">Data de Admissão</div>
-                            <div class="info-value">${formatDate(contract.dataAdmissao)}</div>
-                        </div>
-                        <div class="info-group">
-                            <div class="info-label">Empregador</div>
-                            <div class="info-value">${contract.nomeEmpregador || 'N/A'}</div>
-                        </div>
-                        <div class="info-group">
-                            <div class="info-label">CNPJ Empregador</div>
-                            <div class="info-value">${contract.numeroInscricaoEstabelecimento ? formatCnpj(contract.numeroInscricaoEstabelecimento) : 'N/A'}</div>
-                        </div>
+                        ${createInfoGroupHTML('Código IF Concessora', contract['ifConcessora.codigo'])}
+                        ${createInfoGroupHTML('Nome do Trabalhador', contract.nomeTrabalhador)}
+                        ${createInfoGroupHTML('CPF Trabalhador', contract.cpf, formatCpf)}
+                        ${createInfoGroupHTML('Matrícula', contract.matricula)}
+                        ${createInfoGroupHTML('Data de Admissão', contract.dataAdmissao, formatDate)}
+                        
+                        ${createInfoGroupHTML('Empregador', contract.nomeEmpregador)}
+                        ${createInfoGroupHTML('Cód. Inscrição Empregador', contract['inscricaoEmpregador.codigo'])}
+                        ${createInfoGroupHTML('Tipo Inscrição Empregador', contract['inscricaoEmpregador.descricao'])}
+                        ${createInfoGroupHTML('Nº Inscrição Empregador', contract.numeroInscricaoEmpregador, (val) => {
+                            if (!val) return 'N/A'; // val já é string aqui
+                            if (val.length === 11 && /^\d+$/.test(val)) return formatCpf(val);
+                            if (val.length === 14 && /^\d+$/.test(val)) return formatCnpj(val);
+                            return val; // Retorna original se não for CPF/CNPJ formatável ou já formatado
+                        })}
+                        
+                        ${createInfoGroupHTML('Cód. Inscrição Estabelecimento', contract['inscricaoEstabelecimento.codigo'])}
+                        ${createInfoGroupHTML('Tipo Inscrição Estabelecimento', contract['inscricaoEstabelecimento.descricao'])}
+                        ${createInfoGroupHTML('CNPJ Estabelecimento', contract.numeroInscricaoEstabelecimento, formatCnpj)}
                     </div>
                     <div class="financial-info">
                         <div class="financial-title">Informações do Contrato</div>
                         <div class="financial-grid">
-                            <div class="info-group">
-                                <div class="info-label">Início do Contrato</div>
-                                <div class="info-value">${formatDate(contract.dataInicioContrato)}</div>
-                            </div>
-                            <div class="info-group">
-                                <div class="info-label">Fim do Contrato</div>
-                                <div class="info-value">${formatDate(contract.dataFimContrato)}</div>
-                            </div>
-                            <div class="info-group">
-                                <div class="info-label">Competência Início</div>
-                                <div class="info-value">${contract.competenciaInicioDesconto || 'N/A'}</div>
-                            </div>
-                            <div class="info-group">
-                                <div class="info-label">Competência Fim</div>
-                                <div class="info-value">${contract.competenciaFimDesconto || 'N/A'}</div>
-                            </div>
-                            <div class="info-group">
-                                <div class="info-label">Total de Parcelas</div>
-                                <div class="info-value">${contract.totalParcelas || 'N/A'}</div>
-                            </div>
-                            <div class="info-group">
-                                <div class="info-label">Valor da Parcela</div>
-                                <div class="info-value">${formatCurrency(contract.valorParcela)}</div>
-                            </div>
-                            <div class="info-group">
-                                <div class="info-label">Valor do Empréstimo</div>
-                                <div class="info-value">${formatCurrency(contract.valorEmprestimo)}</div>
-                            </div>
-                            <div class="info-group">
-                                <div class="info-label">Valor Liberado</div>
-                                <div class="info-value">${formatCurrency(contract.valorLiberado)}</div>
-                            </div>
-                            <div class="info-group">
-                                <div class="info-label">Categoria</div>
-                                <div class="info-value">${contract['categoriaTrabalhador.descricao'] || 'N/A'}</div>
-                            </div>
+                            ${createInfoGroupHTML('Início do Contrato', contract.dataInicioContrato, formatDate)}
+                            ${createInfoGroupHTML('Fim do Contrato', contract.dataFimContrato, formatDate)}
+                            ${createInfoGroupHTML('Competência Início Desconto', contract.competenciaInicioDesconto)}
+                            ${createInfoGroupHTML('Competência Fim Desconto', contract.competenciaFimDesconto)}
+                            ${createInfoGroupHTML('Total de Parcelas', contract.totalParcelas)}
+                            ${createInfoGroupHTML('Valor da Parcela', contract.valorParcela, formatCurrency)}
+                            ${createInfoGroupHTML('Valor do Empréstimo', contract.valorEmprestimo, formatCurrency)}
+                            ${createInfoGroupHTML('Valor Liberado', contract.valorLiberado, formatCurrency)}
+                            ${createInfoGroupHTML('Cód. Categoria Trabalhador', contract['categoriaTrabalhador.codigo'])}
+                            ${createInfoGroupHTML('Categoria Trabalhador', contract['categoriaTrabalhador.descricao'])}
+                            ${createInfoGroupHTML('Qtd. Pagamentos', contract.qtdPagamentos)}
+                            ${createInfoGroupHTML('Qtd. Escriturações', contract.qtdEscrituracoes)}
+                            ${createInfoGroupHTML('Competência do Contrato', contract.competencia)}
                         </div>
                     </div>
                 `;
-
                 return card;
             }
+
 
             // Função para criar paginação
             function createPagination(totalPages) {
@@ -900,8 +897,8 @@
                 let companyName = '';
                 
                 data.forEach(contract => {
-                    totalLoan += contract.valorEmprestimo || 0;
-                    totalReleased += contract.valorLiberado || 0;
+                    totalLoan += Number(contract.valorEmprestimo) || 0;
+                    totalReleased += Number(contract.valorLiberado) || 0;
                     
                     // Adicionar nome do funcionário ao conjunto (evita duplicatas)
                     if (contract.nomeTrabalhador) {
@@ -959,7 +956,8 @@
                     '.report-header', 
                     '.pagination',
                     '#pagination',
-                    '#pagination-bottom'
+                    '#pagination-bottom',
+                    'script' // Remover scripts para a versão de download
                 ];
                 
                 elementsToRemove.forEach(selector => {
@@ -971,34 +969,44 @@
                 const reportPages = printContent.querySelectorAll('.report-page');
                 reportPages.forEach(page => {
                     page.style.display = 'block';
+                    page.classList.add('active'); // Garante que o conteúdo está visível
                 });
                 
-                // Criar um novo documento HTML
-                const printWindow = window.open('', '_blank');
-                printWindow.document.open();
-                printWindow.document.write('<!DOCTYPE html><html>');
-                printWindow.document.write('<head><title>Relatório de Contratos - Impressão</title>');
-                printWindow.document.write(printContent.querySelector('head').innerHTML);
-                printWindow.document.write('</head><body>');
-                
-                // Adicionar apenas o conteúdo relevante
-                const reportSection = printContent.querySelector('.report-section');
-                reportSection.style.display = 'block';
-                printWindow.document.write('<div class="container">');
-                printWindow.document.write('<h1 style="color: #4f0072; margin-bottom: 20px;">Relatório de Contratos</h1>');
-                printWindow.document.write(printContent.querySelector('#summary-section').outerHTML);
-                printWindow.document.write(printContent.querySelector('#report-content').outerHTML);
-                printWindow.document.write('</div>');
-                
-                printWindow.document.write('</body></html>');
-                printWindow.document.close();
-                
-                // Adicionar evento para imprimir automaticamente quando o conteúdo estiver carregado
-                printWindow.onload = function() {
-                    setTimeout(() => {
-                        printWindow.document.title = 'Relatório de Contratos - ' + new Date().toLocaleDateString('pt-BR');
-                    }, 100);
-                };
+                // Garantir que report-section está visível
+                const reportSectionPrint = printContent.querySelector('.report-section');
+                if (reportSectionPrint) {
+                    reportSectionPrint.style.display = 'block';
+                }
+                const reportContentPrint = printContent.querySelector('.report-content');
+                 if (reportContentPrint) {
+                    reportContentPrint.style.display = 'block';
+                }
+
+                // Criar um novo documento HTML para download
+                const htmlContent = `<!DOCTYPE html>
+                    <html lang="pt-BR">
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>Relatório de Contratos - Impressão</title>
+                        <style>${printContent.querySelector('head style').innerHTML}</style>
+                    </head>
+                    <body>
+                        <div class="container">
+                            <h1 style="color: #4f0072; margin-bottom: 20px; text-align: center;">Relatório de Contratos</h1>
+                            ${printContent.querySelector('#summary-section') ? printContent.querySelector('#summary-section').outerHTML : ''}
+                            ${printContent.querySelector('#report-content') ? printContent.querySelector('#report-content').outerHTML : ''}
+                        </div>
+                    </body>
+                    </html>`;
+
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'Relatorio_Contratos_' + new Date().toLocaleDateString('pt-BR').replace(/\//g, '-') + '.html';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(link.href);
             });
 
             // Função para imprimir o relatório
@@ -1007,14 +1015,14 @@
             });
 
             // Funções auxiliares
-            function formatCpf(cpf) {
-                if (!cpf) return 'N/A';
-                return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+            function formatCpf(cpfStr) { // Recebe string
+                if (!cpfStr || cpfStr.length !== 11 || !/^\d+$/.test(cpfStr)) return cpfStr; // Retorna original se inválido
+                return cpfStr.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
             }
 
-            function formatCnpj(cnpj) {
-                if (!cnpj) return 'N/A';
-                return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+            function formatCnpj(cnpjStr) { // Recebe string
+                if (!cnpjStr || cnpjStr.length !== 14 || !/^\d+$/.test(cnpjStr)) return cnpjStr; // Retorna original se inválido
+                return cnpjStr.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
             }
 
             function showLoader() {
