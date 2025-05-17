@@ -1,460 +1,481 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gerador de Layout de Patrimônio</title>
     <style>
-        :root {
-            --primary-color: #4f0072;
-            --accent-color: #fb0a5e;
-            --background-color: #ffffff;
-            --form-bg-color: #f9f9f9;
-            --text-color: #333333;
-            --border-color: #e0e0e0;
-            --text-color-light: #ffffff;
-            --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
-            --transicao: all 0.3s ease;
-        }
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease;
+      }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
 
-        body {
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.6;
-        }
+      body {
+        background-color: var(--background-color);
+        color: var(--text-color);
+        line-height: 1.6;
+      }
 
-        header {
-            background-color: var(--primary-color);
-            color: var(--text-color-light);
-            padding: 1.5rem 0;
-            text-align: center;
-            box-shadow: var(--sombra);
-        }
+      header {
+        background-color: var(--primary-color);
+        color: var(--text-color-light);
+        padding: 1.5rem 0;
+        text-align: center;
+        box-shadow: var(--sombra);
+      }
 
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      h1 {
+        font-size: 2.2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      h2 {
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+        color: var(--primary-color);
+      }
+
+      .subtitle {
+        font-size: 1rem;
+        opacity: 0.9;
+      }
+
+      .card {
+        background-color: var(--form-bg-color);
+        border-radius: 8px;
+        box-shadow: var(--sombra);
+        padding: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--primary-color);
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: var(--transicao);
+      }
+
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(79, 0, 114, 0.1);
+      }
+
+      textarea {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: var(--transicao);
+        font-family: inherit;
+      }
+
+      textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(79, 0, 114, 0.1);
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 0.8rem 1.5rem;
+        background-color: var(--primary-color);
+        color: var(--text-color-light);
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: var(--transicao);
+        text-align: center;
+      }
+
+      .btn:hover {
+        background-color: #3a0055;
+        transform: translateY(-2px);
+      }
+
+      .btn-accent {
+        background-color: var(--accent-color);
+      }
+
+      .btn-accent:hover {
+        background-color: #d9094f;
+      }
+
+      .btn-outline {
+        background-color: transparent;
+        border: 2px solid var(--primary-color);
+        color: var(--primary-color);
+      }
+
+      .btn-outline:hover {
+        background-color: var(--primary-color);
+        color: var(--text-color-light);
+      }
+
+      .actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        flex-wrap: wrap;
+      }
+
+      .items-list {
+        margin-top: 2rem;
+      }
+
+      .item-card {
+        background-color: var(--background-color);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        position: relative;
+        transition: var(--transicao);
+      }
+
+      .item-card:hover {
+        box-shadow: var(--sombra);
+      }
+
+      .item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+
+      .item-title {
+        font-weight: 600;
+        color: var(--primary-color);
+      }
+
+      .item-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 0.5rem;
+        font-size: 0.9rem;
+      }
+
+      .item-detail {
+        display: flex;
+      }
+
+      .detail-label {
+        font-weight: 600;
+        margin-right: 0.5rem;
+        color: var(--primary-color);
+      }
+
+      .remove-btn {
+        background-color: var(--accent-color);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transicao);
+      }
+
+      .remove-btn:hover {
+        background-color: #d9094f;
+        transform: scale(1.1);
+      }
+
+      .result-area {
+        margin-top: 2rem;
+      }
+
+      .result-box {
+        background-color: var(--form-bg-color);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 1rem;
+        margin-top: 1rem;
+        white-space: pre-wrap;
+        word-break: break-all;
+        max-height: 200px;
+        overflow-y: auto;
+        font-family: monospace;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: #888;
+      }
+
+      .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: var(--border-color);
+      }
+
+      @media (max-width: 768px) {
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        h1 {
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        h2 {
-            font-size: 1.8rem;
-            margin-bottom: 1.5rem;
-            color: var(--primary-color);
-        }
-
-        .subtitle {
-            font-size: 1rem;
-            opacity: 0.9;
-        }
-
-        .card {
-            background-color: var(--form-bg-color);
-            border-radius: 8px;
-            box-shadow: var(--sombra);
-            padding: 2rem;
-            margin-bottom: 2rem;
+          padding: 1rem;
         }
 
         .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-
-        input, select {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-size: 1rem;
-            transition: var(--transicao);
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(79, 0, 114, 0.1);
-        }
-
-        textarea {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-size: 1rem;
-            transition: var(--transicao);
-            font-family: inherit;
-        }
-
-        textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(79, 0, 114, 0.1);
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 0.8rem 1.5rem;
-            background-color: var(--primary-color);
-            color: var(--text-color-light);
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: var(--transicao);
-            text-align: center;
-        }
-
-        .btn:hover {
-            background-color: #3a0055;
-            transform: translateY(-2px);
-        }
-
-        .btn-accent {
-            background-color: var(--accent-color);
-        }
-
-        .btn-accent:hover {
-            background-color: #d9094f;
-        }
-
-        .btn-outline {
-            background-color: transparent;
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        .btn-outline:hover {
-            background-color: var(--primary-color);
-            color: var(--text-color-light);
+          grid-template-columns: 1fr;
         }
 
         .actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-            flex-wrap: wrap;
+          flex-direction: column;
         }
 
-        .items-list {
-            margin-top: 2rem;
+        .btn {
+          width: 100%;
         }
+      }
 
-        .item-card {
-            background-color: var(--background-color);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            position: relative;
-            transition: var(--transicao);
-        }
-
-        .item-card:hover {
-            box-shadow: var(--sombra);
-        }
-
-        .item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .item-title {
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-
-        .item-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 0.5rem;
-            font-size: 0.9rem;
-        }
-
-        .item-detail {
-            display: flex;
-        }
-
-        .detail-label {
-            font-weight: 600;
-            margin-right: 0.5rem;
-            color: var(--primary-color);
-        }
-
-        .remove-btn {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: var(--transicao);
-        }
-
-        .remove-btn:hover {
-            background-color: #d9094f;
-            transform: scale(1.1);
-        }
-
-        .result-area {
-            margin-top: 2rem;
-        }
-
-        .result-box {
-            background-color: var(--form-bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 1rem;
-            margin-top: 1rem;
-            white-space: pre-wrap;
-            word-break: break-all;
-            max-height: 200px;
-            overflow-y: auto;
-            font-family: monospace;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 2rem;
-            color: #888;
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            color: var(--border-color);
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-            
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .actions {
-                flex-direction: column;
-            }
-            
-            .btn {
-                width: 100%;
-            }
-        }
-
-        .hidden {
-            display: none;
-        }
+      .hidden {
+        display: none;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <header>
-        <h1>Gerador de Layout de Patrimônio</h1>
-        <p class="subtitle">Preencha os dados e gere o arquivo de texto</p>
+      <h1>Gerador de Layout de Patrimônio</h1>
+      <p class="subtitle">Preencha os dados e gere o arquivo de texto</p>
+      <p class="subtitle">
+        Conjunto de Dados (Cadastro de Bens - Tabela PMBEM (Leiaute Domínio
+        sistemas PMBEM))
+      </p>
     </header>
 
     <div class="container">
-        <div class="card">
-            <h2>Adicionar Item</h2>
-            <form id="patrimonioForm">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="numeroEmpresa">Número da Empresa*</label>
-                        <input type="number" id="numeroEmpresa" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="codigo">Código*</label>
-                        <input type="number" id="codigo" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="identificador">Identificador*</label>
-                        <input type="number" id="identificador" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="nome">Nome*</label>
-                        <input type="text" id="nome" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="dataAquisicao">Data Aquisição*</label>
-                        <input type="date" id="dataAquisicao" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="contaPatrimonial">Conta Patrimonial*</label>
-                        <input type="text" id="contaPatrimonial" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="centroCusto">Centro de Custo*</label>
-                        <input type="text" id="centroCusto" required>
-                    </div>
-                    <div class="form-group" style="grid-column: 1 / -1;">
-                        <label for="historico">Histórico*</label>
-                        <textarea id="historico" rows="3" required style="resize: vertical;"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="funcao">Função (USO)*</label>
-                        <input type="text" id="funcao" required placeholder="ATIVO">
-                    </div>
-                    <div class="form-group">
-                        <label for="valorAquisicao">Valor Aquisição*</label>
-                        <input type="number" id="valorAquisicao" step="0.01" required>
-                    </div>
-                    <!-- Data Início Aquisição field removed -->
-                </div>
-                <div class="actions">
-                    <button type="submit" class="btn">Adicionar Item</button>
-                    <button type="reset" class="btn btn-outline">Limpar Campos</button>
-                </div>
-            </form>
-        </div>
-
-        <div class="items-list" id="itemsList">
-            <h2>Itens Adicionados</h2>
-            <div id="emptyState" class="empty-state">
-                <i>📋</i>
-                <p>Nenhum item adicionado ainda. Preencha o formulário acima para adicionar itens.</p>
+      <div class="card">
+        <h2>Adicionar Item</h2>
+        <form id="patrimonioForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="numeroEmpresa">Número da Empresa*</label>
+              <input type="number" id="numeroEmpresa" required />
             </div>
-            <div id="itemsContainer"></div>
-        </div>
+            <div class="form-group">
+              <label for="codigo">Código*</label>
+              <input type="number" id="codigo" required />
+            </div>
+            <div class="form-group">
+              <label for="identificador">Identificador*</label>
+              <input type="number" id="identificador" required />
+            </div>
+            <div class="form-group">
+              <label for="nome">Nome*</label>
+              <input type="text" id="nome" required />
+            </div>
+            <div class="form-group">
+              <label for="dataAquisicao">Data Aquisição*</label>
+              <input type="date" id="dataAquisicao" required />
+            </div>
+            <div class="form-group">
+              <label for="contaPatrimonial">Conta Patrimonial*</label>
+              <input type="text" id="contaPatrimonial" required />
+            </div>
+            <div class="form-group">
+              <label for="centroCusto">Centro de Custo*</label>
+              <input type="text" id="centroCusto" required />
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1">
+              <label for="historico">Histórico*</label>
+              <textarea
+                id="historico"
+                rows="3"
+                required
+                style="resize: vertical"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label for="funcao">Função (USO)*</label>
+              <input type="text" id="funcao" required placeholder="ATIVO" />
+            </div>
+            <div class="form-group">
+              <label for="valorAquisicao">Valor Aquisição*</label>
+              <input type="number" id="valorAquisicao" step="0.01" required />
+            </div>
+            <!-- Data Início Aquisição field removed -->
+          </div>
+          <div class="actions">
+            <button type="submit" class="btn">Adicionar Item</button>
+            <button type="reset" class="btn btn-outline">Limpar Campos</button>
+          </div>
+        </form>
+      </div>
 
+      <div class="items-list" id="itemsList">
+        <h2>Itens Adicionados</h2>
+        <div id="emptyState" class="empty-state">
+          <i>📋</i>
+          <p>
+            Nenhum item adicionado ainda. Preencha o formulário acima para
+            adicionar itens.
+          </p>
+        </div>
+        <div id="itemsContainer"></div>
+      </div>
+
+      <div class="actions">
+        <button id="gerarTxtBtn" class="btn btn-accent" disabled>
+          Gerar Arquivo TXT
+        </button>
+      </div>
+
+      <div class="result-area hidden" id="resultArea">
+        <h2>Resultado</h2>
+        <div class="result-box" id="resultBox"></div>
         <div class="actions">
-            <button id="gerarTxtBtn" class="btn btn-accent" disabled>Gerar Arquivo TXT</button>
+          <button id="downloadBtn" class="btn">Baixar Arquivo TXT</button>
+          <button id="copyBtn" class="btn btn-outline">Copiar Conteúdo</button>
         </div>
-
-        <div class="result-area hidden" id="resultArea">
-            <h2>Resultado</h2>
-            <div class="result-box" id="resultBox"></div>
-            <div class="actions">
-                <button id="downloadBtn" class="btn">Baixar Arquivo TXT</button>
-                <button id="copyBtn" class="btn btn-outline">Copiar Conteúdo</button>
-            </div>
-        </div>
+      </div>
     </div>
 
     <script>
-        // Array para armazenar os itens adicionados
-        let items = [];
+      // Array para armazenar os itens adicionados
+      let items = [];
 
-        // Elementos do DOM
-        const form = document.getElementById('patrimonioForm');
-        const itemsContainer = document.getElementById('itemsContainer');
-        const emptyState = document.getElementById('emptyState');
-        const gerarTxtBtn = document.getElementById('gerarTxtBtn');
-        const resultArea = document.getElementById('resultArea');
-        const resultBox = document.getElementById('resultBox');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const copyBtn = document.getElementById('copyBtn');
+      // Elementos do DOM
+      const form = document.getElementById("patrimonioForm");
+      const itemsContainer = document.getElementById("itemsContainer");
+      const emptyState = document.getElementById("emptyState");
+      const gerarTxtBtn = document.getElementById("gerarTxtBtn");
+      const resultArea = document.getElementById("resultArea");
+      const resultBox = document.getElementById("resultBox");
+      const downloadBtn = document.getElementById("downloadBtn");
+      const copyBtn = document.getElementById("copyBtn");
 
-        // Inputs for easy access
-        const numeroEmpresaInput = document.getElementById('numeroEmpresa');
-        const codigoInput = document.getElementById('codigo');
-        const identificadorInput = document.getElementById('identificador');
-        const nomeInput = document.getElementById('nome');
-        const funcaoInput = document.getElementById('funcao'); // Added for pre-filling
+      // Inputs for easy access
+      const numeroEmpresaInput = document.getElementById("numeroEmpresa");
+      const codigoInput = document.getElementById("codigo");
+      const identificadorInput = document.getElementById("identificador");
+      const nomeInput = document.getElementById("nome");
+      const funcaoInput = document.getElementById("funcao"); // Added for pre-filling
 
+      // Função para formatar data de YYYY-MM-DD para YYYYMMDD
+      function formatDate(dateString) {
+        return dateString.replace(/-/g, "");
+      }
 
-        // Função para formatar data de YYYY-MM-DD para YYYYMMDD
-        function formatDate(dateString) {
-            return dateString.replace(/-/g, '');
+      // Função para preencher os campos para o próximo item
+      function prefillNextItemFields(lastItem) {
+        if (lastItem) {
+          numeroEmpresaInput.value = lastItem.numeroEmpresa;
+          if (lastItem.codigo && !isNaN(parseInt(lastItem.codigo))) {
+            codigoInput.value = parseInt(lastItem.codigo) + 1;
+          }
+          if (
+            lastItem.identificador &&
+            !isNaN(parseInt(lastItem.identificador))
+          ) {
+            identificadorInput.value = parseInt(lastItem.identificador) + 1;
+          }
+          // Manter valor de 'funcao' do último item ou o placeholder se estiver vazio
+          funcaoInput.value = lastItem.funcao || "";
+        } else {
+          // Se não houver item anterior, o placeholder "ATIVO" já está no HTML
+          // Se quiser que seja preenchido explicitamente no JS, pode fazer aqui:
+          // funcaoInput.value = 'ATIVO'; // Ou deixar o placeholder fazer seu trabalho
         }
+        nomeInput.focus(); // Focar no campo nome para facilitar o próximo cadastro
+      }
 
-        // Função para preencher os campos para o próximo item
-        function prefillNextItemFields(lastItem) {
-            if (lastItem) {
-                numeroEmpresaInput.value = lastItem.numeroEmpresa;
-                if (lastItem.codigo && !isNaN(parseInt(lastItem.codigo))) {
-                    codigoInput.value = parseInt(lastItem.codigo) + 1;
-                }
-                if (lastItem.identificador && !isNaN(parseInt(lastItem.identificador))) {
-                    identificadorInput.value = parseInt(lastItem.identificador) + 1;
-                }
-                // Manter valor de 'funcao' do último item ou o placeholder se estiver vazio
-                funcaoInput.value = lastItem.funcao || ''; 
-            } else {
-                // Se não houver item anterior, o placeholder "ATIVO" já está no HTML
-                // Se quiser que seja preenchido explicitamente no JS, pode fazer aqui:
-                // funcaoInput.value = 'ATIVO'; // Ou deixar o placeholder fazer seu trabalho
-            }
-            nomeInput.focus(); // Focar no campo nome para facilitar o próximo cadastro
-        }
+      // Função para adicionar um novo item
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
 
+        const item = {
+          numeroEmpresa: numeroEmpresaInput.value,
+          codigo: codigoInput.value,
+          identificador: identificadorInput.value,
+          nome: nomeInput.value,
+          dataAquisicao: formatDate(
+            document.getElementById("dataAquisicao").value
+          ),
+          contaPatrimonial: document.getElementById("contaPatrimonial").value,
+          centroCusto: document.getElementById("centroCusto").value,
+          historico: document.getElementById("historico").value,
+          funcao: funcaoInput.value || "ATIVO", // Usar 'ATIVO' se o campo estiver vazio
+          valorAquisicao: document.getElementById("valorAquisicao").value,
+          // dataInicioAquisicao é removido, usaremos dataAquisicao no TXT
+        };
 
-        // Função para adicionar um novo item
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const item = {
-                numeroEmpresa: numeroEmpresaInput.value,
-                codigo: codigoInput.value,
-                identificador: identificadorInput.value,
-                nome: nomeInput.value,
-                dataAquisicao: formatDate(document.getElementById('dataAquisicao').value),
-                contaPatrimonial: document.getElementById('contaPatrimonial').value,
-                centroCusto: document.getElementById('centroCusto').value,
-                historico: document.getElementById('historico').value,
-                funcao: funcaoInput.value || 'ATIVO', // Usar 'ATIVO' se o campo estiver vazio
-                valorAquisicao: document.getElementById('valorAquisicao').value
-                // dataInicioAquisicao é removido, usaremos dataAquisicao no TXT
-            };
-            
-            items.push(item);
-            renderItems();
-            
-            form.reset(); 
-            
-            prefillNextItemFields(item);
-        });
+        items.push(item);
+        renderItems();
 
-        // Função para renderizar os itens na lista
-        function renderItems() {
-            if (items.length === 0) {
-                emptyState.classList.remove('hidden');
-                gerarTxtBtn.disabled = true;
-                resultArea.classList.add('hidden'); 
-            } else {
-                emptyState.classList.add('hidden');
-                gerarTxtBtn.disabled = false;
-                
-                itemsContainer.innerHTML = '';
-                
-                items.forEach((item, index) => {
-                    const itemCard = document.createElement('div');
-                    itemCard.className = 'item-card';
-                    
-                    itemCard.innerHTML = `
+        form.reset();
+
+        prefillNextItemFields(item);
+      });
+
+      // Função para renderizar os itens na lista
+      function renderItems() {
+        if (items.length === 0) {
+          emptyState.classList.remove("hidden");
+          gerarTxtBtn.disabled = true;
+          resultArea.classList.add("hidden");
+        } else {
+          emptyState.classList.add("hidden");
+          gerarTxtBtn.disabled = false;
+
+          itemsContainer.innerHTML = "";
+
+          items.forEach((item, index) => {
+            const itemCard = document.createElement("div");
+            itemCard.className = "item-card";
+
+            itemCard.innerHTML = `
                         <div class="item-header">
-                            <div class="item-title">${item.nome} (Cód: ${item.codigo}, ID: ${item.identificador})</div>
+                            <div class="item-title">${item.nome} (Cód: ${
+              item.codigo
+            }, ID: ${item.identificador})</div>
                             <button class="remove-btn" data-index="${index}">✕</button>
                         </div>
                         <div class="item-details">
@@ -464,11 +485,17 @@
                             </div>
                             <div class="item-detail">
                                 <span class="detail-label">Data Aquisição:</span>
-                                <span>${formatDateDisplay(item.dataAquisicao)}</span>
+                                <span>${formatDateDisplay(
+                                  item.dataAquisicao
+                                )}</span>
                             </div>
                             <div class="item-detail">
                                 <span class="detail-label">Valor:</span>
-                                <span>R$ ${parseFloat(item.valorAquisicao).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                                <span>R$ ${parseFloat(
+                                  item.valorAquisicao
+                                ).toLocaleString("pt-BR", {
+                                  minimumFractionDigits: 2,
+                                })}</span>
                             </div>
                             <div class="item-detail">
                                 <span class="detail-label">Função:</span>
@@ -476,140 +503,143 @@
                             </div>
                         </div>
                     `;
-                    
-                    itemsContainer.appendChild(itemCard);
-                });
-                
-                document.querySelectorAll('.remove-btn').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const index = parseInt(this.getAttribute('data-index'));
-                        removeItem(index);
-                    });
-                });
-            }
-        }
 
-        // Função para formatar data de YYYYMMDD para exibição DD/MM/YYYY
-        function formatDateDisplay(dateString) {
-            if (!dateString || dateString.length !== 8) return dateString; 
-            
-            const year = dateString.substring(0, 4);
-            const month = dateString.substring(4, 6);
-            const day = dateString.substring(6, 8);
-            
-            return `${day}/${month}/${year}`;
-        }
+            itemsContainer.appendChild(itemCard);
+          });
 
-        // Função para remover um item
-        function removeItem(index) {
-            items.splice(index, 1);
-            renderItems();
-            
-            if (items.length > 0) {
-                prefillNextItemFields(items[items.length - 1]);
-            } else {
-                form.reset(); 
-                numeroEmpresaInput.value = '';
-                codigoInput.value = '';
-                identificadorInput.value = '';
-                funcaoInput.value = ''; // Limpar função também ou deixar placeholder
-                numeroEmpresaInput.focus();
-            }
-        }
-
-        // Função para gerar o layout de texto
-        gerarTxtBtn.addEventListener('click', function() {
-            if (items.length === 0) {
-                resultBox.textContent = "Nenhum item para gerar.";
-                resultArea.classList.remove('hidden');
-                return;
-            }
-            let result = '';
-            
-            items.forEach(item => {
-                // Formato específico: usando item.dataAquisicao para o campo de data início aquisição
-                let line = `${item.numeroEmpresa};${item.codigo};${item.identificador};${item.nome};${item.dataAquisicao};;${item.contaPatrimonial};${item.centroCusto};${item.historico};B;I;;;${item.funcao};${item.valorAquisicao};;;;;;;;;;;${item.valorAquisicao};;;;;;S;N;${item.dataAquisicao};N;;;;;N;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;`;
-                result += line + '\n';
+          document.querySelectorAll(".remove-btn").forEach((button) => {
+            button.addEventListener("click", function () {
+              const index = parseInt(this.getAttribute("data-index"));
+              removeItem(index);
             });
-            
-            resultBox.textContent = result;
-            resultArea.classList.remove('hidden');
-        });
+          });
+        }
+      }
 
-        // Função para baixar o arquivo TXT
-        downloadBtn.addEventListener('click', function() {
-            const content = resultBox.textContent;
-            if (!content || content === "Nenhum item para gerar.") return;
-            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' }); 
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'patrimonio_layout.txt';
-            document.body.appendChild(a);
-            a.click();
-            
-            setTimeout(() => {
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }, 100);
-        });
+      // Função para formatar data de YYYYMMDD para exibição DD/MM/YYYY
+      function formatDateDisplay(dateString) {
+        if (!dateString || dateString.length !== 8) return dateString;
 
-        // Função para copiar o conteúdo
-        copyBtn.addEventListener('click', function() {
-            const content = resultBox.textContent;
-            if (!content || content === "Nenhum item para gerar.") return;
-            navigator.clipboard.writeText(content).then(() => {
-                const originalText = copyBtn.textContent;
-                copyBtn.textContent = 'Copiado!';
-                copyBtn.disabled = true;
-                
-                setTimeout(() => {
-                    copyBtn.textContent = originalText;
-                    copyBtn.disabled = false;
-                }, 2000);
-            }).catch(err => {
-                console.error('Erro ao copiar: ', err);
-                alert('Falha ao copiar. Verifique as permissões do navegador ou copie manualmente.');
-            });
-        });
+        const year = dateString.substring(0, 4);
+        const month = dateString.substring(4, 6);
+        const day = dateString.substring(6, 8);
 
-        // Inicializar a renderização
+        return `${day}/${month}/${year}`;
+      }
+
+      // Função para remover um item
+      function removeItem(index) {
+        items.splice(index, 1);
         renderItems();
 
-        // Permitir confirmar com Enter no campo código para ir para identificador
-        codigoInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                identificadorInput.focus();
-            }
-        });
-         // E do identificador para o nome
-        identificadorInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                nomeInput.focus();
-            }
+        if (items.length > 0) {
+          prefillNextItemFields(items[items.length - 1]);
+        } else {
+          form.reset();
+          numeroEmpresaInput.value = "";
+          codigoInput.value = "";
+          identificadorInput.value = "";
+          funcaoInput.value = ""; // Limpar função também ou deixar placeholder
+          numeroEmpresaInput.focus();
+        }
+      }
+
+      // Função para gerar o layout de texto
+      gerarTxtBtn.addEventListener("click", function () {
+        if (items.length === 0) {
+          resultBox.textContent = "Nenhum item para gerar.";
+          resultArea.classList.remove("hidden");
+          return;
+        }
+        let result = "";
+
+        items.forEach((item) => {
+          // Formato específico: usando item.dataAquisicao para o campo de data início aquisição
+          let line = `${item.numeroEmpresa};${item.codigo};${item.identificador};${item.nome};${item.dataAquisicao};;${item.contaPatrimonial};${item.centroCusto};${item.historico};B;I;;;${item.funcao};${item.valorAquisicao};;;;;;;;;;;${item.valorAquisicao};;;;;;S;N;${item.dataAquisicao};N;;;;;N;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;`;
+          result += line + "\n";
         });
 
+        resultBox.textContent = result;
+        resultArea.classList.remove("hidden");
+      });
 
-        // Função para preencher campos com valores do último item AO LIMPAR
-        form.addEventListener('reset', function() {
+      // Função para baixar o arquivo TXT
+      downloadBtn.addEventListener("click", function () {
+        const content = resultBox.textContent;
+        if (!content || content === "Nenhum item para gerar.") return;
+        const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "patrimonio_layout.txt";
+        document.body.appendChild(a);
+        a.click();
+
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 100);
+      });
+
+      // Função para copiar o conteúdo
+      copyBtn.addEventListener("click", function () {
+        const content = resultBox.textContent;
+        if (!content || content === "Nenhum item para gerar.") return;
+        navigator.clipboard
+          .writeText(content)
+          .then(() => {
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = "Copiado!";
+            copyBtn.disabled = true;
+
             setTimeout(() => {
-                if (items.length > 0) {
-                    const lastItem = items[items.length - 1];
-                    prefillNextItemFields(lastItem);
-                } else {
-                    numeroEmpresaInput.value = '';
-                    codigoInput.value = '';
-                    identificadorInput.value = '';
-                    funcaoInput.value = ''; // Limpar ou deixar o placeholder atuar
-                    numeroEmpresaInput.focus(); 
-                }
-                // O placeholder "ATIVO" para 'funcao' será visível se funcaoInput.value for ''
-            }, 0); 
-        });
+              copyBtn.textContent = originalText;
+              copyBtn.disabled = false;
+            }, 2000);
+          })
+          .catch((err) => {
+            console.error("Erro ao copiar: ", err);
+            alert(
+              "Falha ao copiar. Verifique as permissões do navegador ou copie manualmente."
+            );
+          });
+      });
 
+      // Inicializar a renderização
+      renderItems();
+
+      // Permitir confirmar com Enter no campo código para ir para identificador
+      codigoInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          identificadorInput.focus();
+        }
+      });
+      // E do identificador para o nome
+      identificadorInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          nomeInput.focus();
+        }
+      });
+
+      // Função para preencher campos com valores do último item AO LIMPAR
+      form.addEventListener("reset", function () {
+        setTimeout(() => {
+          if (items.length > 0) {
+            const lastItem = items[items.length - 1];
+            prefillNextItemFields(lastItem);
+          } else {
+            numeroEmpresaInput.value = "";
+            codigoInput.value = "";
+            identificadorInput.value = "";
+            funcaoInput.value = ""; // Limpar ou deixar o placeholder atuar
+            numeroEmpresaInput.focus();
+          }
+          // O placeholder "ATIVO" para 'funcao' será visível se funcaoInput.value for ''
+        }, 0);
+      });
     </script>
-</body>
+  </body>
 </html>
