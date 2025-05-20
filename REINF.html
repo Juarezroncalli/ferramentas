@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Processador de Planilha para TXT</title>
+    <title>Processador de Planilha para TXT (REINF)</title>
     <!-- Importa a biblioteca SheetJS (js-xlsx) para ler arquivos Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -200,7 +200,7 @@
   </head>
   <body>
     <div class="container">
-      <h1>Gerador de TXT a partir de Planilha</h1>
+      <h1>Gerador de TXT a partir de Planilha (REINF)</h1>
 
       <!-- Seção 1: De/Para Nome x CPF -->
       <div class="section">
@@ -251,15 +251,13 @@
           Selecione o arquivo Excel (.xlsx ou .xls). A planilha deve conter as
           colunas: <strong>Histórico</strong>, <strong>Valor</strong> e
           <strong>Data</strong> (na primeira aba).
-          <strong
-            >A planilha deve ser restrita a um único trimestre por
-            arquivo.</strong
-          >
+          <!-- MODIFIED: Removed single-quarter restriction -->
+          <strong>O sistema irá agrupar os dados por trimestre fiscal (para REINF) e gerar arquivos TXT separados.</strong>
         </p>
         <label for="excelFile">Arquivo Excel:</label>
         <input type="file" id="excelFile" accept=".xlsx, .xls" />
         <button id="processButton" disabled>
-          Processar Planilha e Gerar TXT
+          Processar Planilha e Gerar TXT(s)
         </button>
       </div>
 
@@ -269,7 +267,7 @@
         <div id="status">Aguardando processamento...</div>
         <div id="report" class="hidden"></div>
         <button id="downloadButton" class="hidden" disabled>
-          Baixar Arquivo TXT
+          Baixar Arquivo(s) TXT
         </button>
       </div>
     </div>
@@ -286,7 +284,8 @@
       const reportDiv = document.getElementById("report");
 
       let mappings = {};
-      let processedLines = [];
+      // MODIFIED: Store data grouped by quarter
+      let processedDataByQuarter = {};
       let notFoundRows = [];
       let excelData = [];
 
@@ -316,10 +315,10 @@
           const cpf = mappings[originalName];
           const row = document.createElement("tr");
           row.innerHTML = `
-                    <td>${originalName}</td>
-                    <td>${formatCPF(cpf)}</td>
-                    <td><button class="remove-btn" data-name="${originalName}">Remover</button></td>
-                `;
+            <td>${originalName}</td>
+            <td>${formatCPF(cpf)}</td>
+            <td><button class="remove-btn" data-name="${originalName}">Remover</button></td>
+          `;
           mappingBody.appendChild(row);
         });
 
@@ -436,9 +435,10 @@
       }
 
       function processExcelData() {
-        processedLines = [];
+        // MODIFIED: Initialize object for grouping
+        processedDataByQuarter = {};
         notFoundRows = [];
-        let processedRowCount = 0;
+        let totalProcessedLines = 0;
 
         console.log("Iniciando processExcelData...");
         if (!excelData || excelData.length === 0) {
@@ -446,39 +446,25 @@
             "Erro: Nenhum dado encontrado na planilha ou falha na leitura inicial. Verifique se a planilha tem conteúdo na primeira aba.",
             "error"
           );
-          console.error("Erro: excelData está vazio ou nulo.");
           processButton.disabled = false;
           return;
         }
-        console.log(`Total de linhas lidas (objetos): ${excelData.length}`);
-        if (excelData.length > 0) {
-          console.log(
-            "Objeto da primeira linha de dados (excelData[0]):",
-            JSON.stringify(excelData[0], null, 2)
-          );
-        } else {
-          updateStatus(
-            "A planilha parece estar vazia (sem linhas de dados após o cabeçalho).",
-            "info"
-          );
-          processButton.disabled = false;
-          return;
+        
+        const headersRaw = Object.keys(excelData[0] || {}); // Handle empty excelData gracefully
+        if (headersRaw.length === 0 && excelData.length > 0) { // If first row is somehow empty but there are other rows
+            updateStatus("A primeira linha de dados da planilha está vazia, mas existem outras linhas. Verifique o arquivo.", "error");
+            processButton.disabled = false;
+            return;
+        }
+        if (excelData.length === 0 && headersRaw.length === 0) {
+             updateStatus("A planilha parece estar completamente vazia.", "info");
+             processButton.disabled = false;
+             return;
         }
 
-        const headersRaw = Object.keys(excelData[0]);
-        console.log("Cabeçalhos detectados:", headersRaw);
-        const historicoHeaderKey = headersRaw.find(
-          (h) => normalizeString(h) === "HISTORICO"
-        );
-        const valorHeaderKey = headersRaw.find(
-          (h) => normalizeString(h) === "VALOR"
-        );
-        const dataHeaderKey = headersRaw.find(
-          (h) => normalizeString(h) === "DATA"
-        );
-        console.log("Chave Histórico:", historicoHeaderKey || "NÃO ENC.");
-        console.log("Chave Valor:", valorHeaderKey || "NÃO ENC.");
-        console.log("Chave Data:", dataHeaderKey || "NÃO ENC.");
+        const historicoHeaderKey = headersRaw.find(h => normalizeString(h) === "HISTORICO");
+        const valorHeaderKey = headersRaw.find(h => normalizeString(h) === "VALOR");
+        const dataHeaderKey = headersRaw.find(h => normalizeString(h) === "DATA");
 
         if (!historicoHeaderKey || !valorHeaderKey || !dataHeaderKey) {
           const missing = [
@@ -492,7 +478,6 @@
             `Erro Fatal: Coluna(s) obrigatória(s) não encontrada(s): ${missing}. Verifique os nomes na LINHA 1.`,
             "error"
           );
-          console.error(`Erro Colunas: ${missing}. Detectadas:`, headersRaw);
           processButton.disabled = false;
           return;
         }
@@ -508,133 +493,79 @@
           const valorRaw = row[valorHeaderKey];
           let dataRaw = row[dataHeaderKey];
 
-          if (index === 0) {
-            /* Log primeira linha dados */
-            console.log(`--- Linha ${excelRowNum} (Dados) ---`);
-            console.log(
-              `'${historicoHeaderKey}':`,
-              historicoRaw,
-              `(${typeof historicoRaw})`
-            );
-            console.log(
-              `'${valorHeaderKey}':`,
-              valorRaw,
-              `(${typeof valorRaw})`
-            );
-            console.log(`'${dataHeaderKey}':`, dataRaw, `(${typeof dataRaw})`);
-          }
-
           if (
             historicoRaw === undefined ||
             valorRaw === undefined ||
             dataRaw === undefined
           ) {
             let missingFields = [];
-            if (historicoRaw === undefined)
-              missingFields.push(`'${historicoHeaderKey}'`);
-            if (valorRaw === undefined)
-              missingFields.push(`'${valorHeaderKey}'`);
+            if (historicoRaw === undefined) missingFields.push(`'${historicoHeaderKey}'`);
+            if (valorRaw === undefined) missingFields.push(`'${valorHeaderKey}'`);
             if (dataRaw === undefined) missingFields.push(`'${dataHeaderKey}'`);
-            const reason = `Dados ausentes (coluna(s) ${missingFields.join(
-              ", "
-            )})`;
+            const reason = `Dados ausentes (coluna(s) ${missingFields.join(", ")})`;
             notFoundRows.push({ row: excelRowNum, reason: reason });
             return;
           }
 
           const historico = String(historicoRaw);
-          if (historico.trim() === "") {
-            notFoundRows.push({
-              row: excelRowNum,
-              reason: `Coluna '${historicoHeaderKey}' vazia`,
-            });
-            // return; // Descomente para pular histórico vazio
-          }
 
-          let rowDate,
-            rowDateStr = "";
+          let rowDate, rowDateStr = "";
           if (dataRaw instanceof Date) {
             rowDate = dataRaw;
-            rowDateStr = formatDate(rowDate);
-          } else if (
-            typeof dataRaw === "string" &&
-            dataRaw.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)
-          ) {
-            rowDateStr = dataRaw;
+          } else if (typeof dataRaw === "string" && dataRaw.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
             rowDate = parseDateDDMMYYYY(dataRaw);
-          } else if (typeof dataRaw === "number" && dataRaw > 1) {
+          } else if (typeof dataRaw === "number" && dataRaw > 1) { // Excel date number
             try {
-              const excelEpoch = new Date(1899, 11, 30);
-              const jsDate = new Date(
-                excelEpoch.getTime() + dataRaw * 24 * 60 * 60 * 1000
-              );
+              const excelEpoch = new Date(1899, 11, 30); // Excel epoch starts Dec 30, 1899 for serial 1
+              const jsDate = new Date(excelEpoch.getTime() + (dataRaw * 24 * 60 * 60 * 1000));
+              // Adjust for timezone offset if XLSX doesn't handle it correctly
               const offset = jsDate.getTimezoneOffset() * 60000;
-              rowDate = new Date(jsDate.getTime() + offset);
-              rowDateStr = formatDate(rowDate);
+              rowDate = new Date(jsDate.getTime() + offset); // Corrected date
             } catch (dateErr) {
               rowDate = null;
             }
-          } else {
+          } else { // Try generic parsing
             try {
-              let parsed = new Date(dataRaw);
-              if (!isNaN(parsed)) {
-                rowDate = parsed;
-                rowDateStr = formatDate(rowDate);
-              } else {
-                rowDate = null;
-              }
-            } catch (parseErr) {
-              rowDate = null;
-            }
+                let parsed = new Date(dataRaw);
+                if (!isNaN(parsed)) rowDate = parsed; else rowDate = null;
+            } catch(parseErr) { rowDate = null; }
           }
 
-          if (!rowDate || isNaN(rowDate)) {
+          if (!rowDate || isNaN(rowDate.getTime())) {
             notFoundRows.push({
               row: excelRowNum,
               reason: `Data inválida ou não reconhecida ('${dataRaw}')`,
             });
             return;
           }
+          rowDateStr = formatDate(rowDate);
+
 
           let valorString = String(valorRaw).trim();
           let cleanedValorString;
-          try {
-            if (
-              valorString.includes(",") &&
-              (!valorString.includes(".") ||
-                valorString.lastIndexOf(",") > valorString.lastIndexOf("."))
-            ) {
-              cleanedValorString = valorString
-                .replace(/\./g, "")
-                .replace(",", ".");
-            } else if (
-              valorString.includes(".") &&
-              (!valorString.includes(",") ||
-                valorString.lastIndexOf(".") > valorString.lastIndexOf(","))
-            ) {
+           try {
+            if (valorString.includes(",") && (!valorString.includes(".") || valorString.lastIndexOf(",") > valorString.lastIndexOf("."))) {
+              cleanedValorString = valorString.replace(/\./g, "").replace(",", ".");
+            } else if (valorString.includes(".") && (!valorString.includes(",") || valorString.lastIndexOf(".") > valorString.lastIndexOf(","))) {
               cleanedValorString = valorString.replace(/,/g, "");
             } else {
-              cleanedValorString = valorString.replace(/,/g, "."); // Tenta trocar vírgula por ponto
+              cleanedValorString = valorString.replace(/,/g, ".");
             }
-            // Remove caracteres não numéricos exceto o ponto decimal
             cleanedValorString = cleanedValorString.replace(/[^\d.-]/g, "");
-            let parts = cleanedValorString.split(".");
-            if (parts.length > 2) {
-              cleanedValorString = parts[0] + "." + parts.slice(1).join("");
+            let parts = cleanedValorString.split('.');
+            if (parts.length > 2) { // Handle cases like 1.234.56 -> 1234.56
+                cleanedValorString = parts.slice(0, -1).join('') + '.' + parts[parts.length -1];
             }
           } catch (cleanError) {
-            cleanedValorString = "NaN";
+            cleanedValorString = "NaN"; // Mark as NaN if cleaning fails
           }
-
           const valorNum = Number(cleanedValorString);
+
           if (isNaN(valorNum)) {
             notFoundRows.push({
               row: excelRowNum,
               reason: `Valor inválido ('${valorRaw}')`,
             });
-            console.warn(
-              `Linha ${excelRowNum}: Falha conversão valor '${valorRaw}'. Limpo: '${cleanedValorString}'.`
-            );
             return;
           }
           const valorFormatado = valorNum.toLocaleString("pt-BR", {
@@ -648,62 +579,68 @@
           for (const term of searchTerms) {
             if (normalizedHistorico.includes(term.normalizedName)) {
               const cpf = term.cpf;
-              const quarterDate = getQuarterEndDatePlusOne(rowDate);
-              const txtLine = `${quarterDate};${cpf};BRASIL;12001;${valorFormatado};${rowDateStr};;;;;;;;;;;;;`;
-              processedLines.push(txtLine);
+              // This is the date for the FIRST field of the TXT line
+              const reinfReportingDateStr = getReinfReportingDateString(rowDate); 
+              const txtLine = `${reinfReportingDateStr};${cpf};BRASIL;12001;${valorFormatado};${rowDateStr};;;;;;;;;;;;;`;
+              
+              // MODIFIED: Group lines by quarter key
+              const quarterKey = getQuarterFilenameSuffix(rowDate); // "MMAAAA"
+              if (!processedDataByQuarter[quarterKey]) {
+                processedDataByQuarter[quarterKey] = [];
+              }
+              processedDataByQuarter[quarterKey].push(txtLine);
+              totalProcessedLines++;
               matchFound = true;
-              processedRowCount++;
               break;
             }
           }
 
           if (!matchFound) {
-            // *** MODIFICAÇÃO AQUI: Adiciona historicoText ***
             notFoundRows.push({
               row: excelRowNum,
               reason: "Nenhum nome mapeado encontrado no Histórico",
-              historicoText: historico, // <--- Adiciona o conteúdo do histórico
+              historicoText: historico,
             });
           }
         }); // Fim do forEach
 
-        if (processedLines.length > 0) {
+        const numQuartersWithData = Object.keys(processedDataByQuarter).length;
+
+        if (numQuartersWithData > 0) {
           updateStatus(
-            `Processamento concluído. ${processedLines.length} linhas geradas para o TXT.`,
+            `Processamento concluído. ${totalProcessedLines} linhas geradas, distribuídas em ${numQuartersWithData} arquivo(s) trimestral(is).`,
             "success"
           );
           downloadButton.disabled = false;
           downloadButton.classList.remove("hidden");
-        } else if (
-          excelData.length > 0 &&
-          notFoundRows.length >= excelData.length
-        ) {
+        } else if (excelData.length > 0 && notFoundRows.length >= excelData.length) {
           updateStatus(
             `Processamento concluído, mas nenhuma linha válida/correspondente encontrada. Verifique o relatório.`,
             "error"
           );
           downloadButton.disabled = true;
           downloadButton.classList.add("hidden");
-        } else if (excelData.length > 0) {
-          updateStatus(
-            "Processamento concluído, mas nenhuma linha correspondeu aos mapeamentos para gerar o TXT.",
+        } else if (excelData.length > 0) { // Data exists, but no matches
+           updateStatus(
+            "Processamento concluído, mas nenhuma linha correspondeu aos mapeamentos para gerar o(s) TXT(s).",
             "info"
           );
           downloadButton.disabled = true;
           downloadButton.classList.add("hidden");
         }
 
+
         displayReport();
         processButton.disabled = false;
       }
 
       // --- Funções Auxiliares ---
-      function formatDate(date) {
-        if (!(date instanceof Date) || isNaN(date)) return "";
+      function formatDate(date) { // Returns DD/MM/YYYY string
+        if (!(date instanceof Date) || isNaN(date.getTime())) return "";
         const day = String(date.getDate()).padStart(2, "0");
         const month = String(date.getMonth() + 1).padStart(2, "0");
         const year = date.getFullYear();
-        if (year < 1000) return "";
+        if (year < 1000 || year > 9999) return ""; // Basic validation
         return `${day}/${month}/${year}`;
       }
 
@@ -712,15 +649,12 @@
         const parts = dateString.split("/");
         if (parts.length === 3) {
           const day = parseInt(parts[0], 10);
-          const month = parseInt(parts[1], 10) - 1;
+          const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed
           const year = parseInt(parts[2], 10);
-          if (!isNaN(day) && !isNaN(month) && !isNaN(year) && year > 0) {
+          if (!isNaN(day) && !isNaN(month) && !isNaN(year) && year > 0 && year < 10000) {
             const date = new Date(year, month, day);
-            if (
-              date.getFullYear() === year &&
-              date.getMonth() === month &&
-              date.getDate() === day
-            ) {
+            // Check if date is valid (e.g. not 31/02/2023)
+            if (date.getFullYear() === year && date.getMonth() === month && date.getDate() === day) {
               return date;
             }
           }
@@ -728,25 +662,42 @@
         return null;
       }
 
-      function getQuarterEndDatePlusOne(date) {
-        if (!(date instanceof Date) || isNaN(date)) return "DATA_INVALIDA";
-        const month = date.getMonth();
+      // Gets the REINF reporting period start date (e.g., 01/04/YYYY for Q1 transactions)
+      function getReinfPeriodStartDate(date) {
+        if (!(date instanceof Date) || isNaN(date.getTime())) return null;
+        const month = date.getMonth(); // 0-11
         const year = date.getFullYear();
-        let targetMonth,
-          targetYear = year;
-        if (month <= 2) {
-          targetMonth = 3;
-        } else if (month <= 5) {
-          targetMonth = 6;
-        } else if (month <= 8) {
-          targetMonth = 9;
-        } else {
-          targetMonth = 0;
+        let targetMonth, targetYear = year;
+
+        if (month <= 2) { // Jan-Mar (Q1) -> Report in April
+          targetMonth = 3; // April (month index 3)
+        } else if (month <= 5) { // Apr-Jun (Q2) -> Report in July
+          targetMonth = 6; // July (month index 6)
+        } else if (month <= 8) { // Jul-Sep (Q3) -> Report in October
+          targetMonth = 9; // October (month index 9)
+        } else { // Oct-Dec (Q4) -> Report in January of next year
+          targetMonth = 0; // January (month index 0)
           targetYear = year + 1;
         }
-        const targetDate = new Date(targetYear, targetMonth, 1);
-        return formatDate(targetDate);
+        return new Date(targetYear, targetMonth, 1);
       }
+      
+      // Returns the REINF reporting date as a string "DD/MM/YYYY" for the TXT file
+      function getReinfReportingDateString(originalTransactionDate) {
+          const periodStartDate = getReinfPeriodStartDate(originalTransactionDate);
+          return periodStartDate ? formatDate(periodStartDate) : "DATA_INVALIDA";
+      }
+
+      // MODIFIED: Helper to get "MMAAAA" suffix for filename, based on REINF period start date
+      function getQuarterFilenameSuffix(originalTransactionDate) {
+        const periodStartDate = getReinfPeriodStartDate(originalTransactionDate);
+        if (!periodStartDate || isNaN(periodStartDate.getTime())) return "ERRODATA";
+        
+        const month = String(periodStartDate.getMonth() + 1).padStart(2, "0");
+        const year = periodStartDate.getFullYear();
+        return `${month}${year}`; // e.g., "042023"
+      }
+
 
       function updateStatus(message, type = "info") {
         statusDiv.textContent = message;
@@ -756,59 +707,45 @@
       function displayReport() {
         reportDiv.innerHTML = "";
         reportDiv.classList.add("hidden");
+        const numQuartersWithData = Object.keys(processedDataByQuarter).length;
 
         if (notFoundRows.length > 0) {
           reportDiv.innerHTML = `<strong>Relatório de Linhas com Avisos ou Não Processadas (${notFoundRows.length}):</strong><br>`;
           const maxReportItems = 100;
           const itemsToShow = notFoundRows.slice(0, maxReportItems);
 
-          // *** MODIFICAÇÃO AQUI: Adiciona texto do histórico ***
-          const list = itemsToShow
-            .map((item) => {
+          const list = itemsToShow.map((item) => {
               let reportLine = `Linha ${item.row}: ${item.reason}`;
-              // Verifica se a propriedade historicoText existe (adicionada quando não há match)
               if (item.historicoText) {
-                const maxLength = 80; // Limita o tamanho do texto exibido
-                const truncatedHistorico =
-                  item.historicoText.length > maxLength
+                const maxLength = 80;
+                const truncatedHistorico = item.historicoText.length > maxLength
                     ? item.historicoText.substring(0, maxLength) + "..."
                     : item.historicoText;
-                // Escapa caracteres HTML básicos
-                const safeHistorico = truncatedHistorico
-                  .replace(/&/g, "&amp;")
-                  .replace(/</g, "&lt;")
-                  .replace(/>/g, "&gt;");
-                // Adiciona o texto usando uma classe CSS para estilo
+                const safeHistorico = truncatedHistorico.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 reportLine += ` <span class="historico-text-report">(Histórico: "${safeHistorico}")</span>`;
               }
               return reportLine;
-            })
-            .join("<br>");
+            }).join("<br>");
 
           reportDiv.innerHTML += list;
           if (notFoundRows.length > maxReportItems) {
-            reportDiv.innerHTML += `<br>... e mais ${
-              notFoundRows.length - maxReportItems
-            } linhas.`;
+            reportDiv.innerHTML += `<br>... e mais ${notFoundRows.length - maxReportItems} linhas.`;
           }
-          reportDiv.className =
-            statusDiv.className === "success" ? "info" : "error";
+          reportDiv.className = (numQuartersWithData > 0 && statusDiv.className === "success") ? "info" : "error"; // Show as info if some files generated, else error
           reportDiv.classList.remove("hidden");
-        } else if (excelData.length > 0 && processedLines.length > 0) {
-          reportDiv.innerHTML =
-            "Todas as linhas válidas foram verificadas e os mapeamentos aplicados com sucesso.";
+        } else if (excelData.length > 0 && numQuartersWithData > 0) {
+          reportDiv.innerHTML = "Todas as linhas válidas foram verificadas e os mapeamentos aplicados com sucesso.";
           reportDiv.className = "success";
           reportDiv.classList.remove("hidden");
-        } else if (excelData.length > 0 && processedLines.length === 0) {
-          reportDiv.innerHTML =
-            "Planilha processada, mas nenhum histórico correspondeu aos nomes mapeados.";
-          reportDiv.className = "info";
-          reportDiv.classList.remove("hidden");
+        } else if (excelData.length > 0 && numQuartersWithData === 0 && notFoundRows.length === 0) { // Valid data but no matches
+           reportDiv.innerHTML = "Planilha processada, mas nenhum histórico correspondeu aos nomes mapeados.";
+           reportDiv.className = "info";
+           reportDiv.classList.remove("hidden");
         }
       }
 
       function resetResults() {
-        processedLines = [];
+        processedDataByQuarter = {}; // MODIFIED
         notFoundRows = [];
         excelData = [];
         downloadButton.disabled = true;
@@ -820,33 +757,49 @@
       }
 
       // --- Função de Download ---
-      function downloadTxt() {
-        if (processedLines.length === 0) {
+      // MODIFIED: To download multiple files
+      function downloadTxtFiles() {
+        const quarters = Object.keys(processedDataByQuarter);
+        if (quarters.length === 0) {
           alert("Não há dados processados para baixar.");
           return;
         }
-        const txtContent = processedLines.join("\r\n");
-        const blob = new Blob([txtContent], {
-          type: "text/plain;charset=utf-8",
+
+        let filesDownloaded = 0;
+        quarters.forEach(quarterKey => {
+            const lines = processedDataByQuarter[quarterKey];
+            if (lines && lines.length > 0) {
+                const txtContent = lines.join("\r\n");
+                const blob = new Blob([txtContent], { type: "text/plain;charset=utf-8" });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                // Filename: Importador_Reinf_Trim_MMAAAA.txt
+                link.download = `Importador_Reinf_Trim_${quarterKey}.txt`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                filesDownloaded++;
+            }
         });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "resultado_processamento.txt";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        updateStatus(
-          `Arquivo TXT gerado e download iniciado. ${processedLines.length} linhas.`,
-          "success"
-        );
+
+        if (filesDownloaded > 0) {
+             updateStatus(
+                `${filesDownloaded} arquivo(s) TXT gerado(s) e download(s) iniciado(s).`,
+                "success"
+            );
+        } else {
+            updateStatus("Nenhuma linha válida encontrada para gerar arquivos TXT.", "info");
+        }
       }
 
       // --- Event Listeners ---
       addMappingBtn.addEventListener("click", addMapping);
       processButton.addEventListener("click", handleFileProcess);
-      downloadButton.addEventListener("click", downloadTxt);
+      // MODIFIED: Event listener for download button
+      downloadButton.addEventListener("click", downloadTxtFiles);
+
       excelFileInput.addEventListener("change", () => {
         const hasFile = excelFileInput.files && excelFileInput.files.length > 0;
         const hasMappings = Object.keys(mappings).length > 0;
