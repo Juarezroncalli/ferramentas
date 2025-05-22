@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Processador de Arquivo TXT</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease;
+        --primary-dark: #3d005a;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        --text-muted: #64748b;
+        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh;
+        color: var(--text-color);
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+
+      .header h1 {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .header p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+      }
+
+      .upload-section {
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--sombra);
+        margin-bottom: 2rem;
+        transition: var(--transicao);
+      }
+
+      .upload-area {
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius);
+        padding: 3rem 2rem;
+        text-align: center;
+        transition: var(--transicao);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .upload-area:hover {
+        border-color: var(--primary-color);
+        background: var(--form-bg-color);
+      }
+
+      .upload-area.dragover {
+        border-color: var(--primary-color);
+        background: rgba(79, 0, 114, 0.05);
+        transform: scale(1.02);
+      }
+
+      .upload-icon {
+        font-size: 3rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .upload-area:hover .upload-icon {
+        color: var(--primary-color);
+        transform: scale(1.1);
+      }
+
+      .upload-text {
+        font-size: 1.1rem;
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+      }
+
+      .upload-subtext {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+
+      #file-input {
+        display: none;
+      }
+
+      .file-info {
+        background: var(--form-bg-color);
+        border-radius: var(--radius);
+        padding: 1rem;
+        margin-top: 1rem;
+        display: none;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .file-info.show {
+        display: flex;
+      }
+
+      .file-icon {
+        color: var(--success);
+        font-size: 1.5rem;
+      }
+
+      .file-details {
+        flex: 1;
+      }
+
+      .file-name {
+        font-weight: 600;
+        color: var(--text-color);
+      }
+
+      .file-size {
+        color: var(--text-muted);
+        font-size: 0.875rem;
+      }
+
+      .btn {
+        background: var(--primary-color);
+        color: var(--text-color-light);
+        border: none;
+        padding: 0.875rem 2rem;
+        border-radius: var(--radius);
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transicao);
+        box-shadow: var(--sombra);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .btn:disabled {
+        background: var(--text-muted);
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .btn-process {
+        width: 100%;
+        justify-content: center;
+        margin-top: 1.5rem;
+      }
+
+      .results {
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--sombra);
+        overflow: hidden;
+        display: none;
+      }
+
+      .results.show {
+        display: block;
+        animation: slideIn 0.5s ease-out;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .results-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--primary-dark)
+        );
+        color: var(--text-color-light);
+        padding: 1.5rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .results-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+
+      .results-content {
+        padding: 2rem;
+      }
+
+      .result-section {
+        margin-bottom: 2rem;
+      }
+
+      .result-section:last-child {
+        margin-bottom: 0;
+      }
+
+      .section-title {
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .data-group {
+        background: var(--form-bg-color);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--primary-color);
+        transition: var(--transicao);
+      }
+
+      .data-group:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--sombra);
+      }
+
+      .group-title {
+        color: var(--text-color);
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .data-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(224, 224, 224, 0.5);
+      }
+
+      .data-item:last-child {
+        border-bottom: none;
+      }
+
+      .data-label {
+        font-weight: 600;
+        color: var(--text-muted);
+      }
+
+      .data-value {
+        font-weight: 600;
+        color: var(--text-color);
+        font-family: "Monaco", "Menlo", monospace;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-muted);
+      }
+
+      .loading.show {
+        display: block;
+      }
+
+      .spinner {
+        border: 3px solid var(--border-color);
+        border-top: 3px solid var(--primary-color);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: var(--text-muted);
+      }
+
+      .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 1rem;
+        }
+
+        .header h1 {
+          font-size: 2rem;
+        }
+
+        .upload-section {
+          padding: 1.5rem;
+        }
+
+        .upload-area {
+          padding: 2rem 1rem;
+        }
+
+        .results-content {
+          padding: 1.5rem;
+        }
+
+        .data-item {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1><i class="fas fa-file-alt"></i> Processador de Arquivo ECF</h1>
+        <p>Extraia e visualize dados dos registros N030 e M500</p>
+      </div>
+
+      <div class="upload-section">
+        <div
+          class="upload-area"
+          onclick="document.getElementById('file-input').click()"
+        >
+          <div class="upload-icon">
+            <i class="fas fa-cloud-upload-alt"></i>
+          </div>
+          <div class="upload-text">Clique para selecionar um arquivo</div>
+          <div class="upload-subtext">
+            ou arraste e solte um arquivo .txt aqui
+          </div>
+          <input type="file" id="file-input" accept=".txt" />
+        </div>
+
+        <div class="file-info" id="file-info">
+          <div class="file-icon">
+            <i class="fas fa-file-text"></i>
+          </div>
+          <div class="file-details">
+            <div class="file-name" id="file-name"></div>
+            <div class="file-size" id="file-size"></div>
+          </div>
+        </div>
+
+        <button
+          class="btn btn-process"
+          id="process-btn"
+          onclick="processFile()"
+          disabled
+        >
+          <i class="fas fa-cogs"></i>
+          Processar Arquivo
+        </button>
+      </div>
+
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Processando arquivo...</p>
+      </div>
+
+      <div class="results" id="results">
+        <div class="results-header">
+          <i class="fas fa-chart-line"></i>
+          <div class="results-title">Resultados do Processamento</div>
+        </div>
+        <div class="results-content" id="results-content"></div>
+      </div>
+    </div>
+
+    <script>
+      const fileInput = document.getElementById("file-input");
+      const fileInfo = document.getElementById("file-info");
+      const fileName = document.getElementById("file-name");
+      const fileSize = document.getElementById("file-size");
+      const processBtn = document.getElementById("process-btn");
+      const loading = document.getElementById("loading");
+      const results = document.getElementById("results");
+      const resultsContent = document.getElementById("results-content");
+      const uploadArea = document.querySelector(".upload-area");
+
+      // Drag and drop functionality
+      ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+        uploadArea.addEventListener(eventName, preventDefaults, false);
+      });
+
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      ["dragenter", "dragover"].forEach((eventName) => {
+        uploadArea.addEventListener(eventName, highlight, false);
+      });
+
+      ["dragleave", "drop"].forEach((eventName) => {
+        uploadArea.addEventListener(eventName, unhighlight, false);
+      });
+
+      function highlight(e) {
+        uploadArea.classList.add("dragover");
+      }
+
+      function unhighlight(e) {
+        uploadArea.classList.remove("dragover");
+      }
+
+      uploadArea.addEventListener("drop", handleDrop, false);
+
+      function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+
+        if (files.length > 0) {
+          handleFileSelect(files[0]);
+        }
+      }
+
+      fileInput.addEventListener("change", function (e) {
+        if (e.target.files.length > 0) {
+          handleFileSelect(e.target.files[0]);
+        }
+      });
+
+      function handleFileSelect(file) {
+        if (file && file.name.toLowerCase().endsWith(".txt")) {
+          fileName.textContent = file.name;
+          fileSize.textContent = formatFileSize(file.size);
+          fileInfo.classList.add("show");
+          processBtn.disabled = false;
+          results.classList.remove("show");
+        } else {
+          alert("Por favor, selecione um arquivo .txt válido");
+        }
+      }
+
+      function formatFileSize(bytes) {
+        if (bytes === 0) return "0 Bytes";
+        const k = 1024;
+        const sizes = ["Bytes", "KB", "MB", "GB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+      }
+
+      function processFile() {
+        const file = fileInput.files[0];
+        if (!file) {
+          alert("Por favor, selecione um arquivo");
+          return;
+        }
+
+        loading.classList.add("show");
+        results.classList.remove("show");
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          setTimeout(() => {
+            const content = e.target.result;
+            const processedData = parseFileContent(content);
+            displayResults(processedData);
+            loading.classList.remove("show");
+          }, 1000); // Simula processamento
+        };
+
+        reader.onerror = function () {
+          loading.classList.remove("show");
+          alert("Erro ao ler o arquivo");
+        };
+
+        reader.readAsText(file);
+      }
+
+      function parseFileContent(content) {
+        const lines = content.split("\n");
+        const n030Results = {};
+        const m500Results = {};
+        let currentN030Date = null;
+        let currentM030Value = null;
+
+        for (const line of lines) {
+          if (line.startsWith("|N030|")) {
+            const parts = line.split("|");
+            if (parts.length > 2) {
+              const rawDate = parts[2].trim();
+              const day = rawDate.substring(0, 2);
+              const month = rawDate.substring(2, 4);
+              const year = rawDate.substring(4, 8);
+              currentN030Date = `${day}/${month}/${year}`;
+
+              if (!n030Results[currentN030Date]) {
+                n030Results[currentN030Date] = {
+                  irpjPagar: null,
+                  csllPagar: null,
+                };
+              }
+            }
+          } else if (line.startsWith("|N630|26|") && currentN030Date) {
+            const parts = line.split("|");
+            if (parts.length > 4) {
+              const rawValue = parts[4].trim();
+              n030Results[currentN030Date].irpjPagar = formatCurrency(rawValue);
+            }
+          } else if (line.startsWith("|N670|21|") && currentN030Date) {
+            const parts = line.split("|");
+            if (parts.length > 4) {
+              const rawValue = parts[4].trim();
+              n030Results[currentN030Date].csllPagar = formatCurrency(rawValue);
+            }
+          } else if (line.startsWith("|M030|")) {
+            const parts = line.split("|");
+            if (parts.length > 4) {
+              currentM030Value = parts[4].trim();
+              if (!m500Results[currentM030Value]) {
+                m500Results[currentM030Value] = [];
+              }
+            }
+          } else if (line.startsWith("|M500|") && currentM030Value !== null) {
+            m500Results[currentM030Value].push(line);
+          }
+        }
+
+        return { n030Results, m500Results };
+      }
+
+      function formatCurrency(value) {
+        const number = parseFloat(
+          value.replace(/[^0-9,-]/g, "").replace(",", ".")
+        );
+        if (isNaN(number)) return "";
+        return number.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
+      }
+
+      function displayResults(data) {
+        const { n030Results, m500Results } = data;
+        let html = "";
+
+        // N030 Results
+        if (Object.keys(n030Results).length > 0) {
+          html += `
+                    <div class="result-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-calendar-alt"></i>
+                            Resultados N030
+                        </h2>
+                `;
+
+          for (const date in n030Results) {
+            html += `
+                        <div class="data-group">
+                            <h3 class="group-title">Data: ${date}</h3>
+                    `;
+
+            if (n030Results[date].irpjPagar !== null) {
+              html += `
+                            <div class="data-item">
+                                <span class="data-label">IRPJ a Pagar:</span>
+                                <span class="data-value">${n030Results[date].irpjPagar}</span>
+                            </div>
+                        `;
+            }
+
+            if (n030Results[date].csllPagar !== null) {
+              html += `
+                            <div class="data-item">
+                                <span class="data-label">CSLL a Pagar:</span>
+                                <span class="data-value">${n030Results[date].csllPagar}</span>
+                            </div>
+                        `;
+            }
+
+            html += "</div>";
+          }
+
+          html += "</div>";
+        }
+
+        // M500 Results
+        if (Object.keys(m500Results).length > 0) {
+          html += `
+                    <div class="result-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-list-ul"></i>
+                            Resultados M500
+                        </h2>
+                `;
+
+          for (const m030Key in m500Results) {
+            html += `
+                        <div class="data-group">
+                            <h3 class="group-title">Valor M030: ${m030Key}</h3>
+                    `;
+
+            m500Results[m030Key].forEach((line, index) => {
+              html += `
+                            <div class="data-item">
+                                <span class="data-label">Linha M500 ${
+                                  index + 1
+                                }:</span>
+                                <span class="data-value">${line}</span>
+                            </div>
+                        `;
+            });
+
+            html += "</div>";
+          }
+
+          html += "</div>";
+        }
+
+        if (
+          Object.keys(n030Results).length === 0 &&
+          Object.keys(m500Results).length === 0
+        ) {
+          html = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h3>Nenhum dado encontrado</h3>
+                        <p>Não foram encontrados registros N030 ou M500 no arquivo fornecido.</p>
+                    </div>
+                `;
+        }
+
+        resultsContent.innerHTML = html;
+        results.classList.add("show");
+      }
+    </script>
+  </body>
+</html>
