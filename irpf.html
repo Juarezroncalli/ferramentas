@@ -1,694 +1,965 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Analisador de Estouro de Caixa IRPF (.DEC)</title>
     <style>
-      :root {
-        --primary-color: #4f0072;
-        --accent-color: #fb0a5e;
-        --background-color: #ffffff;
-        --form-bg-color: #f9f9f9;
-        --text-color: #333333;
-        --border-color: #e0e0e0;
-        --text-color-light: #ffffff;
-        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
-        --transicao: all 0.3s ease;
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family: sans-serif;
-        background-color: var(--background-color);
-        color: var(--text-color);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding-top: 30px;
-        min-height: 100vh;
-        line-height: 1.6;
-      }
-
-      .container {
-        max-width: 1200px;
-        width: 100%;
-        margin: 0 auto;
-        background: var(--background-color);
-        border-radius: 20px;
-        box-shadow: var(--sombra);
-        overflow: hidden;
-        animation: slideUp 0.6s ease-out;
-      }
-
-      @keyframes slideUp {
-        from {
-          opacity: 0;
-          transform: translateY(30px);
+        /* Variáveis CSS para cores e sombras */
+        :root {
+            --primary-color: #4f0072;
+            --accent-color: #fb0a5e;
+            --background-color: #ffffff;
+            --form-bg-color: #f9f9f9;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
+            --text-color-light: #ffffff;
+            --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+            --transicao: all 0.3s ease;
         }
-        to {
-          opacity: 1;
-          transform: translateY(0);
+
+        /* Reset básico e estilos globais */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-      }
 
-      .header {
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
-        color: var(--text-color-light);
-        padding: 40px;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        animation: rotate 20s linear infinite;
-      }
-
-      @keyframes rotate {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-      }
-
-      .header h1 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 10px;
-        position: relative;
-        z-index: 1;
-      }
-
-      .header p {
-        font-size: 1.1rem;
-        opacity: 0.9;
-        position: relative;
-        z-index: 1;
-        max-width: 800px;
-        margin: 0 auto;
-      }
-
-      .content {
-        padding: 40px;
-      }
-
-      .upload-section {
-        background: var(--form-bg-color);
-        border-radius: 16px;
-        padding: 30px;
-        margin-bottom: 30px;
-        border: 2px dashed var(--border-color);
-        transition: var(--transicao);
-        text-align: center;
-      }
-
-      .upload-section:hover {
-        border-color: var(--primary-color);
-        background: #f5f5f5;
-        transform: translateY(-2px);
-        box-shadow: var(--sombra);
-      }
-
-      .upload-section.dragover {
-        border-color: var(--accent-color);
-        background: #fef7f7;
-        transform: scale(1.02);
-      }
-
-      .file-input-wrapper {
-        position: relative;
-        display: inline-block;
-        margin-bottom: 20px;
-      }
-
-      .file-input {
-        position: absolute;
-        opacity: 0;
-        width: 100%;
-        height: 100%;
-        cursor: pointer;
-      }
-
-      .file-input-label {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
-        color: var(--text-color-light);
-        padding: 15px 30px;
-        border-radius: 12px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: var(--transicao);
-        box-shadow: var(--sombra);
-      }
-
-      .file-input-label:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(79, 0, 114, 0.25);
-      }
-
-      .file-input-label::before {
-        content: '📁';
-        font-size: 1.2rem;
-      }
-
-      .analyze-btn {
-        background: linear-gradient(135deg, var(--accent-color) 0%, #e6095a 100%);
-        color: var(--text-color-light);
-        border: none;
-        padding: 15px 40px;
-        border-radius: 12px;
-        font-size: 1.1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: var(--transicao);
-        box-shadow: 0 4px 12px rgba(251, 10, 94, 0.3);
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .analyze-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(251, 10, 94, 0.4);
-      }
-
-      .analyze-btn:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        transform: none;
-      }
-
-      .analyze-btn::before {
-        content: '🔍';
-        font-size: 1.2rem;
-      }
-
-      .results {
-        background: var(--background-color);
-        border-radius: 16px;
-        padding: 30px;
-        box-shadow: var(--sombra);
-        border: 1px solid var(--border-color);
-        animation: fadeIn 0.5s ease-out;
-      }
-
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-
-      .results h2 {
-        color: var(--primary-color);
-        font-size: 1.8rem;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 3px solid var(--primary-color);
-        position: relative;
-      }
-
-      .results h2::after {
-        content: '';
-        position: absolute;
-        bottom: -3px;
-        left: 0;
-        width: 50px;
-        height: 3px;
-        background: var(--accent-color);
-      }
-
-      .info-block {
-        background: var(--form-bg-color);
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 20px;
-        border-left: 4px solid var(--primary-color);
-      }
-
-      .info-block p {
-        margin: 8px 0;
-        font-size: 1rem;
-      }
-
-      .info-block strong {
-        color: var(--primary-color);
-        font-weight: 600;
-      }
-
-      .status-card {
-        padding: 20px;
-        border-radius: 12px;
-        margin: 20px 0;
-        font-weight: 600;
-        text-align: center;
-        font-size: 1.1rem;
-        box-shadow: var(--sombra);
-      }
-
-      .warning {
-        background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-        color: #dc2626;
-        border: 2px solid #fecaca;
-      }
-
-      .success {
-        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-        color: #16a34a;
-        border: 2px solid #bbf7d0;
-      }
-
-      .table-container {
-        overflow-x: auto;
-        margin: 20px 0;
-        border-radius: 12px;
-        box-shadow: var(--sombra);
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        background: var(--background-color);
-        border-radius: 12px;
-        overflow: hidden;
-      }
-
-      th {
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
-        color: var(--text-color-light);
-        padding: 15px;
-        text-align: left;
-        font-weight: 600;
-        font-size: 0.95rem;
-      }
-
-      td {
-        padding: 15px;
-        border-bottom: 1px solid var(--border-color);
-        font-size: 0.95rem;
-      }
-
-      tr:hover {
-        background: var(--form-bg-color);
-      }
-
-      tr:last-child td {
-        border-bottom: none;
-      }
-
-      .loading {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        padding: 40px;
-        color: var(--text-color);
-        font-size: 1.1rem;
-      }
-
-      .loading::before {
-        content: '';
-        width: 20px;
-        height: 20px;
-        border: 2px solid var(--border-color);
-        border-top: 2px solid var(--primary-color);
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-
-      @keyframes spin {
-        to { transform: rotate(360deg); }
-      }
-
-      .note {
-        background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-        border: 1px solid #fbbf24;
-        border-radius: 12px;
-        padding: 20px;
-        margin-top: 20px;
-        font-size: 0.9rem;
-        color: #92400e;
-        box-shadow: var(--sombra);
-      }
-
-      .note strong {
-        color: #78350f;
-      }
-
-      @media (max-width: 768px) {
         body {
-          padding: 10px;
-          padding-top: 20px;
+            font-family: sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 30px;
+            min-height: 100vh;
+            line-height: 1.6;
         }
 
+        /* Estilo do container principal */
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            background: var(--background-color);
+            border-radius: 20px;
+            box-shadow: var(--sombra);
+            overflow: hidden;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        /* Animação de entrada do container */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Estilo do cabeçalho */
         .header {
-          padding: 30px 20px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            color: var(--text-color-light);
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Efeito de fundo no cabeçalho */
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        /* Animação de rotação para o efeito de fundo */
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .header h1 {
-          font-size: 2rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
         }
 
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Estilo da seção de conteúdo */
         .content {
-          padding: 20px;
+            padding: 40px;
         }
 
+        /* Estilo da seção de upload */
         .upload-section {
-          padding: 20px;
+            background: var(--form-bg-color);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px dashed var(--border-color);
+            transition: var(--transicao);
+            text-align: center;
         }
 
-        .file-input-label,
+        .upload-section:hover {
+            border-color: var(--primary-color);
+            background: #f5f5f5;
+            transform: translateY(-2px);
+            box-shadow: var(--sombra);
+        }
+
+        /* Estilo quando um arquivo é arrastado sobre a seção de upload */
+        .upload-section.dragover {
+            border-color: var(--accent-color);
+            background: #fef7f7;
+            transform: scale(1.02);
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            color: var(--text-color-light);
+            padding: 15px 30px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transicao);
+            box-shadow: var(--sombra);
+        }
+
+        .file-input-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 0, 114, 0.25);
+        }
+
+        .file-input-label::before {
+            content: '📁';
+            font-size: 1.2rem;
+        }
+
+        /* Estilo do botão de análise */
         .analyze-btn {
-          padding: 12px 20px;
-          font-size: 1rem;
+            background: linear-gradient(135deg, var(--accent-color) 0%, #e6095a 100%);
+            color: var(--text-color-light);
+            border: none;
+            padding: 15px 40px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transicao);
+            box-shadow: 0 4px 12px rgba(251, 10, 94, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(251, 10, 94, 0.4);
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .analyze-btn::before {
+            content: '🔍';
+            font-size: 1.2rem;
+        }
+
+        /* Estilo do container de resultados com abas */
+        .results-container {
+            display: none; /* Escondido inicialmente */
+            width: 100%;
+            background: var(--background-color);
+            border-radius: 16px;
+            box-shadow: var(--sombra);
+            border: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        /* Estilo dos botões das abas */
+        .tab-buttons {
+            display: flex;
+            border-bottom: 2px solid var(--border-color);
+            flex-wrap: wrap; /* Permite que os botões quebrem a linha em telas pequenas */
+            justify-content: center; /* Centraliza os botões */
+            padding: 10px;
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px; /* Adiciona margem entre os botões */
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            border-bottom: 2px solid transparent;
+            transition: var(--transicao);
+            border-radius: 8px; /* Cantos arredondados para os botões */
+        }
+
+        /* Estilos para as cores das abas com base no status de estouro */
+        .tab-button.tab-button-overflow {
+            background: linear-gradient(135deg, var(--accent-color) 0%, #e6095a 100%); /* Cor do botão analisar */
+            color: var(--text-color-light);
+        }
+        .tab-button.tab-button-no-overflow {
+            background: linear-gradient(135deg, #10b981 0%, #16a34a 100%); /* Tom de verde */
+            color: var(--text-color-light);
+        }
+
+        .tab-button.active {
+            border-bottom-color: var(--accent-color);
+            color: var(--primary-color);
+            background-color: var(--form-bg-color); /* Fundo sutil para a aba ativa */
+        }
+        /* Garantir que o estado ativo mantenha a cor de estouro/sem estouro */
+        .tab-button.active.tab-button-overflow {
+            border-bottom-color: var(--accent-color);
+            background: linear-gradient(135deg, var(--accent-color) 0%, #e6095a 100%);
+            color: var(--text-color-light);
+        }
+        .tab-button.active.tab-button-no-overflow {
+            border-bottom-color: #16a34a;
+            background: linear-gradient(135deg, #10b981 0%, #16a34a 100%);
+            color: var(--text-color-light);
+        }
+
+        /* Estilo do conteúdo das abas */
+        .tab-contents {
+            padding: 20px;
+        }
+
+        .tab-content {
+            display: none; /* Escondido por padrão */
+            animation: fadeIn 0.5s ease-out; /* Animação ao mostrar o conteúdo */
+        }
+
+        .tab-content.active {
+            display: block; /* Mostra o conteúdo da aba ativa */
+        }
+
+        /* Estilo da div de resultados (para a mensagem inicial) */
+        .results {
+            background: var(--background-color);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--sombra);
+            border: 1px solid var(--border-color);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Animação de fade-in */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Estilos para títulos dentro dos resultados */
+        .results h2 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--primary-color);
+            position: relative;
+        }
+
+        .results h2::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--accent-color);
+        }
+
+        /* Estilo dos blocos de informação */
+        .info-block {
+            background: var(--form-bg-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .info-block p {
+            margin: 8px 0;
+            font-size: 1rem;
+        }
+
+        .info-block strong {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Estilo dos cartões de status (warning/success) */
+        .status-card {
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-weight: 600;
+            text-align: center;
+            font-size: 1.1rem;
+            box-shadow: var(--sombra);
+        }
+
+        .warning {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            color: #dc2626;
+            border: 2px solid #fecaca;
+        }
+
+        .success {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            color: #16a34a;
+            border: 2px solid #bbf7d0;
+        }
+
+        /* Estilo da tabela de resultados */
+        .table-container {
+            overflow-x: auto; /* Permite rolagem horizontal em telas pequenas */
+            margin: 20px 0;
+            border-radius: 12px;
+            box-shadow: var(--sombra);
         }
 
         table {
-          font-size: 0.85rem;
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--background-color);
+            border-radius: 12px;
+            overflow: hidden;
         }
 
-        th, td {
-          padding: 10px 8px;
+        th {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            color: var(--text-color-light);
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95rem;
         }
-      }
 
-      .file-selected {
-        background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-        border: 2px solid #10b981;
-        color: #065f46;
-        padding: 15px;
-        border-radius: 12px;
-        margin: 10px 0;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        box-shadow: var(--sombra);
-      }
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.95rem;
+        }
 
-      .file-selected::before {
-        content: '✅';
-      }
+        tr:hover {
+            background: var(--form-bg-color);
+        }
 
-      .upload-section h3 {
-        margin-bottom: 15px;
-        color: var(--primary-color);
-        font-size: 1.3rem;
-      }
+        tr:last-child td {
+            border-bottom: none;
+        }
 
-      .upload-section p {
-        margin-bottom: 20px;
-        color: var(--text-color);
-        opacity: 0.8;
-      }
+        /* Estilo do estado de carregamento */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 40px;
+            color: var(--text-color);
+            font-size: 1.1rem;
+        }
 
-      .waiting-state {
-        text-align: center;
-        padding: 40px;
-        color: var(--text-color);
-      }
+        .loading::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
 
-      .waiting-state h3 {
-        margin-bottom: 10px;
-        color: var(--primary-color);
-      }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
-      .waiting-state .icon {
-        font-size: 3rem;
-        margin-bottom: 15px;
-        color: var(--accent-color);
-      }
+        /* Estilo da nota de observação */
+        .note {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border: 1px solid #fbbf24;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #92400e;
+            box-shadow: var(--sombra);
+        }
+
+        .note strong {
+            color: #78350f;
+        }
+
+        /* Media queries para responsividade */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                padding-top: 20px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .upload-section {
+                padding: 20px;
+            }
+
+            .file-input-label,
+            .analyze-btn {
+                padding: 12px 20px;
+                font-size: 1rem;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th,
+            td {
+                padding: 10px 8px;
+            }
+
+            .tab-buttons {
+                flex-direction: column; /* Empilha os botões em telas pequenas */
+                align-items: stretch; /* Estica os botões para preencher a largura */
+            }
+
+            .tab-button {
+                margin: 5px 0; /* Ajusta a margem para empilhamento vertical */
+            }
+        }
+
+        /* Estilo da mensagem de arquivo selecionado */
+        .file-selected {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border: 2px solid #10b981;
+            color: #065f46;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 10px 0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--sombra);
+        }
+
+        .file-selected::before {
+            content: '✅';
+        }
+
+        /* Estilos para títulos e parágrafos na seção de upload */
+        .upload-section h3 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-size: 1.3rem;
+        }
+
+        .upload-section p {
+            margin-bottom: 20px;
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        /* Estilo do estado inicial de "aguardando arquivo" */
+        .waiting-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-color);
+        }
+
+        .waiting-state h3 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .waiting-state .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+        }
     </style>
-  </head>
-  <body>
+</head>
+
+<body>
     <div class="container">
-      <div class="header">
-        <h1>Analisador de Estouro de Caixa IRPF</h1>
-        <p>
-          Ferramenta moderna para análise de arquivos .DEC da Declaração de
-          Imposto de Renda Pessoa Física. Verifique se o aumento patrimonial é
-          compatível com as receitas declaradas de forma rápida e intuitiva.
-        </p>
-      </div>
-
-      <div class="content">
-        <div class="upload-section" id="uploadSection">
-          <h3>📊 Selecione seu arquivo .DEC</h3>
-          <p>
-            Arraste e solte seu arquivo aqui ou clique no botão abaixo
-          </p>
-          
-          <div class="file-input-wrapper">
-            <input type="file" id="decFile" accept=".DEC" class="file-input" />
-            <label for="decFile" class="file-input-label">
-              Escolher Arquivo .DEC
-            </label>
-          </div>
-          
-          <div id="fileSelected" style="display: none;"></div>
-          
-          <button class="analyze-btn" onclick="analyzeFile()" id="analyzeBtn" disabled>
-            Analisar Arquivo
-          </button>
+        <div class="header">
+            <h1>Analisador de Estouro de Caixa IRPF</h1>
+            <p>
+                Ferramenta moderna para análise de arquivos .DEC da Declaração de
+                Imposto de Renda Pessoa Física. Verifique se o aumento patrimonial é
+                compatível com as receitas declaradas de forma rápida e intuitiva.
+            </p>
         </div>
 
-        <div class="results" id="results">
-          <div class="waiting-state">
-            <div class="icon">📋</div>
-            <h3>Aguardando arquivo para análise</h3>
-            <p>Selecione um arquivo .DEC para começar a análise</p>
-          </div>
+        <div class="content">
+            <div class="upload-section" id="uploadSection">
+                <h3>📊 Selecione seus arquivos .DEC</h3>
+                <p>Arraste e solte seus arquivos aqui ou clique no botão abaixo</p>
+
+                <div class="file-input-wrapper">
+                    <input type="file" id="decFile" accept=".DEC" class="file-input" multiple />
+                    <label for="decFile" class="file-input-label">
+                        Escolher Arquivos .DEC
+                    </label>
+                </div>
+
+                <div id="fileSelected" style="display: none;"></div>
+
+                <button class="analyze-btn" id="analyzeBtn" disabled>
+                    Analisar Arquivos
+                </button>
+            </div>
+
+            <div class="results-container" id="resultsContainer">
+                <div class="tab-buttons" id="tabButtons"></div>
+                <div class="tab-contents" id="tabContents"></div>
+            </div>
+
+            <div class="results" id="results">
+                <div class="waiting-state">
+                    <div class="icon">📋</div>
+                    <h3>Aguardando arquivo para análise</h3>
+                    <p>Selecione um ou mais arquivos .DEC para começar a análise</p>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
 
     <script>
-      // File input handling
-      const fileInput = document.getElementById('decFile');
-      const uploadSection = document.getElementById('uploadSection');
-      const analyzeBtn = document.getElementById('analyzeBtn');
-      const fileSelectedDiv = document.getElementById('fileSelected');
+        // Referências aos elementos HTML
+        const fileInput = document.getElementById('decFile');
+        const uploadSection = document.getElementById('uploadSection');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const fileSelectedDiv = document.getElementById('fileSelected');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const tabButtons = document.getElementById('tabButtons');
+        const tabContents = document.getElementById('tabContents');
+        const initialResultsDiv = document.getElementById('results'); // Renomeado para evitar conflito
 
-      fileInput.addEventListener('change', function(e) {
-        if (e.target.files.length > 0) {
-          const fileName = e.target.files[0].name;
-          fileSelectedDiv.innerHTML = `Arquivo selecionado: ${fileName}`;
-          fileSelectedDiv.style.display = 'block';
-          fileSelectedDiv.className = 'file-selected';
-          analyzeBtn.disabled = false;
-        } else {
-          fileSelectedDiv.style.display = 'none';
-          analyzeBtn.disabled = true;
-        }
-      });
+        let filesArray = []; // Array para armazenar os nomes dos arquivos selecionados
 
-      // Drag and drop functionality
-      uploadSection.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        uploadSection.classList.add('dragover');
-      });
-
-      uploadSection.addEventListener('dragleave', function(e) {
-        e.preventDefault();
-        uploadSection.classList.remove('dragover');
-      });
-
-      uploadSection.addEventListener('drop', function(e) {
-        e.preventDefault();
-        uploadSection.classList.remove('dragover');
-        
-        const files = e.dataTransfer.files;
-        if (files.length > 0 && files[0].name.toLowerCase().endsWith('.dec')) {
-          fileInput.files = files;
-          const event = new Event('change', { bubbles: true });
-          fileInput.dispatchEvent(event);
-        }
-      });
-
-      // Helper function to parse fixed-width fields
-      function parseField(line, start, end, isNumeric = false, decimalPlaces = 0) {
-        if (start > line.length) return isNumeric ? 0 : "";
-        const value = line
-          .substring(start - 1, Math.min(end, line.length))
-          .trim();
-        if (isNumeric) {
-          const num = parseFloat(value.replace(",", ".")) || 0;
-          return num / Math.pow(10, decimalPlaces);
-        }
-        return value;
-      }
-
-      async function analyzeFile() {
-        const fileInput = document.getElementById("decFile");
-        const resultsDiv = document.getElementById("results");
-        
-        resultsDiv.innerHTML = '<div class="loading">Analisando arquivo...</div>';
-
-        if (fileInput.files.length === 0) {
-          resultsDiv.innerHTML = `
-            <div class="status-card warning">
-              ⚠️ Por favor, selecione um arquivo .DEC para análise.
-            </div>
-          `;
-          return;
-        }
-
-        const file = fileInput.files[0];
-        const reader = new FileReader();
-
-        reader.onload = function (event) {
-          const fileContent = event.target.result;
-          const lines = fileContent.split(/\r?\n/);
-
-          let taxpayerName = "Não encontrado";
-          let taxpayerCPF = "Não encontrado";
-          let isCompleteDeclaration = false;
-
-          let totalTaxableIncome = 0;
-          let totalExemptIncome = 0;
-          let totalExclusiveTaxIncome = 0;
-
-          let assetsPreviousYear = 0;
-          let assetsCurrentYear = 0;
-          let debtsPreviousYear = 0;
-          let debtsCurrentYear = 0;
-
-          let foundHeader = false;
-          let foundSummaryReg = false;
-
-          for (const line of lines) {
-            if (line.length < 2) continue;
-            const regType = line.substring(0, 2);
-
-            if (regType === "IR") {
-              foundHeader = true;
-              taxpayerName = parseField(line, 40, 99);
-              taxpayerCPF = parseField(line, 22, 32);
-              const inCompleta = parseField(line, 121, 121);
-              isCompleteDeclaration = inCompleta === "S";
-
-              totalTaxableIncome = parseField(line, 696, 708, true, 2);
-              totalExemptIncome = parseField(line, 737, 749, true, 2);
-              totalExclusiveTaxIncome = parseField(line, 750, 762, true, 2);
-            } else if (regType === "16") {
-              if (taxpayerName === "Não encontrado")
-                taxpayerName = parseField(line, 14, 73);
-              if (taxpayerCPF === "Não encontrado")
-                taxpayerCPF = parseField(line, 3, 13);
-            } else if (regType === "18" && !isCompleteDeclaration) {
-              foundSummaryReg = true;
-              assetsPreviousYear = parseField(line, 275, 287, true, 2);
-              assetsCurrentYear = parseField(line, 288, 300, true, 2);
-              debtsPreviousYear = parseField(line, 366, 378, true, 2);
-              debtsCurrentYear = parseField(line, 379, 391, true, 2);
-            } else if (regType === "20" && isCompleteDeclaration) {
-              foundSummaryReg = true;
-              assetsPreviousYear = parseField(line, 405, 417, true, 2);
-              assetsCurrentYear = parseField(line, 418, 430, true, 2);
-              debtsPreviousYear = parseField(line, 431, 443, true, 2);
-              debtsCurrentYear = parseField(line, 444, 456, true, 2);
+        // Event listener para quando os arquivos são selecionados
+        fileInput.addEventListener('change', function (e) {
+            filesArray = Array.from(e.target.files).map(file => file.name); // Atualiza o array com os nomes
+            if (e.target.files.length > 0) {
+                fileSelectedDiv.innerHTML = `Arquivos selecionados: ${filesArray.join(', ')}`;
+                fileSelectedDiv.style.display = 'block';
+                fileSelectedDiv.className = 'file-selected';
+                analyzeBtn.disabled = false; // Habilita o botão de análise
+            } else {
+                fileSelectedDiv.style.display = 'none';
+                analyzeBtn.disabled = true; // Desabilita o botão se nenhum arquivo for selecionado
             }
-          }
+        });
 
-          if (!foundHeader) {
-            resultsDiv.innerHTML = `
-              <div class="status-card warning">
-                ❌ Arquivo .DEC inválido ou não contém registro Header (IR).
-              </div>
-            `;
-            return;
-          }
+        // Funcionalidade de Drag and Drop
+        uploadSection.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            uploadSection.classList.add('dragover');
+        });
 
-          const netPatrimonyPreviousYear = assetsPreviousYear - debtsPreviousYear;
-          const netPatrimonyCurrentYear = assetsCurrentYear - debtsCurrentYear;
-          const patrimonialVariation = netPatrimonyCurrentYear - netPatrimonyPreviousYear;
-          const totalDeclaredRevenue = totalTaxableIncome + totalExemptIncome + totalExclusiveTaxIncome;
-          const difference = totalDeclaredRevenue - patrimonialVariation;
+        uploadSection.addEventListener('dragleave', function (e) {
+            e.preventDefault();
+            uploadSection.classList.remove('dragover');
+        });
 
-          let resultHTML = `<h2>📊 Resultado da Análise</h2>`;
-          
-          resultHTML += `<div class="info-block">
-            <p><strong>👤 Contribuinte:</strong> ${taxpayerName}</p>
-            <p><strong>🆔 CPF:</strong> ${taxpayerCPF}</p>
-            <p><strong>📋 Tipo de Declaração:</strong> ${isCompleteDeclaration ? "Completa" : "Simplificada (Desconto Simplificado)"}</p>
-          </div>`;
+        uploadSection.addEventListener('drop', function (e) {
+            e.preventDefault();
+            uploadSection.classList.remove('dragover');
 
-          resultHTML += `<h2>🏠 Situação Patrimonial</h2>`;
-          resultHTML += `<div class="table-container">
-            <table>
-              <tr><th>Descrição</th><th>Ano Anterior (R$)</th><th>Ano Atual (R$)</th></tr>
-              <tr><td>Total de Bens e Direitos</td><td>${assetsPreviousYear.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td><td>${assetsCurrentYear.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td></tr>
-              <tr><td>Total de Dívidas e Ônus Reais</td><td>${debtsPreviousYear.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td><td>${debtsCurrentYear.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td></tr>
-              <tr style="background: var(--form-bg-color); font-weight: 600;"><td><strong>Patrimônio Líquido</strong></td><td><strong>R$ ${netPatrimonyPreviousYear.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong></td><td><strong>R$ ${netPatrimonyCurrentYear.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong></td></tr>
-            </table>
-          </div>`;
-          
-          resultHTML += `<div class="info-block">
-            <p><strong>📈 Variação Patrimonial no Período:</strong> R$ ${patrimonialVariation.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</p>
-          </div>`;
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                // Atribui os arquivos arrastados ao input de arquivo
+                fileInput.files = files;
+                // Dispara o evento 'change' para que o listener acima seja ativado
+                const event = new Event('change', { bubbles: true });
+                fileInput.dispatchEvent(event);
+            }
+        });
 
-          resultHTML += `<h2>💰 Receitas Declaradas (Resumo)</h2>`;
-          resultHTML += `<div class="table-container">
-            <table>
-              <tr><th>Tipo de Receita</th><th>Valor (R$)</th></tr>
-              <tr><td>Total de Rendimentos Tributáveis (Titular e Dependentes)</td><td>R$ ${totalTaxableIncome.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td></tr>
-              <tr><td>Total de Rendimentos Isentos e Não Tributáveis</td><td>R$ ${totalExemptIncome.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td></tr>
-              <tr><td>Total de Rendimentos Sujeitos à Tributação Exclusiva/Definitiva</td><td>R$ ${totalExclusiveTaxIncome.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td></tr>
-              <tr style="background: var(--form-bg-color); font-weight: 600;"><td><strong>Total das Receitas Declaradas</strong></td><td><strong>R$ ${totalDeclaredRevenue.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong></td></tr>
-            </table>
-          </div>`;
+        /**
+         * Função auxiliar para extrair campos de uma linha do arquivo .DEC.
+         * @param {string} line - A linha do arquivo .DEC.
+         * @param {number} start - Posição inicial do campo (base 1).
+         * @param {number} end - Posição final do campo (base 1).
+         * @param {boolean} isNumeric - Indica se o campo é numérico.
+         * @param {number} decimalPlaces - Número de casas decimais para campos numéricos.
+         * @returns {string|number} O valor do campo parseado.
+         */
+        function parseField(line, start, end, isNumeric = false, decimalPlaces = 0) {
+            if (start > line.length) return isNumeric ? 0 : "";
+            const value = line
+                .substring(start - 1, Math.min(end, line.length))
+                .trim();
+            if (isNumeric) {
+                const num = parseFloat(value.replace(",", ".")) || 0;
+                return num / Math.pow(10, decimalPlaces);
+            }
+            return value;
+        }
 
-          resultHTML += `<h2>🔍 Análise de Caixa</h2>`;
-          
-          if (difference < 0) {
-            resultHTML += `<div class="status-card warning">
-              ⚠️ <strong>ESTOURO DE CAIXA DETECTADO!</strong><br><br>
-              A variação patrimonial (R$ ${patrimonialVariation.toLocaleString('pt-BR', {minimumFractionDigits: 2})}) é MAIOR que o total de receitas declaradas (R$ ${totalDeclaredRevenue.toLocaleString('pt-BR', {minimumFractionDigits: 2})}).<br>
-              <strong>Diferença: R$ ${Math.abs(difference).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong>
+        /**
+         * Função principal para analisar múltiplos arquivos .DEC.
+         */
+        async function analyzeFiles() {
+            // Limpa os botões e conteúdos das abas anteriores
+            tabButtons.innerHTML = '';
+            tabContents.innerHTML = '';
+            initialResultsDiv.style.display = 'none'; // Esconde a mensagem inicial
+            resultsContainer.style.display = 'block'; // Mostra o container das abas
+
+            const files = fileInput.files;
+
+            if (files.length === 0) {
+                initialResultsDiv.innerHTML = `
+                    <div class="status-card warning">
+                        ⚠️ Por favor, selecione pelo menos um arquivo .DEC para análise.
+                    </div>
+                `;
+                initialResultsDiv.style.display = 'block'; // Mostra a mensagem inicial
+                resultsContainer.style.display = 'none'; // Esconde o container das abas
+                return;
+            }
+
+            let processedFilesCount = 0; // Contador para saber quando todos os arquivos foram processados
+
+            // Para cada arquivo selecionado, lê e analisa o conteúdo
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+
+                reader.onload = function (event) {
+                    const fileContent = event.target.result;
+                    // Retorna um objeto com o HTML e o status de estouro
+                    const { html: resultHTML, isOverflow } = analyzeFileContent(fileContent);
+
+                    const fileName = file.name;
+                    // Extrai o CPF do nome do arquivo ou usa um nome padrão
+                    const cpf = extractCPFFromFileName(fileName);
+                    const tabId = cpf || `Arquivo ${i + 1}`; // ID único para a aba
+
+                    createTab(tabId, resultHTML, isOverflow); // Passa o status de estouro para createTab
+
+                    processedFilesCount++;
+                    // Ativa a primeira aba após todos os arquivos serem processados
+                    if (processedFilesCount === files.length) {
+                        if (tabButtons.firstElementChild) { // Garante que há pelo menos uma aba
+                            showTab(tabButtons.firstElementChild.dataset.tabId); // Ativa a primeira aba
+                        }
+                    }
+                };
+
+                reader.onerror = function () {
+                    const fileName = file.name;
+                    const cpf = extractCPFFromFileName(fileName);
+                    const tabId = cpf || `Arquivo ${i + 1}`;
+                    // Em caso de erro, a aba não terá estouro (isOverflow = false)
+                    createTab(tabId, `<div class="status-card warning">❌ Erro ao ler o arquivo ${fileName}.</div>`, false);
+
+                    processedFilesCount++;
+                    if (processedFilesCount === files.length) {
+                        if (tabButtons.firstElementChild) {
+                            showTab(tabButtons.firstElementChild.dataset.tabId);
+                        }
+                    }
+                };
+
+                reader.readAsText(file, "ISO-8859-1"); // Lê o arquivo como texto com codificação ISO-8859-1
+            }
+        }
+
+        /**
+         * Analisa o conteúdo de um único arquivo .DEC e gera o HTML do relatório.
+         * Esta função foi refatorada para retornar um objeto com o HTML e o status de estouro.
+         * @param {string} fileContent - O conteúdo do arquivo .DEC.
+         * @returns {{html: string, isOverflow: boolean}} Um objeto com o HTML gerado e o status de estouro.
+         */
+        function analyzeFileContent(fileContent) {
+            const lines = fileContent.split(/\r?\n/);
+
+            let taxpayerName = "Não encontrado";
+            let taxpayerCPF = "Não encontrado";
+            let isCompleteDeclaration = false;
+
+            let totalTaxableIncome = 0;
+            let totalExemptIncome = 0;
+            let totalExclusiveTaxIncome = 0;
+
+            let assetsPreviousYear = 0;
+            let assetsCurrentYear = 0;
+            let debtsPreviousYear = 0;
+            let debtsCurrentYear = 0;
+
+            let foundHeader = false;
+            let foundSummaryReg = false;
+            let isOverflow = false; // Variável para controlar o status de estouro
+
+            for (const line of lines) {
+                if (line.length < 2) continue;
+                const regType = line.substring(0, 2);
+
+                if (regType === "IR") {
+                    foundHeader = true;
+                    taxpayerName = parseField(line, 40, 99);
+                    taxpayerCPF = parseField(line, 22, 32);
+                    const inCompleta = parseField(line, 121, 121);
+                    isCompleteDeclaration = inCompleta === "S";
+
+                    totalTaxableIncome = parseField(line, 696, 708, true, 2);
+                    totalExemptIncome = parseField(line, 737, 749, true, 2);
+                    totalExclusiveTaxIncome = parseField(line, 750, 762, true, 2);
+                } else if (regType === "16") {
+                    if (taxpayerName === "Não encontrado")
+                        taxpayerName = parseField(line, 14, 73);
+                    if (taxpayerCPF === "Não encontrado")
+                        taxpayerCPF = parseField(line, 3, 13);
+                } else if (regType === "18" && !isCompleteDeclaration) {
+                    foundSummaryReg = true;
+                    assetsPreviousYear = parseField(line, 275, 287, true, 2);
+                    assetsCurrentYear = parseField(line, 288, 300, true, 2);
+                    debtsPreviousYear = parseField(line, 366, 378, true, 2);
+                    debtsCurrentYear = parseField(line, 379, 391, true, 2);
+                } else if (regType === "20" && isCompleteDeclaration) {
+                    foundSummaryReg = true;
+                    assetsPreviousYear = parseField(line, 405, 417, true, 2);
+                    assetsCurrentYear = parseField(line, 418, 430, true, 2);
+                    debtsPreviousYear = parseField(line, 431, 443, true, 2);
+                    debtsCurrentYear = parseField(line, 444, 456, true, 2);
+                }
+            }
+
+            if (!foundHeader) {
+                return {
+                    html: `<div class="status-card warning">❌ Arquivo .DEC inválido ou não contém registro Header (IR).</div>`,
+                    isOverflow: false
+                };
+            }
+
+            const netPatrimonyPreviousYear = assetsPreviousYear - debtsPreviousYear;
+            const netPatrimonyCurrentYear = assetsCurrentYear - debtsCurrentYear;
+            const patrimonialVariation = netPatrimonyCurrentYear - netPatrimonyPreviousYear;
+            const totalDeclaredRevenue = totalTaxableIncome + totalExemptIncome + totalExclusiveTaxIncome;
+            const difference = totalDeclaredRevenue - patrimonialVariation;
+
+            let resultHTML = `<h2>📊 Resultado da Análise</h2>`;
+
+            resultHTML += `<div class="info-block">
+                <p><strong>👤 Contribuinte:</strong> ${taxpayerName}</p>
+                <p><strong>🆔 CPF:</strong> ${taxpayerCPF}</p>
+                <p><strong>📋 Tipo de Declaração:</strong> ${isCompleteDeclaration ? "Completa" : "Simplificada (Desconto Simplificado)"}</p>
             </div>`;
-            resultHTML += `<p>Isso sugere que o aumento de patrimônio ou redução de dívidas não é totalmente justificado pelas receitas declaradas neste resumo. Pode haver omissão de rendimentos ou outras fontes não consideradas nesta análise simplificada.</p>`;
-          } else {
-            resultHTML += `<div class="status-card success">
-              ✅ <strong>Situação de Caixa Compatível</strong><br><br>
-              O total de receitas declaradas (R$ ${totalDeclaredRevenue.toLocaleString('pt-BR', {minimumFractionDigits: 2})}) é SUFICIENTE para cobrir a variação patrimonial (R$ ${patrimonialVariation.toLocaleString('pt-BR', {minimumFractionDigits: 2})}).<br>
-              <strong>Saldo: R$ ${difference.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong>
+
+            resultHTML += `<h2>🏠 Situação Patrimonial</h2>`;
+            resultHTML += `<div class="table-container">
+                <table>
+                    <tr><th>Descrição</th><th>Ano Anterior (R$)</th><th>Ano Atual (R$)</th></tr>
+                    <tr><td>Total de Bens e Direitos</td><td>${assetsPreviousYear.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td><td>${assetsCurrentYear.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td></tr>
+                    <tr><td>Total de Dívidas e Ônus Reais</td><td>${debtsPreviousYear.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td><td>${debtsCurrentYear.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td></tr>
+                    <tr style="background: var(--form-bg-color); font-weight: 600;"><td><strong>Patrimônio Líquido</strong></td><td><strong>R$ ${netPatrimonyPreviousYear.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong></td><td><strong>R$ ${netPatrimonyCurrentYear.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong></td></tr>
+                </table>
             </div>`;
-          }
 
-          if (!foundSummaryReg) {
-            resultHTML += `<div class="status-card warning">
-              ⚠️ Não foi possível encontrar os registros de totais patrimoniais adequados para o tipo de declaração. A análise patrimonial pode estar incompleta.
+            resultHTML += `<div class="info-block">
+                <p><strong>📈 Variação Patrimonial no Período:</strong> R$ ${patrimonialVariation.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
             </div>`;
-          }
 
-          resultHTML += `<div class="note">
-            <strong>📝 Observação Importante:</strong> Esta é uma análise simplificada que não considera despesas de custeio pessoal (moradia, alimentação, saúde não dedutível, etc.) que impactariam o caixa disponível. Um "estouro de caixa" real para a Receita Federal consideraria uma estimativa dessas despesas. Os dados são baseados nos totais informados no Header da declaração e nos registros patrimoniais.
-          </div>`;
+            resultHTML += `<h2>💰 Receitas Declaradas (Resumo)</h2>`;
+            resultHTML += `<div class="table-container">
+                <table>
+                    <tr><th>Tipo de Receita</th><th>Valor (R$)</th></tr>
+                    <tr><td>Total de Rendimentos Tributáveis (Titular e Dependentes)</td><td>R$ ${totalTaxableIncome.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td></tr>
+                    <tr><td>Total de Rendimentos Isentos e Não Tributáveis</td><td>R$ ${totalExemptIncome.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td></tr>
+                    <tr><td>Total de Rendimentos Sujeitos à Tributação Exclusiva/Definitiva</td><td>R$ ${totalExclusiveTaxIncome.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td></tr>
+                    <tr style="background: var(--form-bg-color); font-weight: 600;"><td><strong>Total das Receitas Declaradas</strong></td><td><strong>R$ ${totalDeclaredRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong></td></tr>
+                </table>
+            </div>`;
 
-          resultsDiv.innerHTML = resultHTML;
-        };
+            resultHTML += `<h2>🔍 Análise de Caixa</h2>`;
 
-        reader.onerror = function () {
-          resultsDiv.innerHTML = `
-            <div class="status-card warning">
-              ❌ Erro ao ler o arquivo. Verifique se o arquivo está correto e tente novamente.
-            </div>
-          `;
-        };
+            if (difference < 0) {
+                isOverflow = true; // Define o status de estouro
+                resultHTML += `<div class="status-card warning">
+                    ⚠️ <strong>ESTOURO DE CAIXA DETECTADO!</strong><br><br>
+                    A variação patrimonial (R$ ${patrimonialVariation.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}) é MAIOR que o total de receitas declaradas (R$ ${totalDeclaredRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}).<br>
+                    <strong>Diferença: R$ ${Math.abs(difference).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong>
+                </div>`;
+                resultHTML += `<p>Isso sugere que o aumento de patrimônio ou redução de dívidas não é totalmente justificado pelas receitas declaradas neste resumo. Pode haver omissão de rendimentos ou outras fontes não consideradas nesta análise simplificada.</p>`;
+            } else {
+                isOverflow = false; // Define o status de não estouro
+                resultHTML += `<div class="status-card success">
+                    ✅ <strong>Situação de Caixa Compatível</strong><br><br>
+                    O total de receitas declaradas (R$ ${totalDeclaredRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}) é SUFICIENTE para cobrir a variação patrimonial (R$ ${patrimonialVariation.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}).<br>
+                    <strong>Saldo: R$ ${difference.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong>
+                </div>`;
+            }
 
-        reader.readAsText(file, "ISO-8859-1");
-      }
+            if (!foundSummaryReg) {
+                resultHTML += `<div class="status-card warning">
+                    ⚠️ Não foi possível encontrar os registros de totais patrimoniais adequados para o tipo de declaração. A análise patrimonial pode estar incompleta.
+                </div>`;
+            }
+
+            resultHTML += `<div class="note">
+                <strong>📝 Observação Importante:</strong> Esta é uma análise simplificada que não considera despesas de custeio pessoal (moradia, alimentação, saúde não dedutível, etc.) que impactariam o caixa disponível. Um "estouro de caixa" real para a Receita Federal consideraria uma estimativa dessas despesas. Os dados são baseados nos totais informados no Header da declaração e nos registros patrimoniais.
+            </div>`;
+
+            return { html: resultHTML, isOverflow: isOverflow }; // Retorna o objeto completo
+        }
+
+        /**
+         * Cria um novo botão de aba e seu conteúdo correspondente.
+         * @param {string} tabName - O nome a ser exibido na aba (ex: CPF).
+         * @param {string} contentHTML - O conteúdo HTML a ser exibido na aba.
+         * @param {boolean} isOverflow - Indica se o relatório desta aba tem estouro patrimonial.
+         */
+        function createTab(tabName, contentHTML, isOverflow = false) {
+            const tabButton = document.createElement('button');
+            tabButton.classList.add('tab-button');
+            // Adiciona a classe de cor baseada no status de estouro
+            if (isOverflow) {
+                tabButton.classList.add('tab-button-overflow');
+            } else {
+                tabButton.classList.add('tab-button-no-overflow');
+            }
+            tabButton.textContent = tabName;
+            tabButton.dataset.tabId = tabName; // Armazena o ID da aba no dataset do botão
+            tabButton.addEventListener('click', () => showTab(tabName));
+            tabButtons.appendChild(tabButton);
+
+            const tabContent = document.createElement('div');
+            tabContent.classList.add('tab-content');
+            tabContent.id = `tab-${tabName}`; // ID único para o conteúdo da aba
+            tabContent.innerHTML = contentHTML;
+            tabContents.appendChild(tabContent);
+        }
+
+        /**
+         * Mostra a aba com o ID especificado e esconde as outras.
+         * @param {string} tabIdToShow - O ID da aba a ser exibida.
+         */
+        function showTab(tabIdToShow) {
+            console.log('showTab called with:', tabIdToShow);
+
+            // Remove a classe 'active' de todos os botões de aba
+            const allTabButtons = Array.from(tabButtons.children);
+            allTabButtons.forEach(button => {
+                console.log('Removing active from:', button.dataset.tabId);
+                button.classList.remove('active');
+            });
+
+            // Esconde todos os conteúdos das abas
+            const allTabContents = Array.from(tabContents.children);
+            allTabContents.forEach(content => {
+                console.log('Hiding content for:', content.id);
+                content.style.display = 'none';
+            });
+
+            // Adiciona a classe 'active' ao botão da aba selecionada
+            const selectedTabButton = tabButtons.querySelector(`[data-tab-id="${tabIdToShow}"]`);
+            console.log('Selected tab button:', selectedTabButton);
+            if (selectedTabButton) {
+                selectedTabButton.classList.add('active');
+            }
+
+            // Mostra o conteúdo da aba selecionada
+            const selectedTabContent = document.getElementById(`tab-${tabIdToShow}`);
+            console.log('Selected tab content:', selectedTabContent);
+            if (selectedTabContent) {
+                selectedTabContent.style.display = 'block';
+            }
+        }
+
+        /**
+         * Extrai um CPF de 11 dígitos do nome de um arquivo.
+         * @param {string} fileName - O nome do arquivo.
+         * @returns {string|null} O CPF encontrado ou null se não for encontrado.
+         */
+        function extractCPFFromFileName(fileName) {
+            // Regex para encontrar 11 dígitos consecutivos
+            const cpfRegex = /(\d{11})/g;
+            const match = fileName.match(cpfRegex);
+            return match ? match[0] : null;
+        }
+
+        // Adiciona o event listener ao botão de análise
+        analyzeBtn.addEventListener('click', analyzeFiles);
     </script>
-  </body>
+</body>
+
 </html>
