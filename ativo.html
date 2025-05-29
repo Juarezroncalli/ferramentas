@@ -343,7 +343,6 @@
               <label for="valorAquisicao">Valor Aquisição*</label>
               <input type="number" id="valorAquisicao" step="0.01" required />
             </div>
-            <!-- Data Início Aquisição field removed -->
           </div>
           <div class="actions">
             <button type="submit" class="btn">Adicionar Item</button>
@@ -381,266 +380,269 @@
     </div>
 
     <script>
-            // Array para armazenar os itens adicionados
-            let items = [];
+      // Array para armazenar os itens adicionados
+      let items = [];
 
-            // Elementos do DOM
-            const form = document.getElementById("patrimonioForm");
-            const itemsContainer = document.getElementById("itemsContainer");
-            const emptyState = document.getElementById("emptyState");
-            const gerarTxtBtn = document.getElementById("gerarTxtBtn");
-            const resultArea = document.getElementById("resultArea");
-            const resultBox = document.getElementById("resultBox");
-            const downloadBtn = document.getElementById("downloadBtn");
-            const copyBtn = document.getElementById("copyBtn");
+      // Elementos do DOM
+      const form = document.getElementById("patrimonioForm");
+      const itemsContainer = document.getElementById("itemsContainer");
+      const emptyState = document.getElementById("emptyState");
+      const gerarTxtBtn = document.getElementById("gerarTxtBtn");
+      const resultArea = document.getElementById("resultArea");
+      const resultBox = document.getElementById("resultBox");
+      const downloadBtn = document.getElementById("downloadBtn");
+      const copyBtn = document.getElementById("copyBtn");
 
-            // Inputs for easy access
-            const numeroEmpresaInput = document.getElementById("numeroEmpresa");
-            const codigoInput = document.getElementById("codigo");
-            const identificadorInput = document.getElementById("identificador");
-            const nomeInput = document.getElementById("nome");
-            const funcaoInput = document.getElementById("funcao"); // Added for pre-filling
+      // Inputs for easy access
+      const numeroEmpresaInput = document.getElementById("numeroEmpresa");
+      const codigoInput = document.getElementById("codigo");
+      const identificadorInput = document.getElementById("identificador");
+      const nomeInput = document.getElementById("nome");
+      const funcaoInput = document.getElementById("funcao");
 
-            // Função para formatar data de YYYY-MM-DD para YYYYMMDD
-            function formatDate(dateString) {
-              return dateString.replace(/-/g, "");
-            }
+      // Função para formatar data de YYYY-MM-DD para YYYYMMDD
+      function formatDate(dateString) {
+        return dateString.replace(/-/g, "");
+      }
 
-            // Função para preencher os campos para o próximo item
-            function prefillNextItemFields(lastItem) {
-              if (lastItem) {
-                numeroEmpresaInput.value = lastItem.numeroEmpresa;
-                if (lastItem.codigo && !isNaN(parseInt(lastItem.codigo))) {
-                  codigoInput.value = parseInt(lastItem.codigo) + 1;
-                }
-                if (
-                  lastItem.identificador &&
-                  !isNaN(parseInt(lastItem.identificador))
-                ) {
-                  identificadorInput.value = parseInt(lastItem.identificador) + 1;
-                }
-                // Manter valor de 'funcao' do último item ou o placeholder se estiver vazio
-                funcaoInput.value = lastItem.funcao || "";
-              } else {
-                // Se não houver item anterior, o placeholder "ATIVO" já está no HTML
-                // Se quiser que seja preenchido explicitamente no JS, pode fazer aqui:
-                // funcaoInput.value = 'ATIVO'; // Ou deixar o placeholder fazer seu trabalho
-              }
-              nomeInput.focus(); // Focar no campo nome para facilitar o próximo cadastro
-            }
+      // Função para formatar valor monetário com vírgula
+      function formatValorMonetario(valor) {
+        return parseFloat(valor).toFixed(2).replace(".", ",");
+      }
 
-            // Função para adicionar um novo item
-            form.addEventListener("submit", function (e) {
-              e.preventDefault();
+      // Função para preencher os campos para o próximo item
+      function prefillNextItemFields(lastItem) {
+        if (lastItem) {
+          numeroEmpresaInput.value = lastItem.numeroEmpresa;
+          if (lastItem.codigo && !isNaN(parseInt(lastItem.codigo))) {
+            codigoInput.value = parseInt(lastItem.codigo) + 1;
+          }
+          if (
+            lastItem.identificador &&
+            !isNaN(parseInt(lastItem.identificador))
+          ) {
+            identificadorInput.value = parseInt(lastItem.identificador) + 1;
+          }
+          funcaoInput.value = lastItem.funcao || "";
+        }
+        nomeInput.focus();
+      }
 
-              const item = {
-                numeroEmpresa: numeroEmpresaInput.value,
-                codigo: codigoInput.value,
-                identificador: identificadorInput.value,
-                nome: nomeInput.value,
-                dataAquisicao: formatDate(
-                  document.getElementById("dataAquisicao").value
-                ),
-                contaPatrimonial: document.getElementById("contaPatrimonial").value,
-                centroCusto: document.getElementById("centroCusto").value,
-                historico: document.getElementById("historico").value,
-                funcao: funcaoInput.value || "ATIVO", // Usar 'ATIVO' se o campo estiver vazio
-                valorAquisicao: document.getElementById("valorAquisicao").value,
-                // dataInicioAquisicao é removido, usaremos dataAquisicao no TXT
-              };
+      // Função para adicionar um novo item
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
 
-              items.push(item);
-              renderItems();
+        const item = {
+          numeroEmpresa: numeroEmpresaInput.value,
+          codigo: codigoInput.value,
+          identificador: identificadorInput.value,
+          nome: nomeInput.value,
+          dataAquisicao: formatDate(
+            document.getElementById("dataAquisicao").value
+          ),
+          contaPatrimonial: document.getElementById("contaPatrimonial").value,
+          centroCusto: document.getElementById("centroCusto").value,
+          historico: document.getElementById("historico").value,
+          funcao: funcaoInput.value || "ATIVO",
+          valorAquisicao: document.getElementById("valorAquisicao").value,
+        };
 
-              form.reset();
+        items.push(item);
+        renderItems();
 
-              prefillNextItemFields(item);
+        form.reset();
+
+        prefillNextItemFields(item);
+      });
+
+      // Função para renderizar os itens na lista
+      function renderItems() {
+        if (items.length === 0) {
+          emptyState.classList.remove("hidden");
+          gerarTxtBtn.disabled = true;
+          resultArea.classList.add("hidden");
+        } else {
+          emptyState.classList.add("hidden");
+          gerarTxtBtn.disabled = false;
+
+          itemsContainer.innerHTML = "";
+
+          items.forEach((item, index) => {
+            const itemCard = document.createElement("div");
+            itemCard.className = "item-card";
+
+            itemCard.innerHTML = `
+              <div class="item-header">
+                  <div class="item-title">${item.nome} (Cód: ${
+              item.codigo
+            }, ID: ${item.identificador})</div>
+                  <button class="remove-btn" data-index="${index}">✕</button>
+              </div>
+              <div class="item-details">
+                  <div class="item-detail">
+                      <span class="detail-label">Empresa:</span>
+                      <span>${item.numeroEmpresa}</span>
+                  </div>
+                  <div class="item-detail">
+                      <span class="detail-label">Data Aquisição:</span>
+                      <span>${formatDateDisplay(item.dataAquisicao)}</span>
+                  </div>
+                  <div class="item-detail">
+                      <span class="detail-label">Valor:</span>
+                      <span>R$ ${parseFloat(item.valorAquisicao).toLocaleString(
+                        "pt-BR",
+                        {
+                          minimumFractionDigits: 2,
+                        }
+                      )}</span>
+                  </div>
+                  <div class="item-detail">
+                      <span class="detail-label">Função:</span>
+                      <span>${item.funcao}</span>
+                  </div>
+              </div>
+            `;
+
+            itemsContainer.appendChild(itemCard);
+          });
+
+          document.querySelectorAll(".remove-btn").forEach((button) => {
+            button.addEventListener("click", function () {
+              const index = parseInt(this.getAttribute("data-index"));
+              removeItem(index);
             });
+          });
+        }
+      }
 
-            // Função para renderizar os itens na lista
-            function renderItems() {
-              if (items.length === 0) {
-                emptyState.classList.remove("hidden");
-                gerarTxtBtn.disabled = true;
-                resultArea.classList.add("hidden");
-              } else {
-                emptyState.classList.add("hidden");
-                gerarTxtBtn.disabled = false;
+      // Função para formatar data de YYYYMMDD para exibição DD/MM/YYYY
+      function formatDateDisplay(dateString) {
+        if (!dateString || dateString.length !== 8) return dateString;
 
-                itemsContainer.innerHTML = "";
+        const year = dateString.substring(0, 4);
+        const month = dateString.substring(4, 6);
+        const day = dateString.substring(6, 8);
 
-                items.forEach((item, index) => {
-                  const itemCard = document.createElement("div");
-                  itemCard.className = "item-card";
+        return `${day}/${month}/${year}`;
+      }
 
-                  itemCard.innerHTML = `
-                              <div class="item-header">
-                                  <div class="item-title">${item.nome} (Cód: ${
-                    item.codigo
-                  }, ID: ${item.identificador})</div>
-                                  <button class="remove-btn" data-index="${index}">✕</button>
-                              </div>
-                              <div class="item-details">
-                                  <div class="item-detail">
-                                      <span class="detail-label">Empresa:</span>
-                                      <span>${item.numeroEmpresa}</span>
-                                  </div>
-                                  <div class="item-detail">
-                                      <span class="detail-label">Data Aquisição:</span>
-                                      <span>${formatDateDisplay(
-                                        item.dataAquisicao
-                                      )}</span>
-                                  </div>
-                                  <div class="item-detail">
-                                      <span class="detail-label">Valor:</span>
-                                      <span>R$ ${parseFloat(
-                                        item.valorAquisicao
-                                      ).toLocaleString("pt-BR", {
-                                        minimumFractionDigits: 2,
-                                      })}</span>
-                                  </div>
-                                  <div class="item-detail">
-                                      <span class="detail-label">Função:</span>
-                                      <span>${item.funcao}</span>
-                                  </div>
-                              </div>
-                          `;
+      // Função para remover um item
+      function removeItem(index) {
+        items.splice(index, 1);
+        renderItems();
 
-                  itemsContainer.appendChild(itemCard);
-                });
+        if (items.length > 0) {
+          prefillNextItemFields(items[items.length - 1]);
+        } else {
+          form.reset();
+          numeroEmpresaInput.value = "";
+          codigoInput.value = "";
+          identificadorInput.value = "";
+          funcaoInput.value = "";
+          numeroEmpresaInput.focus();
+        }
+      }
 
-                document.querySelectorAll(".remove-btn").forEach((button) => {
-                  button.addEventListener("click", function () {
-                    const index = parseInt(this.getAttribute("data-index"));
-                    removeItem(index);
-                  });
-                });
-              }
-            }
+      // Função para gerar o layout de texto
+      gerarTxtBtn.addEventListener("click", function () {
+        if (items.length === 0) {
+          resultBox.textContent = "Nenhum item para gerar.";
+          resultArea.classList.remove("hidden");
+          return;
+        }
+        
+        let result = "";
 
-            // Função para formatar data de YYYYMMDD para exibição DD/MM/YYYY
-            function formatDateDisplay(dateString) {
-              if (!dateString || dateString.length !== 8) return dateString;
+        items.forEach((item) => {
+          // Formatar valor com vírgula para o arquivo TXT
+          let valorAquisicaoFormatado = formatValorMonetario(item.valorAquisicao);
+          
+          let line = `${item.numeroEmpresa};${item.codigo};${item.identificador};${item.nome};${item.dataAquisicao};;${item.contaPatrimonial};${item.centroCusto};${item.historico};B;I;;;${item.funcao};${valorAquisicaoFormatado};;;;;;;;;;;${valorAquisicaoFormatado};;;;;;S;N;${item.dataAquisicao};N;;;;;N;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;`;
+          
+          result += line + "\n";
+        });
 
-              const year = dateString.substring(0, 4);
-              const month = dateString.substring(4, 6);
-              const day = dateString.substring(6, 8);
+        resultBox.textContent = result;
+        resultArea.classList.remove("hidden");
+      });
 
-              return `${day}/${month}/${year}`;
-            }
+      // Função para baixar o arquivo TXT
+      downloadBtn.addEventListener("click", function () {
+        const content = resultBox.textContent;
+        if (!content || content === "Nenhum item para gerar.") return;
+        const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
 
-            // Função para remover um item
-            function removeItem(index) {
-              items.splice(index, 1);
-              renderItems();
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "patrimonio_layout.txt";
+        document.body.appendChild(a);
+        a.click();
 
-              if (items.length > 0) {
-                prefillNextItemFields(items[items.length - 1]);
-              } else {
-                form.reset();
-                numeroEmpresaInput.value = "";
-                codigoInput.value = "";
-                identificadorInput.value = "";
-                funcaoInput.value = ""; // Limpar função também ou deixar placeholder
-                numeroEmpresaInput.focus();
-              }
-            }
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 100);
+      });
 
-            // Função para gerar o layout de texto
-            gerarTxtBtn.addEventListener("click", function () {
-              if (items.length === 0) {
-                resultBox.textContent = "Nenhum item para gerar.";
-                resultArea.classList.remove("hidden");
-                return;
-              }
-              let result = "";
+      // Função para copiar o conteúdo
+      copyBtn.addEventListener("click", function () {
+        const content = resultBox.textContent;
+        if (!content || content === "Nenhum item para gerar.") return;
+        navigator.clipboard
+          .writeText(content)
+          .then(() => {
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = "Copiado!";
+            copyBtn.disabled = true;
 
-              items.forEach((item) => {
-                // Formato específico: usando item.dataAquisicao para o campo de data início aquisição
-                let valorAquisicaoFormatado = parseFloat(item.valorAquisicao).toFixed(2).replace(".", ",");
-      let line = `${item.numeroEmpresa};${item.codigo};${item.identificador};${item.nome};${item.dataAquisicao};;${item.contaPatrimonial};${item.centroCusto};${item.historico};B;I;;;${item.funcao};${valorAquisicaoFormatado};;;;;;;;;;;${valorAquisicaoFormatado};;;;;;S;N;${item.dataAquisicao};N;;;;;N;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;`;
+            setTimeout(() => {
+              copyBtn.textContent = originalText;
+              copyBtn.disabled = false;
+            }, 2000);
+          })
+          .catch((err) => {
+            console.error("Erro ao copiar: ", err);
+            alert(
+              "Falha ao copiar. Verifique as permissões do navegador ou copie manualmente."
+            );
+          });
+      });
 
-              resultBox.textContent = result;
-              resultArea.classList.remove("hidden");
-            });
+      // Inicializar a renderização
+      renderItems();
 
-            // Função para baixar o arquivo TXT
-            downloadBtn.addEventListener("click", function () {
-              const content = resultBox.textContent;
-              if (!content || content === "Nenhum item para gerar.") return;
-              const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-              const url = URL.createObjectURL(blob);
+      // Permitir confirmar com Enter no campo código para ir para identificador
+      codigoInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          identificadorInput.focus();
+        }
+      });
+      
+      // E do identificador para o nome
+      identificadorInput.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          nomeInput.focus();
+        }
+      });
 
-              const a = document.createElement("a");
-              a.href = url;
-              a.download = "patrimonio_layout.txt";
-              document.body.appendChild(a);
-              a.click();
-
-              setTimeout(() => {
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-              }, 100);
-            });
-
-            // Função para copiar o conteúdo
-            copyBtn.addEventListener("click", function () {
-              const content = resultBox.textContent;
-              if (!content || content === "Nenhum item para gerar.") return;
-              navigator.clipboard
-                .writeText(content)
-                .then(() => {
-                  const originalText = copyBtn.textContent;
-                  copyBtn.textContent = "Copiado!";
-                  copyBtn.disabled = true;
-
-                  setTimeout(() => {
-                    copyBtn.textContent = originalText;
-                    copyBtn.disabled = false;
-                  }, 2000);
-                })
-                .catch((err) => {
-                  console.error("Erro ao copiar: ", err);
-                  alert(
-                    "Falha ao copiar. Verifique as permissões do navegador ou copie manualmente."
-                  );
-                });
-            });
-
-            // Inicializar a renderização
-            renderItems();
-
-            // Permitir confirmar com Enter no campo código para ir para identificador
-            codigoInput.addEventListener("keydown", function (e) {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                identificadorInput.focus();
-              }
-            });
-            // E do identificador para o nome
-            identificadorInput.addEventListener("keydown", function (e) {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                nomeInput.focus();
-              }
-            });
-
-            // Função para preencher campos com valores do último item AO LIMPAR
-            form.addEventListener("reset", function () {
-              setTimeout(() => {
-                if (items.length > 0) {
-                  const lastItem = items[items.length - 1];
-                  prefillNextItemFields(lastItem);
-                } else {
-                  numeroEmpresaInput.value = "";
-                  codigoInput.value = "";
-                  identificadorInput.value = "";
-                  funcaoInput.value = ""; // Limpar ou deixar o placeholder atuar
-                  numeroEmpresaInput.focus();
-                }
-                // O placeholder "ATIVO" para 'funcao' será visível se funcaoInput.value for ''
-              }, 0);
-            });
+      // Função para preencher campos com valores do último item AO LIMPAR
+      form.addEventListener("reset", function () {
+        setTimeout(() => {
+          if (items.length > 0) {
+            const lastItem = items[items.length - 1];
+            prefillNextItemFields(lastItem);
+          } else {
+            numeroEmpresaInput.value = "";
+            codigoInput.value = "";
+            identificadorInput.value = "";
+            funcaoInput.value = "";
+            numeroEmpresaInput.focus();
+          }
+        }, 0);
+      });
     </script>
   </body>
 </html>
