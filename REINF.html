@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Processador de Planilha para TXT (REINF)</title>
-    <!-- Importa a biblioteca SheetJS (js-xlsx) para ler arquivos Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
       :root {
@@ -43,7 +42,8 @@
       }
 
       h1,
-      h2 {
+      h2,
+      h3 { /* Adicionado h3 para consistência */
         color: var(--primary-color);
         border-bottom: 2px solid var(--accent-color);
         padding-bottom: 10px;
@@ -97,27 +97,34 @@
         cursor: not-allowed;
       }
 
-      #mapping-table {
+      #mapping-table,
+      #cpfTotalsTable { /* Aplicar estilo também à nova tabela */
         width: 100%;
         border-collapse: collapse;
         margin-top: 15px;
+        margin-bottom: 20px; /* Espaço abaixo da tabela de totais */
       }
 
       #mapping-table th,
-      #mapping-table td {
+      #mapping-table td,
+      #cpfTotalsTable th, /* Aplicar estilo também à nova tabela */
+      #cpfTotalsTable td { /* Aplicar estilo também à nova tabela */
         border: 1px solid var(--border-color);
         padding: 10px;
         text-align: left;
       }
 
-      #mapping-table th {
+      #mapping-table th,
+      #cpfTotalsTable th { /* Aplicar estilo também à nova tabela */
         background-color: var(--primary-color);
         color: var(--text-color-light);
       }
 
-      #mapping-table tr:nth-child(even) {
+      #mapping-table tr:nth-child(even),
+      #cpfTotalsTable tr:nth-child(even) { /* Aplicar estilo também à nova tabela */
         background-color: var(--form-bg-color);
       }
+
 
       #mapping-table button.remove-btn {
         background-color: var(--accent-color);
@@ -155,7 +162,6 @@
         border: 1px solid #d6d8db;
       }
 
-      /* Estilo específico para o texto do histórico no relatório */
       .historico-text-report {
         color: #555;
         font-style: italic;
@@ -175,26 +181,26 @@
 
       .form-inline {
         display: flex;
-        flex-wrap: wrap; /* Permite quebrar linha em telas menores */
+        flex-wrap: wrap;
         gap: 10px;
-        align-items: flex-end; /* Alinha itens na parte inferior */
+        align-items: flex-end;
         margin-bottom: 15px;
       }
       .form-inline div {
-        flex-grow: 1; /* Faz os inputs ocuparem espaço disponível */
-        min-width: 150px; /* Largura mínima para evitar que fiquem muito estreitos */
+        flex-grow: 1;
+        min-width: 150px;
       }
       .form-inline label {
-        margin-bottom: 5px; /* Menor margem para label inline */
+        margin-bottom: 5px;
       }
       .form-inline input[type="text"] {
-        margin-bottom: 0; /* Remove margem inferior do input */
-        width: 100%; /* Garante que o input preencha a div */
+        margin-bottom: 0;
+        width: 100%;
       }
       .form-inline button {
-        flex-shrink: 0; /* Impede que o botão encolha */
-        height: 40px; /* Ajusta altura para alinhar com inputs */
-        margin-top: 10px; /* Adiciona espaço acima do botão quando quebrar linha */
+        flex-shrink: 0;
+        height: 40px;
+        margin-top: 10px;
       }
     </style>
   </head>
@@ -202,7 +208,6 @@
     <div class="container">
       <h1>Gerador de TXT a partir de Planilha (REINF)</h1>
 
-      <!-- Seção 1: De/Para Nome x CPF -->
       <div class="section">
         <h2>1. Mapeamento Nome x CPF</h2>
         <p>
@@ -239,19 +244,16 @@
             </tr>
           </thead>
           <tbody id="mapping-body">
-            <!-- Linhas de mapeamento serão adicionadas aqui -->
           </tbody>
         </table>
       </div>
 
-      <!-- Seção 2: Importação da Planilha -->
       <div class="section">
         <h2>2. Importar Planilha Excel</h2>
         <p>
           Selecione o arquivo Excel (.xlsx ou .xls). A planilha deve conter as
           colunas: <strong>Histórico</strong>, <strong>Valor</strong> e
           <strong>Data</strong> (na primeira aba).
-          <!-- MODIFIED: Removed single-quarter restriction -->
           <strong>O sistema irá agrupar os dados por trimestre fiscal (para REINF) e gerar arquivos TXT separados.</strong>
         </p>
         <label for="excelFile">Arquivo Excel:</label>
@@ -261,10 +263,23 @@
         </button>
       </div>
 
-      <!-- Seção 3: Resultados e Download -->
       <div class="section">
         <h2>3. Resultado</h2>
         <div id="status">Aguardando processamento...</div>
+
+        <div id="cpfTotalsSection" class="hidden">
+          <h3>Totais por CPF (para Conferência)</h3>
+          <table id="cpfTotalsTable">
+            <thead>
+              <tr>
+                <th>CPF</th>
+                <th>Valor Total (R$)</th>
+              </tr>
+            </thead>
+            <tbody id="cpfTotalsTableBody">
+              </tbody>
+          </table>
+        </div>
         <div id="report" class="hidden"></div>
         <button id="downloadButton" class="hidden" disabled>
           Baixar Arquivo(s) TXT
@@ -282,14 +297,17 @@
       const downloadButton = document.getElementById("downloadButton");
       const statusDiv = document.getElementById("status");
       const reportDiv = document.getElementById("report");
+      // NOVOS ELEMENTOS PARA TABELA DE TOTAIS
+      const cpfTotalsSectionDiv = document.getElementById("cpfTotalsSection");
+      const cpfTotalsTableBody = document.getElementById("cpfTotalsTableBody");
+
 
       let mappings = {};
-      // MODIFIED: Store data grouped by quarter
       let processedDataByQuarter = {};
       let notFoundRows = [];
       let excelData = [];
+      let cpfTotals = {}; // MODIFIED: Store totals per CPF
 
-      // --- Função de Normalização ---
       function normalizeString(str) {
         if (!str) return "";
         return str
@@ -299,7 +317,6 @@
           .replace(/[\u0300-\u036f]/g, "");
       }
 
-      // --- Funções de Mapeamento ---
       function renderMappingTable() {
         mappingBody.innerHTML = "";
         const names = Object.keys(mappings);
@@ -381,7 +398,6 @@
         return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
       }
 
-      // --- Funções de Processamento da Planilha ---
       function handleFileProcess() {
         const file = excelFileInput.files[0];
         if (!file) {
@@ -435,9 +451,9 @@
       }
 
       function processExcelData() {
-        // MODIFIED: Initialize object for grouping
         processedDataByQuarter = {};
         notFoundRows = [];
+        cpfTotals = {}; // MODIFIED: Reset CPF totals
         let totalProcessedLines = 0;
 
         console.log("Iniciando processExcelData...");
@@ -450,8 +466,8 @@
           return;
         }
         
-        const headersRaw = Object.keys(excelData[0] || {}); // Handle empty excelData gracefully
-        if (headersRaw.length === 0 && excelData.length > 0) { // If first row is somehow empty but there are other rows
+        const headersRaw = Object.keys(excelData[0] || {});
+        if (headersRaw.length === 0 && excelData.length > 0) {
             updateStatus("A primeira linha de dados da planilha está vazia, mas existem outras linhas. Verifique o arquivo.", "error");
             processButton.disabled = false;
             return;
@@ -509,22 +525,21 @@
 
           const historico = String(historicoRaw);
 
-          let rowDate, rowDateStr = "";
+          let rowDate;
           if (dataRaw instanceof Date) {
             rowDate = dataRaw;
           } else if (typeof dataRaw === "string" && dataRaw.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
             rowDate = parseDateDDMMYYYY(dataRaw);
-          } else if (typeof dataRaw === "number" && dataRaw > 1) { // Excel date number
+          } else if (typeof dataRaw === "number" && dataRaw > 1) { 
             try {
-              const excelEpoch = new Date(1899, 11, 30); // Excel epoch starts Dec 30, 1899 for serial 1
+              const excelEpoch = new Date(1899, 11, 30); 
               const jsDate = new Date(excelEpoch.getTime() + (dataRaw * 24 * 60 * 60 * 1000));
-              // Adjust for timezone offset if XLSX doesn't handle it correctly
               const offset = jsDate.getTimezoneOffset() * 60000;
-              rowDate = new Date(jsDate.getTime() + offset); // Corrected date
+              rowDate = new Date(jsDate.getTime() + offset); 
             } catch (dateErr) {
               rowDate = null;
             }
-          } else { // Try generic parsing
+          } else { 
             try {
                 let parsed = new Date(dataRaw);
                 if (!isNaN(parsed)) rowDate = parsed; else rowDate = null;
@@ -538,8 +553,7 @@
             });
             return;
           }
-          rowDateStr = formatDate(rowDate);
-
+          const rowDateStr = formatDate(rowDate);
 
           let valorString = String(valorRaw).trim();
           let cleanedValorString;
@@ -553,11 +567,11 @@
             }
             cleanedValorString = cleanedValorString.replace(/[^\d.-]/g, "");
             let parts = cleanedValorString.split('.');
-            if (parts.length > 2) { // Handle cases like 1.234.56 -> 1234.56
+            if (parts.length > 2) { 
                 cleanedValorString = parts.slice(0, -1).join('') + '.' + parts[parts.length -1];
             }
           } catch (cleanError) {
-            cleanedValorString = "NaN"; // Mark as NaN if cleaning fails
+            cleanedValorString = "NaN"; 
           }
           const valorNum = Number(cleanedValorString);
 
@@ -579,16 +593,22 @@
           for (const term of searchTerms) {
             if (normalizedHistorico.includes(term.normalizedName)) {
               const cpf = term.cpf;
-              // This is the date for the FIRST field of the TXT line
               const reinfReportingDateStr = getReinfReportingDateString(rowDate); 
               const txtLine = `${reinfReportingDateStr};${cpf};BRASIL;12001;${valorFormatado};${rowDateStr};;;;;;;;;;;;;`;
               
-              // MODIFIED: Group lines by quarter key
-              const quarterKey = getQuarterFilenameSuffix(rowDate); // "MMAAAA"
+              const quarterKey = getQuarterFilenameSuffix(rowDate);
               if (!processedDataByQuarter[quarterKey]) {
                 processedDataByQuarter[quarterKey] = [];
               }
               processedDataByQuarter[quarterKey].push(txtLine);
+
+              // MODIFIED: Accumulate totals for CPF
+              if (cpfTotals[cpf]) {
+                cpfTotals[cpf] += valorNum;
+              } else {
+                cpfTotals[cpf] = valorNum;
+              }
+
               totalProcessedLines++;
               matchFound = true;
               break;
@@ -602,7 +622,7 @@
               historicoText: historico,
             });
           }
-        }); // Fim do forEach
+        }); 
 
         const numQuartersWithData = Object.keys(processedDataByQuarter).length;
 
@@ -620,7 +640,7 @@
           );
           downloadButton.disabled = true;
           downloadButton.classList.add("hidden");
-        } else if (excelData.length > 0) { // Data exists, but no matches
+        } else if (excelData.length > 0) {
            updateStatus(
             "Processamento concluído, mas nenhuma linha correspondeu aos mapeamentos para gerar o(s) TXT(s).",
             "info"
@@ -628,19 +648,41 @@
           downloadButton.disabled = true;
           downloadButton.classList.add("hidden");
         }
-
-
+        
+        displayCpfTotalsTable(); // MODIFIED: Display CPF totals table
         displayReport();
         processButton.disabled = false;
       }
 
-      // --- Funções Auxiliares ---
-      function formatDate(date) { // Returns DD/MM/YYYY string
+      // --- NOVA FUNÇÃO: Display CPF Totals Table ---
+      function displayCpfTotalsTable() {
+        cpfTotalsTableBody.innerHTML = ""; // Clear previous totals
+        const cpfsProcessed = Object.keys(cpfTotals);
+
+        if (cpfsProcessed.length === 0) {
+          cpfTotalsSectionDiv.classList.add("hidden");
+          return;
+        }
+
+        cpfsProcessed.sort().forEach(cpf => {
+          const total = cpfTotals[cpf];
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${formatCPF(cpf)}</td>
+            <td>${total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+          `;
+          cpfTotalsTableBody.appendChild(row);
+        });
+        cpfTotalsSectionDiv.classList.remove("hidden");
+      }
+
+
+      function formatDate(date) {
         if (!(date instanceof Date) || isNaN(date.getTime())) return "";
         const day = String(date.getDate()).padStart(2, "0");
         const month = String(date.getMonth() + 1).padStart(2, "0");
         const year = date.getFullYear();
-        if (year < 1000 || year > 9999) return ""; // Basic validation
+        if (year < 1000 || year > 9999) return "";
         return `${day}/${month}/${year}`;
       }
 
@@ -649,11 +691,10 @@
         const parts = dateString.split("/");
         if (parts.length === 3) {
           const day = parseInt(parts[0], 10);
-          const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed
+          const month = parseInt(parts[1], 10) - 1;
           const year = parseInt(parts[2], 10);
           if (!isNaN(day) && !isNaN(month) && !isNaN(year) && year > 0 && year < 10000) {
             const date = new Date(year, month, day);
-            // Check if date is valid (e.g. not 31/02/2023)
             if (date.getFullYear() === year && date.getMonth() === month && date.getDate() === day) {
               return date;
             }
@@ -662,40 +703,37 @@
         return null;
       }
 
-      // Gets the REINF reporting period start date (e.g., 01/04/YYYY for Q1 transactions)
       function getReinfPeriodStartDate(date) {
         if (!(date instanceof Date) || isNaN(date.getTime())) return null;
-        const month = date.getMonth(); // 0-11
+        const month = date.getMonth(); 
         const year = date.getFullYear();
         let targetMonth, targetYear = year;
 
-        if (month <= 2) { // Jan-Mar (Q1) -> Report in April
-          targetMonth = 3; // April (month index 3)
-        } else if (month <= 5) { // Apr-Jun (Q2) -> Report in July
-          targetMonth = 6; // July (month index 6)
-        } else if (month <= 8) { // Jul-Sep (Q3) -> Report in October
-          targetMonth = 9; // October (month index 9)
-        } else { // Oct-Dec (Q4) -> Report in January of next year
-          targetMonth = 0; // January (month index 0)
+        if (month <= 2) { 
+          targetMonth = 3; 
+        } else if (month <= 5) { 
+          targetMonth = 6; 
+        } else if (month <= 8) { 
+          targetMonth = 9; 
+        } else { 
+          targetMonth = 0; 
           targetYear = year + 1;
         }
         return new Date(targetYear, targetMonth, 1);
       }
       
-      // Returns the REINF reporting date as a string "DD/MM/YYYY" for the TXT file
       function getReinfReportingDateString(originalTransactionDate) {
           const periodStartDate = getReinfPeriodStartDate(originalTransactionDate);
           return periodStartDate ? formatDate(periodStartDate) : "DATA_INVALIDA";
       }
 
-      // MODIFIED: Helper to get "MMAAAA" suffix for filename, based on REINF period start date
       function getQuarterFilenameSuffix(originalTransactionDate) {
         const periodStartDate = getReinfPeriodStartDate(originalTransactionDate);
         if (!periodStartDate || isNaN(periodStartDate.getTime())) return "ERRODATA";
         
         const month = String(periodStartDate.getMonth() + 1).padStart(2, "0");
         const year = periodStartDate.getFullYear();
-        return `${month}${year}`; // e.g., "042023"
+        return `${month}${year}`;
       }
 
 
@@ -731,13 +769,13 @@
           if (notFoundRows.length > maxReportItems) {
             reportDiv.innerHTML += `<br>... e mais ${notFoundRows.length - maxReportItems} linhas.`;
           }
-          reportDiv.className = (numQuartersWithData > 0 && statusDiv.className === "success") ? "info" : "error"; // Show as info if some files generated, else error
+          reportDiv.className = (numQuartersWithData > 0 && statusDiv.className === "success") ? "info" : "error"; 
           reportDiv.classList.remove("hidden");
         } else if (excelData.length > 0 && numQuartersWithData > 0) {
           reportDiv.innerHTML = "Todas as linhas válidas foram verificadas e os mapeamentos aplicados com sucesso.";
           reportDiv.className = "success";
           reportDiv.classList.remove("hidden");
-        } else if (excelData.length > 0 && numQuartersWithData === 0 && notFoundRows.length === 0) { // Valid data but no matches
+        } else if (excelData.length > 0 && numQuartersWithData === 0 && notFoundRows.length === 0) { 
            reportDiv.innerHTML = "Planilha processada, mas nenhum histórico correspondeu aos nomes mapeados.";
            reportDiv.className = "info";
            reportDiv.classList.remove("hidden");
@@ -745,19 +783,24 @@
       }
 
       function resetResults() {
-        processedDataByQuarter = {}; // MODIFIED
+        processedDataByQuarter = {}; 
         notFoundRows = [];
         excelData = [];
+        cpfTotals = {}; // MODIFIED: Reset CPF totals
+
         downloadButton.disabled = true;
         downloadButton.classList.add("hidden");
         reportDiv.classList.add("hidden");
         reportDiv.innerHTML = "";
+        
+        // MODIFIED: Hide and clear CPF totals table
+        cpfTotalsSectionDiv.classList.add("hidden");
+        cpfTotalsTableBody.innerHTML = "";
+
         statusDiv.textContent = "Aguardando processamento...";
         statusDiv.className = "";
       }
 
-      // --- Função de Download ---
-      // MODIFIED: To download multiple files
       function downloadTxtFiles() {
         const quarters = Object.keys(processedDataByQuarter);
         if (quarters.length === 0) {
@@ -774,7 +817,6 @@
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement("a");
                 link.href = url;
-                // Filename: Importador_Reinf_Trim_MMAAAA.txt
                 link.download = `Importador_Reinf_Trim_${quarterKey}.txt`;
                 document.body.appendChild(link);
                 link.click();
@@ -794,10 +836,8 @@
         }
       }
 
-      // --- Event Listeners ---
       addMappingBtn.addEventListener("click", addMapping);
       processButton.addEventListener("click", handleFileProcess);
-      // MODIFIED: Event listener for download button
       downloadButton.addEventListener("click", downloadTxtFiles);
 
       excelFileInput.addEventListener("change", () => {
@@ -824,7 +864,6 @@
         }
       });
 
-      // Inicializa
       renderMappingTable();
     </script>
   </body>
