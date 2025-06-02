@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gerador de Layout de Patrimônio com Excel</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: var(--background-color);
+        color: var(--text-color);
+        line-height: 1.6;
+      }
+
+      header {
+        background-color: var(--primary-color);
+        color: var(--text-color-light);
+        padding: 1.5rem 0;
+        text-align: center;
+        box-shadow: var(--sombra);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      h1 {
+        font-size: 2.2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      h2 {
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+        color: var(--primary-color);
+      }
+
+      .subtitle {
+        font-size: 1rem;
+        opacity: 0.9;
+      }
+
+      .card {
+        background-color: var(--form-bg-color);
+        border-radius: 8px;
+        box-shadow: var(--sombra);
+        padding: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      #numeroEmpresa {
+        max-width: 150px;
+      }
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+      .checkbox-group input[type="checkbox"] {
+        width: auto;
+        margin-right: 0.5rem;
+      }
+      .checkbox-group label {
+        margin-bottom: 0;
+        font-weight: normal;
+        color: var(--text-color);
+      }
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--primary-color);
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: var(--transicao);
+        font-family: inherit;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(79, 0, 114, 0.1);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+      }
+      th,
+      td {
+        border: 1px solid var(--border-color);
+        padding: 0.75rem;
+        text-align: left;
+      }
+      th {
+        background-color: var(--primary-color);
+        color: var(--text-color-light);
+      }
+      td input[type="text"] {
+        font-size: 0.9rem;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 0.8rem 1.5rem;
+        background-color: var(--primary-color);
+        color: var(--text-color-light);
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: var(--transicao);
+        text-align: center;
+      }
+
+      .btn:hover {
+        background-color: #3a0055;
+        transform: translateY(-2px);
+      }
+      .btn:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .btn-accent {
+        background-color: var(--accent-color);
+      }
+
+      .btn-accent:hover {
+        background-color: #d9094f;
+      }
+      .btn-accent:disabled {
+        background-color: #f09cb9;
+      }
+
+      .btn-outline {
+        background-color: transparent;
+        border: 2px solid var(--primary-color);
+        color: var(--primary-color);
+      }
+
+      .btn-outline:hover {
+        background-color: var(--primary-color);
+        color: var(--text-color-light);
+      }
+      .btn-outline:disabled {
+        border-color: #ccc;
+        color: #ccc;
+        background-color: transparent;
+      }
+
+      .actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        flex-wrap: wrap;
+      }
+
+      .items-list {
+        margin-top: 2rem;
+      }
+
+      .item-card {
+        background-color: var(--background-color);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        position: relative;
+        transition: var(--transicao);
+      }
+
+      .item-card:hover {
+        box-shadow: var(--sombra);
+      }
+
+      .item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+
+      .item-title {
+        font-weight: 600;
+        color: var(--primary-color);
+      }
+
+      .item-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      .item-detail {
+        display: flex;
+        flex-direction: column;
+      }
+      .item-detail.full-width {
+        grid-column: 1 / -1;
+      }
+      .item-detail span:first-child {
+        word-break: break-word;
+      }
+
+      .detail-label {
+        font-weight: 600;
+        margin-right: 0.5rem;
+        color: var(--primary-color);
+        margin-bottom: 0.25rem;
+      }
+
+      .remove-btn {
+        background-color: var(--accent-color);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: var(--transicao);
+      }
+
+      .remove-btn:hover {
+        background-color: #d9094f;
+        transform: scale(1.1);
+      }
+
+      .result-area {
+        margin-top: 2rem;
+      }
+
+      .result-box {
+        background-color: var(--form-bg-color);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 1rem;
+        margin-top: 1rem;
+        white-space: pre-wrap;
+        word-break: break-all;
+        max-height: 300px;
+        overflow-y: auto;
+        font-family: monospace;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: #888;
+      }
+
+      .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: var(--border-color);
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      /* Custom Modal Styles */
+      .custom-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        padding: 1rem;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+      }
+      .custom-modal-overlay.visible {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .custom-modal-content {
+        background-color: var(--form-bg-color);
+        padding: 2.5rem;
+        border-radius: 8px;
+        box-shadow: var(--sombra), 0 8px 25px rgba(0, 0, 0, 0.1);
+        min-width: 320px;
+        max-width: 500px;
+        width: 90%;
+        text-align: center;
+        color: var(--text-color);
+        transform: scale(0.95);
+        transition: transform 0.3s ease;
+      }
+      .custom-modal-overlay.visible .custom-modal-content {
+        transform: scale(1);
+      }
+
+      .custom-modal-text {
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+        line-height: 1.7;
+        white-space: pre-line;
+        color: var(--text-color);
+      }
+      .custom-modal-text h3 {
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+      }
+
+      .custom-modal-actions {
+        margin-top: 1.5rem;
+      }
+      .custom-modal-close-btn {
+        /* Using existing .btn styles */
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 1rem;
+        }
+        .actions {
+          flex-direction: column;
+        }
+        .btn {
+          width: 100%;
+        }
+        #numeroEmpresa {
+          max-width: 100%;
+        }
+        .custom-modal-content {
+          padding: 2rem;
+        }
+        .custom-modal-text h3 {
+          font-size: 1.3rem;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1>Gerador de Layout de Patrimônio (Upload Excel)</h1>
+      <p class="subtitle">Faça o upload do arquivo Excel e mapeie as contas</p>
+      <p class="subtitle">
+        <strong
+          >Conjunto de Dados (Cadastro de Bens - Tabela PMBEM (Leiaute Domínio
+          sistemas PMBEM))</strong
+        >
+      </p>
+    </header>
+
+    <div class="container">
+      <div class="card">
+        <h2>1. Carregar Dados e Opções</h2>
+        <div class="form-group">
+          <label for="numeroEmpresa">Número da Empresa* (máx. 5 dígitos)</label>
+          <input
+            type="number"
+            id="numeroEmpresa"
+            required
+            max="99999"
+            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+            maxlength="5"
+          />
+        </div>
+        <div class="form-group">
+          <label for="excelFile">Arquivo Excel (.xlsx, .xls)*</label>
+          <input type="file" id="excelFile" accept=".xlsx, .xls" required />
+        </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="processarBaixadosCheckbox" />
+          <label for="processarBaixadosCheckbox"
+            >Processar itens com Status 'Baixa Total' na planilha?</label
+          >
+        </div>
+      </div>
+
+      <div class="card hidden" id="mappingCard">
+        <h2>2. Mapeamento De/Para (Conta Principal -> Conta Patrimonial)</h2>
+        <p>
+          Preencha a "Conta Patrimonial" correspondente para cada "Conta
+          Principal" encontrada no arquivo Excel.
+        </p>
+        <div id="mappingTableContainer"></div>
+        <div class="actions">
+          <button id="processExcelBtn" class="btn">Processar Dados</button>
+        </div>
+      </div>
+
+      <div class="items-list" id="itemsList">
+        <h2>Itens Processados</h2>
+        <div id="emptyState" class="empty-state">
+          <i>📋</i>
+          <p>
+            Nenhum item processado ainda. Carregue um arquivo Excel e realize o
+            mapeamento.
+          </p>
+        </div>
+        <div id="itemsContainer"></div>
+      </div>
+
+      <div class="actions">
+        <button id="gerarTxtBtn" class="btn btn-accent" disabled>
+          Gerar Arquivo TXT
+        </button>
+      </div>
+
+      <div class="result-area hidden" id="resultArea">
+        <h2>Resultado do Layout</h2>
+        <div class="result-box" id="resultBox"></div>
+        <div class="actions">
+          <button id="downloadBtn" class="btn">Baixar Arquivo TXT</button>
+          <button id="copyBtn" class="btn btn-outline">Copiar Conteúdo</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="customAlertModal" class="custom-modal-overlay">
+      <div class="custom-modal-content">
+        <p id="customAlertText" class="custom-modal-text"></p>
+        <div class="custom-modal-actions">
+          <button id="customAlertCloseBtn" class="btn custom-modal-close-btn">
+            OK
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let items = [];
+      let excelData = [];
+
+      const numeroEmpresaInput = document.getElementById("numeroEmpresa");
+      const excelFileInput = document.getElementById("excelFile");
+      const processarBaixadosCheckbox = document.getElementById(
+        "processarBaixadosCheckbox"
+      );
+      const mappingCard = document.getElementById("mappingCard");
+      const mappingTableContainer = document.getElementById(
+        "mappingTableContainer"
+      );
+      const processExcelBtn = document.getElementById("processExcelBtn");
+      const itemsContainer = document.getElementById("itemsContainer");
+      const emptyState = document.getElementById("emptyState");
+      const gerarTxtBtn = document.getElementById("gerarTxtBtn");
+      const resultArea = document.getElementById("resultArea");
+      const resultBox = document.getElementById("resultBox");
+      const downloadBtn = document.getElementById("downloadBtn");
+      const copyBtn = document.getElementById("copyBtn");
+
+      const customAlertModal = document.getElementById("customAlertModal");
+      const customAlertText = document.getElementById("customAlertText");
+      const customAlertCloseBtn = document.getElementById(
+        "customAlertCloseBtn"
+      );
+
+      function showCustomAlert(message, title) {
+        let fullMessage = message;
+        if (title) {
+          fullMessage = `<h3>${title}</h3>${message}`;
+        }
+        customAlertText.innerHTML = fullMessage;
+        customAlertModal.classList.add("visible");
+      }
+
+      function hideCustomAlert() {
+        customAlertModal.classList.remove("visible");
+      }
+
+      customAlertCloseBtn.addEventListener("click", hideCustomAlert);
+      customAlertModal.addEventListener("click", function (event) {
+        if (event.target === customAlertModal) {
+          hideCustomAlert();
+        }
+      });
+
+      function formatDateToYYYYMMDD(dateInput) {
+        if (!dateInput) return "";
+        let date;
+        if (dateInput instanceof Date) {
+          date = dateInput;
+        } else if (typeof dateInput === "string" && dateInput.includes("-")) {
+          return dateInput.replace(/-/g, "");
+        } else if (typeof dateInput === "string" && dateInput.includes("/")) {
+          const parts = dateInput.split("/");
+          if (parts.length === 3) return `${parts[2]}${parts[1]}${parts[0]}`;
+          return dateInput;
+        } else if (
+          typeof dateInput === "string" &&
+          dateInput.length === 8 &&
+          !isNaN(dateInput)
+        ) {
+          return dateInput;
+        } else {
+          date = new Date(dateInput);
+        }
+        if (isNaN(date.getTime())) {
+          console.warn("Data de aquisição inválida:", dateInput);
+          return typeof dateInput === "string" ? dateInput : "";
+        }
+        const year = date.getFullYear();
+        const month = (date.getMonth() + 1).toString().padStart(2, "0");
+        const day = date.getDate().toString().padStart(2, "0");
+        return `${year}${month}${day}`;
+      }
+
+      function formatValorMonetario(valor) {
+        const num = parseFloat(String(valor).replace(",", "."));
+        if (isNaN(num)) return "0,00";
+        return num.toFixed(2).replace(".", ",");
+      }
+
+      function formatDateDisplay(dateString) {
+        if (!dateString || dateString.length !== 8) return dateString;
+        const year = dateString.substring(0, 4);
+        const month = dateString.substring(4, 6);
+        const day = dateString.substring(6, 8);
+        return `${day}/${month}/${year}`;
+      }
+
+      excelFileInput.addEventListener("change", (event) => {
+        const file = event.target.files[0];
+        if (!file) {
+          resetToInitialState();
+          return;
+        }
+        items = [];
+        excelData = [];
+        renderItems();
+        mappingCard.classList.add("hidden");
+        mappingTableContainer.innerHTML = "";
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, {
+              type: "array",
+              cellDates: true,
+            });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            excelData = XLSX.utils.sheet_to_json(worksheet);
+
+            if (excelData.length === 0) {
+              showCustomAlert(
+                "A planilha parece estar vazia ou não foi lida corretamente.",
+                "Atenção"
+              );
+              resetToInitialState();
+              return;
+            }
+
+            const requiredColumns = [
+              "Conta Principal",
+              "Código",
+              "Descrição",
+              "Aquisição",
+              "Observação",
+              "Valor total do bem",
+              "Nome Fornecedor",
+              "NF/Documento",
+              "Status",
+            ];
+            const firstRow = excelData[0];
+            const missingColumns = [];
+            for (const col of requiredColumns) {
+              if (!(col in firstRow)) {
+                missingColumns.push(col);
+              }
+            }
+
+            if (missingColumns.length > 0) {
+              showCustomAlert(
+                `Colunas obrigatórias não encontradas na planilha:\n<b>${missingColumns.join(
+                  ", "
+                )}</b>.\n\nVerifique o arquivo.`,
+                "Erro na Planilha"
+              );
+              resetToInitialState();
+              return;
+            }
+            displayMappingTable(excelData);
+          } catch (error) {
+            console.error("Erro ao ler o arquivo Excel:", error);
+            showCustomAlert(
+              "Erro ao ler o arquivo Excel. Verifique se é um formato válido e se não está corrompido.\nDetalhe: " +
+                error.message,
+              "Erro de Leitura"
+            );
+            resetToInitialState();
+          }
+        };
+        reader.onerror = (error) => {
+          console.error("Erro no FileReader:", error);
+          showCustomAlert(
+            "Não foi possível ler o arquivo selecionado.",
+            "Erro de Arquivo"
+          );
+          resetToInitialState();
+        };
+        reader.readAsArrayBuffer(file);
+      });
+
+      function resetToInitialState() {
+        excelFileInput.value = "";
+        items = [];
+        excelData = [];
+        renderItems();
+        mappingCard.classList.add("hidden");
+        mappingTableContainer.innerHTML = "";
+        resultArea.classList.add("hidden");
+        resultBox.textContent = "";
+        gerarTxtBtn.disabled = true;
+      }
+
+      function displayMappingTable(data) {
+        const contasPrincipais = [
+          ...new Set(
+            data
+              .map((row) => row["Conta Principal"])
+              .filter((cp) => cp != null && String(cp).trim() !== "")
+          ),
+        ];
+        if (contasPrincipais.length === 0) {
+          showCustomAlert(
+            "Nenhuma 'Conta Principal' válida (não vazia) encontrada nos dados do Excel para mapeamento.",
+            "Atenção"
+          );
+          mappingCard.classList.add("hidden");
+          return;
+        }
+        let tableHTML = `<table><thead><tr><th>Conta Principal (do Excel)</th><th>Conta Patrimonial (De/Para)*</th></tr></thead><tbody>`;
+        contasPrincipais.forEach((conta) => {
+          tableHTML += `<tr><td>${conta}</td><td><input type="text" class="conta-patrimonial-input" data-conta-principal="${conta}" required placeholder="Digite a conta patrimonial"></td></tr>`;
+        });
+        tableHTML += `</tbody></table>`;
+        mappingTableContainer.innerHTML = tableHTML;
+        mappingCard.classList.remove("hidden");
+      }
+
+      processExcelBtn.addEventListener("click", () => {
+        const numeroEmpresa = numeroEmpresaInput.value;
+        if (!numeroEmpresa) {
+          showCustomAlert(
+            "Por favor, informe o Número da Empresa.",
+            "Campo Obrigatório"
+          );
+          numeroEmpresaInput.focus();
+          return;
+        }
+        if (
+          numeroEmpresa.length > 5 ||
+          parseInt(numeroEmpresa, 10) > 99999 ||
+          parseInt(numeroEmpresa, 10) < 0
+        ) {
+          showCustomAlert(
+            "O Número da Empresa deve ser um valor numérico entre 0 e 99999.",
+            "Valor Inválido"
+          );
+          numeroEmpresaInput.focus();
+          return;
+        }
+        if (excelData.length === 0) {
+          showCustomAlert(
+            "Nenhum dado do Excel carregado para processar. Por favor, carregue um arquivo.",
+            "Sem Dados"
+          );
+          return;
+        }
+
+        const contaPatrimonialInputs = document.querySelectorAll(
+          ".conta-patrimonial-input"
+        );
+        const deParaMap = new Map();
+        let allMappingsFilled = true;
+        contaPatrimonialInputs.forEach((input) => {
+          const contaPrincipal = input.getAttribute("data-conta-principal");
+          const contaPatrimonial = input.value.trim();
+          if (!contaPatrimonial) {
+            allMappingsFilled = false;
+            input.style.borderColor = "red";
+          } else {
+            input.style.borderColor = "var(--border-color)";
+          }
+          deParaMap.set(contaPrincipal, contaPatrimonial);
+        });
+
+        if (!allMappingsFilled) {
+          showCustomAlert(
+            "Por favor, preencha todas as Contas Patrimoniais correspondentes na tabela de De/Para.",
+            "Mapeamento Incompleto"
+          );
+          return;
+        }
+
+        items = [];
+        let processErrors = [];
+        const querProcessarBaixados = processarBaixadosCheckbox.checked;
+
+        excelData.forEach((row, index) => {
+          const statusDoBem = String(row["Status"] || "")
+            .trim()
+            .toLowerCase();
+          if (statusDoBem === "baixa total" && !querProcessarBaixados) {
+            processErrors.push(
+              `Linha ${index + 2} (Cód: ${row["Código"] || "N/A"} - Status: ${
+                row["Status"]
+              }) ignorada conforme opção (não processar baixados).`
+            );
+            return;
+          }
+
+          const contaPrincipalExcel = row["Conta Principal"];
+          const contaPatrimonial = deParaMap.get(contaPrincipalExcel) || "";
+          if (
+            row["Código"] === undefined ||
+            row["Código"] === null ||
+            String(row["Código"]).trim() === ""
+          ) {
+            processErrors.push(
+              `Linha ${index + 2} do Excel: Código não preenchido.`
+            );
+            return;
+          }
+
+          let dataAquisicaoRaw = row["Aquisição"];
+          let dataAquisicaoFormatada = formatDateToYYYYMMDD(dataAquisicaoRaw);
+          if (!dataAquisicaoFormatada && dataAquisicaoRaw) {
+            processErrors.push(
+              `Linha ${index + 2} (Cód: ${
+                row["Código"]
+              }): Data de aquisição '${dataAquisicaoRaw}' é inválida ou não pôde ser formatada.`
+            );
+          }
+
+          const observacaoBase = String(row["Observação"] || "").trim();
+          const nfDocumento = String(row["NF/Documento"] || "").trim();
+          const nomeFornecedor = String(row["Nome Fornecedor"] || "").trim();
+          let historicoCompleto = observacaoBase;
+          if (nfDocumento || nomeFornecedor) {
+            historicoCompleto += `${
+              observacaoBase ? " - " : ""
+            }CONF. N.F. Nr: ${nfDocumento} de ${nomeFornecedor}.`;
+          }
+          historicoCompleto = historicoCompleto.replace(/;/g, ",");
+
+          const item = {
+            numeroEmpresa: numeroEmpresa,
+            codigo: String(row["Código"]).trim(),
+            identificador: String(row["Código"]).trim(),
+            nome: String(row["Descrição"] || "")
+              .trim()
+              .replace(/;/g, ","), // PONTO E VÍRGULA SUBSTITUÍDO NA DESCRIÇÃO
+            dataAquisicao: dataAquisicaoFormatada,
+            contaPatrimonial: String(contaPatrimonial).trim(),
+            centroCusto: "1",
+            historico: historicoCompleto,
+            funcao: "ATIVO",
+            valorAquisicao: String(row["Valor total do bem"] || "0"),
+            statusOriginal: row["Status"],
+          };
+
+          if (!item.codigo) {
+            processErrors.push(
+              `Linha ${index + 2}: Código está vazio após processamento.`
+            );
+            return;
+          }
+          if (!item.nome) {
+            processErrors.push(
+              `Linha ${index + 2} (Cód: ${
+                item.codigo
+              }): Nome (Descrição) está vazio.`
+            );
+          }
+          if (!item.dataAquisicao) {
+            processErrors.push(
+              `Linha ${index + 2} (Cód: ${
+                item.codigo
+              }): Data de Aquisição está vazia ou inválida.`
+            );
+          }
+          if (!item.contaPatrimonial && contaPrincipalExcel) {
+            processErrors.push(
+              `Linha ${index + 2} (Cód: ${
+                item.codigo
+              }): Conta Patrimonial não mapeada para '${contaPrincipalExcel}'.`
+            );
+          }
+          if (
+            isNaN(parseFloat(String(item.valorAquisicao).replace(",", ".")))
+          ) {
+            processErrors.push(
+              `Linha ${index + 2} (Cód: ${item.codigo}): Valor de Aquisição '${
+                row["Valor total do bem"]
+              }' é inválido.`
+            );
+            item.valorAquisicao = "0";
+          }
+          items.push(item);
+        });
+
+        if (processErrors.length > 0) {
+          showCustomAlert(
+            "Avisos durante o processamento:\n\n- " +
+              processErrors.join("\n- ") +
+              "\n\nOs itens válidos (se houver) foram carregados.",
+            "Relatório de Processamento"
+          );
+        } else if (items.length > 0) {
+          showCustomAlert("Dados processados com sucesso!", "Sucesso");
+        } else if (excelData.length > 0 && items.length === 0) {
+          showCustomAlert(
+            "Nenhum item foi processado. Verifique os dados da planilha, mapeamentos e opções de filtro.",
+            "Nenhum Item Processado"
+          );
+        }
+
+        renderItems();
+        if (items.length > 0) {
+          mappingCard.classList.add("hidden");
+        }
+      });
+
+      function renderItems() {
+        if (items.length === 0) {
+          emptyState.classList.remove("hidden");
+          itemsContainer.innerHTML = "";
+          gerarTxtBtn.disabled = true;
+          resultArea.classList.add("hidden");
+        } else {
+          emptyState.classList.add("hidden");
+          gerarTxtBtn.disabled = false;
+          itemsContainer.innerHTML = "";
+
+          items.forEach((item, index) => {
+            const itemCard = document.createElement("div");
+            itemCard.className = "item-card";
+            const isBaixado =
+              String(item.statusOriginal || "")
+                .trim()
+                .toLowerCase() === "baixa total";
+            const statusDisplay = isBaixado
+              ? ` <span style="color: var(--accent-color); font-weight: bold;">(Status: ${item.statusOriginal})</span>`
+              : "";
+
+            itemCard.innerHTML = `
+                        <div class="item-header">
+                            <div class="item-title">${
+                              item.nome || "Nome não informado"
+                            } (Cód: ${item.codigo})${statusDisplay}</div>
+                            <button class="remove-btn" data-index="${index}" title="Remover este item da lista antes de gerar TXT">✕</button>
+                        </div>
+                        <div class="item-details">
+                            <div class="item-detail"><span class="detail-label">Empresa:</span><span>${
+                              item.numeroEmpresa
+                            }</span></div>
+                            <div class="item-detail"><span class="detail-label">Data Aquisição:</span><span>${formatDateDisplay(
+                              item.dataAquisicao
+                            )}</span></div>
+                            <div class="item-detail"><span class="detail-label">Valor:</span><span>R$ ${parseFloat(
+                              String(item.valorAquisicao).replace(",", ".")
+                            ).toLocaleString("pt-BR", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}</span></div>
+                            <div class="item-detail"><span class="detail-label">Função:</span><span>${
+                              item.funcao
+                            }</span></div>
+                            <div class="item-detail"><span class="detail-label">C. Patrimonial:</span><span>${
+                              item.contaPatrimonial
+                            }</span></div>
+                            <div class="item-detail"><span class="detail-label">C. Custo:</span><span>${
+                              item.centroCusto
+                            }</span></div>
+                            <div class="item-detail full-width"><span class="detail-label">Histórico:</span><span>${
+                              item.historico
+                            }</span></div>
+                        </div>`;
+            itemsContainer.appendChild(itemCard);
+          });
+
+          document.querySelectorAll(".remove-btn").forEach((button) => {
+            button.addEventListener("click", function () {
+              removeItem(parseInt(this.getAttribute("data-index")));
+            });
+          });
+        }
+      }
+
+      function removeItem(index) {
+        items.splice(index, 1);
+        renderItems();
+      }
+
+      gerarTxtBtn.addEventListener("click", function () {
+        if (items.length === 0) {
+          showCustomAlert("Nenhum item para gerar o arquivo TXT.", "Atenção");
+          resultBox.textContent = "Nenhum item para gerar.";
+          resultArea.classList.remove("hidden");
+          downloadBtn.disabled = true;
+          copyBtn.disabled = true;
+          return;
+        }
+
+        let result = "";
+        let generationErrors = [];
+        items.forEach((item, index) => {
+          let valorAquisicaoFormatado = formatValorMonetario(
+            item.valorAquisicao
+          );
+          let dataAquisicaoParaTxt = item.dataAquisicao;
+          if (
+            !item.numeroEmpresa ||
+            !item.codigo ||
+            !item.identificador ||
+            !item.nome ||
+            !dataAquisicaoParaTxt ||
+            !item.contaPatrimonial ||
+            !item.centroCusto ||
+            !item.historico ||
+            !item.funcao
+          ) {
+            generationErrors.push(
+              `Item ${index + 1} (Código: ${
+                item.codigo
+              }) possui campos obrigatórios faltando e não será incluído no TXT.`
+            );
+            return;
+          }
+          let line = `${item.numeroEmpresa};${item.codigo};${item.identificador};${item.nome};${dataAquisicaoParaTxt};;${item.contaPatrimonial};${item.centroCusto};${item.historico};B;I;;;${item.funcao};${valorAquisicaoFormatado};;;;;;;;;;;${valorAquisicaoFormatado};;;;;;S;N;${dataAquisicaoParaTxt};N;;;;;N;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;`;
+          result += line + "\n";
+        });
+
+        if (generationErrors.length > 0) {
+          showCustomAlert(
+            "Erros ao gerar o TXT para alguns itens:\n\n- " +
+              generationErrors.join("\n- ") +
+              "\n\nO TXT foi gerado com os itens válidos (se houver).",
+            "Relatório de Geração TXT"
+          );
+        }
+
+        if (result.trim() === "") {
+          resultBox.textContent =
+            "Nenhum item válido para gerar o arquivo TXT após as validações.";
+          downloadBtn.disabled = true;
+          copyBtn.disabled = true;
+        } else {
+          resultBox.textContent = result;
+          downloadBtn.disabled = false;
+          copyBtn.disabled = false;
+        }
+        resultArea.classList.remove("hidden");
+      });
+
+      downloadBtn.addEventListener("click", function () {
+        const content = resultBox.textContent;
+        if (
+          !content ||
+          content === "Nenhum item para gerar." ||
+          content.startsWith("Nenhum item válido")
+        )
+          return;
+        const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "patrimonio_layout.txt";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 100);
+      });
+
+      copyBtn.addEventListener("click", function () {
+        const content = resultBox.textContent;
+        if (
+          !content ||
+          content === "Nenhum item para gerar." ||
+          content.startsWith("Nenhum item válido")
+        )
+          return;
+        navigator.clipboard
+          .writeText(content)
+          .then(() => {
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = "Copiado!";
+            copyBtn.disabled = true;
+            setTimeout(() => {
+              copyBtn.textContent = originalText;
+              copyBtn.disabled = false;
+            }, 2000);
+          })
+          .catch((err) => {
+            console.error("Erro ao copiar: ", err);
+            showCustomAlert(
+              "Falha ao copiar. Verifique as permissões do navegador ou copie manualmente.",
+              "Erro ao Copiar"
+            );
+          });
+      });
+
+      renderItems();
+      downloadBtn.disabled = true;
+      copyBtn.disabled = true;
+    </script>
+  </body>
+</html>
