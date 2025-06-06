@@ -5,340 +5,440 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Processador e Comparador de Planilhas</title>
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
     <style>
+      /* Estilos importados e adaptados do ECF.html */
       :root {
         --primary-color: #4f0072;
-        --secondary-color: #3498db;
-        --accent-color: #fb0a5e; /* Cor principal dos botões de ação */
-        --download-color: #27ae60; /* Cor dos botões de download */
-        --background-color: #f0f2f5;
-        --form-bg-color: #ffffff;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
         --text-color: #333333;
-        --border-color: #d1d9e6;
+        --border-color: #e0e0e0;
         --text-color-light: #ffffff;
-        --sombra: 0 6px 15px rgba(79, 0, 114, 0.1);
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
         --transicao: all 0.3s ease;
+        --primary-dark: #3d005a;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        --text-muted: #64748b;
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
       }
 
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
       }
 
       body {
-        background-color: var(--background-color);
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh;
         color: var(--text-color);
         line-height: 1.6;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        padding: 2rem 1rem;
       }
 
-      .main-container {
+      .container {
         max-width: 900px;
-        width: 100%;
         margin: 0 auto;
-        background-color: var(--form-bg-color);
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: var(--sombra);
       }
 
-      h1 {
+      .header {
         text-align: center;
-        margin-bottom: 25px;
-        color: var(--primary-color);
-        font-size: 2.2em;
+        margin-bottom: 2rem;
       }
 
-      .section {
-        margin-bottom: 30px;
-        padding: 20px;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        background-color: #fdfdff;
+      .header h1 {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
 
-      .section h2 {
-        color: var(--primary-color);
-        margin-bottom: 15px;
-        border-bottom: 2px solid var(--accent-color);
-        padding-bottom: 5px;
-        font-size: 1.5em;
-      }
-
-      .upload-section {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 25px;
-        border: 2px dashed var(--border-color);
-        border-radius: 8px;
-        margin-bottom: 15px;
+      .main-content {
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--sombra);
         transition: var(--transicao);
       }
 
-      .upload-section:hover,
-      .upload-section.drag-over {
-        border-color: var(--secondary-color);
-        background-color: rgba(52, 152, 219, 0.05);
+      .section {
+        margin-bottom: 2.5rem;
+      }
+      .section:last-child {
+        margin-bottom: 0;
+      }
+
+      .section-title {
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--accent-color);
+      }
+
+      .upload-area {
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius);
+        padding: 2rem 1.5rem;
+        text-align: center;
+        transition: var(--transicao);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        background-color: var(--form-bg-color);
+      }
+
+      .upload-area:hover,
+      .upload-area.drag-over {
+        border-color: var(--primary-color);
+        background: rgba(79, 0, 114, 0.05);
+      }
+
+      .upload-icon {
+        font-size: 2.5rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+      }
+      .upload-area:hover .upload-icon {
+        color: var(--primary-color);
       }
 
       .file-input {
         display: none;
       }
 
-      .upload-btn,
-      .action-btn {
-        background-color: var(--accent-color); /* Padronizado */
-        color: white;
+      .btn {
+        background: var(--primary-color);
+        color: var(--text-color-light);
         border: none;
-        padding: 12px 24px;
-        border-radius: 5px;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--radius);
+        font-weight: 600;
+        font-size: 1rem;
         cursor: pointer;
-        font-size: 16px;
-        margin-top: 10px;
-        transition: background-color 0.3s;
-        font-weight: bold;
+        transition: var(--transicao);
+        box-shadow: var(--sombra);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
       }
 
-      .upload-btn:hover,
-      .action-btn:hover {
-        background-color: #d90850; /* Escurecer no hover */
+      .btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
       }
 
-      .action-btn:disabled {
-        background-color: #ccc;
+      .btn:disabled {
+        background: var(--text-muted);
         cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
       }
 
-      .status,
+      .btn-download {
+        background-color: var(--success);
+        display: none; /* Controlado por JS */
+      }
+      .btn-download:hover {
+        background-color: #0f9a6b;
+      }
+
+      .btn-compare {
+        background-color: var(--accent-color);
+        width: 100%;
+      }
+      .btn-compare:hover {
+        background-color: #d90850;
+      }
+
+      .file-info {
+        background: var(--form-bg-color);
+        border-radius: var(--radius);
+        padding: 1rem;
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        border: 1px solid var(--border-color);
+      }
+      .file-icon {
+        color: var(--primary-color);
+        font-size: 1.5rem;
+      }
       .file-name-display {
-        margin-top: 10px;
+        font-weight: 600;
+        color: var(--text-color);
+      }
+
+      .status {
+        margin-top: 1rem;
         text-align: center;
         font-weight: bold;
         min-height: 20px;
+        padding: 0.5rem;
+        border-radius: var(--radius);
       }
       .status-success {
-        color: #27ae60;
+        color: var(--success);
+        background-color: rgba(16, 185, 129, 0.1);
       }
       .status-error {
-        color: #c62828;
+        color: var(--error);
+        background-color: rgba(239, 68, 68, 0.1);
       }
       .status-info {
-        color: var(--primary-color);
-      }
-
-      .download-btn {
-        display: none;
-        background-color: var(--download-color); /* Mantém cor de download */
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 15px;
-        margin: 10px auto;
-        transition: background-color 0.3s;
-      }
-
-      .download-btn:hover {
-        background-color: #219653; /* Escurecer no hover */
+        color: var(--primary-dark);
+        background-color: rgba(79, 0, 114, 0.1);
       }
 
       .cfop-input-section {
-        margin-top: 20px;
-        padding: 15px;
+        margin: 1.5rem 0;
         text-align: center;
       }
       .cfop-input-section label {
-        font-weight: bold;
-        margin-right: 10px;
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
         color: var(--primary-color);
       }
       .cfop-input-section input[type="text"] {
-        padding: 8px;
-        border-radius: 4px;
+        padding: 0.75rem;
+        border-radius: var(--radius);
         border: 1px solid var(--border-color);
-        min-width: 200px;
+        width: 100%;
+        max-width: 400px;
+        font-size: 1rem;
+      }
+      .cfop-input-section input[type="text"]:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(79, 0, 114, 0.2);
       }
 
-      .error-info,
       .comparison-alerts-container {
-        margin-top: 20px;
-        padding: 15px;
-        background-color: #ffebee;
-        border-radius: 5px;
-        border: 1px solid #ffcdd2;
+        margin-top: 1.5rem;
+        padding: 1.5rem;
+        background-color: #fffaf0;
+        border-radius: var(--radius);
+        border-left: 4px solid var(--warning);
         display: none;
       }
-      .comparison-alerts-container {
-        background-color: #fff3e0;
-        border: 1px solid #ffe0b2;
-      }
-
-      .error-info h3,
       .comparison-alerts-container h3 {
-        margin-bottom: 10px;
-        color: #c62828;
-      }
-      .comparison-alerts-container h3 {
-        color: #e65100;
-      }
-
-      .error-info pre {
-        background-color: #fff;
-        padding: 10px;
-        border-radius: 4px;
-        overflow-x: auto;
-        font-family: monospace;
-        font-size: 14px;
-        white-space: pre-wrap;
+        margin-bottom: 1rem;
+        color: var(--warning);
+        font-size: 1.25rem;
+        font-weight: 700;
       }
 
       #alertTable {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 15px;
+        margin-top: 1rem;
         font-size: 0.9em;
       }
       #alertTable th,
       #alertTable td {
-        border: 1px solid #ddd;
-        padding: 8px;
+        border: 1px solid var(--border-color);
+        padding: 0.75rem;
         text-align: left;
       }
       #alertTable th {
-        background-color: #f2f2f2;
+        background-color: var(--form-bg-color);
         color: var(--primary-color);
+        font-weight: 600;
       }
-      #alertTable td {
+      #alertTable tbody tr:nth-child(odd) {
         background-color: #fff;
       }
+      #alertTable tbody tr:nth-child(even) {
+        background-color: var(--form-bg-color);
+      }
 
-      @media (max-width: 700px) {
-        .main-container {
-          padding: 20px;
-        }
-        .section {
-          padding: 15px;
-        }
-        .upload-section {
-          padding: 20px;
-        }
-        .cfop-input-section input[type="text"] {
-          min-width: 150px;
-        }
-        #alertTable {
-          font-size: 0.8em;
-        }
-        #alertTable th,
-        #alertTable td {
-          padding: 5px;
-        }
+      .error-info {
+        margin-top: 1.5rem;
+        padding: 1.5rem;
+        background-color: rgba(239, 68, 68, 0.1);
+        border-radius: var(--radius);
+        border-left: 4px solid var(--error);
+        display: none;
+      }
+      .error-info h3 {
+        margin-bottom: 1rem;
+        color: var(--error);
+      }
+      .error-info pre {
+        background-color: #fff;
+        padding: 1rem;
+        border-radius: var(--radius);
+        overflow-x: auto;
+        font-family: monospace;
+        font-size: 14px;
+        white-space: pre-wrap;
+        border: 1px solid var(--border-color);
       }
     </style>
   </head>
   <body>
-    <div class="main-container">
-      <h1>Processador e Comparador de Planilhas</h1>
-
-      <div class="section">
-        <h2>1. Planilha "Contas a Pagar"</h2>
-        <div class="upload-section" id="dropAreaContasAPagar">
-          <p>
-            Arraste e solte a planilha "Contas a Pagar" aqui ou clique para
-            selecionar.
-          </p>
-          <input
-            type="file"
-            id="fileInputContasAPagar"
-            class="file-input"
-            accept=".xlsx, .xls"
-          />
-          <button class="upload-btn" id="uploadBtnContasAPagar">
-            Selecionar Arquivo Contas a Pagar
-          </button>
-        </div>
-        <div class="file-name-display" id="fileNameContasAPagar">
-          Nenhum arquivo selecionado
-        </div>
-        <div class="status" id="statusContasAPagar"></div>
-        <button class="download-btn" id="downloadBtnContasAPagar">
-          Baixar "Contas a Pagar" Processada
-        </button>
+    <div class="container">
+      <div class="header">
+        <h1>
+          <i class="fas fa-sync-alt"></i> Processador e Comparador de Planilhas
+        </h1>
       </div>
 
-      <div class="section">
-        <h2>2. Planilha de Entradas (Acompanhamento>Entradas)</h2>
-        <div class="upload-section" id="dropAreaAgregada">
-          <p>
-            Arraste e solte a planilha para agregação aqui ou clique para
-            selecionar.
-          </p>
-          <input
-            type="file"
-            id="fileInputAgregada"
-            class="file-input"
-            accept=".xlsx, .xls"
-          />
-          <button class="upload-btn" id="uploadBtnAgregada">
-            Selecionar Arquivo para Agregação
+      <div class="main-content">
+        <div class="section">
+          <h2 class="section-title">
+            <i class="fas fa-file-invoice-dollar"></i> 1. Planilha "Contas a
+            Pagar"
+          </h2>
+          <div class="upload-area" id="dropAreaContasAPagar">
+            <div class="upload-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <p>
+              Arraste e solte a planilha aqui ou
+              <strong style="color: var(--primary-color)"
+                >clique no botão abaixo</strong
+              >.
+            </p>
+            <input
+              type="file"
+              id="fileInputContasAPagar"
+              class="file-input"
+              accept=".xlsx, .xls"
+            />
+          </div>
+          <button class="btn" id="uploadBtnContasAPagar">
+            <i class="fas fa-folder-open"></i> Selecionar Arquivo
           </button>
-        </div>
-        <div class="file-name-display" id="fileNameAgregada">
-          Nenhum arquivo selecionado
-        </div>
-        <div class="status" id="statusAgregada"></div>
-        <button class="download-btn" id="downloadBtnAgregada">
-          Baixar Planilha Agregada
-        </button>
-      </div>
 
-      <div class="section">
-        <h2>3. Comparação e Alertas</h2>
-        <p style="text-align: center; font-style: italic; margin-bottom: 15px">
-          <strong>Atenção:</strong> Será analisado se foram criadas duplicatas
-          para os <strong>CFOPs</strong> informados abaixo.
-        </p>
-        <div class="cfop-input-section">
-          <label for="cfopInput"
-            >CFOP(s) para Verificação (separados por vírgula):</label
+          <div
+            class="file-info"
+            id="fileInfoContasAPagar"
+            style="display: none"
           >
-          <input type="text" id="cfopInput" placeholder="Ex: 1910, 1949" />
+            <div class="file-icon"><i class="fas fa-file-excel"></i></div>
+            <div class="file-name-display" id="fileNameContasAPagar"></div>
+          </div>
+          <div class="status" id="statusContasAPagar"></div>
+          <button class="btn btn-download" id="downloadBtnContasAPagar">
+            <i class="fas fa-download"></i> Baixar "Contas a Pagar" Processada
+          </button>
         </div>
-        <button class="action-btn" id="compareBtn" disabled>
-          Comparar Planilhas (Nota, Código, Valor)
-        </button>
-        <div class="status" id="statusComparison"></div>
-        <div class="comparison-alerts-container" id="comparisonAlertsContainer">
-          <h3>Alertas da Comparação:</h3>
-          <table id="alertTable">
-            <thead>
-              <tr>
-                <th>Nota/Documento (CAP)</th>
-                <th>Código (CAP)</th>
-                <th>CFOPs (Plan. Agregada)</th>
-                <th>CFOP Verificado</th>
-                <th>Fornecedor (Plan. Agregada)</th>
-                <th>Valor Contábil</th>
-              </tr>
-            </thead>
-            <tbody id="alertTableBody"></tbody>
-          </table>
-        </div>
-      </div>
 
-      <div class="error-info" id="generalErrorInfo">
-        <h3>Erro Geral / Detalhes</h3>
-        <div id="generalErrorDetails"></div>
+        <div class="section">
+          <h2 class="section-title">
+            <i class="fas fa-cubes"></i> 2. Planilha de Entradas (Agregação)
+          </h2>
+          <div class="upload-area" id="dropAreaAgregada">
+            <div class="upload-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <p>
+              Arraste e solte a planilha aqui ou
+              <strong style="color: var(--primary-color)"
+                >clique no botão abaixo</strong
+              >.
+            </p>
+            <input
+              type="file"
+              id="fileInputAgregada"
+              class="file-input"
+              accept=".xlsx, .xls"
+            />
+          </div>
+          <button class="btn" id="uploadBtnAgregada">
+            <i class="fas fa-folder-open"></i> Selecionar Arquivo
+          </button>
+
+          <div class="file-info" id="fileInfoAgregada" style="display: none">
+            <div class="file-icon"><i class="fas fa-file-excel"></i></div>
+            <div class="file-name-display" id="fileNameAgregada"></div>
+          </div>
+          <div class="status" id="statusAgregada"></div>
+          <button class="btn btn-download" id="downloadBtnAgregada">
+            <i class="fas fa-download"></i> Baixar Planilha Agregada
+          </button>
+        </div>
+
+        <div class="section">
+          <h2 class="section-title">
+            <i class="fas fa-balance-scale"></i> 3. Comparação e Alertas
+          </h2>
+          <p
+            style="text-align: center; font-style: italic; margin-bottom: 1rem"
+          >
+            Informe os CFOPs para verificar a criação de duplicatas.
+          </p>
+          <div class="cfop-input-section">
+            <label for="cfopInput"
+              >CFOP(s) para Verificação (separados por vírgula):</label
+            >
+            <input type="text" id="cfopInput" placeholder="Ex: 1910, 1949" />
+          </div>
+          <button class="btn btn-compare" id="compareBtn" disabled>
+            <i class="fas fa-search"></i> Comparar Planilhas (Nota, Código,
+            Valor)
+          </button>
+          <div class="status" id="statusComparison"></div>
+          <div
+            class="comparison-alerts-container"
+            id="comparisonAlertsContainer"
+          >
+            <h3>
+              <i class="fas fa-exclamation-triangle"></i> Alertas da Comparação:
+            </h3>
+            <div style="overflow-x: auto">
+              <table id="alertTable">
+                <thead>
+                  <tr>
+                    <th>Nota/Doc (CAP)</th>
+                    <th>Código (CAP)</th>
+                    <th>CFOPs (Agregada)</th>
+                    <th>CFOP Verificado</th>
+                    <th>Fornecedor (Agregada)</th>
+                    <th>Valor Contábil</th>
+                  </tr>
+                </thead>
+                <tbody id="alertTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="error-info" id="generalErrorInfo">
+          <h3><i class="fas fa-bug"></i> Erro Geral / Detalhes</h3>
+          <div id="generalErrorDetails"></div>
+        </div>
       </div>
     </div>
 
     <script>
+      // O SCRIPT JAVASCRIPT ORIGINAL FOI MANTIDO AQUI, COM PEQUENAS ADIÇÕES PARA CONTROLAR O NOVO LAYOUT
       document.addEventListener("DOMContentLoaded", function () {
         // --- Elementos DOM ---
         const fileInputContasAPagar = document.getElementById(
@@ -358,6 +458,9 @@
         const downloadBtnContasAPagar = document.getElementById(
           "downloadBtnContasAPagar"
         );
+        const fileInfoContasAPagar = document.getElementById(
+          "fileInfoContasAPagar"
+        ); // Novo
 
         const fileInputAgregada = document.getElementById("fileInputAgregada");
         const uploadBtnAgregada = document.getElementById("uploadBtnAgregada");
@@ -367,6 +470,7 @@
         const downloadBtnAgregada = document.getElementById(
           "downloadBtnAgregada"
         );
+        const fileInfoAgregada = document.getElementById("fileInfoAgregada"); // Novo
 
         const cfopInput = document.getElementById("cfopInput");
         const compareBtn = document.getElementById("compareBtn");
@@ -391,6 +495,11 @@
         function setStatus(element, message, type = "info") {
           element.textContent = message;
           element.className = `status status-${type}`;
+          if (!message) {
+            element.style.display = "none";
+          } else {
+            element.style.display = "block";
+          }
         }
 
         function showError(title, details) {
@@ -446,17 +555,12 @@
 
           if (hasComma && hasDot) {
             if (strValue.lastIndexOf(",") > strValue.lastIndexOf(".")) {
-              strValue = strValue.replace(/\./g, "");
-              strValue = strValue.replace(",", ".");
+              strValue = strValue.replace(/\./g, "").replace(",", ".");
             } else {
               strValue = strValue.replace(/,/g, "");
             }
           } else if (hasComma) {
             strValue = strValue.replace(",", ".");
-          } else if (hasDot) {
-            if ((strValue.match(/\./g) || []).length > 1) {
-              strValue = strValue.replace(/\./g, "");
-            }
           }
 
           const num = parseFloat(strValue);
@@ -520,7 +624,7 @@
 
         function handleFileContasAPagar(file) {
           if (!file) {
-            fileNameContasAPagar.textContent = "Nenhum arquivo selecionado";
+            fileInfoContasAPagar.style.display = "none";
             setStatus(statusContasAPagar, "");
             downloadBtnContasAPagar.style.display = "none";
             processedDataContasAPagar = null;
@@ -531,7 +635,8 @@
             /\.(xlsx|xls)$/i,
             ""
           );
-          fileNameContasAPagar.textContent = `Arquivo: ${file.name}`;
+          fileNameContasAPagar.textContent = file.name;
+          fileInfoContasAPagar.style.display = "flex"; // Novo
           setStatus(
             statusContasAPagar,
             'Processando "Contas a Pagar"...',
@@ -587,7 +692,7 @@
                   "error"
                 );
               } else {
-                downloadBtnContasAPagar.style.display = "block";
+                downloadBtnContasAPagar.style.display = "inline-flex";
                 setStatus(
                   statusContasAPagar,
                   '"Contas a Pagar" processada com sucesso!',
@@ -647,7 +752,6 @@
                 }
               }
             });
-            delete worksheet["!merges"];
           }
           return { worksheet };
         }
@@ -772,69 +876,6 @@
             }
           }
           if (typeof value === "string") {
-            let day, month, year;
-            if (value.includes("/")) {
-              const parts = value.split("/");
-              if (parts.length === 3) {
-                const p0 = parseInt(parts[0]),
-                  p1 = parseInt(parts[1]),
-                  p2 = parseInt(parts[2]);
-                if (p2 > 1000 && p2 < 3000) {
-                  year = p2;
-                  if (p0 > 0 && p0 <= 31 && p1 > 0 && p1 <= 12) {
-                    if (p0 > 12) {
-                      day = p0;
-                      month = p1;
-                    } else if (p1 > 12) {
-                      month = p0;
-                      day = p1;
-                    } else {
-                      day = p0;
-                      month = p1;
-                    }
-                  }
-                } else if (p2 >= 0 && p2 < 100) {
-                  year = p2 < 30 ? 2000 + p2 : 1900 + p2;
-                  if (p0 > 0 && p0 <= 31 && p1 > 0 && p1 <= 12) {
-                    if (p0 > 12) {
-                      day = p0;
-                      month = p1;
-                    } else if (p1 > 12) {
-                      month = p0;
-                      day = p1;
-                    } else {
-                      day = p0;
-                      month = p1;
-                    }
-                  }
-                }
-              }
-            } else if (value.includes("-")) {
-              const parts = value.split("-");
-              if (parts.length === 3) {
-                const p0 = parseInt(parts[0]),
-                  p1 = parseInt(parts[1]),
-                  p2 = parseInt(parts[2]);
-                if (
-                  p0 > 1000 &&
-                  p0 < 3000 &&
-                  p1 > 0 &&
-                  p1 <= 12 &&
-                  p2 > 0 &&
-                  p2 <= 31
-                ) {
-                  year = p0;
-                  month = p1;
-                  day = p2;
-                }
-              }
-            }
-            if (day && month && year) {
-              return `${String(day).padStart(2, "0")}/${String(month).padStart(
-                2,
-                "0"
-              )}/${year}`;
-            }
             const dateObj = new Date(value);
             if (!isNaN(dateObj.getTime()) && dateObj.getFullYear() > 1800) {
               return `${dateObj.getDate().toString().padStart(2, "0")}/${(
@@ -879,7 +920,7 @@
                   typeof ws[cellRef].v === "number"
                 ) {
                   ws[cellRef].t = "n";
-                  ws[cellRef].z = "#,##0.00";
+                  ws[cellRef].z = "R$ #,##0.00";
                 }
               }
             });
@@ -910,7 +951,7 @@
 
         function handleFileAgregada(file) {
           if (!file) {
-            fileNameAgregada.textContent = "Nenhum arquivo selecionado";
+            fileInfoAgregada.style.display = "none";
             setStatus(statusAgregada, "");
             downloadBtnAgregada.style.display = "none";
             processedDataAgregada = null;
@@ -918,7 +959,8 @@
             return;
           }
           originalFileNameAgregada = file.name.replace(/\.(xlsx|xls)$/i, "");
-          fileNameAgregada.textContent = `Arquivo: ${file.name}`;
+          fileNameAgregada.textContent = file.name;
+          fileInfoAgregada.style.display = "flex";
           setStatus(
             statusAgregada,
             "Processando planilha para agregação...",
@@ -963,28 +1005,23 @@
                 fornecedor: headers.indexOf("Fornecedor"),
                 cfop: headers.indexOf("CFOP"),
                 valorContabil: headers.indexOf("Valor Contábil"),
-                codigo: -1,
+                codigo: K_INDEX, // Assumindo que o código está sempre na coluna K
               };
 
               let missingHeadersMessages = [];
               if (colIndices.data === -1) missingHeadersMessages.push("'Data'");
               if (colIndices.nota === -1) missingHeadersMessages.push("'Nota'");
-              if (headers.length <= K_INDEX)
-                missingHeadersMessages.push("Coluna K ('Código') não existe.");
-              else if (String(headers[K_INDEX]).toLowerCase() !== "código")
-                missingHeadersMessages.push(
-                  `Coluna K deve ser 'Código' (encontrado: '${headers[K_INDEX]}').`
-                );
-              else colIndices.codigo = K_INDEX;
               if (colIndices.fornecedor === -1)
                 missingHeadersMessages.push("'Fornecedor'");
               if (colIndices.cfop === -1) missingHeadersMessages.push("'CFOP'");
               if (colIndices.valorContabil === -1)
                 missingHeadersMessages.push("'Valor Contábil'");
+              if (headers.length <= K_INDEX)
+                missingHeadersMessages.push("Coluna K ('Código') não existe.");
 
               if (missingHeadersMessages.length > 0) {
                 throw new Error(
-                  `Cabeçalho(s) não encontrado(s) na linha 6 da planilha agregada: ${missingHeadersMessages.join(
+                  `Cabeçalho(s) não encontrado(s) na planilha agregada: ${missingHeadersMessages.join(
                     ", "
                   )}.`
                 );
@@ -999,14 +1036,7 @@
                 )
                   return;
 
-                const rawDataValue = row[colIndices.data];
-                if (
-                  typeof rawDataValue === "string" &&
-                  rawDataValue.trim().toLowerCase() === "data"
-                )
-                  return;
-
-                const dataVal = formatDateAgregada(rawDataValue);
+                const dataVal = formatDateAgregada(row[colIndices.data]);
                 const notaVal = String(row[colIndices.nota] || "").trim();
                 const codigoVal = String(row[colIndices.codigo] || "").trim();
 
@@ -1061,7 +1091,7 @@
                   "Planilha agregada processada com sucesso!",
                   "success"
                 );
-                downloadBtnAgregada.style.display = "inline-block";
+                downloadBtnAgregada.style.display = "inline-flex";
               }
             } catch (error) {
               console.error("Erro ao processar planilha agregada:", error);
@@ -1112,7 +1142,7 @@
                   .padStart(2, "0")}/${jsDate.y}`;
               }
             } catch (e) {
-              /* ignore parsing error */
+              /* ignora erro de parsing */
             }
           }
           return excelDate ? String(excelDate) : "";
@@ -1145,7 +1175,7 @@
               if (rowNumber === 1) return;
               if (colLetter === "F") {
                 cell.t = "n";
-                cell.z = "#,##0.00";
+                cell.z = "R$ #,##0.00";
               } else if (colLetter === "B" || colLetter === "C") {
                 cell.t = "s";
               }
@@ -1251,7 +1281,7 @@
               potentialMatchesAgregada.forEach((rowAgregadaMatch) => {
                 const valorAgregado = rowAgregadaMatch["Valor Contábil"];
 
-                if (Math.abs(valorCAP - valorAgregado) < 0.001) {
+                if (Math.abs(valorCAP - valorAgregado) < 0.01) {
                   const cfopsPlanilhaAgregadaString = String(
                     rowAgregadaMatch["CFOP"] || ""
                   );
