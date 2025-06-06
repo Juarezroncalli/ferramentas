@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Comparador de Planilhas</title>
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
     <style>
       :root {
         --primary-color: #4f0072;
@@ -16,19 +20,32 @@
         --text-color-light: #ffffff;
         --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
         --transicao: all 0.3s ease;
+        --primary-dark: #3d005a;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        --text-muted: #64748b;
+        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
       }
 
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       }
 
       body {
-        background-color: var(--background-color);
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh;
         color: var(--text-color);
-        padding: 20px;
+        line-height: 1.6;
+        padding: 2rem 1rem;
       }
 
       .container {
@@ -36,75 +53,147 @@
         margin: 0 auto;
       }
 
-      header {
+      .header {
         text-align: center;
-        margin-bottom: 30px;
+        margin-bottom: 3rem;
       }
 
-      h1 {
-        color: var(--primary-color);
-        margin-bottom: 10px;
+      .header h1 {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .header p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
       }
 
       .upload-section {
-        background-color: var(--form-bg-color);
-        border-radius: 8px;
-        padding: 25px;
-        margin-bottom: 30px;
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        padding: 2.5rem;
         box-shadow: var(--sombra);
+        margin-bottom: 2rem;
       }
 
-      .file-upload {
-        margin-bottom: 20px;
+      .upload-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
       }
 
-      .file-upload h3 {
-        color: var(--primary-color);
-        margin-bottom: 10px;
-      }
-
-      .file-upload p {
-        margin-bottom: 15px;
-        color: #666;
-      }
-
-      .file-input-container {
+      .upload-area {
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius);
+        padding: 2rem;
+        text-align: center;
+        transition: var(--transicao);
+        cursor: pointer;
         position: relative;
-        margin-bottom: 15px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .upload-area:hover {
+        border-color: var(--primary-color);
+        background: var(--form-bg-color);
+      }
+
+      .upload-area.dragover {
+        border-color: var(--primary-color);
+        background: rgba(79, 0, 114, 0.05);
+        transform: scale(1.02);
+      }
+
+      .upload-icon {
+        font-size: 2.5rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .upload-area:hover .upload-icon {
+        color: var(--primary-color);
+        transform: scale(1.1);
+      }
+
+      .upload-text {
+        font-size: 1.1rem;
+        color: var(--primary-color);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .upload-subtext {
+        color: var(--text-muted);
+        font-size: 0.9rem;
       }
 
       .file-input {
-        width: 100%;
-        padding: 12px;
-        border: 2px dashed var(--border-color);
-        border-radius: 6px;
-        background-color: #fff;
-        transition: var(--transicao);
-        cursor: pointer;
+        display: none;
       }
 
-      .file-input:hover {
-        border-color: var(--primary-color);
+      .file-info {
+        background: var(--form-bg-color);
+        border-radius: var(--radius);
+        padding: 1rem;
+        margin-top: 1rem;
+        display: none;
+        align-items: center;
+        gap: 1rem;
+        width: 100%;
+      }
+
+      .file-info.show {
+        display: flex;
+      }
+
+      .file-icon {
+        color: var(--success);
+        font-size: 1.5rem;
+      }
+
+      .file-details {
+        flex: 1;
+        text-align: left;
+      }
+
+      .file-name {
+        font-weight: 600;
+        color: var(--text-color);
+      }
+
+      .file-size {
+        color: var(--text-muted);
+        font-size: 0.875rem;
       }
 
       .filter-section {
-        background-color: #fff;
-        border-radius: 6px;
-        padding: 15px;
-        margin-top: 20px;
+        background-color: var(--form-bg-color);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        margin-top: 2rem;
         border: 1px solid var(--border-color);
       }
 
       .filter-section h3 {
         color: var(--primary-color);
         margin-bottom: 15px;
-        font-size: 1.1rem;
+        font-size: 1.2rem;
+        font-weight: 600;
       }
 
       .filter-row {
         display: flex;
         flex-wrap: wrap;
-        gap: 15px;
+        gap: 1.5rem;
         margin-bottom: 15px;
       }
 
@@ -140,97 +229,110 @@
       }
 
       .btn {
-        background-color: var(--primary-color);
+        background: var(--primary-color);
         color: var(--text-color-light);
         border: none;
-        padding: 12px 24px;
-        border-radius: 6px;
-        cursor: pointer;
+        padding: 0.875rem 2rem;
+        border-radius: var(--radius);
         font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
         transition: var(--transicao);
-        display: inline-block;
+        box-shadow: var(--sombra);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        justify-content: center;
+        width: 100%;
+        margin-top: 1.5rem;
       }
 
       .btn:hover {
-        background-color: var(--accent-color);
+        background: var(--primary-dark);
         transform: translateY(-2px);
-        box-shadow: var(--sombra);
+        box-shadow: var(--shadow-lg);
       }
 
       .btn:disabled {
-        background-color: #ccc;
+        background: var(--text-muted);
         cursor: not-allowed;
         transform: none;
-        box-shadow: none;
       }
 
       .btn-export {
         background-color: var(--accent-color);
-        margin-top: 20px;
+        margin-top: 1.5rem;
+        width: auto;
       }
 
-      .results-section {
-        display: none;
-        background-color: var(--form-bg-color);
-        border-radius: 8px;
-        padding: 25px;
-        margin-bottom: 30px;
+      .results {
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
         box-shadow: var(--sombra);
-      }
-
-      .results-section h2 {
-        color: var(--primary-color);
-        margin-bottom: 20px;
-      }
-
-      .results-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 20px;
-        box-shadow: var(--sombra);
-        background-color: #fff;
-        border-radius: 8px;
         overflow: hidden;
+        display: none;
+        margin-top: 2rem;
       }
 
-      .results-table th {
-        background-color: var(--primary-color);
+      .results.show {
+        display: block;
+        animation: slideIn 0.5s ease-out;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .results-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--primary-dark)
+        );
         color: var(--text-color-light);
-        padding: 12px 15px;
-        text-align: left;
+        padding: 1.5rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
       }
 
-      .results-table tr:nth-child(even) {
-        background-color: #f2f2f2;
+      .results-title {
+        font-size: 1.25rem;
+        font-weight: 600;
       }
 
-      .results-table tr:nth-child(odd) {
-        background-color: #fff;
-      }
-
-      .results-table td {
-        padding: 12px 15px;
-        border-bottom: 1px solid var(--border-color);
-      }
-
-      .results-table tr:hover {
-        background-color: rgba(79, 0, 114, 0.05);
+      .results-content {
+        padding: 2rem;
       }
 
       .loading {
         display: none;
         text-align: center;
-        margin: 20px 0;
+        padding: 2rem;
+        color: var(--text-muted);
+        background: white;
+        border-radius: var(--radius-lg);
+      }
+
+      .loading.show {
+        display: block;
       }
 
       .spinner {
-        border: 4px solid rgba(0, 0, 0, 0.1);
-        width: 36px;
-        height: 36px;
+        border: 4px solid var(--border-color);
+        border-top: 4px solid var(--primary-color);
         border-radius: 50%;
-        border-left-color: var(--primary-color);
+        width: 40px;
+        height: 40px;
         animation: spin 1s linear infinite;
-        margin: 0 auto 15px;
+        margin: 0 auto 1rem;
       }
 
       @keyframes spin {
@@ -246,16 +348,18 @@
         margin-top: 10px;
         padding: 10px;
         border-radius: 4px;
+        font-size: 0.875rem;
+        text-align: left;
       }
 
       .success {
-        background-color: rgba(76, 175, 80, 0.1);
-        color: #4caf50;
+        background-color: rgba(16, 185, 129, 0.1);
+        color: var(--success);
       }
 
       .error {
-        background-color: rgba(244, 67, 54, 0.1);
-        color: #f44336;
+        background-color: rgba(239, 68, 68, 0.1);
+        color: var(--error);
       }
 
       .no-results {
@@ -334,48 +438,95 @@
       .filter-summary strong {
         color: var(--primary-color);
       }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 1rem;
+        }
+        .header h1 {
+          font-size: 2rem;
+        }
+        .upload-section {
+          padding: 1.5rem;
+        }
+        .upload-grid {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+        .results-content {
+          padding: 1.5rem;
+        }
+      }
     </style>
   </head>
   <body>
     <div class="container">
-      <header>
-        <h1>Comparador de Planilhas</h1>
+      <header class="header">
+        <h1><i class="fas fa-balance-scale"></i> Comparador de Planilhas</h1>
         <p>Faça upload das planilhas para comparar os valores</p>
       </header>
 
       <section class="upload-section">
-        <div class="file-upload">
-          <h3>Valores a Classificar</h3>
-          <p>Selecione a planilha de Valores a Classificar</p>
-          <div class="file-input-container">
-            <input
-              type="file"
-              id="valoresFile"
-              class="file-input"
-              accept=".xlsx, .xls"
-            />
+        <div class="upload-grid">
+          <div class="upload-container">
+            <div
+              class="upload-area"
+              id="valores-upload-area"
+              onclick="document.getElementById('valoresFile').click()"
+            >
+              <div class="upload-icon"><i class="fas fa-file-excel"></i></div>
+              <div class="upload-text">Valores a Classificar</div>
+              <div class="upload-subtext">
+                Clique ou arraste a planilha .xlsx
+              </div>
+              <input
+                type="file"
+                id="valoresFile"
+                class="file-input"
+                accept=".xlsx, .xls"
+              />
+            </div>
+            <div class="file-info" id="valores-file-info">
+              <div class="file-icon"><i class="fas fa-check-circle"></i></div>
+              <div class="file-details">
+                <div class="file-name" id="valores-file-name"></div>
+                <div class="file-size" id="valores-file-size"></div>
+              </div>
+            </div>
+            <div id="valoresStatus" class="status-message"></div>
           </div>
-          <div id="valoresStatus" class="status-message"></div>
-        </div>
 
-        <div class="file-upload">
-          <h3>Base Geral</h3>
-          <p>Selecione a planilha com todos os lançamentos contábeis</p>
-          <div class="file-input-container">
-            <input
-              type="file"
-              id="baseGeralFile"
-              class="file-input"
-              accept=".xlsx, .xls"
-            />
+          <div class="upload-container">
+            <div
+              class="upload-area"
+              id="base-geral-upload-area"
+              onclick="document.getElementById('baseGeralFile').click()"
+            >
+              <div class="upload-icon"><i class="fas fa-database"></i></div>
+              <div class="upload-text">Base Geral</div>
+              <div class="upload-subtext">
+                Clique ou arraste a planilha .xlsx
+              </div>
+              <input
+                type="file"
+                id="baseGeralFile"
+                class="file-input"
+                accept=".xlsx, .xls"
+              />
+            </div>
+            <div class="file-info" id="base-geral-file-info">
+              <div class="file-icon"><i class="fas fa-check-circle"></i></div>
+              <div class="file-details">
+                <div class="file-name" id="base-geral-file-name"></div>
+                <div class="file-size" id="base-geral-file-size"></div>
+              </div>
+            </div>
+            <div id="baseGeralStatus" class="status-message"></div>
           </div>
-          <div id="baseGeralStatus" class="status-message"></div>
         </div>
 
         <div class="filter-section">
-          <h3>Filtros de Contas</h3>
-          <p>Informe as contas que deseja desconsiderar na comparação:</p>
-
+          <h3><i class="fas fa-filter"></i> Filtros de Contas</h3>
           <div class="filter-row">
             <div class="filter-field">
               <label for="contasDebito"
@@ -387,10 +538,9 @@
                 placeholder="Ex: 82, 90, 123"
               />
               <div class="filter-help">
-                Para múltiplas contas, separe por vírgulas
+                Para múltiplas contas, separe por vírgulas.
               </div>
             </div>
-
             <div class="filter-field">
               <label for="contasCredito"
                 >Contas de Crédito a desconsiderar:</label
@@ -401,13 +551,15 @@
                 placeholder="Ex: 45, 67, 89"
               />
               <div class="filter-help">
-                Para múltiplas contas, separe por vírgulas
+                Para múltiplas contas, separe por vírgulas.
               </div>
             </div>
           </div>
         </div>
 
-        <button id="compareBtn" class="btn" disabled>Comparar Planilhas</button>
+        <button id="compareBtn" class="btn" disabled>
+          <i class="fas fa-cogs"></i> Comparar Planilhas
+        </button>
       </section>
 
       <div id="loading" class="loading">
@@ -415,20 +567,23 @@
         <p>Processando planilhas...</p>
       </div>
 
-      <section id="resultsSection" class="results-section">
-        <h2>Resultados da Comparação</h2>
-        <div id="filterSummary" class="filter-summary"></div>
-        <div id="resultsContainer">
-          <div id="resultsTable" class="results-table">
-            <!-- Os resultados agrupados serão inseridos aqui -->
-          </div>
-          <div id="noResults" class="no-results" style="display: none">
-            <p>Nenhum valor correspondente encontrado.</p>
-          </div>
+      <section id="resultsSection" class="results">
+        <div class="results-header">
+          <i class="fas fa-chart-line"></i>
+          <div class="results-title">Resultados da Comparação</div>
         </div>
-        <button id="exportBtn" class="btn btn-export">
-          Exportar Resultados como HTML
-        </button>
+        <div class="results-content">
+          <div id="filterSummary" class="filter-summary"></div>
+          <div id="resultsContainer">
+            <div id="resultsTable"></div>
+            <div id="noResults" class="no-results" style="display: none">
+              <p>Nenhum valor correspondente encontrado.</p>
+            </div>
+          </div>
+          <button id="exportBtn" class="btn btn-export">
+            <i class="fas fa-file-download"></i> Exportar Resultados
+          </button>
+        </div>
       </section>
     </div>
 
@@ -445,22 +600,84 @@
       const exportBtn = document.getElementById("exportBtn");
       const loadingElement = document.getElementById("loading");
       const noResultsElement = document.getElementById("noResults");
-      const valoresStatus = document.getElementById("valoresStatus");
-      const baseGeralStatus = document.getElementById("baseGeralStatus");
       const contasDebitoInput = document.getElementById("contasDebito");
       const contasCreditoInput = document.getElementById("contasCredito");
       const filterSummary = document.getElementById("filterSummary");
 
+      // Elementos de Upload Area e File Info
+      const valoresUploadArea = document.getElementById("valores-upload-area");
+      const valoresFileInfo = document.getElementById("valores-file-info");
+      const valoresFileName = document.getElementById("valores-file-name");
+      const valoresFileSize = document.getElementById("valores-file-size");
+      const valoresStatus = document.getElementById("valoresStatus");
+
+      const baseGeralUploadArea = document.getElementById(
+        "base-geral-upload-area"
+      );
+      const baseGeralFileInfo = document.getElementById("base-geral-file-info");
+      const baseGeralFileName = document.getElementById("base-geral-file-name");
+      const baseGeralFileSize = document.getElementById("base-geral-file-size");
+      const baseGeralStatus = document.getElementById("baseGeralStatus");
+
       // Função para verificar se os arquivos foram carregados
       function checkFilesLoaded() {
-        if (valoresData && baseGeralData) {
-          compareBtn.disabled = false;
-        } else {
-          compareBtn.disabled = true;
-        }
+        compareBtn.disabled = !(valoresData && baseGeralData);
       }
 
-      // Função para processar o arquivo Excel
+      // Funções de Drag and Drop
+      function setupDragAndDrop(area, input, fileHandler) {
+        ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+          area.addEventListener(eventName, preventDefaults, false);
+        });
+        function preventDefaults(e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        ["dragenter", "dragover"].forEach((eventName) => {
+          area.addEventListener(eventName, () =>
+            area.classList.add("dragover")
+          );
+        });
+        ["dragleave", "drop"].forEach((eventName) => {
+          area.addEventListener(eventName, () =>
+            area.classList.remove("dragover")
+          );
+        });
+        area.addEventListener("drop", (e) => {
+          const dt = e.dataTransfer;
+          const files = dt.files;
+          if (files.length > 0) {
+            input.files = files;
+            fileHandler({ target: input });
+          }
+        });
+      }
+      setupDragAndDrop(valoresUploadArea, valoresFileInput, handleValoresFile);
+      setupDragAndDrop(
+        baseGeralUploadArea,
+        baseGeralFileInput,
+        handleBaseGeralFile
+      );
+
+      // Funções para manipulação de arquivos
+      function handleFileSelect(file, nameEl, sizeEl, infoEl) {
+        if (file) {
+          nameEl.textContent = file.name;
+          sizeEl.textContent = formatFileSize(file.size);
+          infoEl.classList.add("show");
+          return true;
+        }
+        return false;
+      }
+
+      function formatFileSize(bytes) {
+        if (bytes === 0) return "0 Bytes";
+        const k = 1024;
+        const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+      }
+
       function processExcelFile(
         file,
         expectedColumns,
@@ -468,20 +685,14 @@
         callback
       ) {
         const reader = new FileReader();
-
         reader.onload = function (e) {
           try {
             const data = new Uint8Array(e.target.result);
             const workbook = XLSX.read(data, { type: "array" });
-
-            // Pegar a primeira planilha
             const firstSheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[firstSheetName];
-
-            // Converter para JSON
             const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-            // Verificar se há dados
             if (jsonData.length < 2) {
               statusElement.textContent =
                 "Erro: A planilha não contém dados suficientes.";
@@ -489,10 +700,7 @@
               return;
             }
 
-            // Verificar cabeçalhos
             const headers = jsonData[0].map((h) => String(h).trim());
-
-            // Verificar se todos os cabeçalhos esperados estão presentes
             const missingColumns = expectedColumns.filter(
               (col) => !headers.includes(col)
             );
@@ -505,38 +713,28 @@
               return;
             }
 
-            // Mapear índices das colunas
             const columnIndices = {};
-            expectedColumns.forEach((col) => {
-              columnIndices[col] = headers.indexOf(col);
-            });
+            expectedColumns.forEach(
+              (col) => (columnIndices[col] = headers.indexOf(col))
+            );
 
-            // Extrair dados relevantes
             const extractedData = [];
             for (let i = 1; i < jsonData.length; i++) {
               const row = jsonData[i];
-              if (row.length === 0) continue; // Pular linhas vazias
-
+              if (row.length === 0) continue;
               const rowData = {};
               let hasAllValues = true;
-
               expectedColumns.forEach((col) => {
                 const index = columnIndices[col];
-                if (index !== -1 && index < row.length) {
-                  rowData[col] = row[index];
-                } else {
-                  hasAllValues = false;
-                }
+                rowData[col] =
+                  index !== -1 && index < row.length ? row[index] : undefined;
+                if (rowData[col] === undefined) hasAllValues = false;
               });
-
-              if (hasAllValues) {
-                extractedData.push(rowData);
-              }
+              if (hasAllValues) extractedData.push(rowData);
             }
 
             statusElement.textContent = `Arquivo processado com sucesso. ${extractedData.length} registros encontrados.`;
             statusElement.className = "status-message success";
-
             callback(extractedData);
           } catch (error) {
             console.error("Erro ao processar o arquivo:", error);
@@ -545,90 +743,89 @@
             statusElement.className = "status-message error";
           }
         };
-
         reader.onerror = function () {
           statusElement.textContent = "Erro ao ler o arquivo.";
           statusElement.className = "status-message error";
         };
-
         reader.readAsArrayBuffer(file);
       }
 
-      // Event listeners para os inputs de arquivo
-      valoresFileInput.addEventListener("change", function (e) {
-        if (this.files.length > 0) {
+      function handleValoresFile(e) {
+        if (e.target.files.length > 0) {
+          const file = e.target.files[0];
+          handleFileSelect(
+            file,
+            valoresFileName,
+            valoresFileSize,
+            valoresFileInfo
+          );
           valoresData = null;
           checkFilesLoaded();
           processExcelFile(
-            this.files[0],
+            file,
             ["Data", "Valor", "Histórico"],
             valoresStatus,
-            function (data) {
+            (data) => {
               valoresData = data;
               checkFilesLoaded();
             }
           );
         }
-      });
+      }
 
-      baseGeralFileInput.addEventListener("change", function (e) {
-        if (this.files.length > 0) {
+      function handleBaseGeralFile(e) {
+        if (e.target.files.length > 0) {
+          const file = e.target.files[0];
+          handleFileSelect(
+            file,
+            baseGeralFileName,
+            baseGeralFileSize,
+            baseGeralFileInfo
+          );
           baseGeralData = null;
           checkFilesLoaded();
           processExcelFile(
-            this.files[0],
+            file,
             ["Data", "Cta. Débito", "Cta. Crédito", "Valor", "Histórico"],
             baseGeralStatus,
-            function (data) {
+            (data) => {
               baseGeralData = data;
               checkFilesLoaded();
             }
           );
         }
-      });
+      }
 
-      // Função para processar as contas a serem desconsideradas
+      valoresFileInput.addEventListener("change", handleValoresFile);
+      baseGeralFileInput.addEventListener("change", handleBaseGeralFile);
+
       function processarContasDesconsideradas(inputValue) {
-        if (!inputValue || inputValue.trim() === "") {
-          return [];
-        }
-
-        // Dividir por vírgulas e processar cada valor
+        if (!inputValue || inputValue.trim() === "") return [];
         return inputValue
           .split(",")
           .map((conta) => conta.trim())
           .filter((conta) => conta !== "")
           .map((conta) => {
-            // Tentar converter para número se possível
             const numConta = Number(conta);
             return isNaN(numConta) ? conta : numConta;
           });
       }
 
-      // Função para verificar se um valor está na lista de contas a desconsiderar
       function contaDeveSerDesconsiderada(contaValor, contasDesconsideradas) {
-        if (!contasDesconsideradas || contasDesconsideradas.length === 0) {
+        if (!contasDesconsideradas || contasDesconsideradas.length === 0)
           return false;
-        }
-
-        // Converter o valor da conta para string para comparação
         const contaStr = String(contaValor).trim();
-
-        // Verificar se o valor está na lista de contas a desconsiderar
         return contasDesconsideradas.some(
           (conta) => String(conta) === contaStr
         );
       }
 
-      // Função para comparar os valores
       function compareData() {
-        loadingElement.style.display = "block";
-
-        // Limpar resultados anteriores
+        loadingElement.classList.add("show");
+        resultsSection.classList.remove("show");
         document.getElementById("resultsTable").innerHTML = "";
         noResultsElement.style.display = "none";
 
-        // Processar contas a desconsiderar
         const contasDebitoDesconsideradas = processarContasDesconsideradas(
           contasDebitoInput.value
         );
@@ -636,7 +833,6 @@
           contasCreditoInput.value
         );
 
-        // Atualizar resumo dos filtros
         let filterSummaryText = "Filtros aplicados: ";
         if (contasDebitoDesconsideradas.length > 0) {
           filterSummaryText += `<strong>Contas de Débito desconsideradas:</strong> ${contasDebitoDesconsideradas.join(
@@ -657,314 +853,171 @@
         filterSummary.innerHTML = filterSummaryText;
 
         setTimeout(() => {
-          // Filtrar a Base Geral para excluir registros com contas a desconsiderar
           const filteredBaseGeral = baseGeralData.filter((item) => {
-            // Verificar se a conta de débito deve ser desconsiderada
             const debitoDeveDesconsiderar = contaDeveSerDesconsiderada(
               item["Cta. Débito"],
               contasDebitoDesconsideradas
             );
-
-            // Verificar se a conta de crédito deve ser desconsiderada
             const creditoDeveDesconsiderar = contaDeveSerDesconsiderada(
               item["Cta. Crédito"],
               contasCreditoDesconsideradas
             );
-
-            // Manter apenas registros que não devem ser desconsiderados
             return !debitoDeveDesconsiderar && !creditoDeveDesconsiderar;
           });
 
-          // Agrupar resultados por valor da primeira planilha
           const groupedResults = {};
-          let totalMatches = 0;
-
-          // Para cada valor na primeira planilha
           valoresData.forEach((valorItem) => {
             const valorKey = `${valorItem["Data"]}_${valorItem["Valor"]}`;
-
-            // Procurar correspondências na segunda planilha (já filtrada)
             const matches = filteredBaseGeral.filter(
               (baseItem) =>
                 parseFloat(baseItem["Valor"]) === parseFloat(valorItem["Valor"])
             );
 
             if (matches.length > 0) {
-              groupedResults[valorKey] = {
-                valorData: formatDate(valorItem["Data"]),
-                valor: formatCurrency(valorItem["Valor"]),
-                valorHistorico: valorItem["Histórico"],
-                matches: matches.map((match) => ({
+              if (!groupedResults[valorKey]) {
+                groupedResults[valorKey] = {
+                  valorData: formatDate(valorItem["Data"]),
+                  valor: formatCurrency(valorItem["Valor"]),
+                  valorHistorico: valorItem["Histórico"],
+                  matches: [],
+                };
+              }
+              groupedResults[valorKey].matches.push(
+                ...matches.map((match) => ({
                   baseData: formatDate(match["Data"]),
                   baseDebito: match["Cta. Débito"],
                   baseCredito: match["Cta. Crédito"],
                   baseValor: formatCurrency(match["Valor"]),
                   baseHistorico: match["Histórico"],
-                })),
-              };
-              totalMatches += matches.length;
+                }))
+              );
             }
           });
 
-          // Exibir resultados agrupados
           const resultsTable = document.getElementById("resultsTable");
-
           if (Object.keys(groupedResults).length > 0) {
-            // Para cada grupo de resultados
             Object.values(groupedResults).forEach((group) => {
-              // Criar cabeçalho do grupo
               const groupHeader = document.createElement("div");
               groupHeader.className = "group-header";
-              groupHeader.innerHTML = `
-                            <div class="group-info">
-                                <h3>Data: ${group.valorData} | Valor: ${group.valor}</h3>
-                                <p>Histórico: ${group.valorHistorico}</p>
-                            </div>
-                        `;
+              groupHeader.innerHTML = `<div class="group-info"><h3>Data: ${group.valorData} | Valor: ${group.valor}</h3><p>Histórico: ${group.valorHistorico}</p></div>`;
               resultsTable.appendChild(groupHeader);
 
-              // Criar tabela para os registros correspondentes
               const matchesTable = document.createElement("table");
               matchesTable.className = "matches-table";
               matchesTable.innerHTML = `
-                            <thead>
-                                <tr>
-                                    <th>Data</th>
-                                    <th>Cta. Débito</th>
-                                    <th>Cta. Crédito</th>
-                                    <th>Valor</th>
-                                    <th>Histórico</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${group.matches
-                                  .map(
-                                    (match) => `
-                                    <tr>
-                                        <td>${match.baseData}</td>
-                                        <td>${match.baseDebito}</td>
-                                        <td>${match.baseCredito}</td>
-                                        <td>${match.baseValor}</td>
-                                        <td>${match.baseHistorico}</td>
-                                    </tr>
-                                `
-                                  )
-                                  .join("")}
-                            </tbody>
-                        `;
+                <thead>
+                  <tr>
+                    <th>Data</th><th>Cta. Débito</th><th>Cta. Crédito</th><th>Valor</th><th>Histórico</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${group.matches
+                    .map(
+                      (match) => `
+                    <tr>
+                      <td>${match.baseData}</td><td>${match.baseDebito}</td>
+                      <td>${match.baseCredito}</td><td>${match.baseValor}</td>
+                      <td>${match.baseHistorico}</td>
+                    </tr>`
+                    )
+                    .join("")}
+                </tbody>`;
               resultsTable.appendChild(matchesTable);
 
-              // Adicionar espaçador
               const spacer = document.createElement("div");
               spacer.className = "group-spacer";
               resultsTable.appendChild(spacer);
             });
-
             noResultsElement.style.display = "none";
           } else {
             noResultsElement.style.display = "block";
           }
 
-          // Mostrar seção de resultados
-          resultsSection.style.display = "block";
-          loadingElement.style.display = "none";
-        }, 500); // Pequeno atraso para mostrar o loading
+          resultsSection.classList.add("show");
+          loadingElement.classList.remove("show");
+        }, 500);
       }
 
-      // Função para formatar data
       function formatDate(dateValue) {
         if (!dateValue) return "";
-
-        // Verificar se é um número serial do Excel
         if (typeof dateValue === "number") {
-          // Converter número serial do Excel para data JavaScript
-          // O Excel conta dias a partir de 1/1/1900 (para Windows)
           const excelEpoch = new Date(1899, 11, 30);
           const resultDate = new Date(
             excelEpoch.getTime() + dateValue * 24 * 60 * 60 * 1000
           );
           return resultDate.toLocaleDateString("pt-BR");
         }
-
-        // Se já for uma string de data, tentar formatá-la
         try {
           const date = new Date(dateValue);
-          if (!isNaN(date.getTime())) {
-            return date.toLocaleDateString("pt-BR");
-          }
-          return dateValue;
+          return !isNaN(date.getTime())
+            ? date.toLocaleDateString("pt-BR")
+            : dateValue;
         } catch (e) {
           return dateValue;
         }
       }
 
-      // Função para formatar valor monetário
       function formatCurrency(value) {
         if (value === undefined || value === null) return "";
-
-        // Converter para número se for string
         const numValue =
           typeof value === "string"
             ? parseFloat(value.replace(/[^\d,-]/g, "").replace(",", "."))
             : value;
-
-        if (isNaN(numValue)) return value;
-
-        // Formatar como moeda brasileira
-        return numValue.toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL",
-        });
+        return isNaN(numValue)
+          ? value
+          : numValue.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            });
       }
 
-      // Event listener para o botão de comparar
       compareBtn.addEventListener("click", compareData);
 
-      // Função para exportar resultados como HTML
       exportBtn.addEventListener("click", function () {
-        // Criar um novo documento HTML
         const htmlContent = `
-                <!DOCTYPE html>
-                <html lang="pt-BR">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Resultados da Comparação</title>
-                    <style>
-                        :root {
-                            --primary-color: #4f0072;
-                            --accent-color: #fb0a5e;
-                            --background-color: #ffffff;
-                            --form-bg-color: #f9f9f9;
-                            --text-color: #333333;
-                            --border-color: #e0e0e0;
-                            --text-color-light: #ffffff;
-                        }
-                        
-                        body {
-                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                            background-color: var(--background-color);
-                            color: var(--text-color);
-                            padding: 20px;
-                        }
-                        
-                        .container {
-                            max-width: 1200px;
-                            margin: 0 auto;
-                        }
-                        
-                        h1 {
-                            color: var(--primary-color);
-                            text-align: center;
-                            margin-bottom: 30px;
-                        }
-                        
-                        .filter-summary {
-                            background-color: rgba(79, 0, 114, 0.05);
-                            padding: 10px 15px;
-                            border-radius: 4px;
-                            margin-bottom: 20px;
-                            font-size: 14px;
-                        }
-                        
-                        .filter-summary strong {
-                            color: var(--primary-color);
-                        }
-                        
-                        .group-header {
-                            background-color: var(--primary-color);
-                            color: var(--text-color-light);
-                            padding: 15px;
-                            border-radius: 8px 8px 0 0;
-                            margin-top: 30px;
-                        }
-                        
-                        .group-header:first-child {
-                            margin-top: 0;
-                        }
-                        
-                        .group-info h3 {
-                            margin-bottom: 5px;
-                            font-size: 1.2rem;
-                        }
-                        
-                        .matches-table {
-                            width: 100%;
-                            border-collapse: collapse;
-                            margin-bottom: 0;
-                            background-color: #fff;
-                            border-radius: 0 0 8px 8px;
-                            overflow: hidden;
-                            box-shadow: 0 4px 12px rgba(79, 0, 114, 0.15);
-                        }
-                        
-                        .matches-table th {
-                            background-color: #6b2b8c;
-                            color: var(--text-color-light);
-                            padding: 12px 15px;
-                            text-align: left;
-                        }
-                        
-                        .matches-table tr:nth-child(even) {
-                            background-color: #f2f2f2;
-                        }
-                        
-                        .matches-table tr:nth-child(odd) {
-                            background-color: #fff;
-                        }
-                        
-                        .matches-table td {
-                            padding: 12px 15px;
-                            border-bottom: 1px solid var(--border-color);
-                        }
-                        
-                        .matches-table tr:last-child td {
-                            border-bottom: none;
-                        }
-                        
-                        .group-spacer {
-                            height: 20px;
-                        }
-                        
-                        .footer {
-                            text-align: center;
-                            margin-top: 30px;
-                            color: #666;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="container">
-                        <h1>Resultados da Comparação</h1>
-                        <div class="filter-summary">${
-                          filterSummary.innerHTML
-                        }</div>
-                        ${document.getElementById("resultsTable").innerHTML}
-                        <div class="footer">
-                            <p>Relatório gerado em ${new Date().toLocaleString(
-                              "pt-BR"
-                            )}</p>
-                        </div>
-                    </div>
-                </body>
-                </html>
-            `;
-
-        // Criar um Blob com o conteúdo HTML
+          <!DOCTYPE html>
+          <html lang="pt-BR">
+          <head>
+              <meta charset="UTF-8">
+              <title>Resultados da Comparação</title>
+              <style>
+                  body { font-family: 'Segoe UI', Tahoma, sans-serif; padding: 20px; color: #333; }
+                  .container { max-width: 1200px; margin: 0 auto; }
+                  h1 { color: #4f0072; text-align: center; margin-bottom: 20px; }
+                  .filter-summary { background-color: #f9f9f9; padding: 10px 15px; border-radius: 4px; margin-bottom: 20px; font-size: 14px; border-left: 4px solid #4f0072; }
+                  .filter-summary strong { color: #4f0072; }
+                  .group-header { background-color: #4f0072; color: #fff; padding: 15px; border-radius: 8px 8px 0 0; margin-top: 20px; }
+                  .group-info h3 { margin: 0 0 5px 0; font-size: 1.2rem; }
+                  .matches-table { width: 100%; border-collapse: collapse; background-color: #fff; border-radius: 0 0 8px 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+                  .matches-table th { background-color: #6b2b8c; color: #fff; padding: 12px 15px; text-align: left; }
+                  .matches-table tr:nth-child(even) { background-color: #f2f2f2; }
+                  .matches-table td { padding: 12px 15px; border-bottom: 1px solid #e0e0e0; }
+                  .matches-table tr:last-child td { border-bottom: none; }
+                  .group-spacer { height: 20px; }
+                  .footer { text-align: center; margin-top: 30px; color: #666; font-size: 12px; }
+              </style>
+          </head>
+          <body>
+              <div class="container">
+                  <h1>Resultados da Comparação</h1>
+                  <div class="filter-summary">${filterSummary.innerHTML}</div>
+                  ${document.getElementById("resultsTable").innerHTML}
+                  <div class="footer">
+                      <p>Relatório gerado em ${new Date().toLocaleString(
+                        "pt-BR"
+                      )}</p>
+                  </div>
+              </div>
+          </body>
+          </html>`;
         const blob = new Blob([htmlContent], { type: "text/html" });
-
-        // Criar um link para download
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
         a.download = "resultados_comparacao.html";
-
-        // Adicionar à página, clicar e remover
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-
-        // Liberar a URL
         URL.revokeObjectURL(url);
       });
     </script>
