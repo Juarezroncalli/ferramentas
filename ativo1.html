@@ -5,7 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gerador de Layout de Patrimônio com Excel</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
     <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
       :root {
         --primary-color: #4f0072;
         --accent-color: #fb0a5e;
@@ -16,92 +26,89 @@
         --text-color-light: #ffffff;
         --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
         --transicao: all 0.3s ease;
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        --primary-dark: #3d005a;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        --text-muted: #64748b;
+        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
       }
 
       body {
-        background-color: var(--background-color);
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh;
         color: var(--text-color);
         line-height: 1.6;
-      }
-
-      header {
-        background-color: var(--primary-color);
-        color: var(--text-color-light);
-        padding: 1.5rem 0;
-        text-align: center;
-        box-shadow: var(--sombra);
       }
 
       .container {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 2rem;
+        padding: 2rem 1rem;
       }
 
-      h1 {
-        font-size: 2.2rem;
+      .header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+
+      .header h1 {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
         margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
 
-      h2 {
-        font-size: 1.8rem;
-        margin-bottom: 1.5rem;
-        color: var(--primary-color);
+      .header p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
       }
 
-      .subtitle {
-        font-size: 1rem;
-        opacity: 0.9;
-      }
-
-      .card {
-        background-color: var(--form-bg-color);
-        border-radius: 8px;
-        box-shadow: var(--sombra);
+      .content-card {
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
         padding: 2rem;
+        box-shadow: var(--sombra);
         margin-bottom: 2rem;
+        transition: var(--transicao);
+      }
+      .content-card.hidden {
+        display: none;
+      }
+
+      .content-card h2 {
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
       }
 
       .form-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         gap: 1.5rem;
+        margin-bottom: 1.5rem;
       }
 
       .form-group {
         margin-bottom: 1rem;
       }
 
-      #numeroEmpresa {
-        max-width: 150px;
-      }
-      .checkbox-group {
-        display: flex;
-        align-items: center;
-        margin-bottom: 1rem;
-      }
-      .checkbox-group input[type="checkbox"] {
-        width: auto;
-        margin-right: 0.5rem;
-      }
-      .checkbox-group label {
-        margin-bottom: 0;
-        font-weight: normal;
-        color: var(--text-color);
-      }
-
       label {
         display: block;
         margin-bottom: 0.5rem;
         font-weight: 600;
-        color: var(--primary-color);
+        color: var(--text-muted);
       }
 
       input,
@@ -110,10 +117,11 @@
         width: 100%;
         padding: 0.8rem;
         border: 1px solid var(--border-color);
-        border-radius: 4px;
+        border-radius: var(--radius);
         font-size: 1rem;
         transition: var(--transicao);
         font-family: inherit;
+        background: var(--form-bg-color);
       }
 
       input:focus,
@@ -122,76 +130,175 @@
         outline: none;
         border-color: var(--primary-color);
         box-shadow: 0 0 0 2px rgba(79, 0, 114, 0.1);
+        background: var(--background-color);
+      }
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        margin-top: 1.5rem;
+        background: var(--form-bg-color);
+        padding: 1rem;
+        border-radius: var(--radius);
+      }
+      .checkbox-group input[type="checkbox"] {
+        width: auto;
+        margin-right: 0.75rem;
+        height: 1.2em;
+        width: 1.2em;
+        accent-color: var(--primary-color);
+      }
+      .checkbox-group label {
+        margin-bottom: 0;
+        font-weight: normal;
+        color: var(--text-color);
+      }
+
+      .upload-area {
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius);
+        padding: 3rem 2rem;
+        text-align: center;
+        transition: var(--transicao);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        margin-top: 1rem;
+      }
+
+      .upload-area:hover {
+        border-color: var(--primary-color);
+        background: var(--form-bg-color);
+      }
+
+      .upload-area.dragover {
+        border-color: var(--primary-color);
+        background: rgba(79, 0, 114, 0.05);
+        transform: scale(1.02);
+      }
+
+      .upload-icon {
+        font-size: 3rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .upload-area:hover .upload-icon {
+        color: var(--primary-color);
+        transform: scale(1.1);
+      }
+
+      .upload-text {
+        font-size: 1.1rem;
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+      }
+
+      .upload-subtext {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+
+      #excelFile {
+        display: none;
+      }
+
+      .file-info {
+        background: var(--form-bg-color);
+        border-radius: var(--radius);
+        padding: 1rem;
+        margin-top: 1.5rem;
+        display: none;
+        align-items: center;
+        gap: 1rem;
+        border: 1px solid var(--border-color);
+      }
+
+      .file-info.show {
+        display: flex;
+      }
+
+      .file-icon {
+        color: var(--success);
+        font-size: 1.5rem;
+      }
+      .file-details {
+        flex: 1;
+      }
+      .file-name {
+        font-weight: 600;
+        color: var(--text-color);
+      }
+      .file-size {
+        color: var(--text-muted);
+        font-size: 0.875rem;
       }
 
       table {
         width: 100%;
         border-collapse: collapse;
         margin-top: 1rem;
+        box-shadow: var(--shadow);
+        border-radius: var(--radius);
+        overflow: hidden;
       }
       th,
       td {
         border: 1px solid var(--border-color);
-        padding: 0.75rem;
+        padding: 0.75rem 1rem;
         text-align: left;
       }
       th {
         background-color: var(--primary-color);
         color: var(--text-color-light);
+        font-weight: 600;
+      }
+      td {
+        background-color: var(--background-color);
+      }
+      tr:nth-child(even) td {
+        background-color: var(--form-bg-color);
       }
       td input[type="text"] {
         font-size: 0.9rem;
+        padding: 0.6rem;
       }
 
       .btn {
-        display: inline-block;
-        padding: 0.8rem 1.5rem;
-        background-color: var(--primary-color);
+        background: var(--primary-color);
         color: var(--text-color-light);
         border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 1rem;
+        padding: 0.875rem 2rem;
+        border-radius: var(--radius);
         font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
         transition: var(--transicao);
-        text-align: center;
+        box-shadow: var(--sombra);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
       }
 
       .btn:hover {
-        background-color: #3a0055;
+        background: var(--primary-dark);
         transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
       }
+
       .btn:disabled {
-        background-color: #ccc;
+        background: var(--text-muted);
         cursor: not-allowed;
         transform: none;
+        box-shadow: none;
       }
 
       .btn-accent {
         background-color: var(--accent-color);
       }
-
       .btn-accent:hover {
         background-color: #d9094f;
-      }
-      .btn-accent:disabled {
-        background-color: #f09cb9;
-      }
-
-      .btn-outline {
-        background-color: transparent;
-        border: 2px solid var(--primary-color);
-        color: var(--primary-color);
-      }
-
-      .btn-outline:hover {
-        background-color: var(--primary-color);
-        color: var(--text-color-light);
-      }
-      .btn-outline:disabled {
-        border-color: #ccc;
-        color: #ccc;
-        background-color: transparent;
       }
 
       .actions {
@@ -200,112 +307,134 @@
         margin-top: 1.5rem;
         flex-wrap: wrap;
       }
+      .actions .btn {
+        flex-grow: 1;
+      }
 
-      .items-list {
-        margin-top: 2rem;
+      .items-container {
+        display: grid;
+        gap: 1rem;
       }
 
       .item-card {
-        background-color: var(--background-color);
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        position: relative;
+        background: var(--form-bg-color);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        border-left: 4px solid var(--primary-color);
         transition: var(--transicao);
+        position: relative;
       }
-
       .item-card:hover {
+        transform: translateY(-2px);
         box-shadow: var(--sombra);
       }
 
       .item-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.5rem;
-      }
-
-      .item-title {
-        font-weight: 600;
-        color: var(--primary-color);
+        font-weight: 700;
+        color: var(--primary-dark);
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border-color);
       }
 
       .item-details {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 0.5rem 1rem;
+        gap: 0.75rem;
         font-size: 0.9rem;
       }
-
       .item-detail {
         display: flex;
-        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(224, 224, 224, 0.5);
       }
-      .item-detail.full-width {
-        grid-column: 1 / -1;
+      .item-detail:last-child {
+        border-bottom: none;
       }
-      .item-detail span:first-child {
-        word-break: break-word;
-      }
-
       .detail-label {
         font-weight: 600;
-        margin-right: 0.5rem;
-        color: var(--primary-color);
-        margin-bottom: 0.25rem;
+        color: var(--text-muted);
+      }
+      .detail-value {
+        font-weight: 500;
+        color: var(--text-color);
+        text-align: right;
+        word-break: break-word;
+      }
+      .full-width .detail-value {
+        text-align: left;
+        margin-top: 0.25rem;
+      }
+      .full-width {
+        flex-direction: column;
+        align-items: flex-start;
       }
 
       .remove-btn {
-        background-color: var(--accent-color);
+        background-color: var(--error);
         color: white;
         border: none;
-        border-radius: 4px;
-        width: 30px;
-        height: 30px;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
         transition: var(--transicao);
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 1rem;
       }
 
       .remove-btn:hover {
-        background-color: #d9094f;
+        background-color: #c82333;
         transform: scale(1.1);
       }
 
-      .result-area {
-        margin-top: 2rem;
+      .results-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--primary-dark)
+        );
+        color: var(--text-color-light);
+        padding: 1.5rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
       }
 
+      .results-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
       .result-box {
         background-color: var(--form-bg-color);
         border: 1px solid var(--border-color);
-        border-radius: 6px;
-        padding: 1rem;
-        margin-top: 1rem;
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        margin-top: 1.5rem;
         white-space: pre-wrap;
         word-break: break-all;
         max-height: 300px;
         overflow-y: auto;
-        font-family: monospace;
+        font-family: "Monaco", "Menlo", monospace;
+        font-size: 0.9rem;
       }
 
       .empty-state {
         text-align: center;
-        padding: 2rem;
-        color: #888;
+        padding: 3rem 2rem;
+        color: var(--text-muted);
       }
-
-      .empty-state i {
-        font-size: 3rem;
+      .empty-icon {
+        font-size: 4rem;
         margin-bottom: 1rem;
-        color: var(--border-color);
-      }
-
-      .hidden {
-        display: none !important;
+        opacity: 0.5;
       }
 
       /* Custom Modal Styles */
@@ -331,10 +460,10 @@
       }
 
       .custom-modal-content {
-        background-color: var(--form-bg-color);
+        background-color: var(--background-color);
         padding: 2.5rem;
-        border-radius: 8px;
-        box-shadow: var(--sombra), 0 8px 25px rgba(0, 0, 0, 0.1);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
         min-width: 320px;
         max-width: 500px;
         width: 90%;
@@ -346,80 +475,92 @@
       .custom-modal-overlay.visible .custom-modal-content {
         transform: scale(1);
       }
-
       .custom-modal-text {
         margin-bottom: 1.5rem;
         font-size: 1.1rem;
         line-height: 1.7;
         white-space: pre-line;
-        color: var(--text-color);
       }
       .custom-modal-text h3 {
         color: var(--primary-color);
         margin-bottom: 1rem;
         font-size: 1.5rem;
       }
-
-      .custom-modal-actions {
-        margin-top: 1.5rem;
-      }
-      .custom-modal-close-btn {
-        /* Using existing .btn styles */
+      .custom-modal-text b {
+        color: var(--primary-dark);
       }
 
       @media (max-width: 768px) {
         .container {
           padding: 1rem;
         }
+        .header h1 {
+          font-size: 2rem;
+        }
+        .content-card {
+          padding: 1.5rem;
+        }
         .actions {
           flex-direction: column;
-        }
-        .btn {
-          width: 100%;
-        }
-        #numeroEmpresa {
-          max-width: 100%;
         }
         .custom-modal-content {
           padding: 2rem;
         }
-        .custom-modal-text h3 {
-          font-size: 1.3rem;
-        }
       }
     </style>
   </head>
-
   <body>
-    <header>
-      <h1>Gerador de Layout de Patrimônio (Upload Excel)</h1>
-      <p class="subtitle">Faça o upload do arquivo Excel e mapeie as contas</p>
-      <p class="subtitle">
-        <strong
-          >Conjunto de Dados (Cadastro de Bens - Tabela PMBEM (Leiaute Domínio
-          sistemas PMBEM))</strong
-        >
-      </p>
-    </header>
-
     <div class="container">
-      <div class="card">
-        <h2>1. Carregar Dados e Opções</h2>
-        <div class="form-group">
-          <label for="numeroEmpresa">Número da Empresa* (máx. 5 dígitos)</label>
-          <input
-            type="number"
-            id="numeroEmpresa"
-            required
-            max="99999"
-            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-            maxlength="5"
-          />
+      <div class="header">
+        <h1>
+          <i class="fa-solid fa-file-invoice-dollar"></i> Gerador de Layout de
+          Patrimônio
+        </h1>
+        <p>
+          Faça o upload do arquivo Excel e mapeie as contas para gerar o layout
+          (PMBEM)
+        </p>
+      </div>
+
+      <div class="content-card" id="uploadCard">
+        <h2><i class="fa-solid fa-upload"></i> 1. Carregar Dados e Opções</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="numeroEmpresa"
+              >Número da Empresa* (máx. 5 dígitos)</label
+            >
+            <input
+              type="number"
+              id="numeroEmpresa"
+              required
+              max="99999"
+              oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+              maxlength="5"
+              placeholder="Ex: 123"
+            />
+          </div>
         </div>
-        <div class="form-group">
-          <label for="excelFile">Arquivo Excel (.xlsx, .xls)*</label>
-          <input type="file" id="excelFile" accept=".xlsx, .xls" required />
+
+        <div
+          class="upload-area"
+          onclick="document.getElementById('excelFile').click()"
+        >
+          <div class="upload-icon">
+            <i class="fas fa-cloud-upload-alt"></i>
+          </div>
+          <div class="upload-text">Clique para selecionar o arquivo Excel</div>
+          <div class="upload-subtext">ou arraste e solte (.xlsx, .xls)</div>
+          <input type="file" id="excelFile" accept=".xlsx, .xls" />
         </div>
+
+        <div class="file-info" id="file-info">
+          <div class="file-icon"><i class="fas fa-file-excel"></i></div>
+          <div class="file-details">
+            <div class="file-name" id="file-name"></div>
+            <div class="file-size" id="file-size"></div>
+          </div>
+        </div>
+
         <div class="checkbox-group">
           <input type="checkbox" id="processarBaixadosCheckbox" />
           <label for="processarBaixadosCheckbox"
@@ -428,42 +569,53 @@
         </div>
       </div>
 
-      <div class="card hidden" id="mappingCard">
-        <h2>2. Mapeamento De/Para (Conta Principal -> Conta Patrimonial)</h2>
+      <div class="content-card hidden" id="mappingCard">
+        <h2>
+          <i class="fa-solid fa-right-left"></i> 2. Mapeamento De/Para (Conta
+          Principal -> Conta Patrimonial)
+        </h2>
         <p>
           Preencha a "Conta Patrimonial" correspondente para cada "Conta
           Principal" encontrada no arquivo Excel.
         </p>
         <div id="mappingTableContainer"></div>
         <div class="actions">
-          <button id="processExcelBtn" class="btn">Processar Dados</button>
+          <button id="processExcelBtn" class="btn">
+            <i class="fas fa-cogs"></i> Processar Dados
+          </button>
         </div>
       </div>
 
-      <div class="items-list" id="itemsList">
-        <h2>Itens Processados</h2>
+      <div class="content-card" id="itemsListCard">
+        <h2><i class="fa-solid fa-list-check"></i> 3. Itens a Serem Gerados</h2>
+        <div id="itemsContainer"></div>
         <div id="emptyState" class="empty-state">
-          <i>📋</i>
+          <div class="empty-icon"><i class="fa-solid fa-box-open"></i></div>
+          <h3>Nenhum item processado</h3>
           <p>
-            Nenhum item processado ainda. Carregue um arquivo Excel e realize o
-            mapeamento.
+            Carregue um arquivo Excel e realize o mapeamento para começar.
           </p>
         </div>
-        <div id="itemsContainer"></div>
+        <div class="actions">
+          <button id="gerarTxtBtn" class="btn btn-accent" disabled>
+            <i class="fa-solid fa-file-export"></i> Gerar Arquivo TXT
+          </button>
+        </div>
       </div>
 
-      <div class="actions">
-        <button id="gerarTxtBtn" class="btn btn-accent" disabled>
-          Gerar Arquivo TXT
-        </button>
-      </div>
-
-      <div class="result-area hidden" id="resultArea">
-        <h2>Resultado do Layout</h2>
+      <div class="content-card hidden" id="resultArea">
+        <div class="results-header">
+          <i class="fas fa-file-alt"></i>
+          <div class="results-title">Resultado do Layout (TXT)</div>
+        </div>
         <div class="result-box" id="resultBox"></div>
         <div class="actions">
-          <button id="downloadBtn" class="btn">Baixar Arquivo TXT</button>
-          <button id="copyBtn" class="btn btn-outline">Copiar Conteúdo</button>
+          <button id="downloadBtn" class="btn">
+            <i class="fa-solid fa-download"></i> Baixar Arquivo TXT
+          </button>
+          <button id="copyBtn" class="btn">
+            <i class="fa-solid fa-copy"></i> Copiar Conteúdo
+          </button>
         </div>
       </div>
     </div>
@@ -483,6 +635,7 @@
       let items = [];
       let excelData = [];
 
+      // Elementos do DOM
       const numeroEmpresaInput = document.getElementById("numeroEmpresa");
       const excelFileInput = document.getElementById("excelFile");
       const processarBaixadosCheckbox = document.getElementById(
@@ -501,12 +654,20 @@
       const downloadBtn = document.getElementById("downloadBtn");
       const copyBtn = document.getElementById("copyBtn");
 
+      // Upload Area & File Info
+      const uploadArea = document.querySelector(".upload-area");
+      const fileInfo = document.getElementById("file-info");
+      const fileName = document.getElementById("file-name");
+      const fileSize = document.getElementById("file-size");
+
+      // Modal
       const customAlertModal = document.getElementById("customAlertModal");
       const customAlertText = document.getElementById("customAlertText");
       const customAlertCloseBtn = document.getElementById(
         "customAlertCloseBtn"
       );
 
+      // --- Funções do Modal ---
       function showCustomAlert(message, title) {
         let fullMessage = message;
         if (title) {
@@ -521,12 +682,11 @@
       }
 
       customAlertCloseBtn.addEventListener("click", hideCustomAlert);
-      customAlertModal.addEventListener("click", function (event) {
-        if (event.target === customAlertModal) {
-          hideCustomAlert();
-        }
+      customAlertModal.addEventListener("click", (event) => {
+        if (event.target === customAlertModal) hideCustomAlert();
       });
 
+      // --- Funções de Formatação ---
       function formatDateToYYYYMMDD(dateInput) {
         if (!dateInput) return "";
         let date;
@@ -547,10 +707,7 @@
         } else {
           date = new Date(dateInput);
         }
-        if (isNaN(date.getTime())) {
-          console.warn("Data de aquisição inválida:", dateInput);
-          return typeof dateInput === "string" ? dateInput : "";
-        }
+        if (isNaN(date.getTime())) return "";
         const year = date.getFullYear();
         const month = (date.getMonth() + 1).toString().padStart(2, "0");
         const day = date.getDate().toString().padStart(2, "0");
@@ -571,8 +728,62 @@
         return `${day}/${month}/${year}`;
       }
 
-      excelFileInput.addEventListener("change", (event) => {
-        const file = event.target.files[0];
+      function formatFileSize(bytes) {
+        if (bytes === 0) return "0 Bytes";
+        const k = 1024;
+        const sizes = ["Bytes", "KB", "MB", "GB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+      }
+
+      // --- Lógica de Upload de Arquivo ---
+      ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+        uploadArea.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        });
+      });
+      ["dragenter", "dragover"].forEach((eventName) => {
+        uploadArea.addEventListener(eventName, () =>
+          uploadArea.classList.add("dragover")
+        );
+      });
+      ["dragleave", "drop"].forEach((eventName) => {
+        uploadArea.addEventListener(eventName, () =>
+          uploadArea.classList.remove("dragover")
+        );
+      });
+
+      uploadArea.addEventListener("drop", (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files.length > 0) handleFileSelect(files[0]);
+      });
+
+      excelFileInput.addEventListener("change", (e) => {
+        if (e.target.files.length > 0) handleFileSelect(e.target.files[0]);
+      });
+
+      function handleFileSelect(file) {
+        const validExtensions = [".xlsx", ".xls"];
+        if (
+          file &&
+          validExtensions.some((ext) => file.name.toLowerCase().endsWith(ext))
+        ) {
+          fileName.textContent = file.name;
+          fileSize.textContent = formatFileSize(file.size);
+          fileInfo.classList.add("show");
+          processExcelFile(file);
+        } else {
+          showCustomAlert(
+            "Por favor, selecione um arquivo Excel (.xlsx ou .xls) válido.",
+            "Formato Inválido"
+          );
+          resetToInitialState();
+        }
+      }
+
+      function processExcelFile(file) {
         if (!file) {
           resetToInitialState();
           return;
@@ -616,18 +827,15 @@
               "Status",
             ];
             const firstRow = excelData[0];
-            const missingColumns = [];
-            for (const col of requiredColumns) {
-              if (!(col in firstRow)) {
-                missingColumns.push(col);
-              }
-            }
+            const missingColumns = requiredColumns.filter(
+              (col) => !(col in firstRow)
+            );
 
             if (missingColumns.length > 0) {
               showCustomAlert(
-                `Colunas obrigatórias não encontradas na planilha:\n<b>${missingColumns.join(
+                `Colunas obrigatórias não encontradas na planilha:<br><b>${missingColumns.join(
                   ", "
-                )}</b>.\n\nVerifique o arquivo.`,
+                )}</b>.<br><br>Verifique o arquivo.`,
                 "Erro na Planilha"
               );
               resetToInitialState();
@@ -637,8 +845,7 @@
           } catch (error) {
             console.error("Erro ao ler o arquivo Excel:", error);
             showCustomAlert(
-              "Erro ao ler o arquivo Excel. Verifique se é um formato válido e se não está corrompido.\nDetalhe: " +
-                error.message,
+              `Erro ao ler o arquivo Excel. Verifique se é um formato válido e se não está corrompido.<br>Detalhe: ${error.message}`,
               "Erro de Leitura"
             );
             resetToInitialState();
@@ -653,10 +860,12 @@
           resetToInitialState();
         };
         reader.readAsArrayBuffer(file);
-      });
+      }
 
+      // --- Estado Inicial e Mapeamento ---
       function resetToInitialState() {
         excelFileInput.value = "";
+        fileInfo.classList.remove("show");
         items = [];
         excelData = [];
         renderItems();
@@ -692,6 +901,7 @@
         mappingCard.classList.remove("hidden");
       }
 
+      // --- Processamento dos Dados ---
       processExcelBtn.addEventListener("click", () => {
         const numeroEmpresa = numeroEmpresaInput.value;
         if (!numeroEmpresa) {
@@ -716,7 +926,7 @@
         }
         if (excelData.length === 0) {
           showCustomAlert(
-            "Nenhum dado do Excel carregado para processar. Por favor, carregue um arquivo.",
+            "Nenhum dado do Excel carregado. Por favor, carregue um arquivo.",
             "Sem Dados"
           );
           return;
@@ -734,9 +944,9 @@
             allMappingsFilled = false;
             input.style.borderColor = "red";
           } else {
-            input.style.borderColor = "var(--border-color)";
+            input.style.borderColor = "";
           }
-          deParaMap.set(contaPrincipal, contaPatrimonial);
+          deParaMap.set(String(contaPrincipal), contaPatrimonial);
         });
 
         if (!allMappingsFilled) {
@@ -756,15 +966,10 @@
             .trim()
             .toLowerCase();
           if (statusDoBem === "baixa total" && !querProcessarBaixados) {
-            processErrors.push(
-              `Linha ${index + 2} (Cód: ${row["Código"] || "N/A"} - Status: ${
-                row["Status"]
-              }) ignorada conforme opção (não processar baixados).`
-            );
             return;
           }
 
-          const contaPrincipalExcel = row["Conta Principal"];
+          const contaPrincipalExcel = String(row["Conta Principal"]);
           const contaPatrimonial = deParaMap.get(contaPrincipalExcel) || "";
           if (
             row["Código"] === undefined ||
@@ -804,7 +1009,7 @@
             identificador: String(row["Código"]).trim(),
             nome: String(row["Descrição"] || "")
               .trim()
-              .replace(/;/g, ","), // PONTO E VÍRGULA SUBSTITUÍDO NA DESCRIÇÃO
+              .replace(/;/g, ","),
             dataAquisicao: dataAquisicaoFormatada,
             contaPatrimonial: String(contaPatrimonial).trim(),
             centroCusto: "1",
@@ -814,33 +1019,6 @@
             statusOriginal: row["Status"],
           };
 
-          if (!item.codigo) {
-            processErrors.push(
-              `Linha ${index + 2}: Código está vazio após processamento.`
-            );
-            return;
-          }
-          if (!item.nome) {
-            processErrors.push(
-              `Linha ${index + 2} (Cód: ${
-                item.codigo
-              }): Nome (Descrição) está vazio.`
-            );
-          }
-          if (!item.dataAquisicao) {
-            processErrors.push(
-              `Linha ${index + 2} (Cód: ${
-                item.codigo
-              }): Data de Aquisição está vazia ou inválida.`
-            );
-          }
-          if (!item.contaPatrimonial && contaPrincipalExcel) {
-            processErrors.push(
-              `Linha ${index + 2} (Cód: ${
-                item.codigo
-              }): Conta Patrimonial não mapeada para '${contaPrincipalExcel}'.`
-            );
-          }
           if (
             isNaN(parseFloat(String(item.valorAquisicao).replace(",", ".")))
           ) {
@@ -856,16 +1034,16 @@
 
         if (processErrors.length > 0) {
           showCustomAlert(
-            "Avisos durante o processamento:\n\n- " +
-              processErrors.join("\n- ") +
-              "\n\nOs itens válidos (se houver) foram carregados.",
+            "Avisos durante o processamento:<br><br>- " +
+              processErrors.join("<br>- ") +
+              "<br><br>Os itens válidos (se houver) foram carregados.",
             "Relatório de Processamento"
           );
         } else if (items.length > 0) {
           showCustomAlert("Dados processados com sucesso!", "Sucesso");
         } else if (excelData.length > 0 && items.length === 0) {
           showCustomAlert(
-            "Nenhum item foi processado. Verifique os dados da planilha, mapeamentos e opções de filtro.",
+            "Nenhum item foi processado. Verifique os dados, mapeamentos e filtros.",
             "Nenhum Item Processado"
           );
         }
@@ -876,14 +1054,15 @@
         }
       });
 
+      // --- Renderização e Geração TXT ---
       function renderItems() {
         if (items.length === 0) {
-          emptyState.classList.remove("hidden");
+          emptyState.style.display = "block";
           itemsContainer.innerHTML = "";
           gerarTxtBtn.disabled = true;
           resultArea.classList.add("hidden");
         } else {
-          emptyState.classList.add("hidden");
+          emptyState.style.display = "none";
           gerarTxtBtn.disabled = false;
           itemsContainer.innerHTML = "";
 
@@ -897,40 +1076,36 @@
             const statusDisplay = isBaixado
               ? ` <span style="color: var(--accent-color); font-weight: bold;">(Status: ${item.statusOriginal})</span>`
               : "";
+            const valor = parseFloat(
+              String(item.valorAquisicao).replace(",", ".")
+            );
 
             itemCard.innerHTML = `
-                        <div class="item-header">
-                            <div class="item-title">${
-                              item.nome || "Nome não informado"
-                            } (Cód: ${item.codigo})${statusDisplay}</div>
-                            <button class="remove-btn" data-index="${index}" title="Remover este item da lista antes de gerar TXT">✕</button>
-                        </div>
-                        <div class="item-details">
-                            <div class="item-detail"><span class="detail-label">Empresa:</span><span>${
-                              item.numeroEmpresa
-                            }</span></div>
-                            <div class="item-detail"><span class="detail-label">Data Aquisição:</span><span>${formatDateDisplay(
-                              item.dataAquisicao
-                            )}</span></div>
-                            <div class="item-detail"><span class="detail-label">Valor:</span><span>R$ ${parseFloat(
-                              String(item.valorAquisicao).replace(",", ".")
-                            ).toLocaleString("pt-BR", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })}</span></div>
-                            <div class="item-detail"><span class="detail-label">Função:</span><span>${
-                              item.funcao
-                            }</span></div>
-                            <div class="item-detail"><span class="detail-label">C. Patrimonial:</span><span>${
-                              item.contaPatrimonial
-                            }</span></div>
-                            <div class="item-detail"><span class="detail-label">C. Custo:</span><span>${
-                              item.centroCusto
-                            }</span></div>
-                            <div class="item-detail full-width"><span class="detail-label">Histórico:</span><span>${
-                              item.historico
-                            }</span></div>
-                        </div>`;
+                <button class="remove-btn" data-index="${index}" title="Remover item">✕</button>
+                <div class="item-header">${
+                  item.nome || "Nome não informado"
+                } (Cód: ${item.codigo})${statusDisplay}</div>
+                <div class="item-details">
+                    <div class="item-detail"><span class="detail-label">Empresa:</span><span class="detail-value">${
+                      item.numeroEmpresa
+                    }</span></div>
+                    <div class="item-detail"><span class="detail-label">Aquisição:</span><span class="detail-value">${formatDateDisplay(
+                      item.dataAquisicao
+                    )}</span></div>
+                    <div class="item-detail"><span class="detail-label">Valor:</span><span class="detail-value">R$ ${valor.toLocaleString(
+                      "pt-BR",
+                      { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+                    )}</span></div>
+                    <div class="item-detail"><span class="detail-label">C. Patrimonial:</span><span class="detail-value">${
+                      item.contaPatrimonial
+                    }</span></div>
+                     <div class="item-detail"><span class="detail-label">C. Custo:</span><span class="detail-value">${
+                       item.centroCusto
+                     }</span></div>
+                    <div class="item-detail full-width"><span class="detail-label">Histórico:</span><span class="detail-value">${
+                      item.historico
+                    }</span></div>
+                </div>`;
             itemsContainer.appendChild(itemCard);
           });
 
@@ -950,54 +1125,21 @@
       gerarTxtBtn.addEventListener("click", function () {
         if (items.length === 0) {
           showCustomAlert("Nenhum item para gerar o arquivo TXT.", "Atenção");
-          resultBox.textContent = "Nenhum item para gerar.";
-          resultArea.classList.remove("hidden");
-          downloadBtn.disabled = true;
-          copyBtn.disabled = true;
           return;
         }
 
         let result = "";
-        let generationErrors = [];
-        items.forEach((item, index) => {
+        items.forEach((item) => {
           let valorAquisicaoFormatado = formatValorMonetario(
             item.valorAquisicao
           );
-          let dataAquisicaoParaTxt = item.dataAquisicao;
-          if (
-            !item.numeroEmpresa ||
-            !item.codigo ||
-            !item.identificador ||
-            !item.nome ||
-            !dataAquisicaoParaTxt ||
-            !item.contaPatrimonial ||
-            !item.centroCusto ||
-            !item.historico ||
-            !item.funcao
-          ) {
-            generationErrors.push(
-              `Item ${index + 1} (Código: ${
-                item.codigo
-              }) possui campos obrigatórios faltando e não será incluído no TXT.`
-            );
-            return;
-          }
-          let line = `${item.numeroEmpresa};${item.codigo};${item.identificador};${item.nome};${dataAquisicaoParaTxt};;${item.contaPatrimonial};${item.centroCusto};${item.historico};B;I;;;${item.funcao};${valorAquisicaoFormatado};;;;;;;;;;;${valorAquisicaoFormatado};;;;;;S;N;${dataAquisicaoParaTxt};N;;;;;N;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;`;
+          let line = `${item.numeroEmpresa};${item.codigo};${item.identificador};${item.nome};${item.dataAquisicao};;${item.contaPatrimonial};${item.centroCusto};${item.historico};B;I;;;${item.funcao};${valorAquisicaoFormatado};;;;;;;;;;;${valorAquisicaoFormatado};;;;;;S;N;${item.dataAquisicao};N;;;;;N;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;`;
           result += line + "\n";
         });
 
-        if (generationErrors.length > 0) {
-          showCustomAlert(
-            "Erros ao gerar o TXT para alguns itens:\n\n- " +
-              generationErrors.join("\n- ") +
-              "\n\nO TXT foi gerado com os itens válidos (se houver).",
-            "Relatório de Geração TXT"
-          );
-        }
-
         if (result.trim() === "") {
           resultBox.textContent =
-            "Nenhum item válido para gerar o arquivo TXT após as validações.";
+            "Nenhum item válido para gerar o arquivo TXT.";
           downloadBtn.disabled = true;
           copyBtn.disabled = true;
         } else {
@@ -1010,12 +1152,7 @@
 
       downloadBtn.addEventListener("click", function () {
         const content = resultBox.textContent;
-        if (
-          !content ||
-          content === "Nenhum item para gerar." ||
-          content.startsWith("Nenhum item válido")
-        )
-          return;
+        if (!content || content.startsWith("Nenhum item válido")) return;
         const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
@@ -1031,32 +1168,28 @@
 
       copyBtn.addEventListener("click", function () {
         const content = resultBox.textContent;
-        if (
-          !content ||
-          content === "Nenhum item para gerar." ||
-          content.startsWith("Nenhum item válido")
-        )
-          return;
+        if (!content || content.startsWith("Nenhum item válido")) return;
         navigator.clipboard
           .writeText(content)
           .then(() => {
-            const originalText = copyBtn.textContent;
-            copyBtn.textContent = "Copiado!";
+            const originalIcon = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copiado!';
             copyBtn.disabled = true;
             setTimeout(() => {
-              copyBtn.textContent = originalText;
+              copyBtn.innerHTML = originalIcon;
               copyBtn.disabled = false;
             }, 2000);
           })
           .catch((err) => {
             console.error("Erro ao copiar: ", err);
             showCustomAlert(
-              "Falha ao copiar. Verifique as permissões do navegador ou copie manualmente.",
-              "Erro ao Copiar"
+              "Falha ao copiar. Verifique as permissões do navegador.",
+              "Erro"
             );
           });
       });
 
+      // Inicialização
       renderItems();
       downloadBtn.disabled = true;
       copyBtn.disabled = true;
