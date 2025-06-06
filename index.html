@@ -1,28 +1,36 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
-    
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-6XKND47T4H"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-6XKND47T4H"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-  gtag('config', 'G-6XKND47T4H');
-</script>
+      gtag("config", "G-6XKND47T4H");
+    </script>
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Conta IA - Ferramentas Inteligentes para Contabilidade</title>
     <link rel="icon" href="icone.ico" type="image/x-icon" />
-    <!-- Font Awesome para ícones -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
     <style>
-      /* Variáveis de cores - Nova paleta */
+      /* Reset e variáveis de cores do modelo ECF.html */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
       :root {
         --primary-color: #4f0072;
         --accent-color: #fb0a5e;
@@ -33,37 +41,47 @@
         --text-color-light: #ffffff;
         --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
         --transicao: all 0.3s ease;
-      }
-
-      /* Reset e estilos globais */
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: "Inter", "Poppins", "Roboto", sans-serif;
+        --primary-dark: #3d005a;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        --text-muted: #64748b;
+        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
       }
 
       body {
-        background-color: var(--background-color);
-        color: var(--text-color);
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh;
+        color: var(--text-color-light);
         line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
       }
 
       /* Header */
       header {
-        background-color: var(--primary-color);
-        color: var(--text-color-light);
-        padding: 16px 24px;
-        position: fixed;
+        background-color: transparent;
+        padding: 24px 0;
+        position: absolute;
         width: 100%;
         top: 0;
         z-index: 1000;
-        box-shadow: var(--sombra);
       }
 
       .header-container {
         max-width: 1200px;
         margin: 0 auto;
+        padding: 0 1rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -76,42 +94,37 @@
         text-decoration: none;
         display: flex;
         align-items: center;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       }
 
       .logo i {
         color: var(--accent-color);
         margin-right: 8px;
+        text-shadow: none;
       }
 
       .slogan {
         font-size: 0.9rem;
         color: rgba(255, 255, 255, 0.9);
-        margin-left: 16px;
       }
 
       /* Conteúdo principal */
       main {
-        margin-top: 80px;
-        padding: 24px;
-        max-width: 1200px;
-        margin-left: auto;
-        margin-right: auto;
+        margin-top: 100px; /* Espaço para o header absoluto */
       }
 
       /* Seção de boas-vindas */
       .welcome-section {
         text-align: center;
-        margin-bottom: 48px;
+        margin-bottom: 3rem;
         padding: 24px;
-        background: linear-gradient(135deg, var(--primary-color), #7a1e99);
-        color: var(--text-color-light);
-        border-radius: 12px;
-        box-shadow: var(--sombra);
       }
 
       .welcome-section h1 {
-        font-size: 2.2rem;
-        margin-bottom: 16px;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         position: relative;
         display: inline-block;
       }
@@ -132,65 +145,58 @@
         font-size: 1.1rem;
         max-width: 700px;
         margin: 24px auto 0;
+        color: rgba(255, 255, 255, 0.85);
       }
 
       /* Grid de cards */
       .tools-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
         gap: 24px;
-        margin-top: 32px;
       }
 
       .tool-card {
-        background-color: var(--form-bg-color);
-        border-radius: 12px;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        border-radius: var(--radius-lg);
         padding: 24px;
-        box-shadow: var(--sombra);
+        box-shadow: var(--shadow-lg);
         transition: var(--transicao);
         display: flex;
         flex-direction: column;
-        align-items: center;
         text-align: center;
         cursor: pointer;
-        border: 1px solid var(--border-color);
+        border: 1px solid transparent;
+        position: relative;
+        overflow: hidden;
       }
 
-      /* Add this inside the <style> tag */
-
-      .tool-card {
-        /* ... other styles ... */
-        position: relative; /* Make the card a positioning context for the badge */
-        overflow: hidden; /* Optional: helps contain the badge if needed */
+      .tool-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+        border-color: var(--primary-color);
       }
 
       .custom-solution-badge {
         position: absolute;
-        top: 10px; /* Distance from the top edge */
-        right: 10px; /* Distance from the right edge */
-        background-color: #007bff; /* A different highlight color (e.g., blue) */
-        color: var(--text-color-light); /* White text */
-        padding: 4px 8px; /* Small padding */
-        border-radius: 4px; /* Slightly rounded corners */
-        font-size: 0.7rem; /* Very small text */
+        top: 15px;
+        right: -40px;
+        background-color: var(--accent-color);
+        color: var(--text-color-light);
+        padding: 4px 40px;
+        font-size: 0.7rem;
         font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        z-index: 1; /* Ensure it's above other card content */
-        line-height: 1; /* Adjust line height */
+        z-index: 1;
+        transform: rotate(45deg);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
       }
 
-      /* Optional: Slightly adjust card padding if badge feels too close to content */
-      .tool-card .tool-icon,
-      .tool-card .tool-name,
-      .tool-card .tool-description {
-        position: relative; /* Ensure content respects the badge */
-        z-index: 0;
-      }
-      .tool-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 8px 24px rgba(79, 0, 114, 0.2);
-        border-color: var(--primary-color);
+      .tool-icon {
+        font-size: 2.8rem;
+        margin-bottom: 16px;
+        color: var(--primary-color);
+        transition: var(--transicao);
       }
 
       .tool-card:hover .tool-icon {
@@ -198,33 +204,26 @@
         transform: scale(1.1);
       }
 
-      .tool-icon {
-        font-size: 2.5rem;
-        margin-bottom: 16px;
-        color: var(--primary-color);
-        transition: var(--transicao);
-      }
-
       .tool-name {
-        font-size: 1.2rem;
-        font-weight: 600;
+        font-size: 1.25rem;
+        font-weight: 700;
         margin-bottom: 12px;
-        color: var(--primary-color);
+        color: var(--primary-dark);
       }
 
       .tool-description {
         font-size: 0.9rem;
-        color: #777;
-        margin-bottom: 16px;
+        color: var(--text-muted);
+        margin-bottom: 24px;
         flex-grow: 1;
       }
 
       .access-btn {
-        background: var(--accent-color);
-        color: white;
+        background: var(--primary-color);
+        color: var(--text-color-light);
         border: none;
-        padding: 10px 24px;
-        border-radius: 6px;
+        padding: 12px 24px;
+        border-radius: var(--radius);
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -232,25 +231,30 @@
         cursor: pointer;
         transition: var(--transicao);
         width: 100%;
+        box-shadow: var(--shadow);
+        margin-top: auto;
       }
 
       .access-btn:hover {
-        background: #d9084f;
-        box-shadow: 0 4px 12px rgba(251, 10, 94, 0.3);
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
       }
 
       /* Footer */
       footer {
-        background-color: var(--primary-color);
+        background-color: transparent;
         color: var(--text-color-light);
         text-align: center;
-        padding: 24px;
+        padding: 48px 24px 24px;
         margin-top: 48px;
       }
 
       .footer-container {
         max-width: 1200px;
         margin: 0 auto;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        padding-top: 24px;
       }
 
       .footer-links {
@@ -266,30 +270,30 @@
 
       .footer-links a:hover {
         color: var(--text-color-light);
+        text-decoration: underline;
       }
 
       /* Responsividade */
       @media (max-width: 768px) {
+        body {
+          background: var(--primary-color);
+        }
         .header-container {
           flex-direction: column;
           text-align: center;
+          gap: 10px;
         }
 
-        .slogan {
-          margin-left: 0;
-          margin-top: 8px;
+        main {
+          margin-top: 150px;
         }
 
         .welcome-section h1 {
-          font-size: 1.8rem;
+          font-size: 2rem;
         }
 
         .welcome-section p {
           font-size: 1rem;
-        }
-
-        main {
-          margin-top: 120px;
         }
       }
 
@@ -299,14 +303,13 @@
         }
 
         .welcome-section h1 {
-          font-size: 1.5rem;
+          font-size: 1.8rem;
         }
       }
     </style>
   </head>
 
   <body>
-    <!-- Cabeçalho Fixo -->
     <header>
       <div class="header-container">
         <a href="#" class="logo">
@@ -319,9 +322,7 @@
       </div>
     </header>
 
-    <!-- Conteúdo Principal -->
-    <main>
-      <!-- Seção de Boas-vindas -->
+    <main class="container">
       <section class="welcome-section">
         <h1>Bem-vindo ao Conta IA</h1>
         <p>
@@ -331,9 +332,7 @@
         </p>
       </section>
 
-      <!-- Grade de Ferramentas -->
       <div class="tools-grid">
-        <!-- Card 1 -->
         <div
           class="tool-card"
           data-url="https://ferramentas-seven.vercel.app/h010.html"
@@ -348,7 +347,6 @@
           <button class="access-btn">Acessar</button>
         </div>
 
-        <!-- Card 2 -->
         <div
           class="tool-card"
           data-url="https://ferramentas-seven.vercel.app/financiamentos.html"
@@ -360,12 +358,11 @@
           <p class="tool-description">
             Calcula e separa automaticamente os saldos de empréstimos e
             financiamentos entre curto e longo prazo, facilitando a correta
-            contabilização conforme as normas contábeis.
+            contabilização.
           </p>
           <button class="access-btn">Acessar</button>
         </div>
 
-        <!-- Card 3 -->
         <div
           class="tool-card"
           data-url="https://ferramentas-seven.vercel.app/MIT_PRESUMIDO.html"
@@ -377,13 +374,11 @@
           </h3>
           <p class="tool-description">
             Gere arquivos JSON para o MIT do e-CAC de forma rápida e sem erros.
-            Ideal para quem lida com várias empresas, automatizando o processo e
-            ganhando agilidade no envio.
+            Ideal para quem lida com várias empresas, automatizando o processo.
           </p>
           <button class="access-btn">Acessar</button>
         </div>
 
-        <!-- Card 4 -->
         <div
           class="tool-card"
           data-url="https://ferramentas-seven.vercel.app/MIT_REAL.html"
@@ -395,48 +390,42 @@
           </h3>
           <p class="tool-description">
             Gere arquivos JSON para o MIT do e-CAC de forma rápida e sem erros.
-            Ideal para quem lida com várias empresas, automatizando o processo e
-            ganhando agilidade no envio.
+            Ideal para quem lida com várias empresas, automatizando o processo.
           </p>
           <button class="access-btn">Acessar</button>
         </div>
 
-        <!-- Card 5 -->
         <div
           class="tool-card"
           data-url="https://ferramentas-seven.vercel.app/SPED_CONTRIBUICOES.html"
         >
           <i class="fas fa-chart-pie tool-icon"></i>
           <h3 class="tool-name">
-            Analise de crédito e débitos do Sped Contribuições
+            Análise de Créditos e Débitos do Sped Contribuições
           </h3>
           <p class="tool-description">
-            Facilitamos sua análise do SPED Contribuições! Nosso site extrai em
-            segundos todas as informações sobre créditos e débitos de PIS e
-            COFINS direto do seu arquivo TXT.
+            Extraia em segundos todas as informações sobre créditos e débitos de
+            PIS e COFINS direto do seu arquivo TXT do SPED Contribuições.
           </p>
           <button class="access-btn">Acessar</button>
         </div>
 
-        <!-- Card 6 -->
         <div
           class="tool-card"
           data-url="https://ferramentas-seven.vercel.app/NFS.html"
         >
           <i class="fas fa-balance-scale tool-icon"></i>
           <h3 class="tool-name">
-            Automatize a Importação de Notas Fiscais para o Domínio Sistemas
+            Importação de Notas Fiscais para o Domínio Sistemas
           </h3>
           <p class="tool-description">
-            Ganhe tempo e evite retrabalho! Com nossa ferramenta, você lança
-            apenas algumas informações das notas fiscais e gera um arquivo TXT
-            pronto para importação direta no Domínio Sistemas. Diga adeus ao
-            lançamento manual e avance com mais eficiência no seu dia a dia!
+            Gere um arquivo TXT pronto para importação no Domínio Sistemas a
+            partir de poucas informações das notas fiscais, eliminando o
+            lançamento manual.
           </p>
           <button class="access-btn">Acessar</button>
         </div>
 
-        <!-- Card 7 -->
         <div
           class="tool-card"
           data-url="https://ferramentas-seven.vercel.app/REINF.html"
@@ -444,18 +433,15 @@
           <span class="custom-solution-badge">Personalizado</span>
           <i class="fas fa-file-alt tool-icon"></i>
           <h3 class="tool-name">
-            Geração de arquivo TXT para importação de Lucros Reinf
+            Geração de TXT para Importação de Lucros (Reinf)
           </h3>
           <p class="tool-description">
-            A partir da planilha exportada do módulo Contábil do Domínio
-            Sistemas, é possível automatizar a geração do arquivo TXT compatível
-            com o layout do módulo Fiscal, permitindo a integração das
-            informações de distribuição de lucros para entrega na EFD-Reinf..
+            A partir da planilha do Contábil Domínio, gere o TXT para o Fiscal,
+            integrando a distribuição de lucros para a EFD-Reinf.
           </p>
           <button class="access-btn">Acessar</button>
         </div>
 
-        <!-- Card 8 -->
         <div
           class="tool-card"
           data-url="https://ferramentas-seven.vercel.app/Ideal.html"
@@ -464,15 +450,12 @@
           <i class="fas fa-robot tool-icon"></i>
           <h3 class="tool-name">Importador Financeiro</h3>
           <p class="tool-description">
-            Importa automaticamente toda a movimentação financeira do cliente
-            diretamente para o sistema Domínio. Uma solução personalizada,
-            desenvolvida sob medida para atender às necessidades de um cliente
-            especial.
+            Importa automaticamente a movimentação financeira do cliente para o
+            sistema Domínio. Uma solução desenvolvida sob medida.
           </p>
           <button class="access-btn">Acessar</button>
         </div>
 
-        <!-- Card 9 -->
         <div
           class="tool-card"
           data-url="https://ferramentas-seven.vercel.app/irpj_csll.html"
@@ -486,7 +469,6 @@
           <button class="access-btn">Acessar</button>
         </div>
 
-        <!-- Card 10 -->
         <div
           class="tool-card"
           data-url="https://ferramentas-seven.vercel.app/simples.html"
@@ -495,13 +477,11 @@
           <h3 class="tool-name">Calculadora de Projeção do Simples Nacional</h3>
           <p class="tool-description">
             Preencha a planilha com o faturamento projetado e visualize a
-            alíquota do Simples Nacional dos próximos 12 meses. Com apenas esses
-            dados, você antecipa cenários e toma decisões com mais segurança!
+            alíquota do Simples Nacional dos próximos 12 meses.
           </p>
           <button class="access-btn">Acessar</button>
         </div>
 
-        <!-- Card 11 -->
         <div
           class="tool-card"
           data-url="https://ferramentas-seven.vercel.app/calculadora_simples.html"
@@ -517,7 +497,6 @@
           <button class="access-btn">Acessar</button>
         </div>
 
-        <!-- Card 12 -->
         <div
           class="tool-card"
           data-url="https://ferramentas-seven.vercel.app/simples_rbt12.html"
@@ -531,7 +510,6 @@
           <button class="access-btn">Acessar</button>
         </div>
 
-        <!-- Card 13 -->
         <div
           class="tool-card"
           data-url="https://ferramentas-seven.vercel.app/duplicidade.html"
@@ -540,36 +518,31 @@
           <i class="fas fa-solid fa-check tool-icon"></i>
           <h3 class="tool-name">Duplicidade em transferências bancárias</h3>
           <p class="tool-description">
-            Analisa os lançamentos financeiros para identificar erros em
-            transferências entre contas bancárias da mesma empresa. Ele detecta
-            valores que deveriam ser transferências internas, mas foram lançados
-            incorretamente em outras contas.
+            Analisa os lançamentos para identificar erros em transferências
+            internas que foram lançadas incorretamente em outras contas.
           </p>
           <button class="access-btn">Acessar</button>
         </div>
 
-        <!-- Card 14 -->
         <div
           class="tool-card"
           data-url="https://ferramentas-seven.vercel.app/distribuicao_socios.html"
         >
           <span class="custom-solution-badge">Personalizado</span>
-          <i class="<fas fa-solid fa-user tool-icon"></i>
+          <i class="fas fa-solid fa-user tool-icon"></i>
           <h3 class="tool-name">Distribuição proporcional de lucros</h3>
           <p class="tool-description">
-            Calcula automaticamente a distribuição proporcional dos lucros entre
-            os sócios com base nos valores contabilizados. Em seguida, gera um
-            arquivo pronto para importação no sistema Domínio.
+            Calcula a distribuição proporcional dos lucros entre sócios e gera
+            um arquivo pronto para importação no sistema Domínio.
           </p>
           <button class="access-btn">Acessar</button>
         </div>
 
-        <!-- Card 15 -->
         <div
           class="tool-card"
           data-url="https://ferramentas-seven.vercel.app/provisionador.html"
         >
-          <i class="<fas fa-solid fa-laptop tool-icon"></i>
+          <i class="fas fa-solid fa-laptop tool-icon"></i>
           <h3 class="tool-name">Provisionador para Domínio Sistemas</h3>
           <p class="tool-description">
             Ganhe tempo com provisões anuais automatizadas. Nosso site agiliza a
@@ -579,148 +552,164 @@
           <button class="access-btn">Acessar</button>
         </div>
 
-        <!-- Card 16 -->
         <div
           class="tool-card"
           data-url="https://ferramentas-seven.vercel.app/classificador.html"
         >
           <span class="custom-solution-badge">Personalizado</span>
-          <i class="<fas fa-solid fa-pen tool-icon"></i>
+          <i class="fas fa-solid fa-pen tool-icon"></i>
           <h3 class="tool-name">Classificação Inteligente de Lançamentos</h3>
           <p class="tool-description">
             Ferramenta desenvolvida para comparar duas planilhas contábeis de
-            forma automática, com o objetivo de identificar, sugerir e facilitar
-            a classificação de lançamentos.
+            forma automática, para identificar e facilitar a classificação de
+            lançamentos.
           </p>
           <button class="access-btn">Acessar</button>
         </div>
 
-        <!-- Card 17 -->
-        <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/importador1.html">
+        <div
+          class="tool-card"
+          data-url="https://ferramentas-seven.vercel.app/importador1.html"
+        >
           <span class="custom-solution-badge">Personalizado</span>
-          <i class="<fas fa-solid fa-gears tool-icon"></i>
+          <i class="fas fa-solid fa-gears tool-icon"></i>
           <h3 class="tool-name">Importador Personalizado</h3>
           <p class="tool-description">
-            Seu sistema gera o arquivo, nós cuidamos do resto. Lançamentos contábeis prontos para o Domínio Sistemas em segundos!
+            Seu sistema gera o arquivo, nós cuidamos do resto. Lançamentos
+            contábeis prontos para o Domínio Sistemas em segundos!
           </p>
           <button class="access-btn">Acessar</button>
         </div>
 
-        <!-- Card 18 -->
-        <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/pauta_agua.html">
+        <div
+          class="tool-card"
+          data-url="https://ferramentas-seven.vercel.app/pauta_agua.html"
+        >
           <span class="custom-solution-badge">Personalizado</span>
-          <i class="<fas fa-solid fa-hand-holding-droplet tool-icon"></i>
+          <i class="fas fa-solid fa-hand-holding-droplet tool-icon"></i>
           <h3 class="tool-name">Cálculo de ICMS ST de água mineral</h3>
           <p class="tool-description">
-            Calcule de forma rápida e precisa o ICMS devido por Substituição Tributária em operações com água mineral ou potável, conforme a legislação vigente.
+            Calcule de forma rápida e precisa o ICMS devido por Substituição
+            Tributária em operações com água mineral, conforme a legislação
+            vigente.
           </p>
           <button class="access-btn">Acessar</button>
         </div>
 
-        <!-- Card 19 -->
-        <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/bonificacoes.html">
+        <div
+          class="tool-card"
+          data-url="https://ferramentas-seven.vercel.app/bonificacoes.html"
+        >
           <span class="custom-solution-badge">Personalizado</span>
-          <i class="<fas fa-solid fa-pen tool-icon"></i>
-          <h3 class="tool-name">Analise de Contas a Pagar</h3>
+          <i class="fas fa-solid fa-pen tool-icon"></i>
+          <h3 class="tool-name">Análise de Contas a Pagar</h3>
           <p class="tool-description">
             Analisa se foram criadas duplicatas para os CFOPs 1.910, 1.949, etc.
           </p>
           <button class="access-btn">Acessar</button>
         </div>
 
-        <!-- Card 20 -->
-        <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/emprestimos_folha.html">
+        <div
+          class="tool-card"
+          data-url="https://ferramentas-seven.vercel.app/emprestimos_folha.html"
+        >
           <span class="custom-solution-badge">Personalizado</span>
-          <i class="<fas fa-solid fa-money-check-dollar tool-icon"></i>
+          <i class="fas fa-solid fa-money-check-dollar tool-icon"></i>
           <h3 class="tool-name">Empréstimo consignado INSS</h3>
           <p class="tool-description">
-            Gerar um relatório a partir do arquivo JSON baixado do Portal Emprega Brasil, com foco nas informações referentes aos empréstimos consignados do INSS.
+            Gera um relatório a partir do arquivo JSON baixado do Portal Emprega
+            Brasil, com foco nas informações de empréstimos consignados do INSS.
           </p>
           <button class="access-btn">Acessar</button>
         </div>
 
-         <!-- Card 21 -->
-         <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/ativo.html">
-          <i class="<fas fa-solid fa-house tool-icon"></i>
+        <div
+          class="tool-card"
+          data-url="https://ferramentas-seven.vercel.app/ativo.html"
+        >
+          <i class="fas fa-solid fa-house tool-icon"></i>
           <h3 class="tool-name">Lançamento de Ativo Imobilizado no Dóminio</h3>
           <p class="tool-description">
-            Preencha o site e gere um arquivo TXT para importação no Dóminio Sistemas. O arquivo gerado é compatível com o módulo Patrimônio do sistema.
+            Preencha o site e gere um arquivo TXT para importação no Dóminio
+            Sistemas. O arquivo gerado é compatível com o módulo Patrimônio.
           </p>
           <button class="access-btn">Acessar</button>
         </div>
 
-        <!-- Card 22 -->
-        <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/ECF.html">
-          <i class="<fas fa-solid fa-diamond tool-icon"></i>
-          <h3 class="tool-name">Extraia informações dos registros N030 e M500 da ECF</h3>
+        <div
+          class="tool-card"
+          data-url="https://ferramentas-seven.vercel.app/ECF.html"
+        >
+          <i class="fas fa-solid fa-diamond tool-icon"></i>
+          <h3 class="tool-name">
+            Extraia informações dos registros N030 e M500 da ECF
+          </h3>
           <p class="tool-description">
-            Com base no arquivo TXT da ECF, extraia informações dos registros N030 e M500, facilitando a conferência.
+            Com base no arquivo TXT da ECF, extraia informações dos registros
+            N030 e M500, facilitando a conferência.
           </p>
           <button class="access-btn">Acessar</button>
         </div>
 
-        <!-- Card 23 -->
-        <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/ativo1.html">
-          <i class="<fas fa-solid fa-van-shuttle tool-icon"></i>
-          <h3 class="tool-name">Importe os Ativos Imobilizados do Alterdata diretamente para o Domínio</h3>
+        <div
+          class="tool-card"
+          data-url="https://ferramentas-seven.vercel.app/ativo1.html"
+        >
+          <i class="fas fa-solid fa-van-shuttle tool-icon"></i>
+          <h3 class="tool-name">
+            Importe os Ativos Imobilizados do Alterdata para o Domínio
+          </h3>
           <p class="tool-description">
-            Importe a planilha de BI do Alterdata diretamente para o Domínio Sistemas, facilitando a gestão do ativo imobilizado.
+            Importe a planilha de BI do Alterdata diretamente para o Domínio
+            Sistemas, facilitando a gestão do ativo imobilizado.
           </p>
           <button class="access-btn">Acessar</button>
         </div>
 
-        <!-- Card 24 -->
-        <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/stone.html">
-          <i class="<fas fa-solid fa-credit-card tool-icon"></i>
-          <h3 class="tool-name">Agilize sua contabilidade: converta vendas da Stone em arquivos compatíveis com o Domínio.</h3>
+        <div
+          class="tool-card"
+          data-url="https://ferramentas-seven.vercel.app/stone.html"
+        >
+          <i class="fas fa-solid fa-credit-card tool-icon"></i>
+          <h3 class="tool-name">
+            Converta vendas da Stone em arquivos para o Domínio.
+          </h3>
           <p class="tool-description">
-            Automatize a geração de arquivos contábeis das vendas da Stone para importação direta no Domínio Sistemas.
+            Automatize a geração de arquivos contábeis das vendas da Stone para
+            importação direta no Domínio Sistemas.
           </p>
           <button class="access-btn">Acessar</button>
         </div>
       </div>
+    </main>
+    <footer>
+      <div class="footer-container">
+        © 2024 Conta IA. Todos os direitos reservados.
+        <div class="footer-links">
+          <a href="#">Termos de Uso</a>
+          <a href="#">Política de Privacidade</a>
+        </div>
+      </div>
     </footer>
-
     <script>
       // Script para adicionar efeitos e funcionalidades
       document.addEventListener("DOMContentLoaded", function () {
-        // Adiciona animação suave ao scroll
-        document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-          anchor.addEventListener("click", function (e) {
-            e.preventDefault();
-            document.querySelector(this.getAttribute("href")).scrollIntoView({
-              behavior: "smooth",
-            });
-          });
-        });
-
         // Adiciona funcionalidade para os botões de acesso redirecionarem para URLs
         const toolCards = document.querySelectorAll(".tool-card");
         toolCards.forEach((card) => {
-          const button = card.querySelector(".access-btn");
           const url = card.getAttribute("data-url");
-
-          button.addEventListener("click", function () {
-            // Verifica se há uma URL definida
-            if (url) {
-              // Abre a URL em uma nova aba
+          if (url) {
+            card.addEventListener("click", function () {
               window.open(url, "_blank");
-            } else {
-              // Fallback caso não haja URL definida
+            });
+          } else {
+            card.addEventListener("click", function () {
               const toolName = card.querySelector(".tool-name").textContent;
               alert(
                 `Ferramenta "${toolName}" em desenvolvimento. Em breve estará disponível!`
               );
-            }
-          });
-
-          // Adiciona evento de clique ao card inteiro (não apenas o botão)
-          card.addEventListener("click", function (e) {
-            // Evita que o clique no botão seja processado duas vezes
-            if (e.target !== button) {
-              button.click();
-            }
-          });
+            });
+          }
         });
       });
     </script>
