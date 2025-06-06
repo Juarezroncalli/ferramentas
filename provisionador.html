@@ -4,7 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gerador de Provisões Anuais</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
     <style>
+      /* Estilos unificados, baseados no layout do ECF e Duplicidade */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
       :root {
         --primary-color: #4f0072;
         --accent-color: #fb0a5e;
@@ -15,182 +26,239 @@
         --text-color-light: #ffffff;
         --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
         --transicao: all 0.3s ease;
+        --primary-dark: #3d005a;
+        --error: #ef4444;
+        --text-muted: #64748b;
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
       }
 
       body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(
-          135deg,
-          var(--primary-color) 0%,
-          var(--accent-color) 100%
-        );
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh;
         color: var(--text-color);
-        margin: 0;
-        padding: 20px;
+        line-height: 1.6;
+        padding: 2rem 1rem;
         display: flex;
         justify-content: center;
         align-items: flex-start;
-        min-height: 100vh;
       }
 
       .container {
-        background-color: var(--form-bg-color);
-        padding: 30px;
-        border-radius: 8px;
-        box-shadow: var(--sombra);
+        max-width: 800px;
         width: 100%;
-        max-width: 600px;
+        margin: 0 auto;
       }
 
-      h1 {
-        color: var(--primary-color);
+      .header {
         text-align: center;
-        margin-bottom: 30px;
-        font-size: 1.8em;
+        margin-bottom: 2rem;
       }
 
+      .header h1 {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .header p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+      }
+
+      .form-section {
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        padding: 2.5rem;
+        box-shadow: var(--sombra);
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+      }
       .form-group {
-        margin-bottom: 20px;
+        margin-bottom: 1.5rem;
+      }
+      .full-width {
+        grid-column: 1 / -1;
       }
 
       label {
         display: block;
-        margin-bottom: 8px;
-        font-weight: bold;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
         color: var(--primary-color);
+        font-size: 1rem;
       }
 
-      input[type="number"],
-      input[type="text"],
+      input,
       select,
       textarea {
-        width: calc(100% - 24px); /* Adjust for padding and border */
-        padding: 12px;
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem;
         border: 1px solid var(--border-color);
-        border-radius: 4px;
-        font-size: 1em;
-        color: var(--text-color);
-        background-color: var(--background-color);
-        transition: border-color var(--transicao);
+        border-radius: var(--radius);
+        box-sizing: border-box;
+        font-size: 1rem;
+        transition: border-color var(--transicao), box-shadow var(--transicao);
+        background-color: #fff;
       }
 
-      input[type="number"]:focus,
-      input[type="text"]:focus,
+      input:focus,
       select:focus,
       textarea:focus {
-        border-color: var(--accent-color);
         outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 5px rgba(79, 0, 114, 0.3);
       }
 
       textarea {
-        resize: vertical; /* Allow vertical resizing */
-        min-height: 80px;
+        min-height: 100px;
+        resize: vertical;
       }
 
-      button {
-        display: block;
-        width: 100%;
-        padding: 14px;
-        background-color: var(--primary-color);
+      .btn {
+        background: var(--primary-color);
         color: var(--text-color-light);
         border: none;
-        border-radius: 4px;
-        font-size: 1.1em;
-        font-weight: bold;
+        padding: 0.875rem 2rem;
+        border-radius: var(--radius);
+        font-weight: 600;
+        font-size: 1rem;
         cursor: pointer;
-        transition: background-color var(--transicao),
-          box-shadow var(--transicao);
-        margin-top: 20px;
+        transition: var(--transicao);
+        box-shadow: var(--sombra);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        justify-content: center;
+        margin-top: 1rem;
       }
 
-      button:hover {
-        background-color: #3a0051; /* Slightly darker shade of primary */
-        box-shadow: 0 6px 16px rgba(79, 0, 114, 0.25);
+      .btn:hover:not(:disabled) {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
       }
 
-      button:active {
-        background-color: #28003a; /* Even darker */
-      }
-
-      .error-message {
-        color: var(--accent-color);
-        margin-top: 15px;
+      .message-box {
+        margin-top: 1.5rem;
         text-align: center;
-        font-weight: bold;
+        padding: 1rem 1.5rem;
+        border-radius: var(--radius);
+        color: var(--error);
+        background-color: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        display: none; /* Inicia oculto */
+        font-weight: 600;
+      }
+
+      .message-box.show {
+        display: block;
       }
 
       .info-text {
         font-size: 0.9em;
-        color: #666;
-        margin-top: 5px;
-        margin-bottom: 15px;
+        color: var(--text-muted);
+        margin-top: 1.5rem;
         text-align: center;
+      }
+
+      @media (max-width: 768px) {
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+        .header h1 {
+          font-size: 2rem;
+        }
+        .form-section {
+          padding: 1.5rem;
+        }
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1>Gerador de Provisões Contábeis Anuais</h1>
-
-      <div class="form-group">
-        <label for="ano">Ano da Provisão:</label>
-        <input
-          type="number"
-          id="ano"
-          min="1900"
-          max="2100"
-          value="2024"
-          required
-        />
+      <div class="header">
+        <h1>
+          <i class="fas fa-file-invoice-dollar"></i> Gerador de Provisões Anuais
+        </h1>
+        <p>Crie um arquivo TXT com 12 lançamentos mensais de provisão</p>
       </div>
 
-      <div class="form-group">
-        <label for="dia-opcao">Gerar Provisão no:</label>
-        <select id="dia-opcao" required>
-          <option value="primeiro">
-            Primeiro dia útil (Dia 02 em Jan, Dia 01 nos demais)
-          </option>
-          <option value="ultimo">Último dia do mês (Ex: 31/MM/AAAA)</option>
-        </select>
-      </div>
+      <div class="form-section">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="ano">Ano da Provisão</label>
+            <input
+              type="number"
+              id="ano"
+              min="1900"
+              max="2100"
+              value="2024"
+              required
+            />
+          </div>
 
-      <div class="form-group">
-        <label for="conta-debito">Conta Débito:</label>
-        <input type="text" id="conta-debito" required />
-      </div>
+          <div class="form-group">
+            <label for="dia-opcao">Data da Provisão</label>
+            <select id="dia-opcao" required>
+              <option value="ultimo">Último dia do mês</option>
+              <option value="primeiro">Primeiro dia útil</option>
+            </select>
+          </div>
 
-      <div class="form-group">
-        <label for="conta-credito">Conta Crédito:</label>
-        <input type="text" id="conta-credito" required />
-      </div>
+          <div class="form-group">
+            <label for="conta-debito">Conta Débito</label>
+            <input type="text" id="conta-debito" required />
+          </div>
 
-      <div class="form-group">
-        <label for="valor">Valor:</label>
-        <!-- Placeholder atualizado para refletir que vírgula é aceita -->
-        <input
-          type="text"
-          id="valor"
-          inputmode="decimal"
-          placeholder="Use ponto ou vírgula como separador decimal"
-          required
-        />
-      </div>
+          <div class="form-group">
+            <label for="conta-credito">Conta Crédito</label>
+            <input type="text" id="conta-credito" required />
+          </div>
 
-      <div class="form-group">
-        <label for="historico"
-          >Histórico (O mês/ano será adicionado automaticamente no
-          final):</label
-        >
-        <textarea id="historico" required></textarea>
-      </div>
+          <div class="form-group full-width">
+            <label for="valor">Valor Mensal</label>
+            <input
+              type="text"
+              id="valor"
+              inputmode="decimal"
+              placeholder="Use ponto ou vírgula como separador"
+              required
+            />
+          </div>
 
-      <button id="gerar-btn">Gerar Arquivo TXT</button>
+          <div class="form-group full-width">
+            <label for="historico">Histórico Base</label>
+            <textarea
+              id="historico"
+              placeholder="O mês/ano será adicionado automaticamente no final"
+              required
+            ></textarea>
+          </div>
+        </div>
 
-      <div class="error-message" id="error-message"></div>
+        <button class="btn" id="gerar-btn">
+          <i class="fas fa-download"></i> Gerar Arquivo TXT
+        </button>
 
-      <div class="info-text">
-        O arquivo TXT será gerado com 12 linhas, uma para cada mês do ano
-        especificado.
+        <div class="message-box" id="error-message"></div>
+
+        <div class="info-text">
+          O arquivo será gerado no formato
+          "DATA;DEBITO;CREDITO;VALOR;;HISTORICO" para importação.
+        </div>
       </div>
     </div>
 
@@ -206,66 +274,56 @@
           const historicoBase = document.getElementById("historico").value;
           const errorMessageDiv = document.getElementById("error-message");
 
-          errorMessageDiv.textContent = ""; // Limpa mensagens de erro anteriores
+          // Função para mostrar/esconder o erro
+          const displayError = (message) => {
+            if (message) {
+              errorMessageDiv.textContent = message;
+              errorMessageDiv.classList.add("show");
+            } else {
+              errorMessageDiv.classList.remove("show");
+            }
+          };
+
+          displayError(""); // Limpa erros anteriores
 
           // --- Validação ---
           const ano = parseInt(anoInput.value, 10);
           if (isNaN(ano) || anoInput.value.length !== 4) {
-            errorMessageDiv.textContent =
-              "Por favor, insira um ano válido com 4 dígitos.";
+            displayError("Por favor, insira um ano válido com 4 dígitos.");
             return;
           }
           if (!contaDebito || !contaCredito || !valorInput || !historicoBase) {
-            errorMessageDiv.textContent =
-              "Por favor, preencha todos os campos obrigatórios.";
+            displayError("Por favor, preencha todos os campos obrigatórios.");
             return;
           }
 
-          // Validar e formatar valor
-          let valorString = valorInput.replace(",", "."); // Substitui vírgula por ponto para parseFloat
+          let valorString = valorInput.replace(",", ".");
           const valorNumerico = parseFloat(valorString);
 
           if (isNaN(valorNumerico)) {
-            errorMessageDiv.textContent =
-              "Por favor, insira um valor numérico válido.";
+            displayError("Por favor, insira um valor numérico válido.");
             return;
           }
-
-          // Formata o valor para 2 casas decimais (usará ponto) e depois substitui o ponto por vírgula
-          let valorFormatadoComPonto = valorNumerico.toFixed(2);
-          let valorFinalParaTxt = valorFormatadoComPonto.replace(".", ","); // Substitui o ponto por vírgula para o TXT
+          let valorFinalParaTxt = valorNumerico.toFixed(2).replace(".", ",");
 
           // --- Geração do Conteúdo TXT ---
           let txtContent = "";
-
           for (let i = 0; i < 12; i++) {
-            // Loop para cada um dos 12 meses (i = 0 a 11)
-            const mes = i + 1; // Mês 1-indexado (1 a 12)
-            const mesFormatado = mes.toString().padStart(2, "0"); // Adiciona zero à esquerda se necessário
+            const mes = i + 1;
+            const mesFormatado = mes.toString().padStart(2, "0");
             const anoFormatado = ano.toString();
-
             let diaFormatado;
-            let dataCompleta;
 
             if (diaOpcao === "ultimo") {
-              // Calcula o último dia do mês: Cria uma data para o dia 0 do próximo mês
-              const ultimoDiaDoMes = new Date(ano, i + 1, 0).getDate();
+              const ultimoDiaDoMes = new Date(ano, mes, 0).getDate();
               diaFormatado = ultimoDiaDoMes.toString().padStart(2, "0");
-              dataCompleta = `${diaFormatado}/${mesFormatado}/${anoFormatado}`;
             } else {
-              // diaOpcao === 'primeiro' (Dia 02 em Janeiro, Dia 01 nos demais)
-              diaFormatado = i === 0 ? "02" : "01"; // i=0 é Janeiro
-              dataCompleta = `${diaFormatado}/${mesFormatado}/${anoFormatado}`;
+              diaFormatado = i === 0 ? "02" : "01"; // Janeiro é dia 02, outros são 01
             }
 
-            // Formata o histórico com Mês/Ano no final
-            const historicoFormatado = `${historicoBase}, ${mesFormatado}/${anoFormatado}`;
-
-            // Constrói a linha no formato especificado:
-            // DATA;CONTA DEBITO;CONTA CREDITO;VALOR;;HISTORICO, MES/ANO;;;;
-            // Usa o valorFormatadoComVirgula aqui
+            const dataCompleta = `${diaFormatado}/${mesFormatado}/${anoFormatado}`;
+            const historicoFormatado = `${historicoBase} ${mesFormatado}/${anoFormatado}`;
             const linha = `${dataCompleta};${contaDebito};${contaCredito};${valorFinalParaTxt};;${historicoFormatado};;;;`;
-
             txtContent += linha + "\n";
           }
 
@@ -274,18 +332,13 @@
             type: "text/plain;charset=utf-8",
           });
           const url = URL.createObjectURL(blob);
-
           const a = document.createElement("a");
           a.href = url;
-          a.download = `provisoes_anual_${ano}.txt`; // Nome do arquivo
-          document.body.appendChild(a); // Adiciona o link ao DOM (necessário para Firefox)
-          a.click(); // Simula o clique no link para iniciar o download
-
-          // Limpa o URL e o elemento do DOM
-          setTimeout(() => {
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-          }, 100); // Pequeno delay para garantir que o download comece
+          a.download = `provisoes_anual_${ano}.txt`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
         });
     </script>
   </body>
