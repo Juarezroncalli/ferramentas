@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Processador de Arquivos CSV</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease;
+        --primary-dark: #3d005a;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        --text-muted: #64748b;
+        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh;
+        color: var(--text-color);
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+
+      .header h1 {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .header p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+      }
+
+      .upload-section {
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--sombra);
+        margin-bottom: 2rem;
+        transition: var(--transicao);
+      }
+
+      .upload-area {
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius);
+        padding: 3rem 2rem;
+        text-align: center;
+        transition: var(--transicao);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .upload-area:hover {
+        border-color: var(--primary-color);
+        background: var(--form-bg-color);
+      }
+
+      .upload-area.dragover {
+        border-color: var(--primary-color);
+        background: rgba(79, 0, 114, 0.05);
+        transform: scale(1.02);
+      }
+
+      .upload-icon {
+        font-size: 3rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .upload-area:hover .upload-icon {
+        color: var(--primary-color);
+        transform: scale(1.1);
+      }
+
+      .upload-text {
+        font-size: 1.1rem;
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+      }
+
+      .upload-subtext {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+
+      #file-input {
+        display: none;
+      }
+
+      .file-info {
+        background: var(--form-bg-color);
+        border-radius: var(--radius);
+        padding: 1rem;
+        margin-top: 1.5rem;
+        display: none;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .file-info.show {
+        display: flex;
+      }
+      
+      .accounts-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+        padding: 1.5rem;
+        background: var(--form-bg-color);
+        border-radius: var(--radius);
+      }
+      
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-group label {
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .form-group input {
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        font-size: 1rem;
+        color: var(--text-color);
+        transition: var(--transicao);
+      }
+
+      .form-group input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(79, 0, 114, 0.2);
+      }
+
+      .file-icon {
+        color: var(--success);
+        font-size: 1.5rem;
+      }
+
+      .file-details {
+        flex: 1;
+      }
+
+      .file-name {
+        font-weight: 600;
+        color: var(--text-color);
+      }
+      
+      .file-count {
+        color: var(--text-muted);
+        font-size: 0.875rem;
+      }
+
+      .btn {
+        background: var(--primary-color);
+        color: var(--text-color-light);
+        border: none;
+        padding: 0.875rem 2rem;
+        border-radius: var(--radius);
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transicao);
+        box-shadow: var(--sombra);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .btn:disabled {
+        background: var(--text-muted);
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .btn-process {
+        width: 100%;
+        justify-content: center;
+        margin-top: 1.5rem;
+      }
+
+      .results {
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--sombra);
+        overflow: hidden;
+        display: none;
+      }
+
+      .results.show {
+        display: block;
+        animation: slideIn 0.5s ease-out;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .results-content {
+        padding: 2rem;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-muted);
+      }
+
+      .loading.show {
+        display: block;
+      }
+
+      .spinner {
+        border: 3px solid var(--border-color);
+        border-top: 3px solid var(--primary-color);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      
+      .success-message {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: var(--success);
+      }
+
+      .success-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1><i class="fas fa-file-csv"></i> Processador de Arquivos CSV - Stone</h1>
+        <p>Gere um arquivo de texto para importação no Domínio a partir de seus arquivos CSV de vendas</p>
+      </div>
+
+      <div class="upload-section">
+        <div
+          class="upload-area"
+          onclick="document.getElementById('file-input').click()"
+        >
+          <div class="upload-icon">
+            <i class="fas fa-cloud-upload-alt"></i>
+          </div>
+          <div class="upload-text">Clique para selecionar os arquivos</div>
+          <div class="upload-subtext">
+            ou arraste e solte arquivos .csv aqui
+          </div>
+          <input type="file" id="file-input" accept=".csv" multiple />
+        </div>
+        
+        <div class="file-info" id="file-info">
+          <div class="file-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <div class="file-details">
+            <div class="file-name" id="file-name"></div>
+            <div class="file-count" id="file-count"></div>
+          </div>
+        </div>
+
+        <div class="accounts-group">
+            <div class="form-group">
+                <label for="conta-cartao">Conta Contábil (Cartão de Crédito)</label>
+                <input type="text" id="conta-cartao" placeholder="Ex: 31" required>
+            </div>
+            <div class="form-group">
+                <label for="conta-clientes">Conta Contábil (Clientes)</label>
+                <input type="text" id="conta-clientes" placeholder="Ex: 27" required>
+            </div>
+            <div class="form-group">
+                <label for="conta-tarifas">Conta Contábil (Desp. Tarifas)</label>
+                <input type="text" id="conta-tarifas" placeholder="Ex: 957" required>
+            </div>
+        </div>
+
+
+        <button
+          class="btn btn-process"
+          id="process-btn"
+          onclick="processFiles()"
+          disabled
+        >
+          <i class="fas fa-cogs"></i>
+          Processar Arquivos
+        </button>
+      </div>
+
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Processando arquivos...</p>
+      </div>
+
+      <div class="results" id="results">
+        <div class="results-content" id="results-content"></div>
+      </div>
+    </div>
+
+    <script>
+      const fileInput = document.getElementById("file-input");
+      const fileInfo = document.getElementById("file-info");
+      const fileName = document.getElementById("file-name");
+      const fileCount = document.getElementById("file-count");
+      const processBtn = document.getElementById("process-btn");
+      const loading = document.getElementById("loading");
+      const results = document.getElementById("results");
+      const resultsContent = document.getElementById("results-content");
+      const uploadArea = document.querySelector(".upload-area");
+
+      // Drag and drop
+      ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+        uploadArea.addEventListener(eventName, preventDefaults, false);
+      });
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      ["dragenter", "dragover"].forEach((eventName) => {
+        uploadArea.addEventListener(eventName, () => uploadArea.classList.add("dragover"), false);
+      });
+      ["dragleave", "drop"].forEach((eventName) => {
+        uploadArea.addEventListener(eventName, () => uploadArea.classList.remove("dragover"), false);
+      });
+      uploadArea.addEventListener("drop", handleDrop, false);
+
+      function handleDrop(e) {
+        handleFileSelect(e.dataTransfer.files);
+      }
+
+      fileInput.addEventListener("change", (e) => handleFileSelect(e.target.files));
+
+      function handleFileSelect(files) {
+        if (files.length === 0) return;
+        
+        for(let file of files) {
+            if(!file.name.toLowerCase().endsWith('.csv')) {
+                alert("Por favor, selecione apenas arquivos .csv válidos.");
+                return;
+            }
+        }
+
+        fileName.textContent = `${files.length} arquivo(s) selecionado(s).`;
+        const totalSize = [...files].reduce((acc, file) => acc + file.size, 0);
+        fileCount.textContent = `Tamanho total: ${formatFileSize(totalSize)}`;
+        fileInfo.classList.add("show");
+        processBtn.disabled = false;
+        results.classList.remove("show");
+      }
+      
+      function formatFileSize(bytes) {
+        if (bytes === 0) return "0 Bytes";
+        const k = 1024;
+        const sizes = ["Bytes", "KB", "MB", "GB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+      }
+
+      async function processFiles() {
+        const files = fileInput.files;
+        if (!files.length) {
+          alert("Por favor, selecione os arquivos CSV.");
+          return;
+        }
+
+        const contaCartao = document.getElementById('conta-cartao').value.trim();
+        const contaClientes = document.getElementById('conta-clientes').value.trim();
+        const contaTarifas = document.getElementById('conta-tarifas').value.trim();
+
+        if (!contaCartao || !contaClientes || !contaTarifas) {
+            alert("Por favor, preencha todas as contas contábeis antes de processar.");
+            return;
+        }
+
+        loading.classList.add("show");
+        results.classList.remove("show");
+        processBtn.disabled = true;
+
+        try {
+          const fileContents = await Promise.all(
+            [...files].map(file => file.text())
+          );
+          
+          const aggregatedData = parseAndAggregateCsvs(fileContents);
+          
+          if(Object.keys(aggregatedData).length > 0){
+             const accounts = { contaCartao, contaClientes, contaTarifas };
+             generateAndDownloadTxt(aggregatedData, accounts);
+          } else {
+             alert("Nenhuma linha com status 'Aprovada' foi encontrada nos arquivos para processar.");
+             results.classList.remove("show");
+          }
+
+        } catch (error) {
+          console.error("Erro ao processar arquivos:", error);
+          alert("Ocorreu um erro ao ler ou processar os arquivos.");
+        } finally {
+          loading.classList.remove("show");
+          processBtn.disabled = false;
+        }
+      }
+      
+      function parseCurrency(value) {
+          if (typeof value !== 'string') return 0;
+          const number = parseFloat(value.replace("R$", "").trim().replace(/\./g, "").replace(",", "."));
+          return isNaN(number) ? 0 : number;
+      }
+
+      function parseAndAggregateCsvs(contents) {
+        const aggregatedData = {};
+        const requiredColumns = ["data da venda", "valor bruto", "desconto de mdr", "ultimo status"];
+
+        for (const content of contents) {
+          const lines = content.split(/\r?\n/).filter(line => line.trim() !== '');
+          if (lines.length < 2) continue;
+
+          const delimiter = lines[0].includes(';') ? ';' : ',';
+          
+          const headers = lines[0].split(delimiter).map(h => h.toLowerCase().trim());
+          
+          const colIndices = requiredColumns.reduce((acc, colName) => {
+              acc[colName] = headers.indexOf(colName);
+              return acc;
+          }, {});
+
+          if (Object.values(colIndices).some(index => index === -1)) {
+              console.warn("Um dos arquivos não contém todas as colunas necessárias e será ignorado. Colunas esperadas:", requiredColumns);
+              continue;
+          }
+
+          for (let i = 1; i < lines.length; i++) {
+            const row = lines[i].split(delimiter);
+            
+            if (row[colIndices["ultimo status"]].trim().toLowerCase() === 'aprovada') {
+              const rawDate = row[colIndices["data da venda"]].trim().split(" ")[0];
+              const valorBruto = parseCurrency(row[colIndices["valor bruto"]]);
+              const descontoMdr = Math.abs(parseCurrency(row[colIndices["desconto de mdr"]]));
+
+              if (!aggregatedData[rawDate]) {
+                aggregatedData[rawDate] = { valorBruto: 0, descontoMdr: 0 };
+              }
+              
+              aggregatedData[rawDate].valorBruto += valorBruto;
+              aggregatedData[rawDate].descontoMdr += descontoMdr;
+            }
+          }
+        }
+        return aggregatedData;
+      }
+
+      function generateAndDownloadTxt(data, accounts) {
+          let outputLines = [];
+          
+          // Formata um número para o padrão brasileiro sem pontos de milhar (ex: 1234.5 -> 1234,50)
+          const formatToBRL = (value) => value.toLocaleString('pt-BR', { useGrouping: false, minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+          const sortedDates = Object.keys(data).sort((a, b) => {
+              const [dayA, monthA, yearA] = a.split('/');
+              const [dayB, monthB, yearB] = b.split('/');
+              return new Date(`${yearA}-${monthA}-${dayA}`) - new Date(`${yearB}-${monthB}-${dayB}`);
+          });
+
+          for(const date of sortedDates){
+              const values = data[date];
+
+              if (values.valorBruto > 0) {
+                  const valorBrutoFormatted = formatToBRL(values.valorBruto);
+                  outputLines.push(`${date};${accounts.contaCartao};${accounts.contaClientes};${valorBrutoFormatted};;VALOR DE VENDAS C/ CARTAO DE CREDITO/DEBITO, CONF. EXTRATO;;;;`);
+              }
+
+              if (values.descontoMdr > 0) {
+                  const descontoMdrFormatted = formatToBRL(values.descontoMdr);
+                  outputLines.push(`${date};${accounts.contaTarifas};${accounts.contaCartao};${descontoMdrFormatted};;TAXA DA OPERADORA DE CARTOES DE CREDITO/DEBITO, CONF. EXTRATO;;;;`);
+              }
+          }
+
+          const fileContent = outputLines.join('\n');
+          
+          const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = "lancamentos.txt";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(link.href);
+
+          resultsContent.innerHTML = `
+            <div class="success-message">
+                <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+                <h3>Arquivo gerado com sucesso!</h3>
+                <p>O download de <strong>lancamentos_Stone.txt</strong> foi iniciado.</p>
+            </div>
+          `;
+          results.classList.add("show");
+      }
+    </script>
+  </body>
+</html>
