@@ -5,11 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Analisador de Duplicidades Contábeis</title>
 
-    <!-- Inclui a biblioteca SheetJS (xlsx) para ler arquivos Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
 
     <style>
-      /* Definição das variáveis de cor */
+      /* Estilos importados e adaptados do arquivo ECF.html */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
       :root {
         --primary-color: #4f0072;
         --accent-color: #fb0a5e;
@@ -20,64 +29,80 @@
         --text-color-light: #ffffff;
         --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
         --transicao: all 0.3s ease;
+        --primary-dark: #3d005a;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        --text-muted: #64748b;
+        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
       }
 
       body {
-        font-family: "Arial", sans-serif;
-        margin: 0;
-        padding: 20px;
-        background: linear-gradient(
-          135deg,
-          var(--primary-color) 0%,
-          var(--accent-color) 100%
-        );
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh;
         color: var(--text-color);
         line-height: 1.6;
-        min-height: 100vh;
       }
 
       .container {
-        max-width: 800px;
-        margin: 20px auto;
-        background-color: var(--background-color);
-        padding: 30px;
-        box-shadow: var(--sombra);
-        border-radius: 8px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
       }
 
-      h1,
-      h2 {
-        color: var(--primary-color);
+      .header {
         text-align: center;
-        margin-bottom: 20px;
+        margin-bottom: 3rem;
+      }
+
+      .header h1 {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .header p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
       }
 
       .form-section {
-        background-color: var(--form-bg-color);
-        padding: 20px;
-        border-radius: 8px;
-        margin-bottom: 30px;
-        border: 1px solid var(--border-color);
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        padding: 2.5rem;
+        box-shadow: var(--sombra);
+        margin-bottom: 2rem;
+        transition: var(--transicao);
       }
 
       label {
         display: block;
-        margin-bottom: 8px;
-        font-weight: bold;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
         color: var(--primary-color);
+        font-size: 1rem;
       }
 
       input[type="file"],
       textarea {
         display: block;
         width: 100%;
-        padding: 10px;
-        margin-bottom: 20px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1.5rem;
         border: 1px solid var(--border-color);
-        border-radius: 4px;
+        border-radius: var(--radius);
         box-sizing: border-box;
         font-size: 1rem;
         transition: border-color var(--transicao);
+        background-color: #fff;
       }
 
       input[type="file"]:focus,
@@ -88,142 +113,260 @@
       }
 
       textarea {
-        min-height: 100px;
+        min-height: 120px;
         resize: vertical;
       }
 
-      button {
-        display: block;
-        width: 100%;
-        padding: 12px;
-        background-color: var(--accent-color);
+      .btn {
+        background: var(--primary-color);
         color: var(--text-color-light);
         border: none;
-        border-radius: 4px;
-        font-size: 1.1rem;
+        padding: 0.875rem 2rem;
+        border-radius: var(--radius);
+        font-weight: 600;
+        font-size: 1rem;
         cursor: pointer;
-        transition: background-color var(--transicao), opacity var(--transicao);
+        transition: var(--transicao);
+        box-shadow: var(--sombra);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        justify-content: center;
+        margin-top: 1rem;
       }
 
-      button:hover:not(:disabled) {
-        background-color: #d9074c;
+      .btn:hover:not(:disabled) {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
       }
 
-      button:disabled {
-        background-color: var(--border-color);
+      .btn:disabled {
+        background: var(--text-muted);
         cursor: not-allowed;
-        opacity: 0.7;
+        transform: none;
       }
 
-      .results-section {
-        margin-top: 30px;
-        padding-top: 20px;
-        border-top: 1px solid var(--border-color);
+      .results {
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--sombra);
+        overflow: hidden;
+        display: none;
+      }
+      .results.show {
+        display: block;
+        animation: slideIn 0.5s ease-out;
       }
 
-      #loading {
-        text-align: center;
-        color: var(--primary-color);
-        font-weight: bold;
-        margin-bottom: 15px;
+      .results-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--primary-dark)
+        );
+        color: var(--text-color-light);
+        padding: 1.5rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
       }
 
-      #results ul {
-        list-style: none;
-        padding: 0;
+      .results-title {
+        font-size: 1.25rem;
+        font-weight: 600;
       }
 
-      /* Estilo para cada grupo de duplicidades */
-      #results li {
-        background-color: var(--form-bg-color);
-        border: 1px solid var(--border-color);
-        border-radius: 4px;
-        padding: 10px 15px; /* Condensado */
-        margin-bottom: 10px; /* Condensado */
-        word-break: break-word;
+      .results-content {
+        padding: 2rem;
       }
 
-      #results li strong {
-        color: var(--primary-color);
+      /* Estilos para grupos de duplicidade e mensagens */
+      .data-group {
+        background: var(--form-bg-color);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--primary-color);
+        transition: var(--transicao);
       }
-
-      /* Estilo para a lista interna de lançamentos de um grupo */
-      #results li ul {
-        margin-top: 8px; /* Condensado */
-        padding-left: 15px; /* Condensado */
+      .data-group:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--sombra);
       }
-
-      /* Estilo para cada lançamento dentro de um grupo */
-      #results li ul li {
-        background-color: transparent;
-        border: none;
-        padding: 3px 0; /* Condensado */
-        margin-bottom: 3px; /* Condensado */
-        line-height: 1.4; /* Condensado */
+      .group-title {
+        color: var(--text-color);
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
       }
-
-      /* Novo estilo para destacar valores */
+      .data-item {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(224, 224, 224, 0.5);
+      }
+      .data-item:last-child {
+        border-bottom: none;
+      }
       .highlight-value {
         color: var(--accent-color);
         font-weight: bold;
       }
-
-      .error-message {
-        color: var(--accent-color);
-        font-weight: bold;
+      .message-box {
         text-align: center;
-        margin-bottom: 15px;
+        padding: 3rem 2rem;
+        color: var(--text-muted);
+        background-color: var(--form-bg-color);
+        border-radius: var(--radius);
+      }
+      .message-box .icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+      .message-box.error {
+        color: var(--error);
+        background-color: rgba(239, 68, 68, 0.1);
+        border-left: 4px solid var(--error);
+        text-align: left;
+        padding: 1.5rem;
+      }
+      .message-box.error .icon {
+        display: none;
       }
 
-      .info-message {
-        color: var(--primary-color);
+      .loading {
+        display: none;
         text-align: center;
+        padding: 4rem;
+        color: var(--text-muted);
+        background-color: var(--background-color);
+        border-radius: var(--radius-lg);
+      }
+      .loading.show {
+        display: block;
+      }
+      .spinner {
+        border: 4px solid var(--border-color);
+        border-top: 4px solid var(--primary-color);
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1.5rem;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 1rem;
+        }
+        .header h1 {
+          font-size: 2rem;
+        }
+        .form-section,
+        .results-content {
+          padding: 1.5rem;
+        }
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1>Analisador de Duplicidades Contábeis</h1>
+      <div class="header">
+        <h1>
+          <i class="fas fa-search-dollar"></i> Analisador de Duplicidades
+          Contábeis
+        </h1>
+        <p>Encontre lançamentos com mesma Data e Valor em contas específicas</p>
+      </div>
 
       <div class="form-section">
-        <p>
-          Carregue um arquivo Excel (.xlsx ou .xls), informe as contas desejadas
-          e analise duplicidades (mesma Data e Valor) **apenas** nos lançamentos
-          que envolvem essas contas.
-        </p>
-
-        <label for="excelFile">Escolha o arquivo Excel:</label>
+        <label for="excelFile"
+          ><i class="fas fa-file-excel"></i> Escolha o arquivo Excel:</label
+        >
         <input type="file" id="excelFile" accept=".xlsx, .xls" />
 
         <label for="accountList"
-          >Contas a Analisar (separadas por vírgula ou quebra de linha):</label
+          ><i class="fas fa-list-ol"></i> Contas a Analisar (separadas por
+          vírgula ou quebra de linha):</label
         >
         <textarea
           id="accountList"
           placeholder="Ex: 1000, 2000, 101.01, 202.05"
         ></textarea>
 
-        <button id="analyzeButton" disabled>Analisar Duplicidades</button>
+        <button class="btn" id="analyzeButton" disabled>
+          <i class="fas fa-cogs"></i> Analisar Duplicidades
+        </button>
       </div>
 
-      <div class="results-section">
-        <h2>Resultados da Análise</h2>
-        <p id="loading" style="display: none">Analisando o arquivo...</p>
-        <div id="results">
-          <p class="info-message">
-            Carregue um arquivo e informe as contas para iniciar a análise.
-          </p>
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Analisando o arquivo...</p>
+      </div>
+
+      <div class="results" id="results-container">
+        <div class="results-header">
+          <i class="fas fa-chart-line"></i>
+          <div class="results-title">Resultados da Análise</div>
         </div>
+        <div class="results-content" id="results-content"></div>
       </div>
     </div>
 
     <script>
       document.addEventListener("DOMContentLoaded", () => {
+        // --- Seletores de Elementos ---
         const fileInput = document.getElementById("excelFile");
         const accountListTextarea = document.getElementById("accountList");
         const analyzeButton = document.getElementById("analyzeButton");
-        const resultsDiv = document.getElementById("results");
+        const resultsContainer = document.getElementById("results-container");
+        const resultsContentDiv = document.getElementById("results-content");
         const loadingIndicator = document.getElementById("loading");
+
+        // --- Funções de UI ---
+        const showLoading = (show) => {
+          loadingIndicator.classList.toggle("show", show);
+          if (show) resultsContainer.classList.remove("show");
+        };
+
+        const showResults = (show) => {
+          resultsContainer.classList.toggle("show", show);
+        };
+
+        const displayMessage = (message, type = "info") => {
+          showResults(true);
+          const iconClass =
+            type === "error" ? "fa-exclamation-triangle" : "fa-info-circle";
+          resultsContentDiv.innerHTML = `
+            <div class="message-box ${type}">
+              <div class="icon"><i class="fas ${iconClass}"></i></div>
+              <h3>${type === "error" ? "Ocorreu um Erro" : "Informação"}</h3>
+              <p>${message}</p>
+            </div>`;
+        };
 
         const updateButtonState = () => {
           const fileSelected = fileInput.files.length > 0;
@@ -231,368 +374,280 @@
           analyzeButton.disabled = !(fileSelected && accountsEntered);
         };
 
-        fileInput.addEventListener("change", updateButtonState);
-        accountListTextarea.addEventListener("input", updateButtonState);
-
-        analyzeButton.addEventListener("click", async () => {
-          // Use async for potential future use, currently not strictly needed
+        // --- Lógica Principal ---
+        const handleAnalysis = async () => {
           const file = fileInput.files[0];
           const accountListRaw = accountListTextarea.value;
 
           if (!file) {
-            displayError("Por favor, selecione um arquivo Excel.");
+            displayMessage("Por favor, selecione um arquivo Excel.", "error");
             return;
           }
           if (!accountListRaw.trim()) {
-            displayError("Por favor, informe as contas a serem analisadas.");
+            displayMessage(
+              "Por favor, informe as contas a serem analisadas.",
+              "error"
+            );
             return;
           }
 
-          loadingIndicator.style.display = "block";
-          resultsDiv.innerHTML = "";
-          displayInfo("Lendo arquivo Excel...");
+          showLoading(true);
 
-          const reader = new FileReader();
+          try {
+            const data = await file.arrayBuffer();
+            const workbook = XLSX.read(data, { type: "array", raw: true });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+              header: 1,
+              raw: true,
+            });
 
-          reader.onload = async (event) => {
-            // Use async here if needing awaits inside
+            if (!jsonData || jsonData.length < 2) {
+              showLoading(false);
+              displayMessage("O arquivo Excel está vazio ou não contém dados.");
+              return;
+            }
+
+            const header = jsonData[0];
+            const rows = jsonData.slice(1);
+
+            const findColumnIndex = (headerRow, columnName) => {
+              const lowerColumnName = columnName.toLowerCase().trim();
+              return headerRow.findIndex(
+                (cell) =>
+                  cell?.toString().toLowerCase().trim() === lowerColumnName
+              );
+            };
+
+            const dateColIndex = findColumnIndex(header, "data");
+            const debitColIndex = findColumnIndex(header, "cta. débito");
+            const creditColIndex = findColumnIndex(header, "cta. crédito");
+            const valueColIndex = findColumnIndex(header, "valor");
+
+            if (
+              [
+                dateColIndex,
+                debitColIndex,
+                creditColIndex,
+                valueColIndex,
+              ].includes(-1)
+            ) {
+              const missing = [];
+              if (dateColIndex === -1) missing.push('"Data"');
+              if (debitColIndex === -1) missing.push('"Cta. Débito"');
+              if (creditColIndex === -1) missing.push('"Cta. Crédito"');
+              if (valueColIndex === -1) missing.push('"Valor"');
+              throw new Error(
+                `Colunas obrigatórias não encontradas: ${missing.join(
+                  ", "
+                )}. Verifique o cabeçalho.`
+              );
+            }
+
+            const targetAccounts = new Set(
+              accountListRaw
+                .split(/[\s,]+/)
+                .map((acc) => acc.trim())
+                .filter(Boolean)
+            );
+            if (targetAccounts.size === 0) {
+              throw new Error("Nenhuma conta válida foi informada.");
+            }
+
+            // --- Processamento dos dados ---
+            const filteredEntries = processRows(rows, {
+              dateColIndex,
+              debitColIndex,
+              creditColIndex,
+              valueColIndex,
+              targetAccounts,
+            });
+
+            if (filteredEntries.length === 0) {
+              showLoading(false);
+              displayMessage(
+                "Nenhum lançamento encontrado para as contas informadas ou com dados válidos."
+              );
+              return;
+            }
+
+            const duplicateGroups = findDuplicates(filteredEntries);
+
+            showLoading(false);
+            renderResults(duplicateGroups, filteredEntries.length);
+          } catch (e) {
+            showLoading(false);
+            displayMessage(
+              `Erro ao processar o arquivo: ${e.message}`,
+              "error"
+            );
+            console.error(e);
+          }
+        };
+
+        const processRows = (
+          rows,
+          {
+            dateColIndex,
+            debitColIndex,
+            creditColIndex,
+            valueColIndex,
+            targetAccounts,
+          }
+        ) => {
+          const entries = [];
+          rows.forEach((row, i) => {
+            const debitAccString = String(row[debitColIndex] || "").trim();
+            const creditAccString = String(row[creditColIndex] || "").trim();
+
+            if (
+              targetAccounts.has(debitAccString) ||
+              targetAccounts.has(creditAccString)
+            ) {
+              const dateString = normalizeDate(row[dateColIndex]);
+              const { numericValue, comparisonString, displayString } =
+                normalizeValue(row[valueColIndex]);
+
+              if (dateString && comparisonString !== null) {
+                entries.push({
+                  originalRow: i + 2,
+                  data: dateString,
+                  ctaDebito: debitAccString,
+                  ctaCredito: creditAccString,
+                  valorFormattedForComparison: comparisonString,
+                  valorFormattedForDisplay: displayString,
+                  valorNumeric: numericValue,
+                });
+              }
+            }
+          });
+          return entries;
+        };
+
+        const findDuplicates = (entries) => {
+          const potentialDuplicates = new Map();
+          entries.forEach((entry) => {
+            const key = `${entry.data}|${entry.valorFormattedForComparison}`;
+            if (!potentialDuplicates.has(key)) {
+              potentialDuplicates.set(key, []);
+            }
+            potentialDuplicates.get(key).push(entry);
+          });
+
+          const groups = [];
+          potentialDuplicates.forEach((group) => {
+            if (group.length > 1) {
+              group.sort((a, b) => a.originalRow - b.originalRow);
+              groups.push(group);
+            }
+          });
+
+          groups.sort(
+            (a, b) =>
+              b[0].valorNumeric - a[0].valorNumeric ||
+              a[0].data.localeCompare(b[0].data) ||
+              a[0].originalRow - b[0].originalRow
+          );
+          return groups;
+        };
+
+        const renderResults = (duplicateGroups, filteredCount) => {
+          showResults(true);
+          if (duplicateGroups.length === 0) {
+            displayMessage(
+              `Nenhuma duplicidade (mesma Data e Valor) encontrada entre os ${filteredCount} lançamentos analisados.`
+            );
+            return;
+          }
+
+          let html = "";
+          duplicateGroups.forEach((group) => {
+            const { data, valorFormattedForDisplay, valorNumeric } = group[0];
+            const valueDisplayHTML =
+              valorNumeric > 100
+                ? `<span class="highlight-value">${valorFormattedForDisplay}</span>`
+                : valorFormattedForDisplay;
+
+            let itemsHTML = "";
+            group.forEach((item) => {
+              itemsHTML += `<div class="data-item">Linha ${item.originalRow}: Cta. Débito: <strong>${item.ctaDebito}</strong>, Cta. Crédito: <strong>${item.ctaCredito}</strong></div>`;
+            });
+
+            html += `
+                    <div class="data-group">
+                        <div class="group-title">
+                            Duplicidade (${group.length}x) | Data: ${data} | Valor: ${valueDisplayHTML}
+                        </div>
+                        ${itemsHTML}
+                    </div>
+                `;
+          });
+          resultsContentDiv.innerHTML = html;
+        };
+
+        // --- Funções de Normalização ---
+        const normalizeDate = (date) => {
+          if (date instanceof Date && !isNaN(date)) {
+            return date.toISOString().split("T")[0];
+          }
+          if (typeof date === "number") {
             try {
-              const data = new Uint8Array(event.target.result);
-              // Usando raw: true para manter valores originais
-              const workbook = XLSX.read(data, { type: "array", raw: true });
-
-              const firstSheetName = workbook.SheetNames[0];
-              const worksheet = workbook.Sheets[firstSheetName];
-
-              // Usando raw: true para ter acesso aos valores brutos
-              const jsonData = XLSX.utils.sheet_to_json(worksheet, {
-                header: 1,
-                raw: true,
-              });
-
-              if (!jsonData || jsonData.length < 2) {
-                displayInfo("O arquivo Excel está vazio ou não contém dados.");
-                loadingIndicator.style.display = "none";
-                return;
-              }
-
-              const header = jsonData[0];
-              const rows = jsonData.slice(1);
-
-              // Encontra os índices das colunas
-              const findColumnIndex = (headerRow, columnName) => {
-                if (!headerRow || headerRow.length === 0) return -1;
-                const lowerColumnName = columnName.toLowerCase().trim();
-                let index = -1;
-                headerRow.some((cell, i) => {
-                  if (
-                    cell !== null &&
-                    cell !== undefined &&
-                    typeof cell.toString === "function" &&
-                    cell.toString().toLowerCase().trim() === lowerColumnName
-                  ) {
-                    index = i;
-                    return true;
-                  }
-                  return false;
-                });
-                return index;
-              };
-
-              const dateColIndex = findColumnIndex(header, "data");
-              const debitColIndex = findColumnIndex(header, "cta. débito");
-              const creditColIndex = findColumnIndex(header, "cta. crédito");
-              const valueColIndex = findColumnIndex(header, "valor");
-
-              if (
-                dateColIndex === -1 ||
-                debitColIndex === -1 ||
-                creditColIndex === -1 ||
-                valueColIndex === -1
-              ) {
-                const missing = [];
-                if (dateColIndex === -1) missing.push('"Data"');
-                if (debitColIndex === -1) missing.push('"Cta. Débito"');
-                if (creditColIndex === -1) missing.push('"Cta. Crédito"');
-                if (valueColIndex === -1) missing.push('"Valor"');
-                displayError(
-                  `Colunas obrigatórias não encontradas: ${missing.join(
-                    ", "
-                  )}. Verifique os nomes exatos no cabeçalho.`
-                );
-                loadingIndicator.style.display = "none";
-                return;
-              }
-
-              const targetAccounts = new Set(
-                accountListRaw
-                  .split(/[\s,]+/)
-                  .map((acc) => acc.trim())
-                  .filter((acc) => acc !== "")
-              );
-
-              if (targetAccounts.size === 0) {
-                displayError("Nenhuma conta válida foi informada.");
-                loadingIndicator.style.display = "none";
-                return;
-              }
-
-              displayInfo(
-                `Filtrando lançamentos para ${targetAccounts.size} conta(s)...`
-              );
-
-              // --- Passo 1: Filtrar os lançamentos pelas contas informadas ---
-              const filteredEntries = [];
-
-              for (let i = 0; i < rows.length; i++) {
-                const row = rows[i];
-                const originalRowIndex = i + 2;
-
-                const date = row[dateColIndex];
-                const debitAccount = row[debitColIndex];
-                const creditAccount = row[creditColIndex];
-                const value = row[valueColIndex]; // Valor bruto
-
-                const debitAccString = String(debitAccount || "").trim();
-                const creditAccString = String(creditAccount || "").trim();
-
-                const isRelevantAccount =
-                  targetAccounts.has(debitAccString) ||
-                  targetAccounts.has(creditAccString);
-
-                if (isRelevantAccount) {
-                  // --- Normaliza Data ---
-                  let dateString = null;
-                  if (date instanceof Date && !isNaN(date)) {
-                    dateString = date.toISOString().split("T")[0]; // YYYY-MM-DD
-                  } else if (typeof date === "string") {
-                    // Check if it's already YYYY-MM-DD or attempt parsing
-                    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-                    if (dateRegex.test(date)) {
-                      dateString = date;
-                    } else {
-                      try {
-                        const parsedDate = new Date(date);
-                        if (!isNaN(parsedDate.getTime())) {
-                          dateString = parsedDate.toISOString().split("T")[0];
-                        }
-                      } catch (e) {}
-                    }
-                  } else if (typeof date === "number") {
-                    try {
-                      const dateObj = XLSX.SSF.parse_date_code(date);
-                      if (
-                        dateObj &&
-                        !isNaN(dateObj.y) &&
-                        !isNaN(dateObj.m) &&
-                        !isNaN(dateObj.d)
-                      ) {
-                        dateString = `${dateObj.y}-${String(dateObj.m).padStart(
-                          2,
-                          "0"
-                        )}-${String(dateObj.d).padStart(2, "0")}`;
-                      }
-                    } catch (e) {}
-                  }
-
-                  // --- CORREÇÃO: Melhor processamento para o Valor ---
-                  let numericValue; // Valor numérico real (para comparação > 100 e ordenação)
-                  let valueStringForComparison = null; // String XX.YY (para chave do mapa)
-                  let valueStringForDisplay = "Inválido"; // String XX,YY (para exibição)
-
-                  // Log para debug
-                  console.log(
-                    `Linha ${originalRowIndex}: Valor original:`,
-                    value,
-                    `(Tipo: ${typeof value})`
-                  );
-
-                  // Processo de conversão de valor com correção para evitar perda de casas decimais
-                  if (typeof value === "number" && !isNaN(value)) {
-                    // Se já é número, usamos diretamente
-                    numericValue = value;
-                    console.log(
-                      `Linha ${originalRowIndex}: Valor numérico direto: ${numericValue}`
-                    );
-                  } else if (typeof value === "string") {
-                    // Se for string, primeiro tentar formato brasileiro (vírgula como decimal)
-                    let cleanValue = value.trim();
-
-                    // Se contém vírgula, assume formato brasileiro
-                    if (cleanValue.includes(",")) {
-                      // Formato brasileiro: remove pontos (separadores de milhar) e substitui , por .
-                      cleanValue = cleanValue
-                        .replace(/\./g, "")
-                        .replace(",", ".");
-                    } else if (cleanValue.includes(".")) {
-                      // Já está no formato com ponto, manter como está
-                      cleanValue = cleanValue;
-                    }
-
-                    // Remover quaisquer caracteres não-numéricos exceto o ponto decimal
-                    cleanValue = cleanValue.replace(/[^\d.]/g, "");
-
-                    numericValue = parseFloat(cleanValue);
-                    console.log(
-                      `Linha ${originalRowIndex}: Valor string "${value}" convertido para: ${numericValue}`
-                    );
-                  } else {
-                    // Outro tipo de dado, inválido
-                    numericValue = NaN;
-                    console.log(
-                      `Linha ${originalRowIndex}: Tipo de valor inválido: ${typeof value}`
-                    );
-                  }
-
-                  // Formatação final do valor para comparação e exibição
-                  if (!isNaN(numericValue)) {
-                    // Use toFixed(2) para garantir duas casas decimais
-                    valueStringForComparison = numericValue.toFixed(2); // "15000.00"
-                    // Formata para exibição no padrão brasileiro
-                    valueStringForDisplay = numericValue.toLocaleString(
-                      "pt-BR",
-                      {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      }
-                    ); // "15.000,00"
-                  } else {
-                    console.warn(
-                      `Linha ${originalRowIndex}: Valor numérico inválido após processamento.`
-                    );
-                  }
-
-                  console.log(
-                    `Linha ${originalRowIndex}: Valores finais - Numérico: ${numericValue}, Comparação: "${valueStringForComparison}", Exibição: "${valueStringForDisplay}"`
-                  );
-
-                  // Adiciona à lista filtrada se Data e Valor são válidos
-                  if (dateString && valueStringForComparison !== null) {
-                    filteredEntries.push({
-                      originalRow: originalRowIndex,
-                      data: dateString,
-                      ctaDebito: debitAccString,
-                      ctaCredito: creditAccString,
-                      valorFormattedForComparison: valueStringForComparison,
-                      valorFormattedForDisplay: valueStringForDisplay,
-                      valorNumeric: numericValue,
-                      originalRowData: row,
-                    });
-                  } else {
-                    console.warn(
-                      `Linha ${originalRowIndex} ignorada por Data ou Valor inválido.`
-                    );
-                  }
-                }
-              }
-
-              if (filteredEntries.length === 0) {
-                displayInfo(
-                  "Nenhum lançamento encontrado envolvendo as contas informadas, ou os lançamentos encontrados tinham problemas de Data/Valor."
-                );
-                loadingIndicator.style.display = "none";
-                return;
-              }
-
-              displayInfo(
-                `Analisando ${filteredEntries.length} lançamentos filtrados para duplicidades...`
-              );
-
-              // --- Passo 2: Analisar duplicidades DENTRO dos lançamentos filtrados ---
-              const potentialDuplicates = new Map();
-
-              filteredEntries.forEach((entry) => {
-                const key = `${entry.data}|${entry.valorFormattedForComparison}`; // Chave: Data|Valor (formato XX.YY)
-                if (!potentialDuplicates.has(key)) {
-                  potentialDuplicates.set(key, []);
-                }
-                potentialDuplicates.get(key).push(entry);
-              });
-
-              // --- Identifica e Exibe os Grupos de Duplicidades ---
-              const duplicateGroups = [];
-              potentialDuplicates.forEach((entriesInGroup) => {
-                if (entriesInGroup.length > 1) {
-                  entriesInGroup.sort((a, b) => a.originalRow - b.originalRow); // Ordena por linha para consistência
-                  duplicateGroups.push(entriesInGroup);
-                }
-              });
-
-              loadingIndicator.style.display = "none";
-
-              if (duplicateGroups.length === 0) {
-                displayInfo(
-                  `Nenhuma duplicidade (mesma Data e Valor) encontrada entre os ${filteredEntries.length} lançamentos das contas informadas.`
-                );
-              } else {
-                const ul = document.createElement("ul");
-                // Ordena os grupos por valor crescente (do menor para o maior)
-                duplicateGroups.sort((a, b) => {
-                  // Primeiro critério: ordenar pelo valor numérico (crescente)
-                  const valA = a[0].valorNumeric;
-                  const valB = b[0].valorNumeric;
-                  if (!isNaN(valA) && !isNaN(valB)) {
-                    // Compara números se ambos são válidos
-                    if (valA < valB) return -1;
-                    if (valA > valB) return 1;
-                  }
-
-                  // Segundo critério (em caso de empate no valor): ordenar por data
-                  if (a[0].data < b[0].data) return -1;
-                  if (a[0].data > b[0].data) return 1;
-
-                  // Terceiro critério (em caso de empate no valor e data): ordenar por linha original
-                  return a[0].originalRow - b[0].originalRow;
-                });
-
-                duplicateGroups.forEach((group) => {
-                  const li = document.createElement("li");
-                  const groupValueNumeric = group[0].valorNumeric;
-                  // Formata o valor para exibição e aplica destaque se > 100
-                  const valueDisplayHTML =
-                    !isNaN(groupValueNumeric) && groupValueNumeric > 100
-                      ? `<span class="highlight-value">${group[0].valorFormattedForDisplay}</span>`
-                      : group[0].valorFormattedForDisplay;
-
-                  li.innerHTML = `<strong>Duplicidade Encontrada (${group.length}x):</strong> Data: ${group[0].data}, Valor: ${valueDisplayHTML}<br>
-                                                Detalhes dos lançamentos neste grupo:<ul>`;
-                  group.forEach((item) => {
-                    li.innerHTML += `<li>Linha ${
-                      item.originalRow
-                    }: Cta. Débito: ${item.ctaDebito || ""}, Cta. Crédito: ${
-                      item.ctaCredito || ""
-                    }</li>`;
-                  });
-                  li.innerHTML += `</ul>`;
-                  ul.appendChild(li);
-                });
-                resultsDiv.appendChild(ul);
+              const d = XLSX.SSF.parse_date_code(date);
+              return `${d.y}-${String(d.m).padStart(2, "0")}-${String(
+                d.d
+              ).padStart(2, "0")}`;
+            } catch (e) {
+              return null;
+            }
+          }
+          if (typeof date === "string") {
+            try {
+              const parsedDate = new Date(date);
+              if (!isNaN(parsedDate.getTime())) {
+                return parsedDate.toISOString().split("T")[0];
               }
             } catch (e) {
-              loadingIndicator.style.display = "none";
-              displayError(
-                `Erro ao processar o arquivo: ${e.message}. Verifique o formato do arquivo, os nomes das colunas ("Data", "Cta. Débito", "Cta. Crédito", "Valor") e se os dados nas colunas estão no formato esperado.`
-              );
-              console.error(e);
+              return null;
             }
+          }
+          return null;
+        };
+
+        const normalizeValue = (value) => {
+          let numericValue = NaN;
+          if (typeof value === "number") {
+            numericValue = value;
+          } else if (typeof value === "string") {
+            const cleanValue = value
+              .trim()
+              .replace(/\./g, "")
+              .replace(",", ".");
+            numericValue = parseFloat(cleanValue.replace(/[^\d.]/g, ""));
+          }
+
+          if (isNaN(numericValue)) {
+            return {
+              numericValue: NaN,
+              comparisonString: null,
+              displayString: "Inválido",
+            };
+          }
+
+          return {
+            numericValue,
+            comparisonString: numericValue.toFixed(2),
+            displayString: numericValue.toLocaleString("pt-BR", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }),
           };
+        };
 
-          reader.onerror = (error) => {
-            loadingIndicator.style.display = "none";
-            displayError("Erro ao ler o arquivo.");
-            console.error(error);
-          };
-
-          reader.readAsArrayBuffer(file);
-        });
-
-        function displayError(message) {
-          resultsDiv.innerHTML = `<p class="error-message">${message}</p>`;
-          loadingIndicator.style.display = "none";
-        }
-        function displayInfo(message) {
-          resultsDiv.innerHTML = `<p class="info-message">${message}</p>`;
-        }
+        // --- Event Listeners ---
+        fileInput.addEventListener("change", updateButtonState);
+        accountListTextarea.addEventListener("input", updateButtonState);
+        analyzeButton.addEventListener("click", handleAnalysis);
       });
     </script>
   </body>
