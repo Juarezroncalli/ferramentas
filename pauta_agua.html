@@ -331,7 +331,7 @@
               <span id="currentTime"></span>
             </p>
             <p style="font-style: italic; font-size: 0.8rem; margin-top: 3px">
-              Obs: Cálculo efetuado com a pauta de R$ 12,75 para galões de 20
+              Obs: Cálculo efetuado com a pauta de R$ 12,66 para galões de 20
               litros.
             </p>
           </div>
@@ -425,7 +425,7 @@
           const invoiceValueCents = toCents(invoiceValue);
 
           // Cálculos em centavos
-          const baseIcmsStCents = toCents(waterQuantity * 12.75);
+          const baseIcmsStCents = toCents(waterQuantity * 12.66);
           const reducedBaseIcmsStCents = Math.round(
             baseIcmsStCents * (1 - 0.6111)
           );
@@ -468,7 +468,7 @@
 <div class="calculation-line">Qtd: ${waterQuantity} un | Valor: R$ ${formatCurrency(
             invoiceValueCents
           )}</div>
-<div class="calculation-line">ICMS ST: ${waterQuantity}xR$12,75(Pauta)=${formatCurrency(
+<div class="calculation-line">ICMS ST: ${waterQuantity}xR$12,66(Pauta)=${formatCurrency(
             baseIcmsStCents
           )} | Red: ${formatCurrency(
             reducedBaseIcmsStCents
