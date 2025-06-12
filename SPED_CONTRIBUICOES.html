@@ -32,10 +32,8 @@
         padding: 20px;
         max-width: 1200px;
         margin: 0 auto;
-        min-height: 100vh; /* <<--- ADICIONE ESTA LINHA */
-        background-repeat: no-repeat; /* <<--- Adicione esta também (opcional, mas recomendado) */
-        /* Garante que o corpo ocupe toda a altura da viewport */
-        /* e que o gradiente não tente repetir */
+        min-height: 100vh;
+        background-repeat: no-repeat;
       }
 
       header {
@@ -50,9 +48,7 @@
       }
 
       header p {
-        color: var(
-          --background-color
-        ); /* Define a cor como branca usando a variável */
+        color: var(--background-color);
       }
 
       .upload-container {
@@ -264,7 +260,6 @@
     <div id="results" class="results">
       <h2>Relatório de PIS/COFINS</h2>
 
-      <!-- Nova seção para exibir o nome da empresa e as datas -->
       <div class="company-info">
         <div class="company-name" id="company-name">Nome da Empresa</div>
         <div class="date-info">
@@ -279,7 +274,6 @@
       <div class="report-section">
         <h3>Informações de PIS</h3>
         <div class="report-grid">
-          <!-- Sequência reordenada conforme solicitado -->
           <div class="report-item">
             <span class="label">VALOR TOTAL DE CRÉDITO DE PIS</span>
             <span class="value" id="pis-credito">-</span>
@@ -314,7 +308,6 @@
       <div class="report-section">
         <h3>Informações de COFINS</h3>
         <div class="report-grid">
-          <!-- Sequência reordenada conforme solicitado -->
           <div class="report-item">
             <span class="label">VALOR TOTAL DE CRÉDITO DE COFINS</span>
             <span class="value" id="cofins-credito">-</span>
@@ -412,7 +405,6 @@
 
         // Formata data no padrão brasileiro (DD/MM/YYYY)
         function formatDate(dateString) {
-          // Verifica se a data está no formato DDMMAAAA
           if (dateString && dateString.length === 8) {
             const day = dateString.substring(0, 2);
             const month = dateString.substring(2, 4);
@@ -431,7 +423,6 @@
               const content = e.target.result;
               const lines = content.split("\n");
 
-              // Valores padrão
               let data = {
                 nomeEmpresa: "Nome da Empresa",
                 dataInicial: "--/--/----",
@@ -450,11 +441,9 @@
                 cofinsPagar: "-",
               };
 
-              // Procura as linhas e extrai os dados
               for (const line of lines) {
                 const trimmedLine = line.trim();
 
-                // Extrai as datas e nome da empresa da linha |0000|
                 if (trimmedLine.startsWith("|0000|")) {
                   const fields = trimmedLine.split("|");
                   if (fields.length >= 9) {
@@ -493,15 +482,12 @@
                 }
               }
 
-              // Atualiza o nome da empresa e as datas
               document.getElementById("company-name").textContent =
                 data.nomeEmpresa;
               document.getElementById("data-inicial").textContent =
                 data.dataInicial;
               document.getElementById("data-final").textContent =
                 data.dataFinal;
-
-              // Atualiza os resultados
               document.getElementById("pis-credito").textContent =
                 data.pisCredito;
               document.getElementById("pis-debito").textContent =
@@ -512,7 +498,6 @@
                 data.pisCreditoAnterior;
               document.getElementById("pis-pagar").textContent = data.pisPagar;
               document.getElementById("pis-saldo").textContent = data.pisSaldo;
-
               document.getElementById("cofins-credito").textContent =
                 data.cofinsCredito;
               document.getElementById("cofins-debito").textContent =
@@ -526,7 +511,6 @@
               document.getElementById("cofins-saldo").textContent =
                 data.cofinsSaldo;
 
-              // Mostra os resultados
               results.style.display = "block";
               errorMessage.style.display = "none";
             } catch (error) {
@@ -547,12 +531,23 @@
 
         // Formata valores monetários
         function formatCurrency(value) {
-          if (!value || isNaN(parseFloat(value))) return "R$ 0,00";
+          // Retorna 'R$ 0,00' se o valor for inválido, nulo ou não for uma string.
+          if (
+            !value ||
+            typeof value !== "string" ||
+            isNaN(parseFloat(value.replace(",", ".")))
+          ) {
+            return "R$ 0,00";
+          }
 
+          // Substitui a vírgula por ponto para o parseFloat entender corretamente.
+          const numericValue = parseFloat(value.replace(",", "."));
+
+          // Formata o número para o padrão de moeda brasileiro.
           return new Intl.NumberFormat("pt-BR", {
             style: "currency",
             currency: "BRL",
-          }).format(parseFloat(value));
+          }).format(numericValue);
         }
       });
     </script>
