@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checklist de Conferência - ECD</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease;
+        --primary-dark: #3d005a;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        --text-muted: #64748b;
+        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh;
+        color: var(--text-color);
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+
+      .header h1 {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .header p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+      }
+
+      .checklist-section {
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--sombra);
+        margin-bottom: 2rem;
+        transition: var(--transicao);
+      }
+      
+      .progress-area {
+        margin-bottom: 2rem;
+      }
+
+      .progress-text {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        text-align: center;
+      }
+      
+      .progress-container {
+        background-color: var(--border-color);
+        border-radius: var(--radius);
+        height: 10px;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background-color: var(--success);
+        transition: width 0.4s ease;
+      }
+
+      .checklist-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.25rem 1rem;
+        border-bottom: 1px solid var(--border-color);
+        transition: background-color 0.2s ease;
+      }
+      
+      .checklist-item:first-of-type {
+        border-top: 1px solid var(--border-color);
+      }
+
+      .checklist-item:hover {
+        background-color: var(--form-bg-color);
+      }
+
+      .checklist-label {
+        font-weight: 600;
+        color: var(--text-color);
+        transition: all 0.3s ease;
+      }
+      
+      .status-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.5rem;
+        color: var(--text-muted);
+        transition: color 0.3s ease;
+      }
+
+      .status-btn:hover {
+        color: var(--primary-color);
+      }
+      
+      /* Estilos para item conferido */
+      .checklist-item.checked .checklist-label {
+        text-decoration: line-through;
+        color: var(--text-muted);
+      }
+      
+      .checklist-item.checked .status-btn {
+        color: var(--success);
+      }
+
+      .btn {
+        background: var(--accent-color);
+        color: var(--text-color-light);
+        border: none;
+        padding: 0.875rem 2rem;
+        border-radius: var(--radius);
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transicao);
+        box-shadow: var(--sombra);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        justify-content: center;
+        margin-top: 2rem;
+      }
+
+      .btn:hover {
+        background: #d90852;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 1rem;
+        }
+
+        .header h1 {
+          font-size: 2rem;
+        }
+
+        .checklist-section {
+          padding: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1><i class="fas fa-clipboard-check"></i> Checklist de Conferência ECD</h1>
+        <p>Marque os itens abaixo para acompanhar a conferência do arquivo.</p>
+      </div>
+
+      <div class="checklist-section">
+        <div class="progress-area">
+          <div class="progress-text" id="progress-text">0 de 10 itens conferidos</div>
+          <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+          </div>
+        </div>
+
+        <div id="checklist-container">
+          </div>
+        
+        <button class="btn" id="reset-btn">
+          <i class="fas fa-undo"></i>
+          Limpar Conferência
+        </button>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const checklistContainer = document.getElementById('checklist-container');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+        const resetBtn = document.getElementById('reset-btn');
+
+        const checklistItems = [
+          'PERÍODO DO ARQUIVO',
+          'Nº DO LIVRO',
+          'ATIVO',
+          'PASSIVO',
+          'DRE',
+		  'DRE ANUAL',
+          'DMPL',
+          'DATA CRC',
+          'SOCIOS ASSINANTES',
+          'DATA DO NIRE',
+          'NIRE'
+        ];
+
+        // Cria os itens do checklist dinamicamente
+        function renderItems() {
+          checklistContainer.innerHTML = '';
+          checklistItems.forEach(label => {
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('checklist-item');
+            itemDiv.dataset.label = label;
+            
+            itemDiv.innerHTML = `
+              <span class="checklist-label">${label}</span>
+              <button class="status-btn">
+                <i class="far fa-circle"></i>
+              </button>
+            `;
+            checklistContainer.appendChild(itemDiv);
+          });
+        }
+
+        // Atualiza a barra de progresso e o texto
+        function updateProgress() {
+          const checkedItems = checklistContainer.querySelectorAll('.checklist-item.checked').length;
+          const totalItems = checklistItems.length;
+          const percentage = totalItems > 0 ? (checkedItems / totalItems) * 100 : 0;
+
+          progressBar.style.width = `${percentage}%`;
+          progressText.textContent = `${checkedItems} de ${totalItems} itens conferidos`;
+        }
+
+        // Lida com o clique em um item do checklist
+        checklistContainer.addEventListener('click', function(e) {
+          const targetButton = e.target.closest('.status-btn');
+          if (!targetButton) return;
+          
+          const item = targetButton.parentElement;
+          item.classList.toggle('checked');
+
+          const icon = targetButton.querySelector('i');
+          if (item.classList.contains('checked')) {
+            icon.classList.remove('fa-circle');
+            icon.classList.add('fa-check-circle');
+          } else {
+            icon.classList.remove('fa-check-circle');
+            icon.classList.add('fa-circle');
+          }
+
+          updateProgress();
+        });
+
+        // Lida com o clique no botão de reset
+        resetBtn.addEventListener('click', function() {
+          renderItems();
+          updateProgress();
+        });
+
+        // Inicialização
+        renderItems();
+        updateProgress();
+      });
+    </script>
+  </body>
+</html>
