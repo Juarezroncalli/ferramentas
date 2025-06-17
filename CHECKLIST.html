@@ -78,7 +78,7 @@
         margin-bottom: 2rem;
         transition: var(--transicao);
       }
-      
+
       .progress-area {
         margin-bottom: 2rem;
       }
@@ -90,7 +90,7 @@
         margin-bottom: 0.5rem;
         text-align: center;
       }
-      
+
       .progress-container {
         background-color: var(--border-color);
         border-radius: var(--radius);
@@ -113,7 +113,7 @@
         border-bottom: 1px solid var(--border-color);
         transition: background-color 0.2s ease;
       }
-      
+
       .checklist-item:first-of-type {
         border-top: 1px solid var(--border-color);
       }
@@ -127,7 +127,7 @@
         color: var(--text-color);
         transition: all 0.3s ease;
       }
-      
+
       .status-btn {
         background: none;
         border: none;
@@ -140,13 +140,13 @@
       .status-btn:hover {
         color: var(--primary-color);
       }
-      
+
       /* Estilos para item conferido */
       .checklist-item.checked .checklist-label {
         text-decoration: line-through;
         color: var(--text-muted);
       }
-      
+
       .checklist-item.checked .status-btn {
         color: var(--success);
       }
@@ -194,21 +194,24 @@
   <body>
     <div class="container">
       <div class="header">
-        <h1><i class="fas fa-clipboard-check"></i> Checklist de Conferência ECD</h1>
+        <h1>
+          <i class="fas fa-clipboard-check"></i> Checklist de Conferência ECD
+        </h1>
         <p>Marque os itens abaixo para acompanhar a conferência do arquivo.</p>
       </div>
 
       <div class="checklist-section">
         <div class="progress-area">
-          <div class="progress-text" id="progress-text">0 de 10 itens conferidos</div>
+          <div class="progress-text" id="progress-text">
+            0 de 10 itens conferidos
+          </div>
           <div class="progress-container">
             <div class="progress-bar" id="progress-bar"></div>
           </div>
         </div>
 
-        <div id="checklist-container">
-          </div>
-        
+        <div id="checklist-container"></div>
+
         <button class="btn" id="reset-btn">
           <i class="fas fa-undo"></i>
           Limpar Conferência
@@ -217,34 +220,36 @@
     </div>
 
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const checklistContainer = document.getElementById('checklist-container');
-        const progressBar = document.getElementById('progress-bar');
-        const progressText = document.getElementById('progress-text');
-        const resetBtn = document.getElementById('reset-btn');
+      document.addEventListener("DOMContentLoaded", function () {
+        const checklistContainer = document.getElementById(
+          "checklist-container"
+        );
+        const progressBar = document.getElementById("progress-bar");
+        const progressText = document.getElementById("progress-text");
+        const resetBtn = document.getElementById("reset-btn");
 
         const checklistItems = [
-          'PERÍODO DO ARQUIVO',
-          'Nº DO LIVRO',
-          'ATIVO',
-          'PASSIVO',
-          'DRE',
-		  'DRE ANUAL',
-          'DMPL',
-          'DATA CRC',
-          'SOCIOS ASSINANTES',
-          'DATA DO NIRE',
-          'NIRE'
+          "PERÍODO DO ARQUIVO",
+          "Nº DO LIVRO",
+          "ATIVO",
+          "PASSIVO",
+          "DRE",
+          "DRE ANUAL",
+          "DMPL",
+          "DATA CRC",
+          "SOCIOS ASSINANTES",
+          "DATA DO NIRE",
+          "NIRE",
         ];
 
         // Cria os itens do checklist dinamicamente
         function renderItems() {
-          checklistContainer.innerHTML = '';
-          checklistItems.forEach(label => {
-            const itemDiv = document.createElement('div');
-            itemDiv.classList.add('checklist-item');
+          checklistContainer.innerHTML = "";
+          checklistItems.forEach((label) => {
+            const itemDiv = document.createElement("div");
+            itemDiv.classList.add("checklist-item");
             itemDiv.dataset.label = label;
-            
+
             itemDiv.innerHTML = `
               <span class="checklist-label">${label}</span>
               <button class="status-btn">
@@ -257,36 +262,39 @@
 
         // Atualiza a barra de progresso e o texto
         function updateProgress() {
-          const checkedItems = checklistContainer.querySelectorAll('.checklist-item.checked').length;
+          const checkedItems = checklistContainer.querySelectorAll(
+            ".checklist-item.checked"
+          ).length;
           const totalItems = checklistItems.length;
-          const percentage = totalItems > 0 ? (checkedItems / totalItems) * 100 : 0;
+          const percentage =
+            totalItems > 0 ? (checkedItems / totalItems) * 100 : 0;
 
           progressBar.style.width = `${percentage}%`;
           progressText.textContent = `${checkedItems} de ${totalItems} itens conferidos`;
         }
 
         // Lida com o clique em um item do checklist
-        checklistContainer.addEventListener('click', function(e) {
-          const targetButton = e.target.closest('.status-btn');
+        checklistContainer.addEventListener("click", function (e) {
+          const targetButton = e.target.closest(".status-btn");
           if (!targetButton) return;
-          
-          const item = targetButton.parentElement;
-          item.classList.toggle('checked');
 
-          const icon = targetButton.querySelector('i');
-          if (item.classList.contains('checked')) {
-            icon.classList.remove('fa-circle');
-            icon.classList.add('fa-check-circle');
+          const item = targetButton.parentElement;
+          item.classList.toggle("checked");
+
+          const icon = targetButton.querySelector("i");
+          if (item.classList.contains("checked")) {
+            icon.classList.remove("fa-circle");
+            icon.classList.add("fa-check-circle");
           } else {
-            icon.classList.remove('fa-check-circle');
-            icon.classList.add('fa-circle');
+            icon.classList.remove("fa-check-circle");
+            icon.classList.add("fa-circle");
           }
 
           updateProgress();
         });
 
         // Lida com o clique no botão de reset
-        resetBtn.addEventListener('click', function() {
+        resetBtn.addEventListener("click", function () {
           renderItems();
           updateProgress();
         });
