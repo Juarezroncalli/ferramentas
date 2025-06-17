@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise Contábil - RIFLON INDUSTRIA E COMERCIO DE PLASTICOS LTDA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.07);
+        }
+
+        .header h1 {
+            color: #4a5568;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header h2 {
+            color: #2E8B57; /* Verde Escuro */
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .header .company-info {
+            background: linear-gradient(135deg, #4CAF50, #2E8B57);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .summary-card {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
+            border-left: 5px solid #4CAF50;
+            transition: transform 0.3s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .summary-card h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .summary-card .number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2E8B57;
+            margin-bottom: 10px;
+        }
+
+        .analysis-section {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.07);
+        }
+
+        .section-title {
+            color: #4a5568;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(135deg, #4CAF50, #2E8B57);
+            border-radius: 2px;
+        }
+
+        .account-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .account-card {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 5px solid #e53e3e;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .account-card.warning {
+            border-left-color: #ed8936;
+        }
+
+        .account-card.critical {
+            border-left-color: #e53e3e;
+        }
+
+        .account-card.info {
+            border-left-color: #4CAF50; /* Verde */
+        }
+
+        .account-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .account-title {
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .account-balance {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .account-balance.negative {
+            color: #e53e3e;
+        }
+
+        .account-balance.positive {
+            color: #2E8B57; /* Verde Escuro */
+        }
+
+        .account-issue {
+            background: rgba(229, 62, 62, 0.08); /* Fundo avermelhado bem claro */
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 3px solid #e53e3e;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 300px;
+            background-color: #4a5568;
+            color: #fff;
+            text-align: left;
+            border-radius: 10px;
+            padding: 15px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -150px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #4CAF50, #2E8B57);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .highlight-box h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .methodology {
+            background: #E8F5E9; /* Verde bem claro */
+            border: 1px solid #d4edda;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .methodology h3 {
+            color: #155724; /* Verde escuro para texto */
+            margin-bottom: 15px;
+        }
+
+        .footer {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 40px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.07);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .status-critical {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .status-warning {
+            background: #feebc8;
+            color: #c05621;
+        }
+
+        .status-info {
+            background: #D4EDDA; /* Verde claro */
+            color: #155724; /* Verde escuro */
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .header h2 {
+                font-size: 1.4rem;
+            }
+            
+            .account-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Relatório de Análise Contábil</h1>
+            <h2>RIFLON INDUSTRIA E COMERCIO DE PLASTICOS LTDA</h2>
+            <div class="company-info">
+                <p><strong>Período de Análise:</strong> Balanço de Abertura - 30/06/2024</p>
+                <p><strong>Início como Cliente:</strong> 01/07/2024</p>
+                <p><strong>Metodologia:</strong> Análise minuciosa conta a conta dos últimos 6 anos através dos arquivos da ECD</p>
+            </div>
+        </header>
+
+        <div class="summary-cards">
+            <div class="summary-card">
+                <h3>Contas Analisadas</h3>
+                <div class="number">35+</div>
+                <p>Análise detalhada de todas as contas do balanço patrimonial</p>
+            </div>
+            <div class="summary-card">
+                <h3>Período Investigado</h3>
+                <div class="number">6 anos</div>
+                <p>Pesquisa histórica através dos arquivos da ECD (2019-2024)</p>
+            </div>
+            <div class="summary-card">
+                <h3>Irregularidades Identificadas</h3>
+                <div class="number">25+</div>
+                <p>Inconsistências que requerem ajustes contábeis</p>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <h3>🔍 Desafio Enfrentado</h3>
+            <p>A contabilidade anterior não forneceu nenhum material auxiliar, exigindo uma investigação completa através dos arquivos oficiais da ECD para reconstituir o histórico contábil da empresa.</p>
+        </div>
+
+        <section class="analysis-section">
+            <h2 class="section-title">Análise Detalhada - Todas as Contas</h2>
+            
+            <div class="methodology">
+                <h3>📋 Metodologia Aplicada</h3>
+                <p>Nossa equipe realizou uma análise fundamentada nos <strong>Princípios Fundamentais de Contabilidade</strong> e <strong>CPCs (Comitê de Pronunciamentos Contábeis)</strong>, especialmente:</p>
+                <ul style="margin-top: 10px; margin-left: 20px;">
+                    <li><strong>CPC 00 (R2)</strong> - Estrutura Conceitual para Relatório Financeiro</li>
+                    <li><strong>CPC 25</strong> - Provisões, Passivos Contingentes e Ativos Contingentes</li>
+                    <li><strong>CPC 27</strong> - Ativo Imobilizado</li>
+                    <li><strong>Princípio da Prudência</strong> - Reconhecimento de perdas prováveis</li>
+                </ul>
+            </div>
+
+            <h3 style="color: #4a5568; margin: 30px 0 20px 0; font-size: 1.5rem; border-bottom: 2px solid #4CAF50; padding-bottom: 10px;">💰 CONTAS DO ATIVO CIRCULANTE</h3>
+            
+            <div class="account-grid">
+                <div class="account-card critical">
+                    <div class="account-title">
+                        ADIANTAMENTO DE FORNECEDORES
+                        <span class="status-badge status-critical">CRÍTICO</span>
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Conforme CPC 25, valores sem justificativa devem ser reclassificados ou baixados para evitar distorções no balanço.</span>
+                        </span>
+                    </div>
+                    <div class="account-balance negative">R$ 4.605,79</div>
+                    <div class="account-issue">
+                        <strong>Problema:</strong> Último lançamento em 10/2023, saldo não justificado<br>
+                        <strong>Ação:</strong> Necessária reclassificação ou baixa do valor<br>
+                        <strong>Impacto:</strong> Distorção no ativo circulante
+                    </div>
+                </div>
+
+                <div class="account-card warning">
+                    <div class="account-title">
+                        ICMS A RECUPERAR
+                        <span class="status-badge status-warning">ATENÇÃO</span>
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Créditos tributários devem ter origem identificável para comprovação fiscal conforme legislação do ICMS.</span>
+                        </span>
+                    </div>
+                    <div class="account-balance positive">R$ 10.590,44</div>
+                    <div class="account-issue" style="background-color: rgba(237, 137, 54, 0.08); border-left-color: #ed8936;">
+                        <strong>Problema:</strong> Origem não identificada<br>
+                        <strong>Risco:</strong> Questionamento fiscal e possível glosa<br>
+                        <strong>Ação:</strong> Investigar origem dos créditos
+                    </div>
+                </div>
+
+                <div class="account-card critical">
+                    <div class="account-title">
+                        IRRF A RECUPERAR
+                        <span class="status-badge status-critical">CRÍTICO</span>
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Créditos antigos podem ter perdido o prazo de aproveitamento conforme legislação tributária (5 anos).</span>
+                        </span>
+                    </div>
+                    <div class="account-balance positive">R$ 10.261,82</div>
+                    <div class="account-issue">
+                        <strong>Problema:</strong> Saldos de 2020 e 2021 não aproveitados<br>
+                        <strong>Risco:</strong> Perda do direito ao crédito por decadência<br>
+                        <strong>Ação:</strong> Verificar prazo decadencial urgentemente
+                    </div>
+                </div>
+
+                <div class="account-card warning">
+                    <div class="account-title">
+                        PIS A RECUPERAR
+                        <span class="status-badge status-warning">SALDOS ANTIGOS</span>
+                    </div>
+                    <div class="account-balance positive">R$ 7,16</div>
+                    <div class="account-issue" style="background-color: rgba(237, 137, 54, 0.08); border-left-color: #ed8936;">
+                        <strong>Problema:</strong> Saldos antigos de pequeno valor<br>
+                        <strong>Ação:</strong> Avaliar viabilidade de aproveitamento<br>
+                        <strong>Recomendação:</strong> Baixa por irrelevância
+                    </div>
+                </div>
+
+                <div class="account-card warning">
+                    <div class="account-title">
+                        COFINS A RECUPERAR
+                        <span class="status-badge status-warning">SALDOS ANTIGOS</span>
+                    </div>
+                    <div class="account-balance positive">R$ 33,03</div>
+                    <div class="account-issue" style="background-color: rgba(237, 137, 54, 0.08); border-left-color: #ed8936;">
+                        <strong>Problema:</strong> Saldos antigos de pequeno valor<br>
+                        <strong>Ação:</strong> Avaliar viabilidade de aproveitamento<br>
+                        <strong>Recomendação:</strong> Baixa por irrelevância
+                    </div>
+                </div>
+
+                <div class="account-card warning">
+                    <div class="account-title">
+                        INSS A RECUPERAR
+                        <span class="status-badge status-warning">ATENÇÃO</span>
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Créditos previdenciários têm prazo de 10 anos para aproveitamento conforme Lei 8.212/91.</span>
+                        </span>
+                    </div>
+                    <div class="account-balance positive">R$ 6.698,91</div>
+                    <div class="account-issue" style="background-color: rgba(237, 137, 54, 0.08); border-left-color: #ed8936;">
+                        <strong>Problema:</strong> Saldos antigos de 2019, 2020 e 2021<br>
+                        <strong>Ação:</strong> Verificar possibilidade de compensação<br>
+                        <strong>Prazo:</strong> Ainda dentro do prazo decadencial
+                    </div>
+                </div>
+
+                <div class="account-card warning">
+                    <div class="account-title">
+                        IRRF S/ APLICAÇÕES FINANCEIRAS
+                        <span class="status-badge status-warning">SALDOS ANTIGOS</span>
+                    </div>
+                    <div class="account-balance positive">R$ 591,19</div>
+                    <div class="account-issue" style="background-color: rgba(237, 137, 54, 0.08); border-left-color: #ed8936;">
+                        <strong>Problema:</strong> Saldos antigos sem movimentação<br>
+                        <strong>Ação:</strong> Verificar origem e possibilidade de aproveitamento<br>
+                        <strong>Observação:</strong> Valor de baixa materialidade
+                    </div>
+                </div>
+
+                <div class="account-card info">
+                    <div class="account-title">
+                        INSS A RECUPERAR COVID-19
+                        <span class="status-badge status-info">COVID-19</span>
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Benefícios relacionados à pandemia conforme MP 936/2020 convertida na Lei 14.020/2020.</span>
+                        </span>
+                    </div>
+                    <div class="account-balance positive">R$ 646,76</div>
+                    <div class="account-issue" style="background-color: rgba(76, 175, 80, 0.08); border-left-color: #4CAF50;">
+                        <strong>Origem:</strong> Saldo de 2020 - benefícios pandemia<br>
+                        <strong>Status:</strong> Aguardando compensação<br>
+                        <strong>Ação:</strong> Acompanhar processo de compensação
+                    </div>
+                </div>
+
+                <div class="account-card critical">
+                    <div class="account-title">
+                        ESTOQUES
+                        <span class="status-badge status-critical">REDUÇÃO SIGNIFICATIVA</span>
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">CPC 16 - Estoques devem ser mensurados pelo menor valor entre custo e valor realizável líquido.</span>
+                        </span>
+                    </div>
+                    <div class="account-balance negative">R$ 513.558,04</div>
+                    <div class="account-issue">
+                        <strong>Situação Crítica:</strong> Redução de R$ 810.462,03 em 6 meses<br>
+                        <strong>Saldo 31/12/2023:</strong> R$ 1.324.020,07<br>
+                        <strong>Impacto:</strong> Pode justificar o prejuízo de 2024<br>
+                        <strong>Ação:</strong> Inventário físico urgente
+                    </div>
+                </div>
+
+                <div class="account-card critical">
+                    <div class="account-title">
+                        CLIENTES
+                        <span class="status-badge status-critical">SALDO ZERO</span>
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Ausência de contas a receber pode indicar problemas operacionais ou de fluxo de caixa.</span>
+                        </span>
+                    </div>
+                    <div class="account-balance">R$ 0,00</div>
+                    <div class="account-issue">
+                        <strong>Situação:</strong> Empresa não possui valores a receber de clientes<br>
+                        <strong>Impacto:</strong> Possível problema de fluxo de caixa<br>
+                        <strong>Investigar:</strong> Política de vendas e recebimento
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="color: #4a5568; margin: 40px 0 20px 0; font-size: 1.5rem; border-bottom: 2px solid #4CAF50; padding-bottom: 10px;">🏭 ATIVO NÃO CIRCULANTE - IMOBILIZADO</h3>
+            
+            <div class="account-grid">
+                <div class="account-card critical">
+                    <div class="account-title">
+                        MÁQUINAS E EQUIPAMENTOS
+                        <span class="status-badge status-critical">CRÍTICO</span>
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">CPC 27 exige controle adequado do ativo imobilizado com documentação comprobatória e inventário físico.</span>
+                        </span>
+                    </div>
+                    <div class="account-balance negative">R$ 260.359,90</div>
+                    <div class="account-issue">
+                        <strong>Problema:</strong> Registros apenas de 2019 em diante (R$ 130.397,92)<br>
+                        <strong>Diferença:</strong> R$ 129.961,98 sem comprovação<br>
+                        <strong>Ação:</strong> Inventário físico obrigatório<br>
+                        <strong>Risco:</strong> Superavaliação do ativo
+                    </div>
+                </div>
+
+                <div class="account-card warning">
+                    <div class="account-title">
+                        MÓVEIS E UTENSÍLIOS
+                        <span class="status-badge status-warning">DOCUMENTAÇÃO PARCIAL</span>
+                    </div>
+                    <div class="account-balance positive">R$ 6.078,41</div>
+                    <div class="account-issue" style="background-color: rgba(237, 137, 54, 0.08); border-left-color: #ed8936;">
+                        <strong>Registros:</strong> Apenas de 2019 até hoje (R$ 5.958,41)<br>
+                        <strong>Diferença:</strong> R$ 120,00<br>
+                        <strong>Ação:</strong> Verificar itens anteriores a 2019<br>
+                        <strong>Status:</strong> Diferença não material
+                    </div>
+                </div>
+
+                <div class="account-card critical">
+                    <div class="account-title">
+                        IMÓVEIS
+                        <span class="status-badge status-critical">SEM INFORMAÇÕES</span>
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Imóveis devem ter documentação completa (escrituras, registros) conforme CPC 27.</span>
+                        </span>
+                    </div>
+                    <div class="account-balance negative">R$ 486.746,08</div>
+                    <div class="account-issue">
+                        <strong>Problema:</strong> Não temos informações sobre os imóveis<br>
+                        <strong>Risco:</strong> Alto valor sem comprovação<br>
+                        <strong>Ação Urgente:</strong> Levantar documentação imobiliária<br>
+                        <strong>Verificar:</strong> Escrituras e registros
+                    </div>
+                </div>
+
+                <div class="account-card critical">
+                    <div class="account-title">
+                        VEÍCULOS
+                        <span class="status-badge status-critical">DESATUALIZADO</span>
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Controle de veículos deve refletir a frota atual da empresa conforme documentos do DETRAN.</span>
+                        </span>
+                    </div>
+                    <div class="account-balance negative">R$ 583.377,32</div>
+                    <div class="account-issue">
+                        <strong>Problema:</strong> Veículos vendidos ainda registrados<br>
+                        <strong>Ação:</strong> Ajuste com base na frota atual<br>
+                        <strong>Verificar:</strong> Documentos DETRAN<br>
+                        <strong>Impacto:</strong> Superavaliação significativa
+                    </div>
+                </div>
+
+                <div class="account-card warning">
+                    <div class="account-title">
+                        COMPUTADORES E PERIFÉRICOS
+                        <span class="status-badge status-warning">SEM DADOS</span>
+                    </div>
+                    <div class="account-balance positive">R$ 6.259,78</div>
+                    <div class="account-issue" style="background-color: rgba(237, 137, 54, 0.08); border-left-color: #ed8936;">
+                        <strong>Problema:</strong> Não temos os dados de controle<br>
+                        <strong>Ação:</strong> Inventário de equipamentos de TI<br>
+                        <strong>Observação:</strong> Valor relativamente baixo
+                    </div>
+                </div>
+
+                <div class="account-card warning">
+                    <div class="account-title">
+                        EQUIPAMENTOS INDUSTRIAIS
+                        <span class="status-badge status-warning">SEM INFORMAÇÕES</span>
+                    </div>
+                    <div class="account-balance positive">R$ 36.777,43</div>
+                    <div class="account-issue" style="background-color: rgba(237, 137, 54, 0.08); border-left-color: #ed8936;">
+                        <strong>Problema:</strong> Não temos informações sobre os equipamentos<br>
+                        <strong>Ação:</strong> Inventário físico necessário<br>
+                        <strong>Verificar:</strong> Estado de conservação e uso
+                    </div>
+                </div>
+
+                <div class="account-card info">
+                    <div class="account-title">
+                        DEPRECIAÇÕES
+                        <span class="status-badge status-info">RECÁLCULO</span>
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">CPC 27 determina que a depreciação deve refletir o padrão de consumo dos benefícios econômicos.</span>
+                        </span>
+                    </div>
+                    <div class="account-balance">A RECALCULAR</div>
+                    <div class="account-issue" style="background-color: rgba(76, 175, 80, 0.08); border-left-color: #4CAF50;">
+                        <strong>Ação:</strong> Recálculo completo das depreciações<br>
+                        <strong>Base:</strong> Ativos efetivamente existentes<br>
+                        <strong>Método:</strong> Conforme vida útil econômica
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="color: #4a5568; margin: 40px 0 20px 0; font-size: 1.5rem; border-bottom: 2px solid #4a5568; padding-bottom: 10px;">💳 OUTROS ATIVOS</h3>
+            
+            <div class="account-grid">
+                <div class="account-card info">
+                    <div class="account-title">
+                        CONSÓRCIO
+                        <span class="status-badge status-info">RECENTE</span>
+                    </div>
+                    <div class="account-balance positive">R$ 27.998,51</div>
+                    <div class="account-issue" style="background-color: rgba(76, 175, 80, 0.08); border-left-color: #4CAF50;">
+                        <strong>Início:</strong> 2024<br>
+                        <strong>Status:</strong> Conta nova, acompanhar evolução<br>
+                        <strong>Ação:</strong> Verificar documentação do consórcio
+                    </div>
+                </div>
+
+                <div class="account-card warning">
+                    <div class="account-title">
+                        CONSÓRCIO BB COTA 6785
+                        <span class="status-badge status-warning">VALORES ANTIGOS</span>
+                    </div>
+                    <div class="account-balance positive">R$ 112.916,14</div>
+                    <div class="account-issue" style="background-color: rgba(237, 137, 54, 0.08); border-left-color: #ed8936;">
+                        <strong>Período:</strong> Valores de 2019, 2020 e 2021<br>
+                        <strong>Ação:</strong> Verificar situação atual do consórcio<br>
+                        <strong>Investigar:</strong> Se foi contemplado ou cancelado
+                    </div>
+                </div>
+
+                <div class="account-card info">
+                    <div class="account-title">
+                        ADIANTAMENTO P/ AUMENTO DE CAPITAL
+                        <span class="status-badge status-info">ANÁLISE</span>
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Adiantamentos para futuro aumento de capital devem ser formalizados conforme Lei 6.404/76.</span>
+                        </span>
+                    </div>
+                    <div class="account-balance positive">R$ 2.631.843,14</div>
+                    <div class="account-issue" style="background-color: rgba(76, 175, 80, 0.08); border-left-color: #4CAF50;">
+                        <strong>Observação:</strong> Valores antigos com entrada em espécie<br>
+                        <strong>Ação:</strong> Verificar formalização do aumento de capital<br>
+                        <strong>Risco:</strong> Não formalização pode gerar questionamentos
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="color: #e53e3e; margin: 40px 0 20px 0; font-size: 1.5rem; border-bottom: 2px solid #e53e3e; padding-bottom: 10px;">📋 PASSIVO CIRCULANTE - FORNECEDORES</h3>
+            
+            <div class="account-grid">
+                <div class="account-card critical">
+                    <div class="account-title">
+                        FORNECEDORES
+                        <span class="status-badge status-critical">CRÍTICO</span>
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">CPC 25 exige que passivos sejam mensurados de forma confiável e tenham origem comprovada.</span>
+                        </span>
+                    </div>
+                    <div class="account-balance negative">R$ 564.348,67</div>
+                    <div class="account-issue">
+                        <strong>Problema:</strong> Diversos fornecedores sem confirmação<br>
+                        <strong>Risco:</strong> Passivos super/subavaliados<br>
+                        <strong>Ação Urgente:</strong> Circularização de fornecedores<br>
+                        <strong>Impacto:</strong> Distorção significativa no passivo
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="color: #e53e3e; margin: 40px 0 20px 0; font-size: 1.5rem; border-bottom: 2px solid #e53e3e; padding-bottom: 10px;">👥 OBRIGAÇÕES TRABALHISTAS</h3>
+            
+            <div class="account-grid">
+                <div class="account-card critical">
+                    <div class="account-title">
+                        SALÁRIOS A PAGAR
+                        <span class="status-badge status-critical">CRÍTICO</span>
+                        <span class="tooltip">ℹ️
+                            <span class="tooltiptext">Obrigações trabalhistas devem estar em conformidade com o eSocial e CLT.</span>
+                        </span>
+                    </div>
+                    <div class="account-balance negative">R$ 98.109,17</div>
+                    <div class="account-issue">
+                        <strong>Problema:</strong> Indicação de salários não pagos em 2024<br>
+                        <strong>Ação:</strong> Implantação com base no eSocial<br>
+                        <strong>Risco:</strong> Passivo trabalhista e multas<br>
+                        <strong>Urgência:</strong> Verificação imediata necessária
+                    </div>
+                </div>
+
+                <div class="account-card warning">
+                    <div class="account-title">
+                        FÉRIAS A PAGAR
+                        <span class="status-badge status-warning">INCONSISTENTE</span>
+                    </div>
+                    <div class="account-balance negative">R$ 12.722,03</div>
+                    <div class="account-issue" style="background-color: rgba(237, 137, 54, 0.08); border-left-color: #ed8936;">
+                        <strong>Problema:</strong> Saldos não condizem com movimentação<br>
+                        <strong>Ação:</strong> Zerar e recalcular com base no eSocial<br>
+                        <strong>Base:</strong> Direitos efetivos dos funcionários
+                    </div>
+                </div>
+
+                <div class="account-card warning">
+                    <div class="account-title">
+                        RENDIMENTOS AUTÔNOMOS
+                        <span class="status-badge status-warning">PESSOA ESPECÍFICA</span>
+                    </div>
+                    <div class="account-balance negative">R$ 2.504,46</div>
+                    <div class="account-issue" style="background-color: rgba(237, 137, 54, 0.08); border-left-color: #ed8936;">
+                        <strong>Beneficiário:</strong> Sr. Jeovany Montini<br>
+                        <strong>Ação:</strong> Zerar a conta<br>
+                        <strong>Motivo:</strong> Valores pendentes de regularização
+                    </div>
+                </div>
+
+                <div class="account-card warning">
+                    <div class="account-title">
+                        PRÓ-LABORE A PAGAR
+                        <span class="status-badge status-warning">AJUSTE NECESSÁRIO</span>
+                    </div>
+                    <div class="account-balance negative">R$ 12.566,80</div>
+                    <div class="account-issue" style="background-color: rgba(237, 137, 54, 0.08); border-left-color: #ed8936;">
+                        <strong>Situação:</strong> Pró-labore de 2024 não pagos<br>
+                        <strong>Ação:</strong> Manter apenas saldo de 06/2024<br>
+                        <strong>Ajuste:</strong> Regularizar pagamentos pendentes
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="color: #e53e3e; margin: 40px 0 20px 0; font-size: 1.5rem; border-bottom: 2px solid #e53e3e; padding-bottom: 10px;">🏛️ OBRIGAÇÕES TRIBUTÁRIAS</h3>
+            
+            <div class="account-grid">
+                </div>
+        </section>
+
+        <section class="analysis-section">
+            <h2 class="section-title">Plano de Ação Recomendado</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div style="background: #F8F9FA; padding: 20px; border-radius: 10px; border-left: 4px solid #6c757d;">
+                    <h4 style="color: #343a40; margin-bottom: 10px;">🔍 FASE 1 - INVESTIGAÇÃO</h4>
+                    <ul style="margin-left: 20px;">
+                        <li>Inventário físico completo do ativo imobilizado</li>
+                        <li>Confirmação de saldos com fornecedores</li>
+                        <li>Análise detalhada dos parcelamentos tributários</li>
+                    </ul>
+                </div>
+                
+                <div style="background: #F8F9FA; padding: 20px; border-radius: 10px; border-left: 4px solid #6c757d;">
+                    <h4 style="color: #343a40; margin-bottom: 10px;">⚖️ FASE 2 - AJUSTES</h4>
+                    <ul style="margin-left: 20px;">
+                        <li>Baixa de ativos inexistentes</li>
+                        <li>Reclassificação de contas inadequadas</li>
+                        <li>Ajuste das depreciações</li>
+                    </ul>
+                </div>
+                
+                <div style="background: #E8F5E9; padding: 20px; border-radius: 10px; border-left: 4px solid #4CAF50;">
+                    <h4 style="color: #155724; margin-bottom: 10px;">📋 FASE 3 - REGULARIZAÇÃO</h4>
+                    <ul style="margin-left: 20px;">
+                        <li>Implantação de controles internos</li>
+                        <li>Adequação às normas contábeis</li>
+                        <li>Estruturação para crescimento</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <h3 style="color: #4a5568; margin-bottom: 15px;">Conclusão</h3>
+            <p style="font-size: 1.1rem; line-height: 1.8;">
+                Esta análise demonstra a complexidade e o rigor técnico aplicado na revisão do balanço patrimonial da RIFLON. 
+                Nosso trabalho meticuloso identificou inconsistências significativas que, uma vez corrigidas, 
+                proporcionarão maior <strong>segurança</strong>, <strong>transparência</strong> e <strong>conformidade</strong> 
+                às demonstrações financeiras da empresa.
+            </p>
+            <div style="margin-top: 20px; padding: 20px; background: linear-gradient(135deg, #4CAF50, #2E8B57); color: white; border-radius: 10px;">
+                <strong>Próximos Passos:</strong> Implementação das correções identificadas e estabelecimento de rotinas contábeis adequadas para garantir a qualidade das informações financeiras.
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
