@@ -99,7 +99,7 @@
         font-size: 1rem;
         transition: var(--transicao);
       }
-      
+
       .form-input:focus {
         outline: none;
         border-color: var(--primary-color);
@@ -136,7 +136,7 @@
       #file-input {
         display: none;
       }
-      
+
       .file-info {
         background: var(--form-bg-color);
         border-radius: var(--radius);
@@ -203,7 +203,7 @@
         overflow: hidden;
         display: none;
       }
-      
+
       .results.show {
         display: block;
         animation: slideIn 0.5s ease-out;
@@ -221,26 +221,34 @@
       }
 
       .results-header {
-        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--primary-dark)
+        );
         color: var(--text-color-light);
         padding: 1.5rem 2rem;
       }
-      
+
       .results-title {
         font-size: 1.25rem;
         font-weight: 600;
       }
-      
+
       .results-content {
         padding: 0;
         overflow-x: auto;
       }
 
       .loading {
-        display: none; text-align: center; padding: 2rem;
+        display: none;
+        text-align: center;
+        padding: 2rem;
       }
-      .loading.show { display: block; }
-      
+      .loading.show {
+        display: block;
+      }
+
       .spinner {
         border: 3px solid var(--border-color);
         border-top: 3px solid var(--primary-color);
@@ -250,10 +258,14 @@
         animation: spin 1s linear infinite;
         margin: 0 auto 1rem;
       }
-      
+
       @keyframes spin {
-        0% { transform: rotate(0deg); } 
-        100% { transform: rotate(360deg); }
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
       }
 
       .empty-state {
@@ -267,20 +279,21 @@
         margin-bottom: 1rem;
         opacity: 0.5;
       }
-      
+
       /* Estilos da Tabela de Resultados */
       .results-table {
         width: 100%;
         border-collapse: collapse;
       }
-      
-      .results-table th, .results-table td {
+
+      .results-table th,
+      .results-table td {
         padding: 1rem 1.25rem;
         text-align: left;
         border-bottom: 1px solid var(--border-color);
         white-space: nowrap;
       }
-      
+
       .results-table thead th {
         background-color: var(--form-bg-color);
         font-weight: 600;
@@ -289,11 +302,11 @@
         text-transform: uppercase;
         letter-spacing: 0.5px;
       }
-      
+
       .results-table tbody tr:hover {
         background-color: rgba(79, 0, 114, 0.05);
       }
-      
+
       .results-table tfoot td {
         font-weight: 700;
         font-size: 1.1rem;
@@ -303,43 +316,67 @@
       .results-table tfoot .label-total {
         text-align: right;
       }
-      
+
       .results-table .col-value {
-        font-family: 'Menlo', 'Monaco', monospace;
+        font-family: "Menlo", "Monaco", monospace;
         text-align: right;
       }
 
       @media (max-width: 768px) {
-        .container { padding: 1rem; }
-        .header h1 { font-size: 2rem; }
-        .upload-section, .results-content { padding: 1.5rem; }
+        .container {
+          padding: 1rem;
+        }
+        .header h1 {
+          font-size: 2rem;
+        }
+        .upload-section,
+        .results-content {
+          padding: 1.5rem;
+        }
       }
     </style>
   </head>
   <body>
     <div class="container">
       <header class="header">
-        <h1><i class="fas fa-search-dollar"></i> Analisador de Lançamentos (ECD)</h1>
-        <p>Encontre lançamentos da conta contábil nos arquivos TXT (Registro I250)</p>
+        <h1>
+          <i class="fas fa-search-dollar"></i> Analisador de Lançamentos (ECD)
+        </h1>
+        <p>
+          Encontre lançamentos da conta contábil nos arquivos TXT (Registro
+          I250)
+        </p>
       </header>
 
       <main>
         <div class="upload-section">
           <div class="form-group">
-            <label for="account-input" class="form-label">Conta Contábil a ser Pesquisada</label>
-            <input type="text" id="account-input" class="form-input" placeholder="Ex: 11101001">
+            <label for="account-input" class="form-label"
+              >Conta Contábil a ser Pesquisada</label
+            >
+            <input
+              type="text"
+              id="account-input"
+              class="form-input"
+              placeholder="Ex: 11101001"
+            />
           </div>
-          
+
           <div class="form-group">
-             <label for="file-input" class="form-label">Arquivos TXT</label>
-            <div class="upload-area" onclick="document.getElementById('file-input').click()">
-              <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+            <label for="file-input" class="form-label">Arquivos TXT</label>
+            <div
+              class="upload-area"
+              onclick="document.getElementById('file-input').click()"
+            >
+              <div class="upload-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+              </div>
               <p class="upload-text">Clique para selecionar os arquivos</p>
               <p class="text-muted">ou arraste e solte os arquivos .txt aqui</p>
               <input type="file" id="file-input" accept=".txt" multiple />
             </div>
           </div>
-          
+
           <div class="file-info" id="file-info">
             <div class="file-icon"><i class="fas fa-file-alt"></i></div>
             <div class="file-details">
@@ -360,7 +397,9 @@
 
         <div class="results" id="results">
           <header class="results-header">
-            <h2 class="results-title"><i class="fas fa-list-alt"></i> Resultados da Pesquisa</h2>
+            <h2 class="results-title">
+              <i class="fas fa-list-alt"></i> Resultados da Pesquisa
+            </h2>
           </header>
           <div class="results-content" id="results-content"></div>
         </div>
@@ -380,43 +419,58 @@
 
       // Função para habilitar o botão de processar
       const checkEnableButton = () => {
-          processBtn.disabled = !(accountInput.value.trim() && fileInput.files.length > 0);
+        processBtn.disabled = !(
+          accountInput.value.trim() && fileInput.files.length > 0
+        );
       };
 
       // Event Listeners
-      accountInput.addEventListener('input', checkEnableButton);
+      accountInput.addEventListener("input", checkEnableButton);
       fileInput.addEventListener("change", handleFileSelect);
       processBtn.addEventListener("click", processFiles);
 
       // Drag and Drop
-      ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
-          uploadArea.addEventListener(eventName, (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-          }, false);
+      ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+        uploadArea.addEventListener(
+          eventName,
+          (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          },
+          false
+        );
       });
-      uploadArea.addEventListener("dragenter", () => uploadArea.style.borderColor = 'var(--primary-color)');
-      uploadArea.addEventListener("dragleave", () => uploadArea.style.borderColor = 'var(--border-color)');
+      uploadArea.addEventListener(
+        "dragenter",
+        () => (uploadArea.style.borderColor = "var(--primary-color)")
+      );
+      uploadArea.addEventListener(
+        "dragleave",
+        () => (uploadArea.style.borderColor = "var(--border-color)")
+      );
       uploadArea.addEventListener("drop", (e) => {
-          uploadArea.style.borderColor = 'var(--border-color)';
-          fileInput.files = e.dataTransfer.files;
-          handleFileSelect();
+        uploadArea.style.borderColor = "var(--border-color)";
+        fileInput.files = e.dataTransfer.files;
+        handleFileSelect();
       });
 
       function handleFileSelect() {
         if (fileInput.files.length > 0) {
-            const fileCount = fileInput.files.length;
-            fileNameDisplay.textContent = `${fileCount} arquivo(s) selecionado(s)`;
-            fileInfo.classList.add("show");
+          const fileCount = fileInput.files.length;
+          fileNameDisplay.textContent = `${fileCount} arquivo(s) selecionado(s)`;
+          fileInfo.classList.add("show");
         } else {
-            fileInfo.classList.remove("show");
+          fileInfo.classList.remove("show");
         }
         checkEnableButton();
       }
 
       function formatCurrency(value) {
         if (isNaN(value)) return "N/A";
-        return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL"});
+        return value.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
       }
 
       // Função principal para processar os arquivos
@@ -431,29 +485,31 @@
 
         loading.classList.add("show");
         results.classList.remove("show");
-        
+
         // Simula um delay para melhor experiência do usuário
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 500));
 
         try {
-            const fileReadPromises = Array.from(files).map(file => {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = e => resolve({ name: file.name, content: e.target.result });
-                    reader.onerror = e => reject(e);
-                    reader.readAsText(file, 'UTF-8');
-                });
+          const fileReadPromises = Array.from(files).map((file) => {
+            return new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = (e) =>
+                resolve({ name: file.name, content: e.target.result });
+              reader.onerror = (e) => reject(e);
+              reader.readAsText(file, "UTF-8");
             });
+          });
 
-            const allFilesContent = await Promise.all(fileReadPromises);
-            const processedData = parseFiles(allFilesContent, targetAccount);
-            displayResults(processedData);
-
+          const allFilesContent = await Promise.all(fileReadPromises);
+          const processedData = parseFiles(allFilesContent, targetAccount);
+          displayResults(processedData);
         } catch (error) {
-            console.error("Erro ao ler os arquivos:", error);
-            alert("Ocorreu um erro ao ler um ou mais arquivos. Verifique o console para mais detalhes.");
+          console.error("Erro ao ler os arquivos:", error);
+          alert(
+            "Ocorreu um erro ao ler um ou mais arquivos. Verifique o console para mais detalhes."
+          );
         } finally {
-            loading.classList.remove("show");
+          loading.classList.remove("show");
         }
       }
 
@@ -463,43 +519,47 @@
         let totalCredito = 0;
 
         for (const file of filesContent) {
-            const lines = file.content.split(/\r?\n/);
+          const lines = file.content.split(/\r?\n/);
 
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i];
-                if (line.startsWith(`|I250|${targetAccount}|`)) {
-                    // Encontrou a linha com a conta, agora busca a data para trás
-                    let date = "Não encontrada";
-                    for (let j = i - 1; j >= 0; j--) {
-                        if (lines[j].startsWith("|I200|")) {
-                            const i200parts = lines[j].split("|");
-                            if (i200parts.length > 3) {
-                                const rawDate = i200parts[3].trim(); // DT_LCTO
-                                date = `${rawDate.substring(0, 2)}/${rawDate.substring(2, 4)}/${rawDate.substring(4, 8)}`;
-                            }
-                            break; // Encontrou o I200, pode parar de procurar
-                        }
-                    }
-
-                    const i250parts = line.split("|");
-                    // |I250|COD_CTA|COD_CCUS|VL_DC|IND_DC|NUM_ARQ|COD_HIST_PAD|HIST|COD_PART|
-                    //   1      2       3        4      5      6         7        8      9
-                    const entryValue = parseFloat(i250parts[4].replace(",", ".")) || 0;
-                    const natureza = i250parts.length > 5 ? i250parts[5] : '';
-                    
-                    if (natureza === 'D') {
-                        totalDebito += entryValue;
-                    } else if (natureza === 'C') {
-                        totalCredito += entryValue;
-                    }
-
-                    foundEntries.push({
-                        date: date,
-                        parts: i250parts,
-                        value: entryValue
-                    });
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            if (line.startsWith(`|I250|${targetAccount}|`)) {
+              // Encontrou a linha com a conta, agora busca a data para trás
+              let date = "Não encontrada";
+              for (let j = i - 1; j >= 0; j--) {
+                if (lines[j].startsWith("|I200|")) {
+                  const i200parts = lines[j].split("|");
+                  if (i200parts.length > 3) {
+                    const rawDate = i200parts[3].trim(); // DT_LCTO
+                    date = `${rawDate.substring(0, 2)}/${rawDate.substring(
+                      2,
+                      4
+                    )}/${rawDate.substring(4, 8)}`;
+                  }
+                  break; // Encontrou o I200, pode parar de procurar
                 }
+              }
+
+              const i250parts = line.split("|");
+              // |I250|COD_CTA|COD_CCUS|VL_DC|IND_DC|NUM_ARQ|COD_HIST_PAD|HIST|COD_PART|
+              //   1      2       3        4      5      6         7        8      9
+              const entryValue =
+                parseFloat(i250parts[4].replace(",", ".")) || 0;
+              const natureza = i250parts.length > 5 ? i250parts[5] : "";
+
+              if (natureza === "D") {
+                totalDebito += entryValue;
+              } else if (natureza === "C") {
+                totalCredito += entryValue;
+              }
+
+              foundEntries.push({
+                date: date,
+                parts: i250parts,
+                value: entryValue,
+              });
             }
+          }
         }
         return { entries: foundEntries, totalDebito, totalCredito };
       }
@@ -513,7 +573,17 @@
               <p>A conta contábil <strong>${accountInput.value.trim()}</strong> não foi encontrada nos arquivos fornecidos.</p>
             </div>`;
         } else {
-            let tableHTML = `
+          // ** NOVO: Lógica para calcular o saldo final **
+          const saldoFinal = Math.abs(data.totalCredito - data.totalDebito);
+          let prefixoSaldo = "";
+          if (data.totalCredito > data.totalDebito) {
+            prefixoSaldo = "C";
+          } else if (data.totalDebito > data.totalCredito) {
+            prefixoSaldo = "D";
+          }
+          // Se forem iguais, o saldo é 0 e o prefixo fica em branco.
+
+          let tableHTML = `
                 <table class="results-table">
                     <thead>
                         <tr>
@@ -526,37 +596,59 @@
                         </tr>
                     </thead>
                     <tbody>`;
-            
-            data.entries.forEach(entry => {
-                tableHTML += `
+
+          data.entries.forEach((entry) => {
+            tableHTML += `
                     <tr>
                         <td>${entry.date}</td>
-                        <td>${entry.parts.length > 2 ? entry.parts[2] : 'N/A'}</td>
-                        <td>${entry.parts.length > 3 ? entry.parts[3] : 'N/A'}</td>
-                        <td class="col-value">${formatCurrency(entry.value)}</td>
-                        <td>${entry.parts.length > 5 ? entry.parts[5] : 'N/A'}</td>
-                        <td>${entry.parts.length > 8 ? entry.parts[8] : 'N/A'}</td>
+                        <td>${
+                          entry.parts.length > 2 ? entry.parts[2] : "N/A"
+                        }</td>
+                        <td>${
+                          entry.parts.length > 3 ? entry.parts[3] : "N/A"
+                        }</td>
+                        <td class="col-value">${formatCurrency(
+                          entry.value
+                        )}</td>
+                        <td>${
+                          entry.parts.length > 5 ? entry.parts[5] : "N/A"
+                        }</td>
+                        <td>${
+                          entry.parts.length > 8 ? entry.parts[8] : "N/A"
+                        }</td>
                     </tr>
                 `;
-            });
+          });
 
-            tableHTML += `
+          // ** NOVO: Rodapé da tabela atualizado com o saldo final **
+          tableHTML += `
                     </tbody>
                     <tfoot>
                         <tr>
                             <td colspan="3" class="label-total">TOTAL A DÉBITO (D)</td>
-                            <td class="col-value">${formatCurrency(data.totalDebito)}</td>
+                            <td class="col-value">${formatCurrency(
+                              data.totalDebito
+                            )}</td>
                             <td colspan="2"></td>
                         </tr>
                          <tr>
                             <td colspan="3" class="label-total">TOTAL A CRÉDITO (C)</td>
-                            <td class="col-value">${formatCurrency(data.totalCredito)}</td>
+                            <td class="col-value">${formatCurrency(
+                              data.totalCredito
+                            )}</td>
+                            <td colspan="2"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="label-total">SALDO FINAL (C-D)</td>
+                            <td class="col-value">${prefixoSaldo} ${formatCurrency(
+            saldoFinal
+          )}</td>
                             <td colspan="2"></td>
                         </tr>
                     </tfoot>
                 </table>
             `;
-            resultsContent.innerHTML = tableHTML;
+          resultsContent.innerHTML = tableHTML;
         }
 
         results.classList.add("show");
