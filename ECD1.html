@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analisador de Arquivo TXT - Registros C155</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* Estilos baseados no arquivo fornecido */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease;
+        --primary-dark: #3d005a;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        --text-muted: #64748b;
+        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh;
+        color: var(--text-color);
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .header h1 {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .header p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+      }
+
+      .upload-section {
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--sombra);
+        margin-bottom: 2rem;
+        transition: var(--transicao);
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--border-color);
+        font-size: 1rem;
+        transition: var(--transicao);
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(79, 0, 114, 0.2);
+      }
+
+      .upload-area {
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius);
+        padding: 3rem 2rem;
+        text-align: center;
+        transition: var(--transicao);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .upload-area:hover {
+        border-color: var(--primary-color);
+        background: var(--form-bg-color);
+      }
+
+      .upload-icon {
+        font-size: 3rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+      }
+
+      .upload-text {
+        font-weight: 600;
+        color: var(--text-color);
+      }
+
+      #file-input {
+        display: none;
+      }
+
+      .file-info {
+        background: var(--form-bg-color);
+        border-radius: var(--radius);
+        padding: 1rem;
+        margin-top: 1rem;
+        display: none;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .file-info.show {
+        display: flex;
+      }
+
+      .file-icon {
+        color: var(--success);
+        font-size: 1.5rem;
+      }
+
+      .file-name {
+        font-weight: 600;
+        color: var(--text-color);
+      }
+
+      .results {
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--sombra);
+        overflow: hidden;
+        display: none;
+      }
+
+      .results.show {
+        display: block;
+        animation: slideIn 0.5s ease-out;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .results-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--primary-dark)
+        );
+        color: var(--text-color-light);
+        padding: 1.5rem 2rem;
+      }
+
+      .results-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+
+      .results-content {
+        padding: 2rem;
+        overflow-x: auto;
+      }
+      
+      .loading {
+        display: none;
+        text-align: center;
+        padding: 2rem;
+      }
+      .loading.show {
+        display: block;
+      }
+
+      .spinner {
+        border: 3px solid var(--border-color);
+        border-top: 3px solid var(--primary-color);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      
+      .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: var(--text-muted);
+      }
+
+      .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+
+      .results-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1.5rem;
+      }
+
+      /* ===== MODIFICAÇÕES AQUI ===== */
+      .results-table th,
+      .results-table td {
+        padding: 0.6rem 0.8rem; /* Reduzido o espaçamento */
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.8rem; /* Reduzido o tamanho da fonte */
+        word-break: break-word; /* Permite que palavras longas quebrem a linha */
+      }
+
+      .results-table thead th {
+        background-color: var(--form-bg-color);
+        font-weight: 600;
+        color: var(--text-color);
+        font-size: 0.75rem; /* Reduzido o tamanho da fonte do cabeçalho */
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      /* ===== FIM DAS MODIFICAÇÕES ===== */
+
+      .results-table tbody tr:hover {
+        background-color: rgba(79, 0, 114, 0.05);
+      }
+      
+      .search-box {
+          position: relative;
+      }
+      
+      .search-box .fa-search {
+          position: absolute;
+          top: 50%;
+          left: 1rem;
+          transform: translateY(-50%);
+          color: var(--text-muted);
+      }
+      
+      #search-input {
+          padding-left: 3rem;
+      }
+
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 1rem;
+        }
+        .header h1 {
+          font-size: 2rem;
+        }
+        .upload-section,
+        .results-content {
+          padding: 1.5rem;
+        }
+      }
+    </style>
+</head>
+<body>
+    <div class="container">
+      <header class="header">
+        <h1><i class="fas fa-file-alt"></i> Analisador de Arquivo TXT</h1>
+        <p>Faça o upload de um arquivo .txt para visualizar os registros |C155| em uma tabela.</p>
+      </header>
+
+      <main>
+        <div class="upload-section">
+          <div class="form-group">
+            <label for="file-input" class="form-label">Arquivo TXT</label>
+            <div
+              class="upload-area"
+              onclick="document.getElementById('file-input').click()"
+            >
+              <div class="upload-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+              </div>
+              <p class="upload-text">Clique para selecionar o arquivo</p>
+              <p class="text-muted">ou arraste e solte o arquivo .txt aqui</p>
+              <input type="file" id="file-input" accept=".txt" />
+            </div>
+          </div>
+
+          <div class="file-info" id="file-info">
+            <div class="file-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="file-details">
+              <div class="file-name" id="file-name"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="loading" id="loading">
+          <div class="spinner"></div>
+          <p>Processando arquivo...</p>
+        </div>
+
+        <div class="results" id="results">
+          <header class="results-header">
+            <h2 class="results-title">
+              <i class="fas fa-list-alt"></i> Resultados Encontrados
+            </h2>
+          </header>
+          <div class="results-content" id="results-content">
+            
+            <div class="form-group search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-input" class="form-input" placeholder="Pesquisar na tabela...">
+            </div>
+
+            <div id="table-container"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const fileInput = document.getElementById("file-input");
+      const fileInfo = document.getElementById("file-info");
+      const fileNameDisplay = document.getElementById("file-name");
+      const loading = document.getElementById("loading");
+      const results = document.getElementById("results");
+      const resultsContent = document.getElementById("results-content");
+      const tableContainer = document.getElementById("table-container");
+      const searchInput = document.getElementById("search-input");
+      const uploadArea = document.querySelector(".upload-area");
+
+      // Event Listeners
+      fileInput.addEventListener("change", handleFileSelect);
+      searchInput.addEventListener("input", filterTable);
+
+      // Drag and Drop
+      ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+        uploadArea.addEventListener(
+          eventName,
+          (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          },
+          false
+        );
+      });
+      uploadArea.addEventListener(
+        "dragenter",
+        () => (uploadArea.style.borderColor = "var(--primary-color)")
+      );
+      uploadArea.addEventListener(
+        "dragleave",
+        () => (uploadArea.style.borderColor = "var(--border-color)")
+      );
+      uploadArea.addEventListener("drop", (e) => {
+        uploadArea.style.borderColor = "var(--border-color)";
+        fileInput.files = e.dataTransfer.files;
+        handleFileSelect();
+      });
+
+      function handleFileSelect() {
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            fileNameDisplay.textContent = file.name;
+            fileInfo.classList.add("show");
+            processFile(file);
+        } else {
+            fileInfo.classList.remove("show");
+            results.classList.remove("show");
+        }
+      }
+
+      async function processFile(file) {
+        loading.classList.add("show");
+        results.classList.remove("show");
+        tableContainer.innerHTML = "";
+        searchInput.value = "";
+
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        try {
+            const content = await file.text();
+            const c155Lines = parseFileContent(content);
+            displayResults(c155Lines);
+        } catch (error) {
+            console.error("Erro ao ler o arquivo:", error);
+            alert("Ocorreu um erro ao ler o arquivo. Verifique o console.");
+        } finally {
+            loading.classList.remove("show");
+        }
+      }
+
+      function parseFileContent(content) {
+          const lines = content.split(/\r?\n/);
+          const c155Data = [];
+          for(const line of lines) {
+              if (line.startsWith('|C155|')) {
+                  c155Data.push(line.split('|').slice(1, -1));
+              }
+          }
+          return c155Data;
+      }
+
+      function displayResults(data) {
+        if (data.length === 0) {
+          tableContainer.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-icon"><i class="fas fa-search"></i></div>
+              <h3>Nenhum registro |C155| encontrado</h3>
+              <p>O arquivo selecionado não contém linhas que iniciam com "|C155|".</p>
+            </div>`;
+        } else {
+            const headers = [
+                "REGISTRO", "CODIGO DA CONTA", "CODIGO CENTRO DE CUSTO",
+                "VALOR DO SALDO INICIAL", "INDICADOR", "TOTAL DE DEBITOS",
+                "TOTAL DE CREDITOS", "SALDO FINAL", "INDICADOR"
+            ];
+            
+            let tableHTML = `<table class="results-table" id="data-table"><thead><tr>`;
+            
+            headers.forEach(header => {
+                tableHTML += `<th>${header}</th>`;
+            });
+
+            tableHTML += `</tr></thead><tbody>`;
+
+            data.forEach((row) => {
+                tableHTML += `<tr>`;
+                row.forEach(cell => {
+                    tableHTML += `<td>${cell}</td>`;
+                });
+                tableHTML += `</tr>`;
+            });
+
+            tableHTML += `</tbody></table>`;
+            tableContainer.innerHTML = tableHTML;
+        }
+
+        results.classList.add("show");
+      }
+      
+      function filterTable() {
+          const searchTerm = searchInput.value.toLowerCase();
+          const table = document.getElementById("data-table");
+          if (!table) return;
+          
+          const rows = table.getElementsByTagName("tr");
+
+          for (let i = 1; i < rows.length; i++) {
+              const row = rows[i];
+              const cells = row.getElementsByTagName("td");
+              let found = false;
+              for(let j = 0; j < cells.length; j++) {
+                  if (cells[j].textContent.toLowerCase().includes(searchTerm)) {
+                      found = true;
+                      break;
+                  }
+              }
+              row.style.display = found ? "" : "none";
+          }
+      }
+    </script>
+</body>
+</html>
