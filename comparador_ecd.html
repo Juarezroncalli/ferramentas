@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Comparador de Arquivos ECD - Lançamentos I250</title>
@@ -117,12 +117,21 @@
         align-items: center;
       }
       .upload-area.active {
-          border-color: var(--primary-color);
-          background: var(--form-bg-color);
+        border-color: var(--primary-color);
+        background: var(--form-bg-color);
       }
-      .upload-icon { font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; }
-      .upload-text { font-weight: 600; color: var(--text-color); }
-      .file-input { display: none; }
+      .upload-icon {
+        font-size: 3rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+      }
+      .upload-text {
+        font-weight: 600;
+        color: var(--text-color);
+      }
+      .file-input {
+        display: none;
+      }
 
       .file-info {
         background: var(--form-bg-color);
@@ -133,61 +142,136 @@
         align-items: center;
         gap: 1rem;
       }
-      .file-info.show { display: flex; }
-      .file-icon { color: var(--success); font-size: 1.5rem; }
-      .file-name { font-weight: 600; color: var(--text-color); word-break: break-all; }
+      .file-info.show {
+        display: flex;
+      }
+      .file-icon {
+        color: var(--success);
+        font-size: 1.5rem;
+      }
+      .file-name {
+        font-weight: 600;
+        color: var(--text-color);
+        word-break: break-all;
+      }
 
-      .actions { text-align: center; margin-bottom: 2rem; }
+      .actions {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
       .btn {
-          background: var(--primary-color);
-          color: var(--text-color-light);
-          padding: 0.85rem 2.5rem;
-          font-size: 1.1rem;
-          font-weight: 600;
-          border-radius: var(--radius);
-          border: none;
-          cursor: pointer;
-          transition: var(--transicao);
-          box-shadow: var(--sombra);
+        background: var(--primary-color);
+        color: var(--text-color-light);
+        padding: 0.85rem 2.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: var(--radius);
+        border: none;
+        cursor: pointer;
+        transition: var(--transicao);
+        box-shadow: var(--sombra);
       }
-      .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+      .btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+      }
       .btn:disabled {
-          background-color: var(--text-muted);
-          cursor: not-allowed;
-          opacity: 0.7;
-          transform: none;
+        background-color: var(--text-muted);
+        cursor: not-allowed;
+        opacity: 0.7;
+        transform: none;
       }
-      .btn .fa-solid { margin-right: 0.5rem; }
+      .btn .fa-solid {
+        margin-right: 0.5rem;
+      }
 
-      .results { display: none; }
-      .results.show { display: block; animation: slideIn 0.5s ease-out; }
-      @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+      .results {
+        display: none;
+      }
+      .results.show {
+        display: block;
+        animation: slideIn 0.5s ease-out;
+      }
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
       .result-block {
-          background: var(--background-color);
-          border-radius: var(--radius-lg);
-          box-shadow: var(--sombra);
-          overflow: hidden;
-          margin-bottom: 2rem;
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--sombra);
+        overflow: hidden;
+        margin-bottom: 2rem;
       }
       .results-header {
-        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--primary-dark)
+        );
         color: var(--text-color-light);
         padding: 1.5rem 2rem;
       }
-      .results-title { font-size: 1.25rem; font-weight: 600; }
-      .results-content { padding: 1.5rem; overflow-x: auto; }
+      .results-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+      .results-content {
+        padding: 1.5rem;
+        overflow-x: auto;
+      }
 
-      .loading { display: none; text-align: center; padding: 2rem; color: white; }
-      .loading.show { display: block; }
-      .spinner { border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid var(--text-color-light); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 1rem; }
-      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      .loading {
+        display: none;
+        text-align: center;
+        padding: 2rem;
+        color: white;
+      }
+      .loading.show {
+        display: block;
+      }
+      .spinner {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid var(--text-color-light);
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
 
-      .empty-state { text-align: center; padding: 3rem 2rem; color: var(--text-muted); }
-      .empty-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.5; }
+      .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: var(--text-muted);
+      }
+      .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
 
-      .results-table { width: 100%; border-collapse: collapse; }
-      .results-table th, .results-table td {
+      .results-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .results-table th,
+      .results-table td {
         padding: 0.6rem 0.8rem;
         text-align: left;
         border-bottom: 1px solid var(--border-color);
@@ -196,36 +280,70 @@
       }
       .results-table thead th {
         background-color: var(--form-bg-color);
-        font-weight: 600; color: var(--text-color);
-        font-size: 0.75rem; text-transform: uppercase;
+        font-weight: 600;
+        color: var(--text-color);
+        font-size: 0.75rem;
+        text-transform: uppercase;
         letter-spacing: 0.5px;
-        position: sticky; top: 0;
+        position: sticky;
+        top: 0;
       }
-      .results-table tbody tr:hover { background-color: rgba(79, 0, 114, 0.05); }
+      .results-table tbody tr:hover {
+        background-color: rgba(79, 0, 114, 0.05);
+      }
 
-      .search-box { position: relative; margin-bottom: 1rem; }
-      .search-box .fa-search { position: absolute; top: 50%; left: 1rem; transform: translateY(-50%); color: var(--text-muted); }
-      .form-input {
-          width: 100%; padding: 0.75rem 1rem 0.75rem 3rem; border-radius: var(--radius);
-          border: 1px solid var(--border-color); font-size: 1rem; transition: var(--transicao);
+      .search-box {
+        position: relative;
+        margin-bottom: 1rem;
       }
-      .form-input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(79, 0, 114, 0.2); }
+      .search-box .fa-search {
+        position: absolute;
+        top: 50%;
+        left: 1rem;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+      }
+      .form-input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 3rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--border-color);
+        font-size: 1rem;
+        transition: var(--transicao);
+      }
+      .form-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(79, 0, 114, 0.2);
+      }
 
       @media (max-width: 992px) {
-        .upload-container { grid-template-columns: 1fr; }
+        .upload-container {
+          grid-template-columns: 1fr;
+        }
       }
       @media (max-width: 768px) {
-        .container { padding: 1rem; }
-        .header h1 { font-size: 2rem; }
-        .upload-section, .results-content { padding: 1.5rem; }
+        .container {
+          padding: 1rem;
+        }
+        .header h1 {
+          font-size: 2rem;
+        }
+        .upload-section,
+        .results-content {
+          padding: 1.5rem;
+        }
       }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
       <header class="header">
         <h1><i class="fas fa-exchange-alt"></i> Comparador de ECD</h1>
-        <p>Faça o upload da ECD entregue e da nova ECD para comparar os lançamentos contábeis |I250|.</p>
+        <p>
+          Faça o upload da ECD entregue e da nova ECD para comparar os
+          lançamentos contábeis |I250|.
+        </p>
       </header>
 
       <main>
@@ -233,7 +351,12 @@
           <div class="upload-section">
             <label class="form-label">1. ECD Entregue (.txt)</label>
             <div class="upload-area" id="upload-area-entregue">
-              <input type="file" id="file-input-entregue" class="file-input" accept=".txt" />
+              <input
+                type="file"
+                id="file-input-entregue"
+                class="file-input"
+                accept=".txt"
+              />
               <div class="upload-icon"><i class="fas fa-file-upload"></i></div>
               <p class="upload-text">Clique ou arraste o arquivo</p>
             </div>
@@ -245,7 +368,12 @@
           <div class="upload-section">
             <label class="form-label">2. Nova ECD (.txt)</label>
             <div class="upload-area" id="upload-area-nova">
-              <input type="file" id="file-input-nova" class="file-input" accept=".txt" />
+              <input
+                type="file"
+                id="file-input-nova"
+                class="file-input"
+                accept=".txt"
+              />
               <div class="upload-icon"><i class="fas fa-file-upload"></i></div>
               <p class="upload-text">Clique ou arraste o arquivo</p>
             </div>
@@ -261,23 +389,32 @@
             <i class="fa-solid fa-magnifying-glass-chart"></i> Comparar Arquivos
           </button>
         </div>
-        
+
         <div class="loading" id="loading">
           <div class="spinner"></div>
-          <p>Processando e comparando arquivos... Isso pode levar alguns instantes.</p>
+          <p>
+            Processando e comparando arquivos... Isso pode levar alguns
+            instantes.
+          </p>
         </div>
 
         <div class="results" id="results">
           <div class="result-block" id="results-removidos-block">
             <header class="results-header">
-              <h2 class="results-title"><i class="fas fa-file-circle-minus"></i> Lançamentos Removidos (Existem na Entregue mas não na Nova)</h2>
+              <h2 class="results-title">
+                <i class="fas fa-file-circle-minus"></i> Lançamentos Removidos
+                (Existem na Entregue mas não na Nova)
+              </h2>
             </header>
             <div class="results-content" id="results-content-removidos"></div>
           </div>
 
           <div class="result-block" id="results-adicionados-block">
             <header class="results-header">
-              <h2 class="results-title"><i class="fas fa-file-circle-plus"></i> Lançamentos Adicionados (Existem na Nova mas não na Entregue)</h2>
+              <h2 class="results-title">
+                <i class="fas fa-file-circle-plus"></i> Lançamentos Adicionados
+                (Existem na Nova mas não na Entregue)
+              </h2>
             </header>
             <div class="results-content" id="results-content-adicionados"></div>
           </div>
@@ -292,176 +429,257 @@
 
       // Elementos do DOM
       const elements = {
-          uploadAreaEntregue: document.getElementById('upload-area-entregue'),
-          fileInputEntregue: document.getElementById('file-input-entregue'),
-          fileInfoEntregue: document.getElementById('file-info-entregue'),
-          fileNameEntregue: document.getElementById('file-name-entregue'),
+        uploadAreaEntregue: document.getElementById("upload-area-entregue"),
+        fileInputEntregue: document.getElementById("file-input-entregue"),
+        fileInfoEntregue: document.getElementById("file-info-entregue"),
+        fileNameEntregue: document.getElementById("file-name-entregue"),
 
-          uploadAreaNova: document.getElementById('upload-area-nova'),
-          fileInputNova: document.getElementById('file-input-nova'),
-          fileInfoNova: document.getElementById('file-info-nova'),
-          fileNameNova: document.getElementById('file-name-nova'),
+        uploadAreaNova: document.getElementById("upload-area-nova"),
+        fileInputNova: document.getElementById("file-input-nova"),
+        fileInfoNova: document.getElementById("file-info-nova"),
+        fileNameNova: document.getElementById("file-name-nova"),
 
-          compareBtn: document.getElementById('compare-btn'),
-          loading: document.getElementById('loading'),
-          results: document.getElementById('results'),
+        compareBtn: document.getElementById("compare-btn"),
+        loading: document.getElementById("loading"),
+        results: document.getElementById("results"),
 
-          resultsRemovidosContent: document.getElementById('results-content-removidos'),
-          resultsAdicionadosContent: document.getElementById('results-content-adicionados'),
+        resultsRemovidosContent: document.getElementById(
+          "results-content-removidos"
+        ),
+        resultsAdicionadosContent: document.getElementById(
+          "results-content-adicionados"
+        ),
       };
 
       // Cabeçalhos da Tabela |I250|
       const I250_HEADERS = [
-        "REG", "COD_CTA", "COD_CCUS", "VL_DC", "IND_DC",
-        "NUM_LCTO", "DT_LCTO", "COD_HIST_PAD", "HIST", "COD_PART"
+        "REG",
+        "COD_CTA",
+        "COD_CCUS",
+        "VL_DC",
+        "IND_DC",
+        "NUM_LCTO",
+        "DT_LCTO",
+        "COD_HIST_PAD",
+        "HIST",
+        "COD_PART",
       ];
 
       // Funções de setup de eventos
       const setupUploadArea = (area, input, handler) => {
-          area.addEventListener('click', () => input.click());
-          input.addEventListener('change', handler);
+        area.addEventListener("click", () => input.click());
+        input.addEventListener("change", handler);
 
-          ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-              area.addEventListener(eventName, e => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  if (eventName === 'dragenter' || eventName === 'dragover') {
-                      area.classList.add('active');
-                  } else {
-                      area.classList.remove('active');
-                  }
-              }, false);
-          });
-          area.addEventListener('drop', e => {
-              input.files = e.dataTransfer.files;
-              handler();
-          });
+        ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+          area.addEventListener(
+            eventName,
+            (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (eventName === "dragenter" || eventName === "dragover") {
+                area.classList.add("active");
+              } else {
+                area.classList.remove("active");
+              }
+            },
+            false
+          );
+        });
+        area.addEventListener("drop", (e) => {
+          input.files = e.dataTransfer.files;
+          handler();
+        });
       };
 
-      setupUploadArea(elements.uploadAreaEntregue, elements.fileInputEntregue, handleFileEntregueSelect);
-      setupUploadArea(elements.uploadAreaNova, elements.fileInputNova, handleFileNovaSelect);
-      elements.compareBtn.addEventListener('click', processAndCompareFiles);
+      setupUploadArea(
+        elements.uploadAreaEntregue,
+        elements.fileInputEntregue,
+        handleFileEntregueSelect
+      );
+      setupUploadArea(
+        elements.uploadAreaNova,
+        elements.fileInputNova,
+        handleFileNovaSelect
+      );
+      elements.compareBtn.addEventListener("click", processAndCompareFiles);
 
       // Manipuladores de Seleção de Arquivo
       function handleFileEntregueSelect() {
-          fileEntregue = elements.fileInputEntregue.files[0];
-          updateFileInfo(fileEntregue, elements.fileNameEntregue, elements.fileInfoEntregue);
-          checkFilesReady();
+        fileEntregue = elements.fileInputEntregue.files[0];
+        updateFileInfo(
+          fileEntregue,
+          elements.fileNameEntregue,
+          elements.fileInfoEntregue
+        );
+        checkFilesReady();
       }
 
       function handleFileNovaSelect() {
-          fileNova = elements.fileInputNova.files[0];
-          updateFileInfo(fileNova, elements.fileNameNova, elements.fileInfoNova);
-          checkFilesReady();
+        fileNova = elements.fileInputNova.files[0];
+        updateFileInfo(fileNova, elements.fileNameNova, elements.fileInfoNova);
+        checkFilesReady();
       }
-      
+
       function updateFileInfo(file, nameDisplay, infoContainer) {
-          if (file) {
-              nameDisplay.textContent = file.name;
-              infoContainer.classList.add('show');
-          } else {
-              infoContainer.classList.remove('show');
-          }
+        if (file) {
+          nameDisplay.textContent = file.name;
+          infoContainer.classList.add("show");
+        } else {
+          infoContainer.classList.remove("show");
+        }
       }
 
       function checkFilesReady() {
-          elements.compareBtn.disabled = !(fileEntregue && fileNova);
+        elements.compareBtn.disabled = !(fileEntregue && fileNova);
       }
 
       // Função principal de processamento e comparação
       async function processAndCompareFiles() {
-          if (!fileEntregue || !fileNova) {
-              alert("Por favor, selecione ambos os arquivos ECD.");
-              return;
-          }
+        if (!fileEntregue || !fileNova) {
+          alert("Por favor, selecione ambos os arquivos ECD.");
+          return;
+        }
 
-          elements.loading.classList.add('show');
-          elements.results.classList.remove('show');
-          elements.resultsRemovidosContent.innerHTML = '';
-          elements.resultsAdicionadosContent.innerHTML = '';
+        elements.loading.classList.add("show");
+        elements.results.classList.remove("show");
+        elements.resultsRemovidosContent.innerHTML = "";
+        elements.resultsAdicionadosContent.innerHTML = "";
 
-          // Adiciona um pequeno delay para a UI atualizar
-          await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
 
-          try {
-              const [contentEntregue, contentNova] = await Promise.all([
-                  fileEntregue.text(),
-                  fileNova.text()
-              ]);
+        try {
+          const [contentEntregue, contentNova] = await Promise.all([
+            fileEntregue.text(),
+            fileNova.text(),
+          ]);
 
-              const i250LinesEntregue = parseI250Lines(contentEntregue);
-              const i250LinesNova = parseI250Lines(contentNova);
+          // Normaliza e parseia as linhas ANTES da comparação
+          const i250LinesEntregue = parseAndNormalizeI250Lines(contentEntregue);
+          const i250LinesNova = parseAndNormalizeI250Lines(contentNova);
 
-              const setNova = new Set(i250LinesNova);
-              const setEntregue = new Set(i250LinesEntregue);
-              
-              const linhasRemovidas = i250LinesEntregue.filter(line => !setNova.has(line));
-              const linhasAdicionadas = i250LinesNova.filter(line => !setEntregue.has(line));
+          const setNova = new Set(i250LinesNova);
+          const setEntregue = new Set(i250LinesEntregue);
 
-              displayResultTable(elements.resultsRemovidosContent, 'removidos', I250_HEADERS, linhasRemovidas);
-              displayResultTable(elements.resultsAdicionadosContent, 'adicionados', I250_HEADERS, linhasAdicionadas);
+          const linhasRemovidas = i250LinesEntregue.filter(
+            (line) => !setNova.has(line)
+          );
+          const linhasAdicionadas = i250LinesNova.filter(
+            (line) => !setEntregue.has(line)
+          );
 
-              elements.results.classList.add('show');
+          displayResultTable(
+            elements.resultsRemovidosContent,
+            "removidos",
+            I250_HEADERS,
+            linhasRemovidas
+          );
+          displayResultTable(
+            elements.resultsAdicionadosContent,
+            "adicionados",
+            I250_HEADERS,
+            linhasAdicionadas
+          );
 
-          } catch (error) {
-              console.error("Erro ao processar os arquivos:", error);
-              alert("Ocorreu um erro ao ler ou processar os arquivos. Verifique o console para mais detalhes.");
-          } finally {
-              elements.loading.classList.remove('show');
-          }
+          elements.results.classList.add("show");
+        } catch (error) {
+          console.error("Erro ao processar os arquivos:", error);
+          alert(
+            "Ocorreu um erro ao ler ou processar os arquivos. Verifique o console para mais detalhes."
+          );
+        } finally {
+          elements.loading.classList.remove("show");
+        }
       }
-      
-      function parseI250Lines(content) {
-          return content.split(/\r?\n/).filter(line => line.startsWith('|I250|'));
+
+      /**
+       * Extrai as linhas |I250| e normaliza o campo de valor (4º) para sempre ter duas casas decimais.
+       * @param {string} content - O conteúdo do arquivo TXT.
+       * @returns {string[]} - Um array de linhas |I250| normalizadas.
+       */
+      function parseAndNormalizeI250Lines(content) {
+        return content
+          .split(/\r?\n/)
+          .filter((line) => line.startsWith("|I250|"))
+          .map((line) => {
+            const fields = line.split("|");
+            // O campo VL_DC é o 4º campo de dados, que corresponde ao índice 4.
+            if (fields.length > 4) {
+              let valor = fields[4];
+              const commaIndex = valor.indexOf(",");
+
+              if (commaIndex === -1) {
+                // Caso 1: É um número inteiro (ex: "123"). Adiciona ",00".
+                fields[4] = valor + ",00";
+              } else if (valor.substring(commaIndex + 1).length === 1) {
+                // Caso 2: Tem uma casa decimal (ex: "123,4"). Adiciona "0".
+                fields[4] = valor + "0";
+              }
+            }
+            return fields.join("|");
+          });
       }
 
       function displayResultTable(container, tableIdPrefix, headers, data) {
-          if (data.length === 0) {
-              container.innerHTML = `
+        if (data.length === 0) {
+          container.innerHTML = `
                 <div class="empty-state">
                   <div class="empty-icon"><i class="fas fa-check-circle"></i></div>
                   <h3>Nenhuma diferença encontrada.</h3>
                   <p>Os lançamentos |I250| são idênticos nesta categoria.</p>
                 </div>`;
-              return;
-          }
+          return;
+        }
 
-          const tableId = `table-${tableIdPrefix}`;
-          const searchId = `search-${tableIdPrefix}`;
+        const tableId = `table-${tableIdPrefix}`;
+        const searchId = `search-${tableIdPrefix}`;
 
-          let tableHTML = `
+        let tableHTML = `
             <div class="search-box">
                 <i class="fas fa-search"></i>
                 <input type="text" id="${searchId}" class="form-input" placeholder="Pesquisar nesta tabela...">
             </div>
             <div style="max-height: 500px; overflow-y: auto;">
               <table class="results-table" id="${tableId}">
-                <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+                <thead><tr>${headers
+                  .map((h) => `<th>${h}</th>`)
+                  .join("")}</tr></thead>
                 <tbody>
-                  ${data.map(line => {
-                      const cells = line.split('|').slice(1, -1);
-                      return `<tr>${cells.map(cell => `<td>${cell}</td>`).join('')}</tr>`;
-                  }).join('')}
+                  ${data
+                    .map((line) => {
+                      // Os dados já estão formatados, apenas os dividimos para a tabela
+                      const cells = line.split("|").slice(1, -1);
+                      return `<tr>${cells
+                        .map((cell) => `<td>${cell}</td>`)
+                        .join("")}</tr>`;
+                    })
+                    .join("")}
                 </tbody>
               </table>
             </div>`;
 
-          container.innerHTML = tableHTML;
-          document.getElementById(searchId).addEventListener('input', (e) => filterTable(e.target.value, tableId));
+        container.innerHTML = tableHTML;
+        document
+          .getElementById(searchId)
+          .addEventListener("input", (e) =>
+            filterTable(e.target.value, tableId)
+          );
       }
-      
-      function filterTable(searchTerm, tableId) {
-          const term = searchTerm.toLowerCase();
-          const table = document.getElementById(tableId);
-          if (!table) return;
 
-          const rows = table.getElementsByTagName("tr");
-          for (let i = 1; i < rows.length; i++) { // Inicia em 1 para pular o cabeçalho
-              const row = rows[i];
-              const rowText = row.textContent || row.innerText;
-              row.style.display = rowText.toLowerCase().includes(term) ? "" : "none";
-          }
+      function filterTable(searchTerm, tableId) {
+        const term = searchTerm.toLowerCase();
+        const table = document.getElementById(tableId);
+        if (!table) return;
+
+        const rows = table.getElementsByTagName("tr");
+        for (let i = 1; i < rows.length; i++) {
+          // Inicia em 1 para pular o cabeçalho
+          const row = rows[i];
+          const rowText = row.textContent || row.innerText;
+          row.style.display = rowText.toLowerCase().includes(term)
+            ? ""
+            : "none";
+        }
       }
     </script>
-</body>
+  </body>
 </html>
