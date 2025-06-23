@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Comparador de Arquivos ECD - Lançamentos I250</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* Estilos baseados no arquivo fornecido */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease;
+        --primary-dark: #3d005a;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        --text-muted: #64748b;
+        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh;
+        color: var(--text-color);
+        line-height: 1.6;
+        padding-bottom: 4rem;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .header h1 {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .header p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+      }
+
+      .upload-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .upload-section {
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--sombra);
+        transition: var(--transicao);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+        font-size: 1.1rem;
+      }
+
+      .upload-area {
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius);
+        padding: 2rem;
+        text-align: center;
+        transition: var(--transicao);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .upload-area.active {
+          border-color: var(--primary-color);
+          background: var(--form-bg-color);
+      }
+      .upload-icon { font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; }
+      .upload-text { font-weight: 600; color: var(--text-color); }
+      .file-input { display: none; }
+
+      .file-info {
+        background: var(--form-bg-color);
+        border-radius: var(--radius);
+        padding: 1rem;
+        margin-top: 1rem;
+        display: none;
+        align-items: center;
+        gap: 1rem;
+      }
+      .file-info.show { display: flex; }
+      .file-icon { color: var(--success); font-size: 1.5rem; }
+      .file-name { font-weight: 600; color: var(--text-color); word-break: break-all; }
+
+      .actions { text-align: center; margin-bottom: 2rem; }
+      .btn {
+          background: var(--primary-color);
+          color: var(--text-color-light);
+          padding: 0.85rem 2.5rem;
+          font-size: 1.1rem;
+          font-weight: 600;
+          border-radius: var(--radius);
+          border: none;
+          cursor: pointer;
+          transition: var(--transicao);
+          box-shadow: var(--sombra);
+      }
+      .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+      .btn:disabled {
+          background-color: var(--text-muted);
+          cursor: not-allowed;
+          opacity: 0.7;
+          transform: none;
+      }
+      .btn .fa-solid { margin-right: 0.5rem; }
+
+      .results { display: none; }
+      .results.show { display: block; animation: slideIn 0.5s ease-out; }
+      @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+      .result-block {
+          background: var(--background-color);
+          border-radius: var(--radius-lg);
+          box-shadow: var(--sombra);
+          overflow: hidden;
+          margin-bottom: 2rem;
+      }
+      .results-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: var(--text-color-light);
+        padding: 1.5rem 2rem;
+      }
+      .results-title { font-size: 1.25rem; font-weight: 600; }
+      .results-content { padding: 1.5rem; overflow-x: auto; }
+
+      .loading { display: none; text-align: center; padding: 2rem; color: white; }
+      .loading.show { display: block; }
+      .spinner { border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid var(--text-color-light); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 1rem; }
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+      .empty-state { text-align: center; padding: 3rem 2rem; color: var(--text-muted); }
+      .empty-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.5; }
+
+      .results-table { width: 100%; border-collapse: collapse; }
+      .results-table th, .results-table td {
+        padding: 0.6rem 0.8rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.8rem;
+        word-break: break-all;
+      }
+      .results-table thead th {
+        background-color: var(--form-bg-color);
+        font-weight: 600; color: var(--text-color);
+        font-size: 0.75rem; text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: sticky; top: 0;
+      }
+      .results-table tbody tr:hover { background-color: rgba(79, 0, 114, 0.05); }
+
+      .search-box { position: relative; margin-bottom: 1rem; }
+      .search-box .fa-search { position: absolute; top: 50%; left: 1rem; transform: translateY(-50%); color: var(--text-muted); }
+      .form-input {
+          width: 100%; padding: 0.75rem 1rem 0.75rem 3rem; border-radius: var(--radius);
+          border: 1px solid var(--border-color); font-size: 1rem; transition: var(--transicao);
+      }
+      .form-input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(79, 0, 114, 0.2); }
+
+      @media (max-width: 992px) {
+        .upload-container { grid-template-columns: 1fr; }
+      }
+      @media (max-width: 768px) {
+        .container { padding: 1rem; }
+        .header h1 { font-size: 2rem; }
+        .upload-section, .results-content { padding: 1.5rem; }
+      }
+    </style>
+</head>
+<body>
+    <div class="container">
+      <header class="header">
+        <h1><i class="fas fa-exchange-alt"></i> Comparador de ECD</h1>
+        <p>Faça o upload da ECD entregue e da nova ECD para comparar os lançamentos contábeis |I250|.</p>
+      </header>
+
+      <main>
+        <div class="upload-container">
+          <div class="upload-section">
+            <label class="form-label">1. ECD Entregue (.txt)</label>
+            <div class="upload-area" id="upload-area-entregue">
+              <input type="file" id="file-input-entregue" class="file-input" accept=".txt" />
+              <div class="upload-icon"><i class="fas fa-file-upload"></i></div>
+              <p class="upload-text">Clique ou arraste o arquivo</p>
+            </div>
+            <div class="file-info" id="file-info-entregue">
+              <div class="file-icon"><i class="fas fa-check-circle"></i></div>
+              <div class="file-name" id="file-name-entregue"></div>
+            </div>
+          </div>
+          <div class="upload-section">
+            <label class="form-label">2. Nova ECD (.txt)</label>
+            <div class="upload-area" id="upload-area-nova">
+              <input type="file" id="file-input-nova" class="file-input" accept=".txt" />
+              <div class="upload-icon"><i class="fas fa-file-upload"></i></div>
+              <p class="upload-text">Clique ou arraste o arquivo</p>
+            </div>
+            <div class="file-info" id="file-info-nova">
+              <div class="file-icon"><i class="fas fa-check-circle"></i></div>
+              <div class="file-name" id="file-name-nova"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="compare-btn" class="btn" disabled>
+            <i class="fa-solid fa-magnifying-glass-chart"></i> Comparar Arquivos
+          </button>
+        </div>
+        
+        <div class="loading" id="loading">
+          <div class="spinner"></div>
+          <p>Processando e comparando arquivos... Isso pode levar alguns instantes.</p>
+        </div>
+
+        <div class="results" id="results">
+          <div class="result-block" id="results-removidos-block">
+            <header class="results-header">
+              <h2 class="results-title"><i class="fas fa-file-circle-minus"></i> Lançamentos Removidos (Existem na Entregue mas não na Nova)</h2>
+            </header>
+            <div class="results-content" id="results-content-removidos"></div>
+          </div>
+
+          <div class="result-block" id="results-adicionados-block">
+            <header class="results-header">
+              <h2 class="results-title"><i class="fas fa-file-circle-plus"></i> Lançamentos Adicionados (Existem na Nova mas não na Entregue)</h2>
+            </header>
+            <div class="results-content" id="results-content-adicionados"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // Variáveis globais para os arquivos
+      let fileEntregue = null;
+      let fileNova = null;
+
+      // Elementos do DOM
+      const elements = {
+          uploadAreaEntregue: document.getElementById('upload-area-entregue'),
+          fileInputEntregue: document.getElementById('file-input-entregue'),
+          fileInfoEntregue: document.getElementById('file-info-entregue'),
+          fileNameEntregue: document.getElementById('file-name-entregue'),
+
+          uploadAreaNova: document.getElementById('upload-area-nova'),
+          fileInputNova: document.getElementById('file-input-nova'),
+          fileInfoNova: document.getElementById('file-info-nova'),
+          fileNameNova: document.getElementById('file-name-nova'),
+
+          compareBtn: document.getElementById('compare-btn'),
+          loading: document.getElementById('loading'),
+          results: document.getElementById('results'),
+
+          resultsRemovidosContent: document.getElementById('results-content-removidos'),
+          resultsAdicionadosContent: document.getElementById('results-content-adicionados'),
+      };
+
+      // Cabeçalhos da Tabela |I250|
+      const I250_HEADERS = [
+        "REG", "COD_CTA", "COD_CCUS", "VL_DC", "IND_DC",
+        "NUM_LCTO", "DT_LCTO", "COD_HIST_PAD", "HIST", "COD_PART"
+      ];
+
+      // Funções de setup de eventos
+      const setupUploadArea = (area, input, handler) => {
+          area.addEventListener('click', () => input.click());
+          input.addEventListener('change', handler);
+
+          ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+              area.addEventListener(eventName, e => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (eventName === 'dragenter' || eventName === 'dragover') {
+                      area.classList.add('active');
+                  } else {
+                      area.classList.remove('active');
+                  }
+              }, false);
+          });
+          area.addEventListener('drop', e => {
+              input.files = e.dataTransfer.files;
+              handler();
+          });
+      };
+
+      setupUploadArea(elements.uploadAreaEntregue, elements.fileInputEntregue, handleFileEntregueSelect);
+      setupUploadArea(elements.uploadAreaNova, elements.fileInputNova, handleFileNovaSelect);
+      elements.compareBtn.addEventListener('click', processAndCompareFiles);
+
+      // Manipuladores de Seleção de Arquivo
+      function handleFileEntregueSelect() {
+          fileEntregue = elements.fileInputEntregue.files[0];
+          updateFileInfo(fileEntregue, elements.fileNameEntregue, elements.fileInfoEntregue);
+          checkFilesReady();
+      }
+
+      function handleFileNovaSelect() {
+          fileNova = elements.fileInputNova.files[0];
+          updateFileInfo(fileNova, elements.fileNameNova, elements.fileInfoNova);
+          checkFilesReady();
+      }
+      
+      function updateFileInfo(file, nameDisplay, infoContainer) {
+          if (file) {
+              nameDisplay.textContent = file.name;
+              infoContainer.classList.add('show');
+          } else {
+              infoContainer.classList.remove('show');
+          }
+      }
+
+      function checkFilesReady() {
+          elements.compareBtn.disabled = !(fileEntregue && fileNova);
+      }
+
+      // Função principal de processamento e comparação
+      async function processAndCompareFiles() {
+          if (!fileEntregue || !fileNova) {
+              alert("Por favor, selecione ambos os arquivos ECD.");
+              return;
+          }
+
+          elements.loading.classList.add('show');
+          elements.results.classList.remove('show');
+          elements.resultsRemovidosContent.innerHTML = '';
+          elements.resultsAdicionadosContent.innerHTML = '';
+
+          // Adiciona um pequeno delay para a UI atualizar
+          await new Promise(resolve => setTimeout(resolve, 100));
+
+          try {
+              const [contentEntregue, contentNova] = await Promise.all([
+                  fileEntregue.text(),
+                  fileNova.text()
+              ]);
+
+              const i250LinesEntregue = parseI250Lines(contentEntregue);
+              const i250LinesNova = parseI250Lines(contentNova);
+
+              const setNova = new Set(i250LinesNova);
+              const setEntregue = new Set(i250LinesEntregue);
+              
+              const linhasRemovidas = i250LinesEntregue.filter(line => !setNova.has(line));
+              const linhasAdicionadas = i250LinesNova.filter(line => !setEntregue.has(line));
+
+              displayResultTable(elements.resultsRemovidosContent, 'removidos', I250_HEADERS, linhasRemovidas);
+              displayResultTable(elements.resultsAdicionadosContent, 'adicionados', I250_HEADERS, linhasAdicionadas);
+
+              elements.results.classList.add('show');
+
+          } catch (error) {
+              console.error("Erro ao processar os arquivos:", error);
+              alert("Ocorreu um erro ao ler ou processar os arquivos. Verifique o console para mais detalhes.");
+          } finally {
+              elements.loading.classList.remove('show');
+          }
+      }
+      
+      function parseI250Lines(content) {
+          return content.split(/\r?\n/).filter(line => line.startsWith('|I250|'));
+      }
+
+      function displayResultTable(container, tableIdPrefix, headers, data) {
+          if (data.length === 0) {
+              container.innerHTML = `
+                <div class="empty-state">
+                  <div class="empty-icon"><i class="fas fa-check-circle"></i></div>
+                  <h3>Nenhuma diferença encontrada.</h3>
+                  <p>Os lançamentos |I250| são idênticos nesta categoria.</p>
+                </div>`;
+              return;
+          }
+
+          const tableId = `table-${tableIdPrefix}`;
+          const searchId = `search-${tableIdPrefix}`;
+
+          let tableHTML = `
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="${searchId}" class="form-input" placeholder="Pesquisar nesta tabela...">
+            </div>
+            <div style="max-height: 500px; overflow-y: auto;">
+              <table class="results-table" id="${tableId}">
+                <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+                <tbody>
+                  ${data.map(line => {
+                      const cells = line.split('|').slice(1, -1);
+                      return `<tr>${cells.map(cell => `<td>${cell}</td>`).join('')}</tr>`;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>`;
+
+          container.innerHTML = tableHTML;
+          document.getElementById(searchId).addEventListener('input', (e) => filterTable(e.target.value, tableId));
+      }
+      
+      function filterTable(searchTerm, tableId) {
+          const term = searchTerm.toLowerCase();
+          const table = document.getElementById(tableId);
+          if (!table) return;
+
+          const rows = table.getElementsByTagName("tr");
+          for (let i = 1; i < rows.length; i++) { // Inicia em 1 para pular o cabeçalho
+              const row = rows[i];
+              const rowText = row.textContent || row.innerText;
+              row.style.display = rowText.toLowerCase().includes(term) ? "" : "none";
+          }
+      }
+    </script>
+</body>
+</html>
