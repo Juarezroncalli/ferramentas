@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Analisador de NFS-e XML com Filtro</title>
+    <title>Analisador de NFS-e XML com Agrupamento</title>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
@@ -111,6 +111,29 @@
       }
       @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
       .empty-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.5; }
+      
+      .item-group-section { 
+        margin-bottom: 2.5rem; 
+        padding-bottom: 1.5rem; 
+        border-bottom: 1px solid var(--border-color);
+      }
+      .item-group-section:last-of-type { border-bottom: none; }
+      .group-title {
+        font-size: 1.5rem; font-weight: 700; color: var(--primary-color);
+        margin-bottom: 1rem; padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--accent-color);
+      }
+
+      #final-total-summary {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 3px double var(--primary-dark);
+        display: flex;
+        justify-content: flex-end;
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+
       .results-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
       .results-table thead th {
         background-color: var(--form-bg-color); color: var(--primary-dark);
@@ -170,7 +193,7 @@
       <div class="results" id="results">
         <div class="results-header">
           <i class="fas fa-chart-pie"></i>
-          <div class="results-title">Resumo por Discriminação do Serviço</div>
+          <div class="results-title">Resumo por Item e Discriminação do Serviço</div>
         </div>
         <div class="results-content" id="results-content"></div>
       </div>
@@ -231,28 +254,25 @@
           fileContents.forEach(content => {
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(content, "text/xml");
-
-            if (xmlDoc.getElementsByTagName("parsererror").length > 0) {
-              console.warn("Arquivo não é um XML válido.");
-              return;
-            }
+            if (xmlDoc.getElementsByTagName("parsererror").length > 0) return;
             
             const servicos = xmlDoc.getElementsByTagName("Servico");
 
             for (const servico of servicos) {
-              const valorServicosNode = servico.getElementsByTagName("ValorServicos")[0];
-              const discriminacaoNode = servico.getElementsByTagName("Discriminacao")[0];
+              const valorNode = servico.getElementsByTagName("ValorServicos")[0];
+              const discNode = servico.getElementsByTagName("Discriminacao")[0];
+              const itemNode = servico.getElementsByTagName("ItemListaServico")[0];
 
-              if (valorServicosNode && discriminacaoNode) {
-                const valor = parseFloat(valorServicosNode.textContent);
-                const key = discriminacaoNode.textContent
-                                             .replace(/[\r\n\t]+/g, ' ')
-                                             .replace(/\s\s+/g, ' ')
-                                             .trim()
-                                             .toLowerCase();
+              if (valorNode && discNode && itemNode) {
+                const valor = parseFloat(valorNode.textContent);
+                const itemKey = itemNode.textContent.trim();
+                const discKey = discNode.textContent.replace(/[\r\n\t]+/g, ' ').replace(/\s\s+/g, ' ').trim().toLowerCase();
 
-                if (!isNaN(valor) && key) {
-                  summary[key] = (summary[key] || 0) + valor;
+                if (!isNaN(valor) && itemKey && discKey) {
+                  if (!summary[itemKey]) {
+                    summary[itemKey] = {};
+                  }
+                  summary[itemKey][discKey] = (summary[itemKey][discKey] || 0) + valor;
                 }
               }
             }
@@ -284,70 +304,104 @@
 
       function displayResults(summary) {
         resultsContent.innerHTML = '';
-        const keys = Object.keys(summary);
-        let grandTotal = 0;
+        const itemKeys = Object.keys(summary).sort();
 
-        if (keys.length === 0) {
-          resultsContent.innerHTML = `<div class="empty-state"><div class="empty-icon"><i class="fas fa-search-dollar"></i></div><h3>Nenhum Serviço Encontrado</h3><p>Não foram encontradas tags 'ValorServicos' e 'Discriminacao' nos arquivos processados.</p></div>`;
+        if (itemKeys.length === 0) {
+          resultsContent.innerHTML = `<div class="empty-state"><div class="empty-icon"><i class="fas fa-search-dollar"></i></div><h3>Nenhum Serviço Encontrado</h3><p>Verifique se os arquivos XML contêm as tags 'ItemListaServico', 'ValorServicos' e 'Discriminacao'.</p></div>`;
           results.classList.add("show");
           searchSection.classList.remove('show');
           return;
         }
 
-        let tableHtml = `<table class="results-table">
-                          <thead>
-                            <tr>
-                              <th>Discriminação do Serviço</th>
-                              <th class="amount">Valor Total</th>
-                            </tr>
-                          </thead>
-                          <tbody>`;
+        let allGroupsHtml = '';
+        itemKeys.forEach(itemKey => {
+            const groupData = summary[itemKey];
+            const discKeys = Object.keys(groupData).sort();
+            let groupTotal = 0;
 
-        keys.sort().forEach(key => {
-          const value = summary[key];
-          grandTotal += value;
-          tableHtml += `<tr data-value="${value}">
-                          <td>${key.charAt(0).toUpperCase() + key.slice(1)}</td>
-                          <td class="amount positive">${formatCurrency(value)}</td>
-                        </tr>`;
+            let tableHtml = `<div class="item-group-section" data-item-code="${itemKey}">
+                                <h3 class="group-title">Item da Lista de Serviço: ${itemKey}</h3>
+                                <table class="results-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Discriminação do Serviço</th>
+                                            <th class="amount">Valor Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>`;
+            
+            discKeys.forEach(discKey => {
+                const value = groupData[discKey];
+                groupTotal += value;
+                tableHtml += `<tr data-value="${value}">
+                                <td>${discKey.charAt(0).toUpperCase() + discKey.slice(1)}</td>
+                                <td class="amount positive">${formatCurrency(value)}</td>
+                              </tr>`;
+            });
+
+            tableHtml += `      </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td class="summary-label"><strong>Subtotal do Item:</strong></td>
+                                        <td class="summary-value positive group-subtotal"><strong>${formatCurrency(groupTotal)}</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>`;
+            allGroupsHtml += tableHtml;
         });
-
-        tableHtml += `</tbody>
-                      <tfoot>
-                        <tr>
-                          <td class="summary-label"><strong>Total (filtrado):</strong></td>
-                          <td id="grand-total-value" class="summary-value positive"><strong>${formatCurrency(grandTotal)}</strong></td>
-                        </tr>
-                      </tfoot>
-                    </table>`;
         
-        resultsContent.innerHTML = tableHtml;
+        allGroupsHtml += `<div id="final-total-summary">
+                            <span class="summary-label" style="margin-right: 1rem;">Total Geral (filtrado):</span>
+                            <span id="overall-grand-total" class="summary-value positive"></span>
+                          </div>`;
+
+        resultsContent.innerHTML = allGroupsHtml;
         results.classList.add("show");
         searchSection.classList.add('show');
+        filterAndSummarizeTable(); // Call once to set initial totals
       }
 
       function filterAndSummarizeTable() {
         const searchTerm = searchInput.value.toLowerCase().trim();
-        const rows = resultsContent.querySelectorAll('.results-table tbody tr');
-        const grandTotalCell = document.getElementById('grand-total-value');
-        let filteredTotal = 0;
+        const groupSections = document.querySelectorAll('.item-group-section');
+        const overallGrandTotalCell = document.getElementById('overall-grand-total');
+        let overallFilteredTotal = 0;
 
-        rows.forEach(row => {
-            const descriptionCell = row.querySelector('td:first-child');
-            const rowValue = parseFloat(row.dataset.value);
-            
-            if (descriptionCell.textContent.toLowerCase().includes(searchTerm)) {
-                row.classList.remove('hidden-row');
-                if (!isNaN(rowValue)) {
-                    filteredTotal += rowValue;
+        groupSections.forEach(section => {
+            const rows = section.querySelectorAll('tbody tr');
+            const groupSubtotalCell = section.querySelector('.group-subtotal');
+            let groupFilteredTotal = 0;
+            let isGroupVisible = false;
+
+            rows.forEach(row => {
+                const descriptionCell = row.querySelector('td:first-child');
+                const rowValue = parseFloat(row.dataset.value);
+                
+                if (descriptionCell.textContent.toLowerCase().includes(searchTerm)) {
+                    row.classList.remove('hidden-row');
+                    isGroupVisible = true;
+                    if (!isNaN(rowValue)) {
+                        groupFilteredTotal += rowValue;
+                    }
+                } else {
+                    row.classList.add('hidden-row');
                 }
-            } else {
-                row.classList.add('hidden-row');
+            });
+
+            if (groupSubtotalCell) {
+                groupSubtotalCell.innerHTML = `<strong>${formatCurrency(groupFilteredTotal)}</strong>`;
+            }
+            
+            section.style.display = isGroupVisible ? 'block' : 'none';
+            
+            if (isGroupVisible) {
+                overallFilteredTotal += groupFilteredTotal;
             }
         });
-        
-        if (grandTotalCell) {
-            grandTotalCell.innerHTML = `<strong>${formatCurrency(filteredTotal)}</strong>`;
+
+        if (overallGrandTotalCell) {
+            overallGrandTotalCell.innerHTML = `<strong>${formatCurrency(overallFilteredTotal)}</strong>`;
         }
       }
     </script>
