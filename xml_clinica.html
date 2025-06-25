@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analisador de NFS-e XML com Filtro</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease;
+        --primary-dark: #3d005a;
+        --success: #10b981;
+        --error: #ef4444;
+        --text-muted: #64748b;
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh;
+        color: var(--text-color);
+        line-height: 1.6;
+        padding-bottom: 2rem;
+      }
+      .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+      .header { text-align: center; margin-bottom: 3rem; }
+      .header h1 {
+        color: white; font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .header p { color: rgba(255, 255, 255, 0.8); font-size: 1.1rem; }
+      .upload-section {
+        background: var(--background-color); border-radius: var(--radius-lg);
+        padding: 2rem; box-shadow: var(--sombra); margin-bottom: 2rem;
+      }
+      .upload-area {
+        border: 2px dashed var(--border-color); border-radius: var(--radius);
+        padding: 3rem 2rem; text-align: center; transition: var(--transicao);
+        cursor: pointer;
+      }
+      .upload-area:hover { border-color: var(--primary-color); background: var(--form-bg-color); }
+      .upload-icon { font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; }
+      #file-input { display: none; }
+      .file-info {
+        background: var(--form-bg-color); border-radius: var(--radius);
+        padding: 1rem; margin-top: 1.5rem; display: none; align-items: center; gap: 1rem;
+      }
+      .file-info.show { display: flex; }
+      .file-icon { color: var(--success); font-size: 1.5rem; }
+      .file-name { font-weight: 600; }
+      .file-size { color: var(--text-muted); font-size: 0.875rem; }
+      .btn {
+        background: var(--primary-color); color: var(--text-color-light);
+        border: none; padding: 0.875rem 2rem; border-radius: var(--radius);
+        font-weight: 600; font-size: 1rem; cursor: pointer;
+        transition: var(--transicao); display: inline-flex; align-items: center; gap: 0.5rem;
+      }
+      .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+      .btn:disabled { background: var(--text-muted); cursor: not-allowed; transform: none; }
+      .btn-process { width: 100%; justify-content: center; margin-top: 1.5rem; }
+      
+      #search-section {
+        display: none; background: var(--background-color); padding: 1.5rem;
+        border-radius: var(--radius-lg); margin-top: 2rem; box-shadow: var(--sombra);
+        animation: slideIn 0.5s ease-out;
+      }
+      .search-wrapper { position: relative; }
+      .search-icon {
+        position: absolute; left: 1rem; top: 50%;
+        transform: translateY(-50%); color: var(--text-muted);
+      }
+      #search-input {
+        width: 100%; font-family: "Inter", sans-serif; padding: 0.75rem 1rem 0.75rem 2.8rem; 
+        border: 1px solid var(--border-color); border-radius: var(--radius); font-size: 1rem;
+      }
+
+      .results {
+        background: var(--background-color); border-radius: var(--radius-lg);
+        box-shadow: var(--sombra); overflow: hidden; display: none; margin-top: 2rem;
+      }
+      .results.show, #search-section.show { display: block; animation: slideIn 0.5s ease-out; }
+      @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+      .results-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        color: var(--text-color-light); padding: 1.5rem 2rem;
+        display: flex; align-items: center; gap: 1rem;
+      }
+      .results-title { font-size: 1.25rem; font-weight: 600; }
+      .results-content { padding: 2rem; }
+      .loading { display: none; }
+      .loading.show { display: block; }
+      .loading, .empty-state { text-align: center; padding: 3rem 2rem; color: var(--text-muted); }
+      .spinner {
+        border: 3px solid var(--border-color); border-top: 3px solid var(--primary-color);
+        border-radius: 50%; width: 40px; height: 40px;
+        animation: spin 1s linear infinite; margin: 0 auto 1rem;
+      }
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      .empty-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.5; }
+      .results-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+      .results-table thead th {
+        background-color: var(--form-bg-color); color: var(--primary-dark);
+        font-weight: 600; text-align: left; padding: 0.75rem 1rem;
+        border-bottom: 2px solid var(--border-color);
+      }
+      .results-table tbody tr { border-bottom: 1px solid var(--border-color); }
+      .results-table tbody tr.hidden-row { display: none; }
+      .results-table td { padding: 0.75rem 1rem; vertical-align: top; }
+      .results-table td.amount, .summary-value { font-family: "Monaco", "Menlo", monospace; font-weight: 600; }
+      .results-table tfoot tr { border-top: 2px solid var(--border-color); background-color: var(--form-bg-color); }
+      .results-table tfoot td { font-weight: 700; padding: 0.8rem 1rem; }
+      .summary-label { text-align: right; color: var(--primary-dark); }
+      .amount.positive { color: var(--success); }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1><i class="fas fa-file-invoice-dollar"></i> Analisador de NFS-e XML</h1>
+        <p>Extraia e totalize os serviços de seus arquivos XML de NFS-e</p>
+      </div>
+
+      <div class="upload-section">
+        <div class="upload-area" onclick="document.getElementById('file-input').click()">
+          <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+          <p><strong>Clique para selecionar os arquivos</strong></p>
+          <p>ou arraste e solte um ou mais arquivos .xml aqui</p>
+          <input type="file" id="file-input" accept=".xml,.XML" multiple />
+        </div>
+
+        <div class="file-info" id="file-info">
+          <div class="file-icon"><i class="fas fa-file-alt"></i></div>
+          <div class="file-details">
+            <div id="file-name"></div>
+            <div id="file-size"></div>
+          </div>
+        </div>
+        
+        <button class="btn btn-process" id="process-btn" onclick="processFiles()" disabled>
+          <i class="fas fa-cogs"></i> Processar Arquivos
+        </button>
+      </div>
+
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Processando arquivos...</p>
+      </div>
+
+      <div id="search-section">
+        <div class="search-wrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input type="search" id="search-input" placeholder="Filtrar por discriminação do serviço...">
+        </div>
+      </div>
+
+      <div class="results" id="results">
+        <div class="results-header">
+          <i class="fas fa-chart-pie"></i>
+          <div class="results-title">Resumo por Discriminação do Serviço</div>
+        </div>
+        <div class="results-content" id="results-content"></div>
+      </div>
+    </div>
+
+    <script>
+      const fileInput = document.getElementById("file-input");
+      const processBtn = document.getElementById("process-btn");
+      const loading = document.getElementById("loading");
+      const results = document.getElementById("results");
+      const resultsContent = document.getElementById("results-content");
+      const uploadArea = document.querySelector(".upload-area");
+      const searchSection = document.getElementById('search-section');
+      const searchInput = document.getElementById('search-input');
+
+      ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+        uploadArea.addEventListener(eventName, (e) => e.preventDefault(), false);
+      });
+      uploadArea.addEventListener("drop", (e) => handleFileSelect(e.dataTransfer.files), false);
+      fileInput.addEventListener("change", (e) => handleFileSelect(e.target.files));
+      searchInput.addEventListener('input', filterAndSummarizeTable);
+
+      function handleFileSelect(files) {
+        if (!files || files.length === 0) return;
+        fileInput.files = files; 
+        const fileInfo = document.getElementById("file-info");
+        const totalSize = Array.from(files).reduce((acc, file) => acc + file.size, 0);
+        document.getElementById("file-name").textContent = files.length > 1 ? `${files.length} arquivos selecionados` : files[0].name;
+        document.getElementById("file-size").textContent = `Tamanho total: ${formatFileSize(totalSize)}`;
+        fileInfo.classList.add("show");
+        processBtn.disabled = false;
+        results.classList.remove("show");
+        searchSection.classList.remove('show');
+      }
+
+      function formatFileSize(bytes) {
+        if (bytes === 0) return "0 Bytes";
+        const k = 1024;
+        const sizes = ["Bytes", "KB", "MB", "GB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+      }
+
+      async function processFiles() {
+        if (!fileInput.files || fileInput.files.length === 0) {
+          alert("Por favor, selecione um ou mais arquivos XML.");
+          return;
+        }
+        loading.classList.add("show");
+        results.classList.remove("show");
+        searchSection.classList.remove('show');
+        searchInput.value = '';
+
+        try {
+          const fileContents = await Promise.all(Array.from(fileInput.files).map(readFile));
+          const summary = {};
+
+          fileContents.forEach(content => {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(content, "text/xml");
+
+            if (xmlDoc.getElementsByTagName("parsererror").length > 0) {
+              console.warn("Arquivo não é um XML válido.");
+              return;
+            }
+            
+            const servicos = xmlDoc.getElementsByTagName("Servico");
+
+            for (const servico of servicos) {
+              const valorServicosNode = servico.getElementsByTagName("ValorServicos")[0];
+              const discriminacaoNode = servico.getElementsByTagName("Discriminacao")[0];
+
+              if (valorServicosNode && discriminacaoNode) {
+                const valor = parseFloat(valorServicosNode.textContent);
+                const key = discriminacaoNode.textContent
+                                             .replace(/[\r\n\t]+/g, ' ')
+                                             .replace(/\s\s+/g, ' ')
+                                             .trim()
+                                             .toLowerCase();
+
+                if (!isNaN(valor) && key) {
+                  summary[key] = (summary[key] || 0) + valor;
+                }
+              }
+            }
+          });
+          
+          setTimeout(() => {
+             displayResults(summary);
+             loading.classList.remove("show");
+          }, 500);
+
+        } catch (error) {
+          loading.classList.remove("show");
+          alert("Erro ao ler ou processar os arquivos: " + error.message);
+        }
+      }
+
+      function readFile(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target.result);
+          reader.onerror = () => reject(new Error("Erro ao ler o arquivo " + file.name));
+          reader.readAsText(file, 'UTF-8');
+        });
+      }
+      
+      function formatCurrency(value) {
+        return isNaN(value) ? "" : value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+      }
+
+      function displayResults(summary) {
+        resultsContent.innerHTML = '';
+        const keys = Object.keys(summary);
+        let grandTotal = 0;
+
+        if (keys.length === 0) {
+          resultsContent.innerHTML = `<div class="empty-state"><div class="empty-icon"><i class="fas fa-search-dollar"></i></div><h3>Nenhum Serviço Encontrado</h3><p>Não foram encontradas tags 'ValorServicos' e 'Discriminacao' nos arquivos processados.</p></div>`;
+          results.classList.add("show");
+          searchSection.classList.remove('show');
+          return;
+        }
+
+        let tableHtml = `<table class="results-table">
+                          <thead>
+                            <tr>
+                              <th>Discriminação do Serviço</th>
+                              <th class="amount">Valor Total</th>
+                            </tr>
+                          </thead>
+                          <tbody>`;
+
+        keys.sort().forEach(key => {
+          const value = summary[key];
+          grandTotal += value;
+          tableHtml += `<tr data-value="${value}">
+                          <td>${key.charAt(0).toUpperCase() + key.slice(1)}</td>
+                          <td class="amount positive">${formatCurrency(value)}</td>
+                        </tr>`;
+        });
+
+        tableHtml += `</tbody>
+                      <tfoot>
+                        <tr>
+                          <td class="summary-label"><strong>Total (filtrado):</strong></td>
+                          <td id="grand-total-value" class="summary-value positive"><strong>${formatCurrency(grandTotal)}</strong></td>
+                        </tr>
+                      </tfoot>
+                    </table>`;
+        
+        resultsContent.innerHTML = tableHtml;
+        results.classList.add("show");
+        searchSection.classList.add('show');
+      }
+
+      function filterAndSummarizeTable() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const rows = resultsContent.querySelectorAll('.results-table tbody tr');
+        const grandTotalCell = document.getElementById('grand-total-value');
+        let filteredTotal = 0;
+
+        rows.forEach(row => {
+            const descriptionCell = row.querySelector('td:first-child');
+            const rowValue = parseFloat(row.dataset.value);
+            
+            if (descriptionCell.textContent.toLowerCase().includes(searchTerm)) {
+                row.classList.remove('hidden-row');
+                if (!isNaN(rowValue)) {
+                    filteredTotal += rowValue;
+                }
+            } else {
+                row.classList.add('hidden-row');
+            }
+        });
+        
+        if (grandTotalCell) {
+            grandTotalCell.innerHTML = `<strong>${formatCurrency(filteredTotal)}</strong>`;
+        }
+      }
+    </script>
+  </body>
+</html>
