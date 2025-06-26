@@ -80,6 +80,43 @@
         transition: var(--transicao);
       }
 
+      /* Estilo de destaque para o campo de nome da empresa */
+      .company-name-section {
+        background-color: #f8f5fa; /* Fundo suave para destacar a área */
+        padding: 1.5rem;
+        border-radius: var(--radius);
+        margin-bottom: 2rem;
+        border: 1px solid #e0d1e8;
+      }
+
+      .company-name-section label {
+        display: block;
+        font-size: 1.1rem; /* Fonte do rótulo maior */
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 0.75rem;
+      }
+
+      .company-name-section input {
+        width: 100%;
+        padding: 1rem; /* Mais espaço interno */
+        border-radius: var(--radius);
+        border: 1px solid var(--border-color);
+        font-size: 1.25rem; /* Fonte do campo maior */
+        font-weight: 500;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .company-name-section input:focus {
+        outline: none;
+        border-color: var(
+          --accent-color
+        ); /* Destaque na cor de destaque ao focar */
+        box-shadow: 0 0 0 3px rgba(251, 10, 94, 0.2);
+      }
+
       .progress-area {
         margin-bottom: 2rem;
       }
@@ -202,9 +239,18 @@
       </div>
 
       <div class="checklist-section">
+        <div class="company-name-section">
+          <label for="company-name">Nome da Empresa Auditada</label>
+          <input
+            type="text"
+            id="company-name"
+            placeholder="Digite o nome da empresa aqui"
+          />
+        </div>
+
         <div class="progress-area">
           <div class="progress-text" id="progress-text">
-            0 de 10 itens conferidos
+            0 de 13 itens conferidos
           </div>
           <div class="progress-container">
             <div class="progress-bar" id="progress-bar"></div>
@@ -235,6 +281,8 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", function () {
+        // Elementos do DOM
+        const companyNameInput = document.getElementById("company-name");
         const checklistContainer = document.getElementById(
           "checklist-container"
         );
@@ -243,6 +291,7 @@
         const resetBtn = document.getElementById("reset-btn");
         const successMessage = document.getElementById("success-message");
 
+        // Itens do checklist
         const checklistItems = [
           "HISTORICO DO ENCERRAMENTO",
           "TIPO DE PLANO DE CONTAS",
@@ -324,11 +373,15 @@
 
         // Lida com o clique no botão de reset
         resetBtn.addEventListener("click", function () {
+          // Limpa o nome da empresa
+          companyNameInput.value = "";
+          // Recria os itens do checklist
           renderItems();
+          // Atualiza o progresso para o estado inicial
           updateProgress();
         });
 
-        // Inicialização
+        // Inicialização do checklist
         renderItems();
         updateProgress();
       });
