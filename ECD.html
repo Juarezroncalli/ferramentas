@@ -279,9 +279,6 @@
         font-size: 1.1rem;
         color: var(--primary-color);
       }
-      .results-table tfoot .label-total {
-        text-align: right;
-      }
       .results-table .col-value {
         font-family: "Menlo", "Monaco", monospace;
         text-align: right;
@@ -339,8 +336,26 @@
           </div>
 
           <div class="form-group">
+            <label for="account-nature-select" class="form-label"
+              >2. Natureza da Conta (I050, Campo 3)</label
+            >
+            <select id="account-nature-select" class="form-select" disabled>
+              <option value="">Aguardando seleção de arquivos...</option>
+              </select>
+          </div>
+
+          <div class="form-group">
+            <label for="account-level-select" class="form-label"
+              >3. Nível da Conta (I050, Campo 5)</label
+            >
+            <select id="account-level-select" class="form-select" disabled>
+              <option value="">Aguardando seleção de arquivos...</option>
+            </select>
+          </div>
+
+          <div class="form-group">
             <label for="account-filter-input" class="form-label"
-              >2. Escolha a Conta Contábil Analítica (Nível 5)</label
+              >4. Escolha a Conta Contábil</label
             >
             <input
               type="text"
@@ -383,6 +398,8 @@
       const accountFilterInput = document.getElementById(
         "account-filter-input"
       );
+      const accountNatureSelect = document.getElementById("account-nature-select"); // Alterado de accountTypeSelect
+      const accountLevelSelect = document.getElementById("account-level-select");
       const fileInput = document.getElementById("file-input");
       const fileInfo = document.getElementById("file-info");
       const fileNameDisplay = document.getElementById("file-name");
@@ -393,14 +410,31 @@
       const uploadArea = document.querySelector(".upload-area");
 
       let cachedFilesContent = [];
-      let originalOptions = [];
+      let allExtractedAccounts = []; 
+      let filteredOptions = []; 
+
+      // Mapeamento para nomes amigáveis da Natureza da Conta (Campo 3 do I050)
+      const NATURE_MAP = {
+        "01": "Ativo",
+        "02": "Passivo",
+        "03": "Patrimônio Líquido",
+        "04": "Resultado",
+        "05": "Compensação",
+        "09": "Outras Contas",
+      };
 
       const checkEnableButton = () => {
         processBtn.disabled = !(
-          accountSelect.value && fileInput.files.length > 0
+          accountSelect.value &&
+          fileInput.files.length > 0 &&
+          accountNatureSelect.value && // Verificação da natureza
+          accountLevelSelect.value
         );
       };
 
+      // Adiciona event listeners para os novos campos
+      accountNatureSelect.addEventListener("change", filterAndPopulateAccounts); // Alterado
+      accountLevelSelect.addEventListener("change", filterAndPopulateAccounts);
       accountSelect.addEventListener("change", checkEnableButton);
       fileInput.addEventListener("change", handleFileSelect);
       processBtn.addEventListener("click", processFiles);
@@ -439,17 +473,23 @@
         } else {
           fileInfo.classList.remove("show");
           cachedFilesContent = [];
-          resetAccountSelect();
+          allExtractedAccounts = [];
+          resetAccountSelects();
         }
         checkEnableButton();
       }
 
-      function resetAccountSelect() {
-        accountSelect.innerHTML =
-          '<option value="">Aguardando seleção de arquivos...</option>';
+      function resetAccountSelects() {
+        accountSelect.innerHTML = '<option value="">Aguardando seleção de arquivos...</option>';
         accountSelect.disabled = true;
         accountFilterInput.value = "";
         accountFilterInput.disabled = true;
+
+        accountNatureSelect.innerHTML = '<option value="">Aguardando seleção de arquivos...</option>'; // Alterado
+        accountNatureSelect.disabled = true;
+
+        accountLevelSelect.innerHTML = '<option value="">Aguardando seleção de arquivos...</option>';
+        accountLevelSelect.disabled = true;
       }
 
       function filterAccountOptions() {
@@ -460,7 +500,7 @@
         }
 
         let hasMatches = false;
-        originalOptions.forEach((opt) => {
+        filteredOptions.forEach((opt) => {
           if (opt.text.toLowerCase().includes(filterText)) {
             accountSelect.add(new Option(opt.text, opt.value));
             hasMatches = true;
@@ -478,7 +518,7 @@
         loading.querySelector("p").textContent =
           "Lendo arquivos e extraindo contas...";
         results.classList.remove("show");
-        resetAccountSelect();
+        resetAccountSelects();
 
         try {
           const fileReadPromises = Array.from(fileInput.files).map((file) => {
@@ -487,38 +527,46 @@
               reader.onload = (e) =>
                 resolve({ name: file.name, content: e.target.result });
               reader.onerror = (e) => reject(e);
-              // **CORREÇÃO DA ACENTUAÇÃO: Mudar de 'UTF-8' para 'ISO-8859-1'**
               reader.readAsText(file, "ISO-8859-1");
             });
           });
 
           cachedFilesContent = await Promise.all(fileReadPromises);
 
-          const accounts = new Map();
+          const accountsMap = new Map();
+          const accountLevels = new Set();
+          const accountNatures = new Set(); // Novo Set para as naturezas
+
           for (const file of cachedFilesContent) {
             const lines = file.content.split(/\r?\n/);
             for (const line of lines) {
               if (line.startsWith("|I050|")) {
                 const parts = line.split("|");
-                // **CORREÇÃO DO FILTRO: Adicionar verificação do campo 5 (Nível)**
-                // Campo 5 (Nível) no índice 5, Campo 6 (Código) no índice 6, Campo 8 (Nome) no índice 8
-                if (parts.length > 8 && parts[5] === "5" && parts[6]) {
+                // Campo 3 (Natureza), Campo 5 (Nível), Campo 6 (Código), Campo 8 (Nome)
+                if (parts.length > 8 && parts[3] && parts[5] && parts[6]) {
+                  const nature = parts[3].trim(); // Campo 3
+                  const level = parts[5].trim(); // Campo 5
                   const code = parts[6].trim();
                   const name = parts[8].trim();
-                  if (!accounts.has(code)) {
-                    accounts.set(code, name);
+                  
+                  const key = `${code}-${nature}-${level}`; 
+                  if (!accountsMap.has(key)) {
+                    accountsMap.set(key, { code, name, nature, level });
+                    accountLevels.add(level);
+                    accountNatures.add(nature); // Adiciona a natureza ao Set
                   }
                 }
               }
             }
           }
 
-          const sortedAccounts = Array.from(accounts, ([code, name]) => ({
-            code,
-            name,
-          })).sort((a, b) => a.code.localeCompare(b.code));
+          allExtractedAccounts = Array.from(accountsMap.values()).sort((a, b) =>
+            a.code.localeCompare(b.code)
+          );
 
-          populateAccountSelect(sortedAccounts);
+          populateAccountNatureSelect(Array.from(accountNatures).sort()); // Popula as naturezas
+          populateAccountLevelSelect(Array.from(accountLevels).sort((a, b) => parseInt(a) - parseInt(b)));
+
         } catch (error) {
           console.error("Erro ao ler ou processar os arquivos:", error);
           alert(
@@ -530,28 +578,57 @@
         }
       }
 
-      function populateAccountSelect(accounts) {
-        originalOptions = [];
-        accountSelect.innerHTML = "";
-
-        if (accounts.length > 0) {
-          accountSelect.add(new Option("Selecione uma conta...", ""));
-          accounts.forEach((acc) => {
-            const displayText = `${acc.code} - ${acc.name}`;
-            const option = new Option(displayText, acc.code);
-            originalOptions.push({ text: displayText, value: acc.code });
-            accountSelect.add(option);
-          });
-          accountSelect.disabled = false;
-          accountFilterInput.disabled = false;
-        } else {
-          accountSelect.add(
-            new Option("Nenhuma conta analítica (Nível 5) encontrada", "")
-          );
-          accountSelect.disabled = true;
-          accountFilterInput.disabled = true;
-        }
+      function populateAccountNatureSelect(natures) {
+        accountNatureSelect.innerHTML = '<option value="">Selecione a Natureza...</option>';
+        natures.forEach(natureCode => {
+          const natureName = NATURE_MAP[natureCode] || `Desconhecido (${natureCode})`;
+          accountNatureSelect.add(new Option(`${natureCode} - ${natureName}`, natureCode));
+        });
+        accountNatureSelect.disabled = false;
       }
+
+      function populateAccountLevelSelect(levels) {
+        accountLevelSelect.innerHTML = '<option value="">Selecione o Nível...</option>';
+        levels.forEach(level => {
+          accountLevelSelect.add(new Option(`Nível ${level}`, level));
+        });
+        accountLevelSelect.disabled = false;
+      }
+
+      function filterAndPopulateAccounts() {
+        const selectedNature = accountNatureSelect.value; // Alterado
+        const selectedLevel = accountLevelSelect.value;
+
+        accountSelect.innerHTML = '<option value="">Selecione uma conta...</option>';
+        accountSelect.disabled = true;
+        accountFilterInput.value = "";
+        accountFilterInput.disabled = true;
+        
+        if (!selectedNature || !selectedLevel) { // Alterado
+            checkEnableButton();
+            return;
+        }
+
+        const accountsToDisplay = allExtractedAccounts.filter(acc => 
+            acc.nature === selectedNature && acc.level === selectedLevel // Alterado
+        );
+
+        filteredOptions = [];
+        if (accountsToDisplay.length > 0) {
+            accountsToDisplay.forEach((acc) => {
+                const displayText = `${acc.code} - ${acc.name}`;
+                const option = new Option(displayText, acc.code);
+                filteredOptions.push({ text: displayText, value: acc.code });
+                accountSelect.add(option);
+            });
+            accountSelect.disabled = false;
+            accountFilterInput.disabled = false;
+        } else {
+            accountSelect.add(new Option("Nenhuma conta encontrada para o tipo e nível selecionados", ""));
+        }
+        checkEnableButton();
+      }
+
 
       function formatCurrency(value) {
         if (isNaN(value)) return "N/A";
