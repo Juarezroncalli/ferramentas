@@ -340,7 +340,7 @@
 
           <div class="form-group">
             <label for="account-filter-input" class="form-label"
-              >2. Escolha a Conta Contábil</label
+              >2. Escolha a Conta Contábil Analítica (Nível 5)</label
             >
             <input
               type="text"
@@ -393,7 +393,6 @@
       const uploadArea = document.querySelector(".upload-area");
 
       let cachedFilesContent = [];
-      // **NOVO: Armazena a lista original de opções para o filtro funcionar corretamente**
       let originalOptions = [];
 
       const checkEnableButton = () => {
@@ -402,11 +401,9 @@
         );
       };
 
-      // --- EVENT LISTENERS ---
       accountSelect.addEventListener("change", checkEnableButton);
       fileInput.addEventListener("change", handleFileSelect);
       processBtn.addEventListener("click", processFiles);
-      // **NOVO: Event listener para o campo de filtro**
       accountFilterInput.addEventListener("input", filterAccountOptions);
 
       ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
@@ -455,16 +452,13 @@
         accountFilterInput.disabled = true;
       }
 
-      // **NOVO: Função para filtrar as opções da lista suspensa**
       function filterAccountOptions() {
         const filterText = accountFilterInput.value.toLowerCase();
 
-        // Remove todas as opções atuais
         while (accountSelect.firstChild) {
           accountSelect.removeChild(accountSelect.firstChild);
         }
 
-        // Adiciona apenas as opções que correspondem ao filtro
         let hasMatches = false;
         originalOptions.forEach((opt) => {
           if (opt.text.toLowerCase().includes(filterText)) {
@@ -473,12 +467,9 @@
           }
         });
 
-        // Se não houver correspondências, mostra uma mensagem
         if (!hasMatches) {
           accountSelect.add(new Option("Nenhuma conta encontrada", ""));
         }
-
-        // Garante que o botão seja reavaliado
         checkEnableButton();
       }
 
@@ -496,26 +487,25 @@
               reader.onload = (e) =>
                 resolve({ name: file.name, content: e.target.result });
               reader.onerror = (e) => reject(e);
-              reader.readAsText(file, "UTF-8");
+              // **CORREÇÃO DA ACENTUAÇÃO: Mudar de 'UTF-8' para 'ISO-8859-1'**
+              reader.readAsText(file, "ISO-8859-1");
             });
           });
 
           cachedFilesContent = await Promise.all(fileReadPromises);
 
-          // **ALTERADO: Usa um Map para garantir contas únicas e armazenar o nome**
           const accounts = new Map();
           for (const file of cachedFilesContent) {
             const lines = file.content.split(/\r?\n/);
             for (const line of lines) {
               if (line.startsWith("|I050|")) {
                 const parts = line.split("|");
-                // Campo 6 (COD_CTA) está no índice 6
-                // Campo 8 (NOME_CTA) está no índice 8
-                if (parts.length > 8 && parts[6]) {
+                // **CORREÇÃO DO FILTRO: Adicionar verificação do campo 5 (Nível)**
+                // Campo 5 (Nível) no índice 5, Campo 6 (Código) no índice 6, Campo 8 (Nome) no índice 8
+                if (parts.length > 8 && parts[5] === "5" && parts[6]) {
                   const code = parts[6].trim();
                   const name = parts[8].trim();
                   if (!accounts.has(code)) {
-                    // Evita sobreescrever se já existir
                     accounts.set(code, name);
                   }
                 }
@@ -523,7 +513,6 @@
             }
           }
 
-          // Converte o Map para um array de objetos e ordena pelo código da conta
           const sortedAccounts = Array.from(accounts, ([code, name]) => ({
             code,
             name,
@@ -542,21 +531,23 @@
       }
 
       function populateAccountSelect(accounts) {
-        originalOptions = []; // Limpa a lista original
-        accountSelect.innerHTML = ""; // Limpa o select
+        originalOptions = [];
+        accountSelect.innerHTML = "";
 
         if (accounts.length > 0) {
           accountSelect.add(new Option("Selecione uma conta...", ""));
           accounts.forEach((acc) => {
             const displayText = `${acc.code} - ${acc.name}`;
             const option = new Option(displayText, acc.code);
-            originalOptions.push({ text: displayText, value: acc.code }); // Salva na lista original
+            originalOptions.push({ text: displayText, value: acc.code });
             accountSelect.add(option);
           });
           accountSelect.disabled = false;
           accountFilterInput.disabled = false;
         } else {
-          accountSelect.add(new Option("Nenhuma conta (I050) encontrada", ""));
+          accountSelect.add(
+            new Option("Nenhuma conta analítica (Nível 5) encontrada", "")
+          );
           accountSelect.disabled = true;
           accountFilterInput.disabled = true;
         }
