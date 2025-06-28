@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Analisador de Arquivo TXT - Registros C155</title>
@@ -204,7 +204,7 @@
         padding: 2rem;
         overflow-x: auto;
       }
-      
+
       .loading {
         display: none;
         text-align: center;
@@ -232,7 +232,7 @@
           transform: rotate(360deg);
         }
       }
-      
+
       .empty-state {
         text-align: center;
         padding: 3rem 2rem;
@@ -274,23 +274,22 @@
       .results-table tbody tr:hover {
         background-color: rgba(79, 0, 114, 0.05);
       }
-      
+
       .search-box {
-          position: relative;
-      }
-      
-      .search-box .fa-search {
-          position: absolute;
-          top: 50%;
-          left: 1rem;
-          transform: translateY(-50%);
-          color: var(--text-muted);
-      }
-      
-      #search-input {
-          padding-left: 3rem;
+        position: relative;
       }
 
+      .search-box .fa-search {
+        position: absolute;
+        top: 50%;
+        left: 1rem;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+      }
+
+      #search-input {
+        padding-left: 3rem;
+      }
 
       @media (max-width: 768px) {
         .container {
@@ -305,12 +304,15 @@
         }
       }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
       <header class="header">
-        <h1><i class="fas fa-file-alt"></i> Analisador de Arquivo TXT</h1>
-        <p>Faça o upload de um arquivo .txt para visualizar os registros |C155| em uma tabela.</p>
+        <h1><i class="fas fa-file-alt"></i> Extrair Balanço da ECD anterior</h1>
+        <p>
+          Faça o upload de um arquivo .txt para visualizar os registros |C155|
+          em uma tabela.
+        </p>
       </header>
 
       <main>
@@ -337,7 +339,7 @@
             </div>
           </div>
         </div>
-        
+
         <div class="loading" id="loading">
           <div class="spinner"></div>
           <p>Processando arquivo...</p>
@@ -350,10 +352,14 @@
             </h2>
           </header>
           <div class="results-content" id="results-content">
-            
             <div class="form-group search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" id="search-input" class="form-input" placeholder="Pesquisar na tabela...">
+              <i class="fas fa-search"></i>
+              <input
+                type="text"
+                id="search-input"
+                class="form-input"
+                placeholder="Pesquisar na tabela..."
+              />
             </div>
 
             <div id="table-container"></div>
@@ -404,13 +410,13 @@
 
       function handleFileSelect() {
         if (fileInput.files.length > 0) {
-            const file = fileInput.files[0];
-            fileNameDisplay.textContent = file.name;
-            fileInfo.classList.add("show");
-            processFile(file);
+          const file = fileInput.files[0];
+          fileNameDisplay.textContent = file.name;
+          fileInfo.classList.add("show");
+          processFile(file);
         } else {
-            fileInfo.classList.remove("show");
-            results.classList.remove("show");
+          fileInfo.classList.remove("show");
+          results.classList.remove("show");
         }
       }
 
@@ -423,26 +429,26 @@
         await new Promise((resolve) => setTimeout(resolve, 500));
 
         try {
-            const content = await file.text();
-            const c155Lines = parseFileContent(content);
-            displayResults(c155Lines);
+          const content = await file.text();
+          const c155Lines = parseFileContent(content);
+          displayResults(c155Lines);
         } catch (error) {
-            console.error("Erro ao ler o arquivo:", error);
-            alert("Ocorreu um erro ao ler o arquivo. Verifique o console.");
+          console.error("Erro ao ler o arquivo:", error);
+          alert("Ocorreu um erro ao ler o arquivo. Verifique o console.");
         } finally {
-            loading.classList.remove("show");
+          loading.classList.remove("show");
         }
       }
 
       function parseFileContent(content) {
-          const lines = content.split(/\r?\n/);
-          const c155Data = [];
-          for(const line of lines) {
-              if (line.startsWith('|C155|')) {
-                  c155Data.push(line.split('|').slice(1, -1));
-              }
+        const lines = content.split(/\r?\n/);
+        const c155Data = [];
+        for (const line of lines) {
+          if (line.startsWith("|C155|")) {
+            c155Data.push(line.split("|").slice(1, -1));
           }
-          return c155Data;
+        }
+        return c155Data;
       }
 
       function displayResults(data) {
@@ -454,55 +460,61 @@
               <p>O arquivo selecionado não contém linhas que iniciam com "|C155|".</p>
             </div>`;
         } else {
-            const headers = [
-                "REGISTRO", "CODIGO DA CONTA", "CODIGO CENTRO DE CUSTO",
-                "VALOR DO SALDO INICIAL", "INDICADOR", "TOTAL DE DEBITOS",
-                "TOTAL DE CREDITOS", "SALDO FINAL", "INDICADOR"
-            ];
-            
-            let tableHTML = `<table class="results-table" id="data-table"><thead><tr>`;
-            
-            headers.forEach(header => {
-                tableHTML += `<th>${header}</th>`;
+          const headers = [
+            "REGISTRO",
+            "CODIGO DA CONTA",
+            "CODIGO CENTRO DE CUSTO",
+            "VALOR DO SALDO INICIAL",
+            "INDICADOR",
+            "TOTAL DE DEBITOS",
+            "TOTAL DE CREDITOS",
+            "SALDO FINAL",
+            "INDICADOR",
+          ];
+
+          let tableHTML = `<table class="results-table" id="data-table"><thead><tr>`;
+
+          headers.forEach((header) => {
+            tableHTML += `<th>${header}</th>`;
+          });
+
+          tableHTML += `</tr></thead><tbody>`;
+
+          data.forEach((row) => {
+            tableHTML += `<tr>`;
+            row.forEach((cell) => {
+              tableHTML += `<td>${cell}</td>`;
             });
+            tableHTML += `</tr>`;
+          });
 
-            tableHTML += `</tr></thead><tbody>`;
-
-            data.forEach((row) => {
-                tableHTML += `<tr>`;
-                row.forEach(cell => {
-                    tableHTML += `<td>${cell}</td>`;
-                });
-                tableHTML += `</tr>`;
-            });
-
-            tableHTML += `</tbody></table>`;
-            tableContainer.innerHTML = tableHTML;
+          tableHTML += `</tbody></table>`;
+          tableContainer.innerHTML = tableHTML;
         }
 
         results.classList.add("show");
       }
-      
-      function filterTable() {
-          const searchTerm = searchInput.value.toLowerCase();
-          const table = document.getElementById("data-table");
-          if (!table) return;
-          
-          const rows = table.getElementsByTagName("tr");
 
-          for (let i = 1; i < rows.length; i++) {
-              const row = rows[i];
-              const cells = row.getElementsByTagName("td");
-              let found = false;
-              for(let j = 0; j < cells.length; j++) {
-                  if (cells[j].textContent.toLowerCase().includes(searchTerm)) {
-                      found = true;
-                      break;
-                  }
-              }
-              row.style.display = found ? "" : "none";
+      function filterTable() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const table = document.getElementById("data-table");
+        if (!table) return;
+
+        const rows = table.getElementsByTagName("tr");
+
+        for (let i = 1; i < rows.length; i++) {
+          const row = rows[i];
+          const cells = row.getElementsByTagName("td");
+          let found = false;
+          for (let j = 0; j < cells.length; j++) {
+            if (cells[j].textContent.toLowerCase().includes(searchTerm)) {
+              found = true;
+              break;
+            }
           }
+          row.style.display = found ? "" : "none";
+        }
       }
     </script>
-</body>
+  </body>
 </html>
