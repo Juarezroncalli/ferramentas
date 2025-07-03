@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Corretor de Contas SPED |C170| e |C175|</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+    <style>
+      :root {
+        --primary-color: #4f0072; --accent-color: #fb0a5e; --background-color: #ffffff;
+        --form-bg-color: #f9f9f9; --text-color: #333333; --border-color: #e0e0e0;
+        --text-color-light: #ffffff; --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease; --primary-dark: #3d005a; --success: #10b981;
+        --error: #ef4444; --text-muted: #64748b; --radius: 0.5rem; --radius-lg: 0.75rem;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh; color: var(--text-color); line-height: 1.6; padding: 2rem 0;
+      }
+      .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+      .header { text-align: center; margin-bottom: 2rem; }
+      .header h1 { color: white; font-size: 2.5rem; font-weight: 700; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+      .header p { color: rgba(255, 255, 255, 0.9); font-size: 1.1rem; }
+      .main-content > section {
+        background: var(--background-color); border-radius: var(--radius-lg);
+        padding: 2rem; box-shadow: var(--sombra); margin-bottom: 2rem;
+      }
+      .upload-area {
+        border: 2px dashed var(--border-color); border-radius: var(--radius); padding: 3rem 2rem;
+        text-align: center; transition: var(--transicao); cursor: pointer;
+      }
+      .upload-area:hover { border-color: var(--primary-color); background: var(--form-bg-color); }
+      .upload-icon { font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; }
+      #file-input { display: none; }
+      .file-info {
+        background: var(--form-bg-color); border-radius: var(--radius); padding: 1rem;
+        margin-top: 1.5rem; display: none; align-items: center; gap: 1rem;
+      }
+      .file-info.show { display: flex; }
+      .btn {
+        background: var(--primary-color); color: var(--text-color-light); border: none;
+        padding: 0.875rem 2rem; border-radius: var(--radius); font-weight: 600;
+        font-size: 1rem; cursor: pointer; transition: var(--transicao);
+        display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;
+      }
+      .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+      .btn:disabled { background: var(--text-muted); cursor: not-allowed; transform: none; }
+      .btn-process { width: 100%; justify-content: center; margin-top: 1.5rem; }
+      .section-title { font-size: 1.5rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent-color); }
+      .hidden { display: none !important; }
+      .loading { text-align: center; padding: 3rem 2rem; color: var(--text-muted); }
+      .spinner {
+        border: 3px solid var(--border-color); border-top: 3px solid var(--primary-color);
+        border-radius: 50%; width: 40px; height: 40px;
+        animation: spin 1s linear infinite; margin: 0 auto 1rem;
+      }
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      .input-group { display: flex; flex-direction: column; }
+      .input-group label { font-size: 0.875rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.25rem; }
+      .input-group input {
+        padding: 0.75rem; border: 1px solid var(--border-color);
+        border-radius: var(--radius); font-size: 1rem;
+      }
+      .correlation-input-group {
+          padding: 1rem;
+          background-color: #fafafa;
+          border-left: 4px solid var(--accent-color);
+          border-radius: var(--radius);
+          margin-bottom: 1.5rem;
+      }
+      .overwrite-option {
+          margin-top: 0.75rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+      }
+       .overwrite-option input[type="checkbox"] {
+          width: 1rem;
+          height: 1rem;
+          flex-shrink: 0;
+      }
+       .overwrite-option label {
+          font-size: 0.875rem;
+          font-weight: normal;
+          color: var(--text-muted);
+          margin-bottom: 0;
+          cursor: pointer;
+      }
+      .results-preview {
+        background-color: #2d3748; color: #f7fafc; padding: 1.5rem;
+        border-radius: var(--radius); font-family: 'Courier New', Courier, monospace;
+        white-space: pre; overflow-x: auto; max-height: 400px;
+      }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fa-solid fa-wand-magic-sparkles"></i> Corretor de Contas SPED |C170| e |C175|</h1>
+            <p>Faça o upload do seu arquivo SPED Contribuições (.txt) para corrigir as contas contábeis</p>
+        </header>
+
+        <main class="main-content">
+            <section id="upload-section">
+                <div class="upload-area" onclick="document.getElementById('file-input').click()">
+                    <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                    <p><strong>Clique para selecionar um arquivo SPED</strong></p>
+                    <p>ou arraste e solte o arquivo .txt aqui</p>
+                    <input type="file" id="file-input" accept=".txt" />
+                </div>
+                <div class="file-info" id="file-info">
+                    <i class="fas fa-file-alt" style="color: var(--success); font-size: 1.5rem;"></i>
+                    <div>
+                        <div id="file-name" style="font-weight: 600;"></div>
+                        <div id="file-size" style="color: var(--text-muted); font-size: 0.875rem;"></div>
+                    </div>
+                </div>
+                <button class="btn btn-process" id="process-btn" disabled>
+                    <i class="fas fa-play"></i> Iniciar Processamento
+                </button>
+            </section>
+
+            <section id="loading-section" class="hidden">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Analisando arquivo SPED e verificando CFOPs...</p>
+                </div>
+            </section>
+            
+            <section id="correlation-section" class="hidden">
+                <h2 class="section-title"><i class="fas fa-link"></i> CFOPs Pendentes de Conta Contábil</h2>
+                <p class="text-muted" style="margin-bottom: 1.5rem;">Encontramos registros sem conta contábil. Informe a conta para cada CFOP e escolha se deseja substituir os valores já existentes.</p>
+                <div id="correlation-form"></div>
+                <button id="save-correlations-btn" class="btn btn-process"><i class="fas fa-save"></i> Salvar Contas e Continuar</button>
+            </section>
+
+            <section id="export-section" class="hidden">
+                <h2 class="section-title"><i class="fas fa-file-export"></i> Pré-visualização e Exportação</h2>
+                <p class="text-muted" style="margin-bottom: 1.5rem;">O arquivo foi processado. Abaixo está uma pré-visualização das primeiras linhas do arquivo corrigido.</p>
+                <div class="results-preview" id="results-preview">A pré-visualização aparecerá aqui...</div>
+                <button id="export-btn" class="btn btn-process"><i class="fas fa-download"></i> Gerar e Baixar Arquivo TXT Corrigido</button>
+            </section>
+        </main>
+    </div>
+
+<script>
+    // --- ELEMENTOS DO DOM ---
+    const fileInput = document.getElementById('file-input');
+    const processBtn = document.getElementById('process-btn');
+    const uploadArea = document.querySelector('.upload-area');
+    const fileInfo = document.getElementById('file-info');
+    const fileNameDiv = document.getElementById('file-name');
+    const fileSizeDiv = document.getElementById('file-size');
+
+    const uploadSection = document.getElementById('upload-section');
+    const loadingSection = document.getElementById('loading-section');
+    const correlationSection = document.getElementById('correlation-section');
+    const exportSection = document.getElementById('export-section');
+    
+    const correlationForm = document.getElementById('correlation-form');
+    const saveCorrelationsBtn = document.getElementById('save-correlations-btn');
+    
+    const resultsPreview = document.getElementById('results-preview');
+    const exportBtn = document.getElementById('export-btn');
+
+    // --- VARIÁVEIS GLOBAIS ---
+    let spedLines = [];
+    let sessionCFOPMap = {}; 
+
+    // --- FUNÇÕES DE LÓGICA PRINCIPAL ---
+
+    function handleFileSelect(files) {
+        if (!files || files.length === 0) return;
+        const file = files[0];
+        fileNameDiv.textContent = file.name;
+        fileSizeDiv.textContent = `Tamanho: ${(file.size / 1024).toFixed(2)} KB`;
+        fileInfo.classList.add('show');
+        processBtn.disabled = false;
+        resetUI();
+    }
+
+    async function processFile() {
+        if (!fileInput.files || fileInput.files.length === 0) {
+            alert("Por favor, selecione um arquivo .txt.");
+            return;
+        }
+        showSection('loading');
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                spedLines = e.target.result.split(/\r?\n/);
+                if (spedLines.length <= 1) {
+                    alert("O arquivo parece estar vazio ou em um formato inesperado.");
+                    showSection('upload');
+                    return;
+                }
+                checkCFOPs();
+            } catch (error) {
+                console.error(error);
+                alert("Ocorreu um erro ao ler o arquivo.\nDetalhes: " + error.message);
+                showSection('upload');
+            }
+        };
+        reader.onerror = () => {
+             alert("Não foi possível ler o arquivo.");
+             showSection('upload');
+        }
+        reader.readAsText(file, 'UTF-8');
+    }
+    
+    function checkCFOPs() {
+        const pendingCFOPs = new Set();
+        for (const line of spedLines) {
+            if (line.startsWith('|C170|')) {
+                const fields = line.split('|');
+                if (!fields[37]) {
+                    const cfop = fields[11];
+                    if (cfop) pendingCFOPs.add(cfop);
+                }
+            } else if (line.startsWith('|C175|')) {
+                const fields = line.split('|');
+                if (!fields[17]) {
+                    const cfop = fields[2];
+                    if (cfop) pendingCFOPs.add(cfop);
+                }
+            }
+        }
+        if (pendingCFOPs.size > 0) {
+            displayCFOPForm(pendingCFOPs);
+            showSection('correlation');
+        } else {
+            showSection('export');
+            generatePreview();
+        }
+    }
+    
+    function displayCFOPForm(pendingCFOPs) {
+        correlationForm.innerHTML = '';
+        pendingCFOPs.forEach((cfop) => {
+            const group = document.createElement('div');
+            group.className = 'input-group correlation-input-group';
+            group.innerHTML = `
+                <label for="conta-${cfop}">Para o CFOP: <strong>${cfop}</strong></label>
+                <input type="text" name="conta" id="conta-${cfop}" data-cfop="${cfop}" placeholder="Informe a Conta Contábil" required>
+                <div class="overwrite-option">
+                    <input type="checkbox" id="overwrite-${cfop}" data-overwrite-cfop="${cfop}">
+                    <label for="overwrite-${cfop}">Substituir todas as contas existentes para este CFOP</label>
+                </div>
+            `;
+            correlationForm.appendChild(group);
+        });
+    }
+
+    function saveAndContinue() {
+        sessionCFOPMap = {};
+        let allFilled = true;
+        
+        document.querySelectorAll('input[data-cfop]').forEach(input => {
+            const cfop = input.dataset.cfop;
+            const conta = input.value.trim();
+            const overwriteCheckbox = document.getElementById(`overwrite-${cfop}`);
+            const shouldOverwrite = overwriteCheckbox.checked;
+
+            if (conta) {
+                sessionCFOPMap[cfop] = { 
+                    account: conta,
+                    overwrite: shouldOverwrite 
+                };
+            } else {
+                allFilled = false;
+            }
+        });
+
+        if (!allFilled) {
+            alert('Por favor, preencha a conta para todos os CFOPs pendentes.');
+            return;
+        }
+        
+        showSection('export');
+        generatePreview();
+    }
+    
+    function generateTxtContent() {
+        const cfopMap = sessionCFOPMap;
+        const newLines = [];
+        let hasError = false;
+
+        for (const line of spedLines) {
+            let processed = false;
+            
+            if (line.startsWith('|C170|')) {
+                let fields = line.split('|');
+                const cfop = fields[11];
+                const existingAccount = fields[37];
+                const mapping = cfopMap[cfop];
+
+                if (mapping && (!existingAccount || mapping.overwrite)) {
+                    fields[37] = mapping.account;
+                    newLines.push(fields.join('|'));
+                    processed = true;
+                }
+            } else if (line.startsWith('|C175|')) {
+                let fields = line.split('|');
+                const cfop = fields[2];
+                const existingAccount = fields[17];
+                const mapping = cfopMap[cfop];
+
+                if (mapping && (!existingAccount || mapping.overwrite)) {
+                    fields[17] = mapping.account;
+                    newLines.push(fields.join('|'));
+                    processed = true;
+                }
+            }
+
+            if (!processed) {
+                newLines.push(line);
+            }
+        }
+
+        return newLines.join('\n');
+    }
+
+    function generatePreview() {
+        try {
+            const txtContent = generateTxtContent();
+            const previewContent = txtContent.split('\n').slice(0, 20).join('\n');
+            resultsPreview.textContent = previewContent;
+            exportBtn.disabled = false;
+        } catch (error) {
+            resultsPreview.textContent = `Erro ao gerar pré-visualização: ${error.message}`;
+            exportBtn.disabled = true;
+        }
+    }
+
+    function generateAndDownload() {
+        try {
+            const txtContent = generateTxtContent();
+            const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            
+            const originalFileName = fileInput.files[0].name.replace('.txt', '');
+            link.download = `${originalFileName}_corrigido.txt`;
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error) {
+            alert(`Erro ao gerar o arquivo: ${error.message}`);
+        }
+    }
+
+    // --- FUNÇÕES DE UI E MANIPULAÇÃO DO DOM ---
+    
+    function showSection(sectionName) {
+        const sections = ['upload', 'loading', 'correlation', 'export'];
+        sections.forEach(sec => {
+            document.getElementById(`${sec}-section`).classList.add('hidden');
+        });
+        document.getElementById(`${sectionName}-section`).classList.remove('hidden');
+    }
+
+    function resetUI() {
+        showSection('upload');
+        spedLines = [];
+        sessionCFOPMap = {};
+        resultsPreview.textContent = 'A pré-visualização aparecerá aqui...';
+        exportBtn.disabled = true;
+    }
+
+    // --- EVENT LISTENERS ---
+    ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
+        uploadArea.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
+    });
+    uploadArea.addEventListener('drop', (e) => handleFileSelect(e.dataTransfer.files));
+    fileInput.addEventListener('change', (e) => handleFileSelect(e.target.files));
+    processBtn.addEventListener('click', processFile);
+    saveCorrelationsBtn.addEventListener('click', saveAndContinue);
+    exportBtn.addEventListener('click', generateAndDownload);
+
+</script>
+</body>
+</html>
