@@ -26,7 +26,11 @@
         --radius: 0.5rem;
         --radius-lg: 0.75rem;
       }
-      * { margin: 0; padding: 0; box-sizing: border-box; }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
       body {
         font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
           Roboto, sans-serif;
@@ -36,91 +40,235 @@
         line-height: 1.6;
         padding-bottom: 2rem;
       }
-      .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
-      .header { text-align: center; margin-bottom: 3rem; }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
       .header h1 {
-        color: white; font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
-      .header p { color: rgba(255, 255, 255, 0.8); font-size: 1.1rem; }
+      .header p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+      }
       .upload-section {
-        background: var(--background-color); border-radius: var(--radius-lg);
-        padding: 2rem; box-shadow: var(--sombra); margin-bottom: 2rem;
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--sombra);
+        margin-bottom: 2rem;
       }
       .upload-area {
-        border: 2px dashed var(--border-color); border-radius: var(--radius);
-        padding: 3rem 2rem; text-align: center; transition: var(--transicao);
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius);
+        padding: 3rem 2rem;
+        text-align: center;
+        transition: var(--transicao);
         cursor: pointer;
       }
-      .upload-area:hover { border-color: var(--primary-color); background: var(--form-bg-color); }
-      .upload-icon { font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; }
-      #file-input { display: none; }
+      .upload-area:hover {
+        border-color: var(--primary-color);
+        background: var(--form-bg-color);
+      }
+      .upload-icon {
+        font-size: 3rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+      }
+      #file-input {
+        display: none;
+      }
       .file-info {
-        background: var(--form-bg-color); border-radius: var(--radius);
-        padding: 1rem; margin-top: 1.5rem; display: none; align-items: center; gap: 1rem;
+        background: var(--form-bg-color);
+        border-radius: var(--radius);
+        padding: 1rem;
+        margin-top: 1.5rem;
+        display: none;
+        align-items: center;
+        gap: 1rem;
       }
-      .file-info.show { display: flex; }
-      .file-icon { color: var(--success); font-size: 1.5rem; }
-      .file-name { font-weight: 600; }
-      .file-size { color: var(--text-muted); font-size: 0.875rem; }
+      .file-info.show {
+        display: flex;
+      }
+      .file-icon {
+        color: var(--success);
+        font-size: 1.5rem;
+      }
+      .file-name {
+        font-weight: 600;
+      }
+      .file-size {
+        color: var(--text-muted);
+        font-size: 0.875rem;
+      }
       .btn {
-        background: var(--primary-color); color: var(--text-color-light);
-        border: none; padding: 0.875rem 2rem; border-radius: var(--radius);
-        font-weight: 600; font-size: 1rem; cursor: pointer;
-        transition: var(--transicao); display: inline-flex; align-items: center; gap: 0.5rem;
+        background: var(--primary-color);
+        color: var(--text-color-light);
+        border: none;
+        padding: 0.875rem 2rem;
+        border-radius: var(--radius);
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transicao);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
       }
-      .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
-      .btn:disabled { background: var(--text-muted); cursor: not-allowed; transform: none; }
-      .btn-process { width: 100%; justify-content: center; margin-top: 1.5rem; }
-      
+      .btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+      }
+      .btn:disabled {
+        background: var(--text-muted);
+        cursor: not-allowed;
+        transform: none;
+      }
+      .btn-process {
+        width: 100%;
+        justify-content: center;
+        margin-top: 1.5rem;
+      }
+
       #search-section {
-        display: none; background: var(--background-color); padding: 1.5rem;
-        border-radius: var(--radius-lg); margin-top: 2rem; box-shadow: var(--sombra);
+        display: none;
+        background: var(--background-color);
+        padding: 1.5rem;
+        border-radius: var(--radius-lg);
+        margin-top: 2rem;
+        box-shadow: var(--sombra);
         animation: slideIn 0.5s ease-out;
       }
-      .search-wrapper { position: relative; }
+      .search-wrapper {
+        position: relative;
+      }
       .search-icon {
-        position: absolute; left: 1rem; top: 50%;
-        transform: translateY(-50%); color: var(--text-muted);
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
       }
       #search-input {
-        width: 100%; font-family: "Inter", sans-serif; padding: 0.75rem 1rem 0.75rem 2.8rem; 
-        border: 1px solid var(--border-color); border-radius: var(--radius); font-size: 1rem;
+        width: 100%;
+        font-family: "Inter", sans-serif;
+        padding: 0.75rem 1rem 0.75rem 2.8rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        font-size: 1rem;
       }
 
       .results {
-        background: var(--background-color); border-radius: var(--radius-lg);
-        box-shadow: var(--sombra); overflow: hidden; display: none; margin-top: 2rem;
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--sombra);
+        overflow: hidden;
+        display: none;
+        margin-top: 2rem;
       }
-      .results.show, #search-section.show { display: block; animation: slideIn 0.5s ease-out; }
-      @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+      .results.show,
+      #search-section.show {
+        display: block;
+        animation: slideIn 0.5s ease-out;
+      }
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
       .results-header {
-        background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-        color: var(--text-color-light); padding: 1.5rem 2rem;
-        display: flex; align-items: center; gap: 1rem;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--primary-dark)
+        );
+        color: var(--text-color-light);
+        padding: 1.5rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        justify-content: space-between;
       }
-      .results-title { font-size: 1.25rem; font-weight: 600; }
-      .results-content { padding: 2rem; }
-      .loading { display: none; }
-      .loading.show { display: block; }
-      .loading, .empty-state { text-align: center; padding: 3rem 2rem; color: var(--text-muted); }
+      .header-main-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .results-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+      .header-stats {
+        font-size: 1rem;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+      .results-content {
+        padding: 2rem;
+      }
+      .loading {
+        display: none;
+      }
+      .loading.show {
+        display: block;
+      }
+      .loading,
+      .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: var(--text-muted);
+      }
       .spinner {
-        border: 3px solid var(--border-color); border-top: 3px solid var(--primary-color);
-        border-radius: 50%; width: 40px; height: 40px;
-        animation: spin 1s linear infinite; margin: 0 auto 1rem;
+        border: 3px solid var(--border-color);
+        border-top: 3px solid var(--primary-color);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
       }
-      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-      .empty-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.5; }
-      
-      .item-group-section { 
-        margin-bottom: 2.5rem; 
-        padding-bottom: 1.5rem; 
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+
+      .item-group-section {
+        margin-bottom: 2.5rem;
+        padding-bottom: 1.5rem;
         border-bottom: 1px solid var(--border-color);
       }
-      .item-group-section:last-of-type { border-bottom: none; }
+      .item-group-section:last-of-type {
+        border-bottom: none;
+      }
       .group-title {
-        font-size: 1.5rem; font-weight: 700; color: var(--primary-color);
-        margin-bottom: 1rem; padding-bottom: 0.5rem;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
         border-bottom: 2px solid var(--accent-color);
       }
 
@@ -134,31 +282,65 @@
         font-weight: bold;
       }
 
-      .results-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+      .results-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+      }
       .results-table thead th {
-        background-color: var(--form-bg-color); color: var(--primary-dark);
-        font-weight: 600; text-align: left; padding: 0.75rem 1rem;
+        background-color: var(--form-bg-color);
+        color: var(--primary-dark);
+        font-weight: 600;
+        text-align: left;
+        padding: 0.75rem 1rem;
         border-bottom: 2px solid var(--border-color);
       }
-      .results-table tbody tr { border-bottom: 1px solid var(--border-color); }
-      .results-table tbody tr.hidden-row { display: none; }
-      .results-table td { padding: 0.75rem 1rem; vertical-align: top; }
-      .results-table td.amount, .summary-value { font-family: "Monaco", "Menlo", monospace; font-weight: 600; }
-      .results-table tfoot tr { border-top: 2px solid var(--border-color); background-color: var(--form-bg-color); }
-      .results-table tfoot td { font-weight: 700; padding: 0.8rem 1rem; }
-      .summary-label { text-align: right; color: var(--primary-dark); }
-      .amount.positive { color: var(--success); }
+      .results-table tbody tr {
+        border-bottom: 1px solid var(--border-color);
+      }
+      .results-table tbody tr.hidden-row {
+        display: none;
+      }
+      .results-table td {
+        padding: 0.75rem 1rem;
+        vertical-align: top;
+      }
+      .results-table td.amount,
+      .summary-value {
+        font-family: "Monaco", "Menlo", monospace;
+        font-weight: 600;
+      }
+      .results-table tfoot tr {
+        border-top: 2px solid var(--border-color);
+        background-color: var(--form-bg-color);
+      }
+      .results-table tfoot td {
+        font-weight: 700;
+        padding: 0.8rem 1rem;
+      }
+      .summary-label {
+        text-align: right;
+        color: var(--primary-dark);
+      }
+      .amount.positive {
+        color: var(--success);
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <div class="header">
-        <h1><i class="fas fa-file-invoice-dollar"></i> Analisador de NFS-e XML</h1>
+        <h1>
+          <i class="fas fa-file-invoice-dollar"></i> Analisador de NFS-e XML
+        </h1>
         <p>Extraia e totalize os serviços de seus arquivos XML de NFS-e</p>
       </div>
 
       <div class="upload-section">
-        <div class="upload-area" onclick="document.getElementById('file-input').click()">
+        <div
+          class="upload-area"
+          onclick="document.getElementById('file-input').click()"
+        >
           <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
           <p><strong>Clique para selecionar os arquivos</strong></p>
           <p>ou arraste e solte um ou mais arquivos .xml aqui</p>
@@ -172,8 +354,13 @@
             <div id="file-size"></div>
           </div>
         </div>
-        
-        <button class="btn btn-process" id="process-btn" onclick="processFiles()" disabled>
+
+        <button
+          class="btn btn-process"
+          id="process-btn"
+          onclick="processFiles()"
+          disabled
+        >
           <i class="fas fa-cogs"></i> Processar Arquivos
         </button>
       </div>
@@ -185,15 +372,24 @@
 
       <div id="search-section">
         <div class="search-wrapper">
-            <i class="fas fa-search search-icon"></i>
-            <input type="search" id="search-input" placeholder="Filtrar por discriminação do serviço...">
+          <i class="fas fa-search search-icon"></i>
+          <input
+            type="search"
+            id="search-input"
+            placeholder="Filtrar por discriminação do serviço..."
+          />
         </div>
       </div>
 
       <div class="results" id="results">
         <div class="results-header">
-          <i class="fas fa-chart-pie"></i>
-          <div class="results-title">Resumo por Item e Discriminação do Serviço</div>
+          <div class="header-main-info">
+            <i class="fas fa-chart-pie"></i>
+            <div class="results-title">
+              Resumo por Item e Discriminação do Serviço
+            </div>
+          </div>
+          <div id="invoice-count-display" class="header-stats"></div>
         </div>
         <div class="results-content" id="results-content"></div>
       </div>
@@ -206,27 +402,45 @@
       const results = document.getElementById("results");
       const resultsContent = document.getElementById("results-content");
       const uploadArea = document.querySelector(".upload-area");
-      const searchSection = document.getElementById('search-section');
-      const searchInput = document.getElementById('search-input');
+      const searchSection = document.getElementById("search-section");
+      const searchInput = document.getElementById("search-input");
 
       ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
-        uploadArea.addEventListener(eventName, (e) => e.preventDefault(), false);
+        uploadArea.addEventListener(
+          eventName,
+          (e) => e.preventDefault(),
+          false
+        );
       });
-      uploadArea.addEventListener("drop", (e) => handleFileSelect(e.dataTransfer.files), false);
-      fileInput.addEventListener("change", (e) => handleFileSelect(e.target.files));
-      searchInput.addEventListener('input', filterAndSummarizeTable);
+      uploadArea.addEventListener(
+        "drop",
+        (e) => handleFileSelect(e.dataTransfer.files),
+        false
+      );
+      fileInput.addEventListener("change", (e) =>
+        handleFileSelect(e.target.files)
+      );
+      searchInput.addEventListener("input", filterAndSummarizeTable);
 
       function handleFileSelect(files) {
         if (!files || files.length === 0) return;
-        fileInput.files = files; 
+        fileInput.files = files;
         const fileInfo = document.getElementById("file-info");
-        const totalSize = Array.from(files).reduce((acc, file) => acc + file.size, 0);
-        document.getElementById("file-name").textContent = files.length > 1 ? `${files.length} arquivos selecionados` : files[0].name;
-        document.getElementById("file-size").textContent = `Tamanho total: ${formatFileSize(totalSize)}`;
+        const totalSize = Array.from(files).reduce(
+          (acc, file) => acc + file.size,
+          0
+        );
+        document.getElementById("file-name").textContent =
+          files.length > 1
+            ? `${files.length} arquivos selecionados`
+            : files[0].name;
+        document.getElementById(
+          "file-size"
+        ).textContent = `Tamanho total: ${formatFileSize(totalSize)}`;
         fileInfo.classList.add("show");
         processBtn.disabled = false;
         results.classList.remove("show");
-        searchSection.classList.remove('show');
+        searchSection.classList.remove("show");
       }
 
       function formatFileSize(bytes) {
@@ -244,45 +458,55 @@
         }
         loading.classList.add("show");
         results.classList.remove("show");
-        searchSection.classList.remove('show');
-        searchInput.value = '';
+        searchSection.classList.remove("show");
+        searchInput.value = "";
 
         try {
-          const fileContents = await Promise.all(Array.from(fileInput.files).map(readFile));
+          const fileContents = await Promise.all(
+            Array.from(fileInput.files).map(readFile)
+          );
           const summary = {};
+          let servicosContados = 0;
 
-          fileContents.forEach(content => {
+          fileContents.forEach((content) => {
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(content, "text/xml");
             if (xmlDoc.getElementsByTagName("parsererror").length > 0) return;
-            
+
             const servicos = xmlDoc.getElementsByTagName("Servico");
 
             for (const servico of servicos) {
-              const valorNode = servico.getElementsByTagName("ValorServicos")[0];
+              const valorNode =
+                servico.getElementsByTagName("ValorServicos")[0];
               const discNode = servico.getElementsByTagName("Discriminacao")[0];
-              const itemNode = servico.getElementsByTagName("ItemListaServico")[0];
+              const itemNode =
+                servico.getElementsByTagName("ItemListaServico")[0];
 
               if (valorNode && discNode && itemNode) {
+                servicosContados++; // Incrementa para cada serviço encontrado
                 const valor = parseFloat(valorNode.textContent);
                 const itemKey = itemNode.textContent.trim();
-                const discKey = discNode.textContent.replace(/[\r\n\t]+/g, ' ').replace(/\s\s+/g, ' ').trim().toLowerCase();
+                const discKey = discNode.textContent
+                  .replace(/[\r\n\t]+/g, " ")
+                  .replace(/\s\s+/g, " ")
+                  .trim()
+                  .toLowerCase();
 
                 if (!isNaN(valor) && itemKey && discKey) {
                   if (!summary[itemKey]) {
                     summary[itemKey] = {};
                   }
-                  summary[itemKey][discKey] = (summary[itemKey][discKey] || 0) + valor;
+                  summary[itemKey][discKey] =
+                    (summary[itemKey][discKey] || 0) + valor;
                 }
               }
             }
           });
-          
-          setTimeout(() => {
-             displayResults(summary);
-             loading.classList.remove("show");
-          }, 500);
 
+          setTimeout(() => {
+            displayResults(summary, servicosContados);
+            loading.classList.remove("show");
+          }, 500);
         } catch (error) {
           loading.classList.remove("show");
           alert("Erro ao ler ou processar os arquivos: " + error.message);
@@ -293,33 +517,48 @@
         return new Promise((resolve, reject) => {
           const reader = new FileReader();
           reader.onload = (e) => resolve(e.target.result);
-          reader.onerror = () => reject(new Error("Erro ao ler o arquivo " + file.name));
-          reader.readAsText(file, 'UTF-8');
+          reader.onerror = () =>
+            reject(new Error("Erro ao ler o arquivo " + file.name));
+          reader.readAsText(file, "UTF-8");
         });
       }
-      
+
       function formatCurrency(value) {
-        return isNaN(value) ? "" : value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+        return isNaN(value)
+          ? ""
+          : value.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            });
       }
 
-      function displayResults(summary) {
-        resultsContent.innerHTML = '';
-        const itemKeys = Object.keys(summary).sort();
+      function displayResults(summary, servicosContados) {
+        resultsContent.innerHTML = "";
 
+        const countDisplay = document.getElementById("invoice-count-display");
+        if (countDisplay) {
+          const plural =
+            servicosContados === 1
+              ? "Serviço Encontrado"
+              : "Serviços Encontrados";
+          countDisplay.innerHTML = `<i class="fas fa-list-ol" style="margin-right: 0.5rem; opacity: 0.8;"></i> ${servicosContados} ${plural}`;
+        }
+
+        const itemKeys = Object.keys(summary).sort();
         if (itemKeys.length === 0) {
-          resultsContent.innerHTML = `<div class="empty-state"><div class="empty-icon"><i class="fas fa-search-dollar"></i></div><h3>Nenhum Serviço Encontrado</h3><p>Verifique se os arquivos XML contêm as tags 'ItemListaServico', 'ValorServicos' e 'Discriminacao'.</p></div>`;
+          resultsContent.innerHTML = `<div class="empty-state"><div class="empty-icon"><i class="fas fa-search-dollar"></i></div><h3>Nenhum Serviço Encontrado</h3><p>Verifique se os arquivos XML contêm serviços com as tags 'ItemListaServico', 'ValorServicos' e 'Discriminacao' corretamente preenchidas.</p></div>`;
           results.classList.add("show");
-          searchSection.classList.remove('show');
+          searchSection.classList.remove("show");
           return;
         }
 
-        let allGroupsHtml = '';
-        itemKeys.forEach(itemKey => {
-            const groupData = summary[itemKey];
-            const discKeys = Object.keys(groupData).sort();
-            let groupTotal = 0;
+        let allGroupsHtml = "";
+        itemKeys.forEach((itemKey) => {
+          const groupData = summary[itemKey];
+          const discKeys = Object.keys(groupData).sort();
+          let groupTotal = 0;
 
-            let tableHtml = `<div class="item-group-section" data-item-code="${itemKey}">
+          let tableHtml = `<div class="item-group-section" data-item-code="${itemKey}">
                                 <h3 class="group-title">Item da Lista de Serviço: ${itemKey}</h3>
                                 <table class="results-table">
                                     <thead>
@@ -329,28 +568,35 @@
                                         </tr>
                                     </thead>
                                     <tbody>`;
-            
-            discKeys.forEach(discKey => {
-                const value = groupData[discKey];
-                groupTotal += value;
-                tableHtml += `<tr data-value="${value}">
-                                <td>${discKey.charAt(0).toUpperCase() + discKey.slice(1)}</td>
-                                <td class="amount positive">${formatCurrency(value)}</td>
-                              </tr>`;
-            });
 
-            tableHtml += `      </tbody>
+          discKeys.forEach((discKey) => {
+            const value = groupData[discKey];
+            groupTotal += value;
+            tableHtml += `<tr data-value="${value}">
+                                <td>${
+                                  discKey.charAt(0).toUpperCase() +
+                                  discKey.slice(1)
+                                }</td>
+                                <td class="amount positive">${formatCurrency(
+                                  value
+                                )}</td>
+                              </tr>`;
+          });
+
+          tableHtml += `      </tbody>
                                 <tfoot>
                                     <tr>
                                         <td class="summary-label"><strong>Subtotal do Item:</strong></td>
-                                        <td class="summary-value positive group-subtotal"><strong>${formatCurrency(groupTotal)}</strong></td>
+                                        <td class="summary-value positive group-subtotal"><strong>${formatCurrency(
+                                          groupTotal
+                                        )}</strong></td>
                                     </tr>
                                 </tfoot>
                             </table>
                         </div>`;
-            allGroupsHtml += tableHtml;
+          allGroupsHtml += tableHtml;
         });
-        
+
         allGroupsHtml += `<div id="final-total-summary">
                             <span class="summary-label" style="margin-right: 1rem;">Total Geral (filtrado):</span>
                             <span id="overall-grand-total" class="summary-value positive"></span>
@@ -358,50 +604,58 @@
 
         resultsContent.innerHTML = allGroupsHtml;
         results.classList.add("show");
-        searchSection.classList.add('show');
+        searchSection.classList.add("show");
         filterAndSummarizeTable(); // Call once to set initial totals
       }
 
       function filterAndSummarizeTable() {
         const searchTerm = searchInput.value.toLowerCase().trim();
-        const groupSections = document.querySelectorAll('.item-group-section');
-        const overallGrandTotalCell = document.getElementById('overall-grand-total');
+        const groupSections = document.querySelectorAll(".item-group-section");
+        const overallGrandTotalCell = document.getElementById(
+          "overall-grand-total"
+        );
         let overallFilteredTotal = 0;
 
-        groupSections.forEach(section => {
-            const rows = section.querySelectorAll('tbody tr');
-            const groupSubtotalCell = section.querySelector('.group-subtotal');
-            let groupFilteredTotal = 0;
-            let isGroupVisible = false;
+        groupSections.forEach((section) => {
+          const rows = section.querySelectorAll("tbody tr");
+          const groupSubtotalCell = section.querySelector(".group-subtotal");
+          let groupFilteredTotal = 0;
+          let isGroupVisible = false;
 
-            rows.forEach(row => {
-                const descriptionCell = row.querySelector('td:first-child');
-                const rowValue = parseFloat(row.dataset.value);
-                
-                if (descriptionCell.textContent.toLowerCase().includes(searchTerm)) {
-                    row.classList.remove('hidden-row');
-                    isGroupVisible = true;
-                    if (!isNaN(rowValue)) {
-                        groupFilteredTotal += rowValue;
-                    }
-                } else {
-                    row.classList.add('hidden-row');
-                }
-            });
+          rows.forEach((row) => {
+            const descriptionCell = row.querySelector("td:first-child");
+            const rowValue = parseFloat(row.dataset.value);
 
-            if (groupSubtotalCell) {
-                groupSubtotalCell.innerHTML = `<strong>${formatCurrency(groupFilteredTotal)}</strong>`;
+            if (
+              descriptionCell.textContent.toLowerCase().includes(searchTerm)
+            ) {
+              row.classList.remove("hidden-row");
+              isGroupVisible = true;
+              if (!isNaN(rowValue)) {
+                groupFilteredTotal += rowValue;
+              }
+            } else {
+              row.classList.add("hidden-row");
             }
-            
-            section.style.display = isGroupVisible ? 'block' : 'none';
-            
-            if (isGroupVisible) {
-                overallFilteredTotal += groupFilteredTotal;
-            }
+          });
+
+          if (groupSubtotalCell) {
+            groupSubtotalCell.innerHTML = `<strong>${formatCurrency(
+              groupFilteredTotal
+            )}</strong>`;
+          }
+
+          section.style.display = isGroupVisible ? "block" : "none";
+
+          if (isGroupVisible) {
+            overallFilteredTotal += groupFilteredTotal;
+          }
         });
 
         if (overallGrandTotalCell) {
-            overallGrandTotalCell.innerHTML = `<strong>${formatCurrency(overallFilteredTotal)}</strong>`;
+          overallGrandTotalCell.innerHTML = `<strong>${formatCurrency(
+            overallFilteredTotal
+          )}</strong>`;
         }
       }
     </script>
