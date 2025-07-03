@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checklist de Conferência - ECD</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease;
+        --primary-dark: #3d005a;
+        --success: #075a3e;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        --text-muted: #64748b;
+        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh;
+        color: var(--text-color);
+        line-height: 1.6;
+        transition: background 0.5s ease;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+
+      .header h1 {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .header p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+      }
+
+      .checklist-section {
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--sombra);
+        margin-bottom: 2rem;
+        transition: var(--transicao);
+      }
+
+      /* Estilo de destaque para o campo de nome da empresa */
+      .company-name-section {
+        background-color: #f8f5fa; /* Fundo suave para destacar a área */
+        padding: 1.5rem;
+        border-radius: var(--radius);
+        margin-bottom: 2rem;
+        border: 1px solid #e0d1e8;
+      }
+
+      .company-name-section label {
+        display: block;
+        font-size: 1.1rem; /* Fonte do rótulo maior */
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 0.75rem;
+      }
+
+      .company-name-section input {
+        width: 100%;
+        padding: 1rem; /* Mais espaço interno */
+        border-radius: var(--radius);
+        border: 1px solid var(--border-color);
+        font-size: 1.25rem; /* Fonte do campo maior */
+        font-weight: 500;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .company-name-section input:focus {
+        outline: none;
+        border-color: var(
+          --accent-color
+        ); /* Destaque na cor de destaque ao focar */
+        box-shadow: 0 0 0 3px rgba(251, 10, 94, 0.2);
+      }
+
+      .progress-area {
+        margin-bottom: 2rem;
+      }
+
+      .progress-text {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        text-align: center;
+      }
+
+      .progress-container {
+        background-color: var(--border-color);
+        border-radius: var(--radius);
+        height: 10px;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background-color: var(--success);
+        transition: width 0.4s ease;
+      }
+
+      .checklist-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.25rem 1rem;
+        border-bottom: 1px solid var(--border-color);
+        transition: background-color 0.2s ease;
+      }
+
+      .checklist-item:first-of-type {
+        border-top: 1px solid var(--border-color);
+      }
+
+      .checklist-item:hover {
+        background-color: var(--form-bg-color);
+      }
+
+      .checklist-label {
+        font-weight: 600;
+        color: var(--text-color);
+        transition: all 0.3s ease;
+      }
+
+      .status-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.5rem;
+        color: var(--text-muted);
+        transition: color 0.3s ease;
+      }
+
+      .status-btn:hover {
+        color: var(--primary-color);
+      }
+
+      /* Estilos para item conferido */
+      .checklist-item.checked .checklist-label {
+        text-decoration: line-through;
+        color: var(--text-muted);
+      }
+
+      .checklist-item.checked .status-btn {
+        color: var(--success);
+      }
+
+      .btn {
+        background: var(--accent-color);
+        color: var(--text-color-light);
+        border: none;
+        padding: 0.875rem 2rem;
+        border-radius: var(--radius);
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transicao);
+        box-shadow: var(--sombra);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        justify-content: center;
+        margin-top: 2rem;
+      }
+
+      .btn:hover {
+        background: #d90852;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 1rem;
+        }
+
+        .header h1 {
+          font-size: 2rem;
+        }
+
+        .checklist-section {
+          padding: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>
+          <i class="fas fa-clipboard-check"></i> Checklist de Conferência ECF
+        </h1>
+        <p>Marque os itens abaixo para acompanhar a conferência do arquivo.</p>
+      </div>
+
+      <div class="checklist-section">
+        <div class="company-name-section">
+          <label for="company-name">Nome da Empresa Auditada</label>
+          <input
+            type="text"
+            id="company-name"
+            placeholder="Digite o nome da empresa aqui"
+          />
+        </div>
+
+        <div class="progress-area">
+          <div class="progress-text" id="progress-text">
+            0 de 13 itens conferidos
+          </div>
+          <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+          </div>
+        </div>
+
+        <div id="checklist-container"></div>
+
+        <button class="btn" id="reset-btn">
+          <i class="fas fa-undo"></i>
+          Limpar Conferência
+        </button>
+      </div>
+
+      <div
+        id="success-message"
+        style="
+          display: none;
+          text-align: center;
+          color: white;
+          font-size: 1.5rem;
+          margin-top: 2rem;
+          font-weight: 600;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        "
+      ></div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Elementos do DOM
+        const companyNameInput = document.getElementById("company-name");
+        const checklistContainer = document.getElementById(
+          "checklist-container"
+        );
+        const progressBar = document.getElementById("progress-bar");
+        const progressText = document.getElementById("progress-text");
+        const resetBtn = document.getElementById("reset-btn");
+        const successMessage = document.getElementById("success-message");
+
+        // Itens do checklist
+        const checklistItems = [
+          "PERÍODO DE APURAÇÃO",
+          "TRIBUTAÇÃO (PRESUMIDO OU REAL)",
+          "CRÍTERIO DE APURAÇÃO (CAIXA OU COMPETÊNCIA)",
+          "BALANÇO PATRIMONIAL",
+          "DRE",
+          "IRPJ A PAGAR",
+          "CSLL A PAGAR",
+          "RETENÇÕES",
+          "LUCROS E PRÓ-LABORE",
+          "SEGNATÁRIOS",
+        ];
+
+        // Cria os itens do checklist dinamicamente
+        function renderItems() {
+          checklistContainer.innerHTML = "";
+          checklistItems.forEach((label) => {
+            const itemDiv = document.createElement("div");
+            itemDiv.classList.add("checklist-item");
+            itemDiv.dataset.label = label;
+
+            itemDiv.innerHTML = `
+              <span class="checklist-label">${label}</span>
+              <button class="status-btn">
+                <i class="far fa-circle"></i>
+              </button>
+            `;
+            checklistContainer.appendChild(itemDiv);
+          });
+        }
+
+        // Atualiza a barra de progresso e o texto
+        function updateProgress() {
+          const checkedItems = checklistContainer.querySelectorAll(
+            ".checklist-item.checked"
+          ).length;
+          const totalItems = checklistItems.length;
+          const percentage =
+            totalItems > 0 ? (checkedItems / totalItems) * 100 : 0;
+
+          progressBar.style.width = `${percentage}%`;
+          progressText.textContent = `${checkedItems} de ${totalItems} itens conferidos`;
+
+          // Verifica se todos os itens foram marcados
+          if (checkedItems === totalItems) {
+            document.body.style.background = "var(--success)";
+            successMessage.textContent =
+              "Sua ECF pode ser entregue com segurança";
+            successMessage.style.display = "block";
+          } else {
+            document.body.style.background =
+              "linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%)";
+            successMessage.style.display = "none";
+          }
+        }
+
+        // Lida com o clique em um item do checklist
+        checklistContainer.addEventListener("click", function (e) {
+          const targetButton = e.target.closest(".status-btn");
+          if (!targetButton) return;
+
+          const item = targetButton.parentElement;
+          item.classList.toggle("checked");
+
+          const icon = targetButton.querySelector("i");
+          if (item.classList.contains("checked")) {
+            icon.classList.remove("fa-circle");
+            icon.classList.add("fa-check-circle");
+          } else {
+            icon.classList.remove("fa-check-circle");
+            icon.classList.add("fa-circle");
+          }
+
+          updateProgress();
+        });
+
+        // Lida com o clique no botão de reset
+        resetBtn.addEventListener("click", function () {
+          // Limpa o nome da empresa
+          companyNameInput.value = "";
+          // Recria os itens do checklist
+          renderItems();
+          // Atualiza o progresso para o estado inicial
+          updateProgress();
+        });
+
+        // Inicialização do checklist
+        renderItems();
+        updateProgress();
+      });
+    </script>
+  </body>
+</html>
