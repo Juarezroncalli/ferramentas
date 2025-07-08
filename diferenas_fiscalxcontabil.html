@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Comparador de Totais Diários em Excel</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+      /* Estilos gerais */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease;
+        --primary-dark: #3d005a;
+        --success: #10b981;
+        --error: #ef4444;
+        --text-muted: #64748b;
+        --radius: 0.5rem;
+      }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh;
+        color: var(--text-color);
+        line-height: 1.6;
+        padding: 1rem;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      .header h1 {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .header p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+      }
+      .upload-section {
+        background: var(--background-color);
+        border-radius: var(--radius);
+        padding: 2rem;
+        box-shadow: var(--sombra);
+        margin-bottom: 2rem;
+      }
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+      .form-label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+      }
+      .upload-area {
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius);
+        padding: 3rem 2rem;
+        text-align: center;
+        transition: var(--transicao);
+        cursor: pointer;
+      }
+      .upload-area:hover {
+        border-color: var(--primary-color);
+        background: var(--form-bg-color);
+      }
+      .upload-icon {
+        font-size: 3rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+      }
+      .hidden-input {
+        display: none;
+      }
+      .file-info {
+        background: var(--form-bg-color);
+        border-radius: var(--radius);
+        padding: 1rem;
+        margin-top: 1rem;
+        display: none;
+        align-items: center;
+        gap: 1rem;
+      }
+      .file-info.show {
+        display: flex;
+      }
+      .file-icon {
+        color: var(--success);
+        font-size: 1.5rem;
+      }
+      .file-name {
+        font-weight: 600;
+      }
+      .btn {
+        background: var(--primary-color);
+        color: var(--text-color-light);
+        border: none;
+        padding: 0.875rem 2rem;
+        border-radius: var(--radius);
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transicao);
+        box-shadow: var(--sombra);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .btn:hover:not(:disabled) {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+      }
+      .btn:disabled {
+        background: var(--text-muted);
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+      .btn-process {
+        width: 100%;
+        justify-content: center;
+        margin-top: 1.5rem;
+      }
+      .results {
+        background: var(--background-color);
+        border-radius: var(--radius);
+        box-shadow: var(--sombra);
+        overflow: hidden;
+        display: none;
+      }
+      .results.show {
+        display: block;
+        animation: slideIn 0.5s ease-out;
+      }
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .results-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--primary-dark)
+        );
+        color: var(--text-color-light);
+        padding: 1.5rem 2rem;
+      }
+      .loading {
+        display: none;
+        text-align: center;
+        padding: 2rem;
+        margin-top: 2rem;
+      }
+      .loading.show {
+        display: block;
+      }
+      .spinner {
+        border: 3px solid var(--border-color);
+        border-top: 3px solid var(--primary-color);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: var(--text-muted);
+      }
+      .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+      .results-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .results-table th,
+      .results-table td {
+        padding: 1rem 1.25rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+        white-space: nowrap;
+      }
+      .results-table thead th {
+        background-color: var(--form-bg-color);
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+      }
+      .results-table .col-value {
+        font-family: "Menlo", "Monaco", monospace;
+        text-align: right;
+      }
+      .col-divergence {
+        font-weight: 700;
+      }
+      .col-divergence.positive {
+        color: var(--success);
+      }
+      .col-divergence.negative {
+        color: var(--error);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1>
+          <i class="fas fa-balance-scale"></i> Comparador de Totais Diários
+        </h1>
+        <p>
+          Compare os totais diários de dois arquivos Excel para encontrar
+          divergências
+        </p>
+      </header>
+
+      <main>
+        <div class="upload-section">
+          <div class="form-group">
+            <label for="file1-input" class="form-label"
+              >1. Arquivo de Contas a Pagar</label
+            >
+            <div
+              class="upload-area"
+              id="upload-area-1"
+              onclick="document.getElementById('file1-input').click()"
+            >
+              <div class="upload-icon">
+                <i class="fas fa-file-invoice-dollar"></i>
+              </div>
+              <p class="upload-text">
+                Clique para selecionar ou arraste o arquivo .xlsx
+              </p>
+              <input
+                type="file"
+                id="file1-input"
+                class="hidden-input"
+                accept=".xlsx, .xls"
+              />
+            </div>
+            <div class="file-info" id="file-info-1">
+              <div class="file-icon"><i class="fas fa-file-excel"></i></div>
+              <div class="file-name" id="file-name-1"></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="file2-input" class="form-label"
+              >2. Arquivo de Extratos / Conciliação</label
+            >
+            <div
+              class="upload-area"
+              id="upload-area-2"
+              onclick="document.getElementById('file2-input').click()"
+            >
+              <div class="upload-icon"><i class="fas fa-file-alt"></i></div>
+              <p class="upload-text">
+                Clique para selecionar ou arraste o arquivo .xlsx
+              </p>
+              <input
+                type="file"
+                id="file2-input"
+                class="hidden-input"
+                accept=".xlsx, .xls"
+              />
+            </div>
+            <div class="file-info" id="file-info-2">
+              <div class="file-icon"><i class="fas fa-file-excel"></i></div>
+              <div class="file-name" id="file-name-2"></div>
+            </div>
+          </div>
+
+          <button class="btn btn-process" id="process-btn" disabled>
+            <i class="fas fa-cogs"></i> Comparar Arquivos
+          </button>
+        </div>
+
+        <div class="loading" id="loading">
+          <div class="spinner"></div>
+          <p>Processando arquivos...</p>
+        </div>
+
+        <div class="results" id="results">
+          <header class="results-header">
+            <h2 class="results-title">
+              <i class="fas fa-list-alt"></i> Resultados da Comparação
+            </h2>
+          </header>
+          <div class="results-content" id="results-content"></div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const fileInput1 = document.getElementById("file1-input");
+      const fileInfo1 = document.getElementById("file-info-1");
+      const fileName1 = document.getElementById("file-name-1");
+      const uploadArea1 = document.getElementById("upload-area-1");
+
+      const fileInput2 = document.getElementById("file2-input");
+      const fileInfo2 = document.getElementById("file-info-2");
+      const fileName2 = document.getElementById("file-name-2");
+      const uploadArea2 = document.getElementById("upload-area-2");
+
+      const processBtn = document.getElementById("process-btn");
+      const loading = document.getElementById("loading");
+      const results = document.getElementById("results");
+      const resultsContent = document.getElementById("results-content");
+
+      const checkEnableButton = () => {
+        processBtn.disabled = !(
+          fileInput1.files.length > 0 && fileInput2.files.length > 0
+        );
+      };
+
+      const setupUploader = (inputEl, infoEl, nameEl, areaEl) => {
+        const handleFile = () => {
+          if (inputEl.files.length > 0) {
+            nameEl.textContent = inputEl.files[0].name;
+            infoEl.classList.add("show");
+          } else {
+            infoEl.classList.remove("show");
+          }
+          checkEnableButton();
+        };
+        inputEl.addEventListener("change", handleFile);
+        ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+          areaEl.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          });
+        });
+        areaEl.addEventListener(
+          "dragenter",
+          () => (areaEl.style.borderColor = "var(--primary-color)")
+        );
+        areaEl.addEventListener(
+          "dragleave",
+          () => (areaEl.style.borderColor = "var(--border-color)")
+        );
+        areaEl.addEventListener("drop", (e) => {
+          areaEl.style.borderColor = "var(--border-color)";
+          inputEl.files = e.dataTransfer.files;
+          handleFile();
+        });
+      };
+
+      setupUploader(fileInput1, fileInfo1, fileName1, uploadArea1);
+      setupUploader(fileInput2, fileInfo2, fileName2, uploadArea2);
+
+      processBtn.addEventListener("click", processFiles);
+
+      function formatCurrency(value) {
+        return isNaN(value)
+          ? "N/A"
+          : value.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            });
+      }
+
+      function formatDate(date) {
+        return date.toLocaleDateString("pt-BR", { timeZone: "UTC" });
+      }
+
+      function parseExcelDate(excelDate) {
+        // Excel dates are numbers where 1 = 1 day since 1900-01-01
+        if (typeof excelDate === 'number') {
+          const utcDays = Math.floor(excelDate - 25569); // 25569 = days from 1900-01-01 to 1970-01-01
+          const utcValue = utcDays * 86400; // 86400 = seconds in a day
+          const date = new Date(utcValue * 1000); // Convert to milliseconds
+          return date;
+        }
+        return null;
+      }
+
+      function parseValue(value) {
+        if (typeof value === 'number') {
+          return value;
+        }
+        
+        if (typeof value === 'string') {
+          // Remove R$, espaços e pontos de milhar
+          let cleaned = value.replace(/R\$/g, '').trim().replace(/\./g, '');
+          
+          // Substitui vírgula decimal por ponto
+          cleaned = cleaned.replace(',', '.');
+          
+          // Converte para número
+          const num = parseFloat(cleaned);
+          
+          // Se for um número válido, retorna
+          if (!isNaN(num)) {
+            return num;
+          }
+        }
+        
+        // Se não conseguir converter, retorna 0
+        return 0;
+      }
+
+      async function readAndAggregate(file, dateColIndex, valueColIndex) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            try {
+              const data = new Uint8Array(event.target.result);
+              const workbook = XLSX.read(data, { type: "array", cellDates: true });
+              const sheetName = workbook.SheetNames[0];
+              const worksheet = workbook.Sheets[sheetName];
+              const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+              const dailyTotals = new Map();
+
+              for (let i = 1; i < json.length; i++) {
+                const row = json[i];
+                if (!row || row.length <= Math.max(dateColIndex, valueColIndex)) continue;
+
+                // Processa a data
+                let date = null;
+                const rawDate = row[dateColIndex];
+                
+                if (rawDate instanceof Date) {
+                  date = rawDate;
+                } else if (typeof rawDate === 'number') {
+                  date = parseExcelDate(rawDate);
+                } else if (typeof rawDate === 'string' && rawDate.trim() !== '') {
+                  // Tenta parsear datas no formato DD/MM/YYYY ou DD-MM-YYYY
+                  const dateParts = rawDate.split(/[\/-]/);
+                  if (dateParts.length === 3) {
+                    const day = parseInt(dateParts[0], 10);
+                    const month = parseInt(dateParts[1], 10) - 1;
+                    let year = parseInt(dateParts[2], 10);
+                    if (year < 100) year += 2000; // Assume anos com 2 dígitos são 2000+
+                    date = new Date(year, month, day);
+                  }
+                }
+
+                if (!date || isNaN(date.getTime())) continue;
+
+                // Processa o valor
+                const rawValue = row[valueColIndex];
+                const value = parseValue(rawValue);
+                if (isNaN(value)) continue;
+
+                // Formata a chave da data como YYYY-MM-DD
+                const dateKey = date.toISOString().split('T')[0];
+                
+                // Soma os valores por dia
+                const currentTotal = dailyTotals.get(dateKey) || 0;
+                dailyTotals.set(dateKey, currentTotal + value);
+              }
+              
+              resolve(dailyTotals);
+            } catch (err) {
+              reject(err);
+            }
+          };
+          reader.onerror = (error) => reject(error);
+          reader.readAsArrayBuffer(file);
+        });
+      }
+
+      async function processFiles() {
+        loading.classList.add("show");
+        results.classList.remove("show");
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        try {
+          // Contas a Pagar: Coluna G (6) = Data, Coluna K (10) = Valor
+          const totals1Promise = readAndAggregate(fileInput1.files[0], 6, 10);
+          // Extrato: Coluna B (1) = Data, Coluna P (15) = Valor
+          const totals2Promise = readAndAggregate(fileInput2.files[0], 1, 15);
+          
+          const [totals1, totals2] = await Promise.all([
+            totals1Promise,
+            totals2Promise,
+          ]);
+          
+          compareAndDisplay(totals1, totals2);
+        } catch (error) {
+          console.error("Erro ao processar os arquivos:", error);
+          alert(
+            "Ocorreu um erro. Verifique os arquivos e as colunas. Detalhes no console."
+          );
+        } finally {
+          loading.classList.remove("show");
+        }
+      }
+
+      function compareAndDisplay(totals1, totals2) {
+        const allDates = new Set([...totals1.keys(), ...totals2.keys()]);
+        const sortedDates = Array.from(allDates).sort();
+        const divergences = [];
+        
+        for (const dateKey of sortedDates) {
+          const val1 = totals1.get(dateKey) || 0;
+          const val2 = totals2.get(dateKey) || 0;
+          const difference = val1 - val2;
+          
+          // Considera divergência se a diferença for maior que 0.01 (para lidar com arredondamentos)
+          if (Math.abs(difference) > 0.01) {
+            divergences.push({
+              date: new Date(dateKey + "T00:00:00"),
+              total1: val1,
+              total2: val2,
+              difference: difference,
+            });
+          }
+        }
+        
+        displayResults(divergences);
+      }
+
+      function displayResults(divergences) {
+        if (divergences.length === 0) {
+          resultsContent.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-icon"><i class="fas fa-check-circle"></i></div>
+              <h3>Nenhuma divergência encontrada</h3>
+              <p>Os totais diários de ambos os arquivos são idênticos.</p>
+            </div>`;
+        } else {
+          let tableHTML = `
+            <table class="results-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th class="col-value">Total Contas a Pagar</th>
+                  <th class="col-value">Total Extrato/Conciliação</th>
+                  <th class="col-value">Diferença</th>
+                </tr>
+              </thead>
+              <tbody>`;
+              
+          divergences.forEach((item) => {
+            const diffClass = item.difference > 0 ? "positive" : "negative";
+            tableHTML += `
+              <tr>
+                <td>${formatDate(item.date)}</td>
+                <td class="col-value">${formatCurrency(item.total1)}</td>
+                <td class="col-value">${formatCurrency(item.total2)}</td>
+                <td class="col-value col-divergence ${diffClass}">${formatCurrency(item.difference)}</td>
+              </tr>`;
+          });
+          
+          tableHTML += `</tbody></table>`;
+          resultsContent.innerHTML = tableHTML;
+        }
+        
+        results.classList.add("show");
+      }
+    </script>
+  </body>
+</html>
