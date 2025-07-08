@@ -8,6 +8,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <style>
       * {
         margin: 0;
@@ -250,7 +251,7 @@
 
         <div class="progress-area">
           <div class="progress-text" id="progress-text">
-            0 de 13 itens conferidos
+            0 de 11 itens conferidos
           </div>
           <div class="progress-container">
             <div class="progress-bar" id="progress-bar"></div>
@@ -306,6 +307,9 @@
           "SIGNATÁRIOS (Empresa e Contador)",
         ];
 
+        // Variável para controlar a animação
+        let animationInterval = null;
+
         // Cria os itens do checklist dinamicamente
         function renderItems() {
           checklistContainer.innerHTML = "";
@@ -324,6 +328,38 @@
           });
         }
 
+        // Função para iniciar os fogos de artifício infinitamente
+        function startFireworks() {
+          const defaults = {
+            startVelocity: 30,
+            spread: 360,
+            ticks: 60,
+            zIndex: 0,
+          };
+
+          function randomInRange(min, max) {
+            return Math.random() * (max - min) + min;
+          }
+
+          // Define um intervalo que roda para sempre
+          animationInterval = setInterval(function () {
+            const particleCount = 50; // Contagem de particulas constante
+            // Lança fogos de posições aleatórias
+            confetti(
+              Object.assign({}, defaults, {
+                particleCount,
+                origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+              })
+            );
+            confetti(
+              Object.assign({}, defaults, {
+                particleCount,
+                origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+              })
+            );
+          }, 300); // Intervalo um pouco maior para uma animação fluida
+        }
+
         // Atualiza a barra de progresso e o texto
         function updateProgress() {
           const checkedItems = checklistContainer.querySelectorAll(
@@ -336,13 +372,18 @@
           progressBar.style.width = `${percentage}%`;
           progressText.textContent = `${checkedItems} de ${totalItems} itens conferidos`;
 
-          // Verifica se todos os itens foram marcados
-          if (checkedItems === totalItems) {
-            document.body.style.background = "var(--success)";
+          // Sempre limpa a animação ao atualizar o progresso
+          clearInterval(animationInterval);
+
+          // Verifica se TODOS os itens foram marcados
+          if (checkedItems === totalItems && totalItems > 0) {
+            document.body.style.background = "#1a0029"; // Fundo escuro para destacar
             successMessage.textContent =
-              "Sua ECF pode ser entregue com segurança";
+              "Parabéns! Conferência concluída com sucesso!";
             successMessage.style.display = "block";
+            startFireworks(); // Inicia a animação infinita
           } else {
+            // Se nem todos os itens estiverem marcados, volta ao normal
             document.body.style.background =
               "linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%)";
             successMessage.style.display = "none";
@@ -375,7 +416,7 @@
           companyNameInput.value = "";
           // Recria os itens do checklist
           renderItems();
-          // Atualiza o progresso para o estado inicial
+          // Atualiza o progresso, o que vai parar a animação e resetar o fundo
           updateProgress();
         });
 
