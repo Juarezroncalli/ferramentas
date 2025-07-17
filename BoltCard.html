@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gerador de Lançamentos - Bolt Card</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+    <style>
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease;
+        --primary-dark: #3d005a;
+        --success: #10b981;
+        --error: #ef4444;
+        --text-muted: #64748b;
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh;
+        color: var(--text-color);
+        line-height: 1.6;
+        padding: 2rem 0;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      .header h1 {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .header p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+      }
+      .main-content > section {
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--sombra);
+        margin-bottom: 2rem;
+      }
+      .upload-area {
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius);
+        padding: 3rem 2rem;
+        text-align: center;
+        transition: var(--transicao);
+        cursor: pointer;
+      }
+      .upload-area:hover {
+        border-color: var(--primary-color);
+        background: var(--form-bg-color);
+      }
+      .upload-icon {
+        font-size: 3rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+      }
+      #file-input {
+        display: none;
+      }
+      .file-list {
+        background: var(--form-bg-color);
+        border-radius: var(--radius);
+        padding: 1rem;
+        margin-top: 1.5rem;
+        display: none;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .file-list.show {
+        display: flex;
+      }
+      .file-list-item {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--primary-dark);
+      }
+      .btn {
+        background: var(--primary-color);
+        color: var(--text-color-light);
+        border: none;
+        padding: 0.875rem 2rem;
+        border-radius: var(--radius);
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transicao);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+      }
+      .btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+      }
+      .btn:disabled {
+        background: var(--text-muted);
+        cursor: not-allowed;
+        transform: none;
+      }
+      .btn-process {
+        width: 100%;
+        justify-content: center;
+        margin-top: 1.5rem;
+      }
+      .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--accent-color);
+      }
+      .hidden {
+        display: none !important;
+      }
+      .loading {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: var(--text-muted);
+      }
+      .spinner {
+        border: 3px solid var(--border-color);
+        border-top: 3px solid var(--primary-color);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .input-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+      }
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1.25rem;
+      }
+      .input-group label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .input-group input {
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        font-size: 1rem;
+      }
+
+      .preview-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1.5rem;
+      }
+      .preview-table th,
+      .preview-table td {
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border-color);
+        text-align: left;
+      }
+      .preview-table th {
+        background-color: var(--form-bg-color);
+        font-weight: 600;
+        color: var(--primary-dark);
+      }
+      .preview-table tbody tr:nth-child(even) {
+        background-color: #fdfdfd;
+      }
+      .preview-table td:nth-child(2),
+      .preview-table td:nth-child(3) {
+        text-align: right;
+        font-family: "Courier New", Courier, monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1>
+          <i class="fa-solid fa-bolt"></i> Gerador de Lançamentos Bolt Card
+        </h1>
+        <p>
+          Faça o upload dos extratos em Excel para gerar o arquivo de lançamento
+          TXT
+        </p>
+      </header>
+
+      <main class="main-content">
+        <section id="config-section">
+          <h2 class="section-title">
+            <i class="fas fa-cog"></i> 1. Informe as Contas Contábeis
+          </h2>
+          <div class="input-grid">
+            <div class="input-group">
+              <label for="conta-clientes">Conta de Clientes</label>
+              <input
+                type="text"
+                id="conta-clientes"
+                placeholder="Ex: 11201001"
+              />
+            </div>
+            <div class="input-group">
+              <label for="conta-cartao">Conta Cartão (Ativo)</label>
+              <input type="text" id="conta-cartao" placeholder="Ex: 11208001" />
+            </div>
+            <div class="input-group">
+              <label for="conta-tarifas">Conta de Tarifas (Despesa)</label>
+              <input
+                type="text"
+                id="conta-tarifas"
+                placeholder="Ex: 44101005"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section id="upload-section">
+          <h2 class="section-title">
+            <i class="fas fa-upload"></i> 2. Upload dos Extratos (.xlsx)
+          </h2>
+          <div
+            class="upload-area"
+            onclick="document.getElementById('file-input').click()"
+          >
+            <div class="upload-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <p><strong>Clique para selecionar os arquivos</strong></p>
+            <p>ou arraste e solte os extratos em Excel (.xlsx) aqui</p>
+            <input type="file" id="file-input" accept=".xlsx, .xls" multiple />
+          </div>
+          <div class="file-list" id="file-list">
+            <div id="file-list-content"></div>
+          </div>
+          <button class="btn btn-process" id="process-btn" disabled>
+            <i class="fas fa-play"></i> Analisar Arquivos
+          </button>
+        </section>
+
+        <section id="loading-section" class="hidden">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>Processando arquivos e agrupando dados por dia...</p>
+          </div>
+        </section>
+
+        <section id="preview-section" class="hidden">
+          <h2 class="section-title">
+            <i class="fas fa-table-list"></i> 3. Pré-visualização dos
+            Lançamentos
+          </h2>
+          <p class="text-muted" style="margin-bottom: 1.5rem">
+            Confira os valores agrupados por dia. Se estiver tudo correto,
+            clique no botão para gerar o arquivo final.
+          </p>
+          <div id="preview-table-container"></div>
+          <button id="generate-btn" class="btn btn-process">
+            <i class="fas fa-download"></i> Gerar e Baixar Arquivo (.txt)
+          </button>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      // --- ELEMENTOS DO DOM ---
+      const fileInput = document.getElementById("file-input");
+      const processBtn = document.getElementById("process-btn");
+      const generateBtn = document.getElementById("generate-btn");
+      const uploadArea = document.querySelector(".upload-area");
+      const fileList = document.getElementById("file-list");
+      const fileListContent = document.getElementById("file-list-content");
+      const previewTableContainer = document.getElementById(
+        "preview-table-container"
+      );
+      const contaClientesInput = document.getElementById("conta-clientes");
+      const contaCartaoInput = document.getElementById("conta-cartao");
+      const contaTarifasInput = document.getElementById("conta-tarifas");
+
+      // --- SEÇÕES ---
+      const loadingSection = document.getElementById("loading-section");
+      const previewSection = document.getElementById("preview-section");
+      const uploadSection = document.getElementById("upload-section");
+      const configSection = document.getElementById("config-section");
+
+      // --- VARIÁVEIS GLOBAIS ---
+      let dailyAggregatedData = {};
+
+      // --- FUNÇÕES DE LÓGICA PRINCIPAL ---
+
+      function checkFormValidity() {
+        const accountsFilled =
+          contaClientesInput.value.trim() &&
+          contaCartaoInput.value.trim() &&
+          contaTarifasInput.value.trim();
+        const filesSelected = fileInput.files && fileInput.files.length > 0;
+        processBtn.disabled = !(accountsFilled && filesSelected);
+      }
+
+      function handleFileSelect(files) {
+        if (!files || files.length === 0) return;
+
+        fileListContent.innerHTML = "";
+        Array.from(files).forEach((file) => {
+          if (
+            !file.name.toLowerCase().endsWith(".xlsx") &&
+            !file.name.toLowerCase().endsWith(".xls")
+          ) {
+            alert(
+              `O arquivo "${file.name}" não é um Excel válido (.xlsx ou .xls) e será ignorado.`
+            );
+            return;
+          }
+          const fileItem = document.createElement("div");
+          fileItem.className = "file-list-item";
+          fileItem.innerHTML = `<i class="fas fa-file-excel" style="color: var(--success);"></i> ${file.name}`;
+          fileListContent.appendChild(fileItem);
+        });
+
+        fileList.classList.add("show");
+        checkFormValidity();
+      }
+
+      async function processFiles() {
+        if (fileInput.files.length === 0) {
+          alert("Por favor, selecione pelo menos um arquivo Excel.");
+          return;
+        }
+
+        showSection("loading");
+        dailyAggregatedData = {};
+
+        const readPromises = Array.from(fileInput.files).map((file) => {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: "array" });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                // Usamos raw: false para que a biblioteca tente formatar datas como string dd/mm/yyyy
+                const json = XLSX.utils.sheet_to_json(worksheet, {
+                  header: 1,
+                  raw: false,
+                  dateNF: "dd/mm/yyyy",
+                });
+                resolve(json);
+              } catch (error) {
+                reject(
+                  new Error(
+                    `Erro ao processar o arquivo ${file.name}: ${error.message}`
+                  )
+                );
+              }
+            };
+            reader.onerror = () =>
+              reject(new Error(`Não foi possível ler o arquivo ${file.name}.`));
+            reader.readAsArrayBuffer(file);
+          });
+        });
+
+        try {
+          const allFilesData = await Promise.all(readPromises);
+
+          allFilesData.forEach((fileData) => {
+            // Inicia na linha 2 (índice 1), pulando o cabeçalho
+            for (let i = 1; i < fileData.length; i++) {
+              const row = fileData[i];
+
+              // Verifica se a linha tem colunas suficientes (I é a 9ª, índice 8)
+              if (!row || row.length < 9) continue;
+
+              // Coluna A (índice 0) -> Data
+              // Coluna H (índice 7) -> Valor Bruto
+              // Coluna I (índice 8) -> Valor Líquido
+              const saleDateRaw = row[0];
+              const valorBruto =
+                parseFloat(String(row[7]).replace(",", ".")) || 0;
+              const valorLiquido =
+                parseFloat(String(row[8]).replace(",", ".")) || 0;
+
+              let formattedDate = null;
+
+              // *** LÓGICA DE DATA ATUALIZADA ***
+              // Extrai 'dd/mm/yyyy' de formatos como 'dd/mm/yyyy, hh:mm'
+              if (typeof saleDateRaw === "string") {
+                const datePart = saleDateRaw.split(",")[0].trim();
+                // Valida se o resultado é uma data no formato esperado
+                if (datePart.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+                  formattedDate = datePart;
+                }
+              }
+
+              if (!formattedDate || valorBruto === 0) {
+                continue;
+              }
+
+              const valorTarifa = valorBruto - valorLiquido;
+
+              if (!dailyAggregatedData[formattedDate]) {
+                dailyAggregatedData[formattedDate] = { bruto: 0, tarifa: 0 };
+              }
+              dailyAggregatedData[formattedDate].bruto += valorBruto;
+              dailyAggregatedData[formattedDate].tarifa += valorTarifa;
+            }
+          });
+
+          displayPreviewTable();
+          showSection("preview");
+        } catch (error) {
+          alert(
+            "Ocorreu um erro durante o processamento.\nDetalhes: " +
+              error.message
+          );
+          showSection("upload");
+        }
+      }
+
+      function formatBRL(value) {
+        return value.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+      }
+
+      function displayPreviewTable() {
+        const sortedDates = Object.keys(dailyAggregatedData).sort((a, b) => {
+          const [dayA, monthA, yearA] = a.split("/");
+          const [dayB, monthB, yearB] = b.split("/");
+          return (
+            new Date(`${yearA}-${monthA}-${dayA}`) -
+            new Date(`${yearB}-${monthB}-${dayB}`)
+          );
+        });
+
+        if (sortedDates.length === 0) {
+          previewTableContainer.innerHTML =
+            '<p class="text-muted" style="font-weight: bold;">Nenhum dado válido foi encontrado.<br>Verifique se os arquivos contêm as colunas corretas:<br>Coluna A: Data<br>Coluna H: Valor Bruto<br>Coluna I: Valor Líquido</p>';
+          generateBtn.disabled = true;
+          return;
+        }
+
+        let tableHTML = `
+            <table class="preview-table">
+                <thead>
+                    <tr>
+                        <th>Data da Venda</th>
+                        <th>Valor Bruto Total</th>
+                        <th>Valor Tarifa Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        sortedDates.forEach((date) => {
+          const data = dailyAggregatedData[date];
+          tableHTML += `
+                <tr>
+                    <td>${date}</td>
+                    <td>R$ ${formatBRL(data.bruto)}</td>
+                    <td>R$ ${formatBRL(data.tarifa)}</td>
+                </tr>
+            `;
+        });
+
+        tableHTML += "</tbody></table>";
+        previewTableContainer.innerHTML = tableHTML;
+        generateBtn.disabled = false;
+      }
+
+      function generateAndDownload() {
+        const contaClientes = contaClientesInput.value.trim();
+        const contaCartao = contaCartaoInput.value.trim();
+        const contaTarifas = contaTarifasInput.value.trim();
+
+        if (!contaClientes || !contaCartao || !contaTarifas) {
+          alert(
+            "Por favor, preencha todas as contas antes de gerar o arquivo."
+          );
+          return;
+        }
+
+        const sortedDates = Object.keys(dailyAggregatedData).sort((a, b) => {
+          const [dayA, monthA, yearA] = a.split("/");
+          const [dayB, monthB, yearB] = b.split("/");
+          return (
+            new Date(`${yearA}-${monthA}-${dayA}`) -
+            new Date(`${yearB}-${monthB}-${dayB}`)
+          );
+        });
+
+        let txtLines = [];
+
+        sortedDates.forEach((date) => {
+          const data = dailyAggregatedData[date];
+          const valorBrutoFmt = data.bruto.toFixed(2).replace(".", ",");
+          const valorTarifaFmt = data.tarifa.toFixed(2).replace(".", ",");
+
+          const line1 = `${date};${contaCartao};${contaClientes};${valorBrutoFmt};;VALOR DE VENDAS C/ CARTAO DE CREDITO/DEBITO, CONF. EXTRATO;;;;`;
+
+          if (data.tarifa.toFixed(2) !== "0.00") {
+            const line2 = `${date};${contaTarifas};${contaCartao};${valorTarifaFmt};;TAXA OPERADORA DE CARTOES CREDITO/DEBITO, CONF. EXTRATO;;;;`;
+            txtLines.push(line2);
+          }
+          txtLines.push(line1);
+        });
+
+        if (txtLines.length === 0) {
+          alert("Não há dados para gerar. Verifique os arquivos de entrada.");
+          return;
+        }
+
+        const txtContent = txtLines.join("\r\n");
+        const blob = new Blob([txtContent], {
+          type: "text/plain;charset=utf-8",
+        });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `LANCAMENTOS_BOLT_CARD.txt`;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      // --- FUNÇÕES DE UI ---
+
+      function showSection(sectionName) {
+        const sections = {
+          loading: loadingSection,
+          preview: previewSection,
+          upload: uploadSection,
+          config: configSection,
+        };
+        Object.values(sections).forEach((sec) => sec.classList.add("hidden"));
+
+        if (sectionName === "upload" || sectionName === "config") {
+          sections.config.classList.remove("hidden");
+          sections.upload.classList.remove("hidden");
+        } else if (sections[sectionName]) {
+          sections[sectionName].classList.remove("hidden");
+        }
+      }
+
+      // --- EVENT LISTENERS ---
+      [contaClientesInput, contaCartaoInput, contaTarifasInput].forEach(
+        (input) => {
+          input.addEventListener("input", checkFormValidity);
+        }
+      );
+
+      ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+        uploadArea.addEventListener(
+          eventName,
+          (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          },
+          false
+        );
+      });
+      uploadArea.addEventListener("drop", (e) => {
+        fileInput.files = e.dataTransfer.files;
+        handleFileSelect(e.dataTransfer.files);
+      });
+
+      fileInput.addEventListener("change", (e) =>
+        handleFileSelect(e.target.files)
+      );
+      processBtn.addEventListener("click", processFiles);
+      generateBtn.addEventListener("click", generateAndDownload);
+    </script>
+  </body>
+</html>

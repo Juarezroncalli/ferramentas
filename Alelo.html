@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gerador de Lançamentos Contábeis - Alelo</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+    <style>
+      :root {
+        --primary-color: #4f0072; --accent-color: #fb0a5e; --background-color: #ffffff;
+        --form-bg-color: #f9f9f9; --text-color: #333333; --border-color: #e0e0e0;
+        --text-color-light: #ffffff; --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease; --primary-dark: #3d005a; --success: #10b981;
+        --error: #ef4444; --text-muted: #64748b; --radius: 0.5rem; --radius-lg: 0.75rem;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh; color: var(--text-color); line-height: 1.6; padding: 2rem 0;
+      }
+      .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+      .header { text-align: center; margin-bottom: 2rem; }
+      .header h1 { color: white; font-size: 2.5rem; font-weight: 700; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+      .header p { color: rgba(255, 255, 255, 0.9); font-size: 1.1rem; }
+      .main-content > section {
+        background: var(--background-color); border-radius: var(--radius-lg);
+        padding: 2rem; box-shadow: var(--sombra); margin-bottom: 2rem;
+      }
+      .upload-area {
+        border: 2px dashed var(--border-color); border-radius: var(--radius); padding: 3rem 2rem;
+        text-align: center; transition: var(--transicao); cursor: pointer;
+      }
+      .upload-area:hover { border-color: var(--primary-color); background: var(--form-bg-color); }
+      .upload-icon { font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; }
+      #file-input { display: none; }
+      .file-info {
+        background: var(--form-bg-color); border-radius: var(--radius); padding: 1rem;
+        margin-top: 1.5rem; display: none; gap: 1rem;
+      }
+      .file-info.show { display: block; }
+      .file-list { list-style: none; padding-top: 0.5rem; }
+      .file-list-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0; color: var(--text-muted); }
+      .btn {
+        background: var(--primary-color); color: var(--text-color-light); border: none;
+        padding: 0.875rem 2rem; border-radius: var(--radius); font-weight: 600;
+        font-size: 1rem; cursor: pointer; transition: var(--transicao);
+        display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;
+      }
+      .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+      .btn:disabled { background: var(--text-muted); cursor: not-allowed; transform: none; }
+      .btn-process { width: 100%; justify-content: center; margin-top: 1.5rem; }
+      .section-title { font-size: 1.5rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent-color); }
+      .hidden { display: none !important; }
+      .loading { text-align: center; padding: 3rem 2rem; color: var(--text-muted); }
+      .spinner {
+        border: 3px solid var(--border-color); border-top: 3px solid var(--primary-color);
+        border-radius: 50%; width: 40px; height: 40px;
+        animation: spin 1s linear infinite; margin: 0 auto 1rem;
+      }
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+      .input-group { display: flex; flex-direction: column; }
+      .input-group label {
+        font-size: 0.875rem; font-weight: 600; color: var(--text-muted);
+        margin-bottom: 0.5rem;
+      }
+      .input-group input {
+        padding: 0.75rem; border: 1px solid var(--border-color);
+        border-radius: var(--radius); font-size: 1rem;
+      }
+      .table-container { overflow-x: auto; max-height: 400px; }
+      table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+      th, td { padding: 0.75rem 1rem; border: 1px solid var(--border-color); text-align: left; }
+      thead { background: var(--form-bg-color); position: sticky; top: 0; }
+      th { font-weight: 600; color: var(--primary-dark); }
+      td { font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fa-solid fa-file-invoice-dollar"></i> Gerador de Lançamentos - Alelo</h1>
+            <p>Faça o upload dos seus arquivos Excel (.xlsx) para gerar o arquivo de lançamento .txt</p>
+        </header>
+
+        <main class="main-content">
+            <section id="upload-section">
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label for="conta-cartao"><i class="fa-solid fa-credit-card"></i> CONTA CARTÃO</label>
+                        <input type="text" id="conta-cartao" placeholder="Ex: 11202001">
+                    </div>
+                    <div class="input-group">
+                        <label for="conta-clientes"><i class="fa-solid fa-users"></i> CONTA CLIENTES</label>
+                        <input type="text" id="conta-clientes" placeholder="Ex: 11201001">
+                    </div>
+                    <div class="input-group">
+                        <label for="conta-tarifas"><i class="fa-solid fa-tags"></i> CONTA TARIFAS</label>
+                        <input type="text" id="conta-tarifas" placeholder="Ex: 44101007">
+                    </div>
+                </div>
+
+                <div class="upload-area" onclick="document.getElementById('file-input').click()">
+                    <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                    <p><strong>Clique para selecionar os arquivos Excel</strong></p>
+                    <p>ou arraste e solte os arquivos .xlsx aqui</p>
+                    <input type="file" id="file-input" accept=".xlsx, .xls" multiple />
+                </div>
+                <div class="file-info" id="file-info">
+                     <div id="file-name" style="font-weight: 600;">Arquivos Selecionados:</div>
+                     <ul id="file-list" class="file-list"></ul>
+                </div>
+                <button class="btn btn-process" id="process-btn" disabled>
+                    <i class="fas fa-play"></i> Processar Arquivos
+                </button>
+            </section>
+
+            <section id="loading-section" class="hidden">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Processando arquivos...</p>
+                </div>
+            </section>
+            
+            <section id="preview-section" class="hidden">
+                <h2 class="section-title"><i class="fas fa-table"></i> Prévia dos Dados para Geração</h2>
+                <p class="text-muted" style="margin-bottom: 1.5rem;">Confira os dados extraídos dos arquivos. Se estiver tudo correto, clique no botão abaixo para gerar o arquivo .txt.</p>
+                <div class="table-container">
+                    <table id="preview-table">
+                        <thead>
+                            <tr>
+                                <th>Data da Venda</th>
+                                <th>Valor Bruto</th>
+                                <th>Valor Líquido</th>
+                                <th>Valor Tarifa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <button id="generate-btn" class="btn btn-process"><i class="fas fa-download"></i> Gerar e Baixar Arquivo .TXT</button>
+            </section>
+        </main>
+    </div>
+
+<script>
+    const fileInput = document.getElementById('file-input');
+    const processBtn = document.getElementById('process-btn');
+    const uploadArea = document.querySelector('.upload-area');
+    const fileInfo = document.getElementById('file-info');
+    const fileList = document.getElementById('file-list');
+    const contaCartaoInput = document.getElementById('conta-cartao');
+    const contaClientesInput = document.getElementById('conta-clientes');
+    const contaTarifasInput = document.getElementById('conta-tarifas');
+    const uploadSection = document.getElementById('upload-section');
+    const loadingSection = document.getElementById('loading-section');
+    const previewSection = document.getElementById('preview-section');
+    const previewTableBody = document.querySelector('#preview-table tbody');
+    const generateBtn = document.getElementById('generate-btn');
+
+    let processedData = [];
+    let selectedFiles = [];
+
+    function handleFileSelect(files) {
+        if (!files || files.length === 0) return;
+        selectedFiles = Array.from(files);
+        fileList.innerHTML = '';
+        selectedFiles.forEach(file => {
+            const listItem = document.createElement('li');
+            listItem.className = 'file-list-item';
+            listItem.innerHTML = `<i class="fas fa-file-excel text-success"></i> ${file.name}`;
+            fileList.appendChild(listItem);
+        });
+        fileInfo.classList.add('show');
+        processBtn.disabled = false;
+        resetUI(false);
+    }
+    
+    function findKeyForColumn(row, targetColumnName) {
+        const lowerCaseTarget = targetColumnName.toLowerCase();
+        for (const key of Object.keys(row)) {
+            if (key.trim().toLowerCase() === lowerCaseTarget) return key;
+        }
+        return null;
+    }
+
+    // --- FUNÇÃO DE CONVERSÃO DE MOEDA FINAL E CORRIGIDA ---
+    function parseCurrency(value) {
+        if (value === null || value === undefined) return 0;
+        if (typeof value === 'number') return value;
+
+        // 1. Limpa QUALQUER COISA que não seja dígito, vírgula ou ponto.
+        let s = String(value).replace(/[^0-9,.]/g, '');
+
+        if (s === '') return 0;
+
+        const lastComma = s.lastIndexOf(',');
+        const lastDot = s.lastIndexOf('.');
+
+        // 2. Lógica para identificar o separador decimal
+        if (lastComma > lastDot) {
+            // Formato brasileiro (ex: 1.234,56): remove pontos de milhar, troca vírgula decimal
+            s = s.replace(/\./g, '').replace(',', '.');
+        } else {
+            // Formato americano (ex: 1,234.56): remove vírgulas de milhar
+            s = s.replace(/,/g, '');
+        }
+
+        return parseFloat(s) || 0;
+    }
+
+    async function processFiles() {
+        const contaCartao = contaCartaoInput.value.trim();
+        const contaClientes = contaClientesInput.value.trim();
+        const contaTarifas = contaTarifasInput.value.trim();
+        if (!contaCartao || !contaClientes || !contaTarifas) {
+            alert("Por favor, preencha todas as contas (Cartão, Clientes e Tarifas) antes de processar.");
+            return;
+        }
+        if (selectedFiles.length === 0) {
+            alert("Por favor, selecione pelo menos um arquivo Excel.");
+            return;
+        }
+        
+        showSection('loading');
+        processedData = [];
+
+        const filePromises = selectedFiles.map(file => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array', cellDates:true });
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        const jsonData = XLSX.utils.sheet_to_json(worksheet, { raw: false });
+                        
+                        if (jsonData.length === 0) return resolve([]);
+                        
+                        const firstRow = jsonData[0];
+                        const dataCol = findKeyForColumn(firstRow, "Data da Venda");
+                        const brutoCol = findKeyForColumn(firstRow, "Valor Bruto");
+                        const liquidoCol = findKeyForColumn(firstRow, "Valor Líquido");
+
+                        if (!dataCol || !brutoCol || !liquidoCol) {
+                            let missing = [];
+                            if (!dataCol) missing.push('"Data da Venda"');
+                            if (!brutoCol) missing.push('"Valor Bruto"');
+                            if (!liquidoCol) missing.push('"Valor Líquido"');
+                            const foundColumns = Object.keys(firstRow).join(', ');
+                            return reject(new Error(`No arquivo "${file.name}", não foi possível encontrar as colunas: ${missing.join(', ')}.\n\nColunas encontradas: ${foundColumns}`));
+                        }
+
+                        const fileData = [];
+                        jsonData.forEach(row => {
+                           const vendaBruta = parseCurrency(row[brutoCol]);
+                           const vendaLiquida = parseCurrency(row[liquidoCol]);
+                           const dataVendaOriginal = row[dataCol];
+                           if(dataVendaOriginal && !isNaN(vendaBruta) && !isNaN(vendaLiquida)) {
+                                fileData.push({
+                                    dataVenda: formatDate(dataVendaOriginal),
+                                    valorBruto: vendaBruta,
+                                    valorLiquido: vendaLiquida,
+                                    valorTarifa: (vendaBruta - vendaLiquida)
+                                });
+                           }
+                        });
+                        resolve(fileData);
+                    } catch (error) {
+                        console.error("Erro ao processar o arquivo:", file.name, error);
+                        reject(error);
+                    }
+                };
+                reader.onerror = () => reject(new Error(`Não foi possível ler o arquivo ${file.name}.`));
+                reader.readAsArrayBuffer(file);
+            });
+        });
+
+        try {
+            const results = await Promise.all(filePromises);
+            processedData = [].concat(...results);
+            displayPreview();
+            showSection('preview');
+        } catch (error) {
+            alert(`Ocorreu um erro: ${error.message}`);
+            showSection('upload');
+        }
+    }
+
+    function formatDate(date) {
+        if (date instanceof Date && !isNaN(date)) {
+            const userTimezoneOffset = date.getTimezoneOffset() * 60000;
+            const correctedDate = new Date(date.getTime() + userTimezoneOffset);
+            let day = String(correctedDate.getDate()).padStart(2, '0');
+            let month = String(correctedDate.getMonth() + 1).padStart(2, '0');
+            let year = correctedDate.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+        return date;
+    }
+    
+    function formatBRL(value) {
+        return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function displayPreview() {
+        previewTableBody.innerHTML = '';
+        if(processedData.length === 0) {
+            previewTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Nenhum dado válido encontrado. Verifique se os arquivos contêm as colunas "Data da Venda", "Valor Bruto" e "Valor Líquido" e se estão preenchidas.</td></tr>';
+            generateBtn.disabled = true;
+            return;
+        }
+        
+        processedData.sort((a, b) => new Date(a.dataVenda.split('/').reverse().join('-')) - new Date(b.dataVenda.split('/').reverse().join('-')));
+        
+        processedData.forEach(data => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${data.dataVenda}</td>
+                <td>${formatBRL(data.valorBruto)}</td>
+                <td>${formatBRL(data.valorLiquido)}</td>
+                <td style="color: var(--error);">${formatBRL(data.valorTarifa)}</td>
+            `;
+            previewTableBody.appendChild(row);
+        });
+        generateBtn.disabled = false;
+    }
+
+    function generateAndDownload() {
+        if (processedData.length === 0) {
+            alert("Não há dados para gerar o arquivo.");
+            return;
+        }
+        const contaCartao = contaCartaoInput.value.trim();
+        const contaClientes = contaClientesInput.value.trim();
+        const contaTarifas = contaTarifasInput.value.trim();
+        if (!contaCartao || !contaClientes || !contaTarifas) {
+            alert("As contas de Cartão, Clientes e Tarifas são obrigatórias!");
+            return;
+        }
+        
+        const historicoVenda = "VALOR DE VENDAS C/ CARTAO DE CREDITO/DEBITO, CONF. EXTRATO";
+        const historicoTaxa = "TAXA OPERADORA DE CARTOES CREDITO/DEBITO, CONF. EXTRATO";
+        let txtContent = [];
+
+        processedData.forEach(data => {
+            const valorBrutoStr = data.valorBruto.toFixed(2).replace('.', ',');
+            const valorTarifaStr = data.valorTarifa.toFixed(2).replace('.', ',');
+            txtContent.push(`${data.dataVenda};${contaCartao};${contaClientes};${valorBrutoStr};;${historicoVenda};;;;`);
+            if (Math.abs(data.valorTarifa) > 0.005) {
+                txtContent.push(`${data.dataVenda};${contaTarifas};${contaCartao};${valorTarifaStr};;${historicoTaxa};;;;`);
+            }
+        });
+
+        const blob = new Blob([txtContent.join('\r\n')], { type: 'text/plain;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        const today = new Date();
+        const dateStr = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`;
+        link.download = `LANCAMENTOS_ALELO_${dateStr}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    
+    function showSection(sectionName) {
+        ['upload', 'loading', 'preview'].forEach(sec => {
+            document.getElementById(`${sec}-section`).classList.add('hidden');
+        });
+        if (sectionName) {
+            document.getElementById(`${sectionName}-section`).classList.remove('hidden');
+        }
+    }
+
+    function resetUI(fullReset = true) {
+        showSection('upload');
+        if (fullReset) {
+            fileInput.value = '';
+            selectedFiles = [];
+            fileInfo.classList.remove('show');
+            fileList.innerHTML = '';
+            processBtn.disabled = true;
+        }
+    }
+
+    ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
+        uploadArea.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
+    });
+    uploadArea.addEventListener('drop', (e) => handleFileSelect(e.dataTransfer.files));
+    fileInput.addEventListener('change', (e) => handleFileSelect(e.target.files));
+    processBtn.addEventListener('click', processFiles);
+    generateBtn.addEventListener('click', generateAndDownload);
+
+</script>
+</body>
+</html>

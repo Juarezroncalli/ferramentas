@@ -148,6 +148,60 @@
         color: rgba(255, 255, 255, 0.85);
       }
 
+      /* --- ESTILOS DAS ABAS ATUALIZADOS --- */
+      .tabs-container {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem; /* Reduzido */
+        margin-bottom: 2.5rem;
+        flex-wrap: nowrap;
+      }
+
+      .tab-link {
+        padding: 10px 14px; /* Reduzido */
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.875rem; /* Reduzido */
+        font-weight: 600;
+        border-bottom: 3px solid transparent;
+        transition: var(--transicao);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap; 
+      }
+
+      .tab-link:hover {
+        color: var(--text-color-light);
+      }
+
+      .tab-link.active {
+        color: var(--text-color-light);
+        border-bottom-color: var(--accent-color);
+      }
+
+      .tab-pane {
+        display: none;
+      }
+
+      .tab-pane.active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      /* --- FIM DOS ESTILOS DAS ABAS --- */
+
       /* Grid de cards */
       .tools-grid {
         display: grid;
@@ -283,6 +337,12 @@
           text-align: center;
           gap: 10px;
         }
+        
+        /* Adiciona rolagem horizontal para as abas em telas muito pequenas */
+        .tabs-container {
+            justify-content: flex-start;
+            overflow-x: auto;
+        }
 
         main {
           margin-top: 150px;
@@ -332,490 +392,518 @@
         </p>
       </section>
 
-      <div class="tools-grid">
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/h010.html"
-        >
-          <i class="fas fa-calculator tool-icon"></i>
-          <h3 class="tool-name">Editor de Arquivos TXT</h3>
-          <p class="tool-description">
-            Script para incluir automaticamente a conta contábil no registro
-            H010 (inventário) do SPED Fiscal, garantindo o preenchimento correto
-            do campo COD_CTA.
-          </p>
-          <button class="access-btn">Acessar</button>
+      <div class="tabs-container">
+        <button class="tab-link active" data-tab="tab-calculos">
+          Cálculos e Simulações
+        </button>
+        <button class="tab-link" data-tab="tab-sped">
+          SPED e Obrigações Fiscais
+        </button>
+        <button class="tab-link" data-tab="tab-importacao">
+          Importação e Integração
+        </button>
+        <button class="tab-link" data-tab="tab-analise">
+          Análise e Conferência
+        </button>
+        <button class="tab-link" data-tab="tab-cartoes">
+          Cartões de Crédito
+        </button>
+      </div>
+
+      <div class="tabs-content">
+        <div id="tab-calculos" class="tab-pane active">
+          <div class="tools-grid">
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/irpj_csll.html"
+            >
+              <i class="fas fa-table-cells tool-icon"></i>
+              <h3 class="tool-name">
+                Calculadora IRPJ e CSLL – Lucro Presumido
+              </h3>
+              <p class="tool-description">
+                Informe a receita do período e veja automaticamente os valores
+                de IRPJ e CSLL calculados.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/simples.html"
+            >
+              <i class="fas fa-signal tool-icon"></i>
+              <h3 class="tool-name">
+                Calculadora de Projeção do Simples Nacional
+              </h3>
+              <p class="tool-description">
+                Preencha a planilha com o faturamento projetado e visualize a
+                alíquota do Simples Nacional dos próximos 12 meses.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/calculadora_simples.html"
+            >
+              <i class="fas fa-city tool-icon"></i>
+              <h3 class="tool-name">
+                Alíquota do Simples Nacional<br />Faturamento mensal
+              </h3>
+              <p class="tool-description">
+                Preencha o faturamento mensal e simule da alíquota do Simples
+                Nacional em todos os Anexos.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/simples_rbt12.html"
+            >
+              <i class="fas fa-code-compare tool-icon"></i>
+              <h3 class="tool-name">Alíquota do Simples Nacional<br />RBT12</h3>
+              <p class="tool-description">
+                Preencha o RBT12 e simule da alíquota do Simples Nacional em
+                todos os Anexos.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/pauta_agua.html"
+            >
+              <span class="custom-solution-badge">Personalizado</span>
+              <i class="fas fa-solid fa-hand-holding-droplet tool-icon"></i>
+              <h3 class="tool-name">Cálculo de ICMS ST de água mineral</h3>
+              <p class="tool-description">
+                Calcule de forma rápida e precisa o ICMS devido por Substituição
+                Tributária em operações com água mineral, conforme a legislação
+                vigente.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/aliquota_iss_simples.html"
+            >
+              <span class="custom-solution-badge">Personalizado</span>
+              <i class="fas fa-solid fa-percent tool-icon"></i>
+              <h3 class="tool-name">
+                Calcule a alíquota de ISS com base na sua Receita Bruta (RBT12)
+              </h3>
+              <p class="tool-description">
+                Calcule a alíquota de ISS com base na sua Receita Bruta (RBT12),
+                para casos de retenção de ISS dentro do Simples Nacional.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+          </div>
         </div>
 
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/financiamentos.html"
-        >
-          <i class="fas fa-file-invoice tool-icon"></i>
-          <h3 class="tool-name">
-            Separador de Prazos - Empréstimos e Financiamentos
-          </h3>
-          <p class="tool-description">
-            Calcula e separa automaticamente os saldos de empréstimos e
-            financiamentos entre curto e longo prazo, facilitando a correta
-            contabilização.
-          </p>
-          <button class="access-btn">Acessar</button>
+        <div id="tab-sped" class="tab-pane">
+          <div class="tools-grid">
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/h010.html"
+            >
+              <i class="fas fa-calculator tool-icon"></i>
+              <h3 class="tool-name">Editor de Arquivos TXT</h3>
+              <p class="tool-description">
+                Script para incluir automaticamente a conta contábil no registro
+                H010 (inventário) do SPED Fiscal, garantindo o preenchimento
+                correto do campo COD_CTA.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/MIT_PRESUMIDO.html"
+            >
+              <span class="custom-solution-badge">Personalizado</span>
+              <i class="fas fa-check-circle tool-icon"></i>
+              <h3 class="tool-name">
+                Gerador de JSON para MIT do e-CAC - Lucro Presumido
+              </h3>
+              <p class="tool-description">
+                Gere arquivos JSON para o MIT do e-CAC de forma rápida e sem
+                erros. Ideal para quem lida com várias empresas, automatizando o
+                processo.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/MIT_REAL.html"
+            >
+              <span class="custom-solution-badge">Personalizado</span>
+              <i class="fas fa-file-export tool-icon"></i>
+              <h3 class="tool-name">
+                Gerador de JSON para MIT do e-CAC - Lucro Real
+              </h3>
+              <p class="tool-description">
+                Gere arquivos JSON para o MIT do e-CAC de forma rápida e sem
+                erros. Ideal para quem lida com várias empresas, automatizando o
+                processo.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/REINF.html"
+            >
+              <span class="custom-solution-badge">Personalizado</span>
+              <i class="fas fa-file-alt tool-icon"></i>
+              <h3 class="tool-name">
+                Geração de TXT para Importação de Lucros (Reinf)
+              </h3>
+              <p class="tool-description">
+                A partir da planilha do Contábil Domínio, gere o TXT para o
+                Fiscal, integrando a distribuição de lucros para a EFD-Reinf.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/ECF.html"
+            >
+              <i class="fas fa-solid fa-diamond tool-icon"></i>
+              <h3 class="tool-name">
+                Extraia informações dos registros N030 e M500 da ECF
+              </h3>
+              <p class="tool-description">
+                Com base no arquivo TXT da ECF, extraia informações dos
+                registros N030 e M500, facilitando a conferência.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/ECD.html"
+            >
+              <span class="custom-solution-badge">Personalizado</span>
+              <i class="fas fa-solid fa-magnifying-glass-dollar tool-icon"></i>
+              <h3 class="tool-name">
+                Localize lançamentos contábeis em arquivos da ECD.
+              </h3>
+              <p class="tool-description">
+                Este recurso permite localizar rapidamente todos os lançamentos
+                contábeis relacionados a uma conta específica em diversos
+                arquivos da Escrituração Contábil Digital (ECD).
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/comparador_ecd.html"
+            >
+              <span class="custom-solution-badge">Personalizado</span>
+              <i class="fas fa-solid fa-bug tool-icon"></i>
+              <h3 class="tool-name">
+                Compare a ECD transmitida com a nova versão, identificando
+                eventuais divergências entre elas.
+              </h3>
+              <p class="tool-description">
+                Realizou alterações na contabilidade que impactaram os saldos da
+                ECD já entregue? Identifique aqui todas as inconsistências
+                geradas.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/sped_contribuicoes_contas_contabeis.html"
+            >
+              <span class="custom-solution-badge">Personalizado</span>
+              <i class="fas fa-solid fa-wrench tool-icon"></i>
+              <h3 class="tool-name">
+                Informe as contas contabeis nos registros C170 e C175 do Sped
+                Contribuições.
+              </h3>
+              <p class="tool-description">
+                Procurei linhas dos registros C170 e C175 do Sped Contribuições
+                que não possuem a conta contábil informada e informe a conta
+                contábil correta.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+          </div>
         </div>
 
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/MIT_PRESUMIDO.html"
-        >
-          <span class="custom-solution-badge">Personalizado</span>
-          <i class="fas fa-check-circle tool-icon"></i>
-          <h3 class="tool-name">
-            Gerador de JSON para MIT do e-CAC - Lucro Presumido
-          </h3>
-          <p class="tool-description">
-            Gere arquivos JSON para o MIT do e-CAC de forma rápida e sem erros.
-            Ideal para quem lida com várias empresas, automatizando o processo.
-          </p>
-          <button class="access-btn">Acessar</button>
+        <div id="tab-importacao" class="tab-pane">
+          <div class="tools-grid">
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/NFS.html"
+            >
+              <i class="fas fa-balance-scale tool-icon"></i>
+              <h3 class="tool-name">
+                Importação de Notas Fiscais para o Domínio Sistemas
+              </h3>
+              <p class="tool-description">
+                Gere um arquivo TXT pronto para importação no Domínio Sistemas a
+                partir de poucas informações das notas fiscais, eliminando o
+                lançamento manual.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/Ideal.html"
+            >
+              <span class="custom-solution-badge">Personalizado</span>
+              <i class="fas fa-robot tool-icon"></i>
+              <h3 class="tool-name">Importador Financeiro</h3>
+              <p class="tool-description">
+                Importa automaticamente a movimentação financeira do cliente
+                para o sistema Domínio. Uma solução desenvolvida sob medida.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/provisionador.html"
+            >
+              <i class="fas fa-solid fa-laptop tool-icon"></i>
+              <h3 class="tool-name">Provisionador para Domínio Sistemas</h3>
+              <p class="tool-description">
+                Ganhe tempo com provisões anuais automatizadas. Nosso site
+                agiliza a contabilização e libera sua equipe para focar no que
+                realmente importa.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/importador1.html"
+            >
+              <span class="custom-solution-badge">Personalizado</span>
+              <i class="fas fa-solid fa-gears tool-icon"></i>
+              <h3 class="tool-name">Importador Personalizado</h3>
+              <p class="tool-description">
+                Seu sistema gera o arquivo, nós cuidamos do resto. Lançamentos
+                contábeis prontos para o Domínio Sistemas em segundos!
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/ativo.html"
+            >
+              <i class="fas fa-solid fa-house tool-icon"></i>
+              <h3 class="tool-name">
+                Lançamento de Ativo Imobilizado no Domínio
+              </h3>
+              <p class="tool-description">
+                Preencha o site e gere um arquivo TXT para importação no Dóminio
+                Sistemas. O arquivo gerado é compatível com o módulo Patrimônio.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/ativo1.html"
+            >
+              <i class="fas fa-solid fa-van-shuttle tool-icon"></i>
+              <h3 class="tool-name">
+                Importe os Ativos Imobilizados do Alterdata para o Domínio
+              </h3>
+              <p class="tool-description">
+                Importe a planilha de BI do Alterdata diretamente para o Domínio
+                Sistemas, facilitando a gestão do ativo imobilizado.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/ofx.html"
+            >
+              <span class="custom-solution-badge">Personalizado</span>
+              <i class="fas fa-solid fa-hand-holding-dollar tool-icon"></i>
+              <h3 class="tool-name">
+                Importe arquivos OFX e tenha uma visão clara das movimentações
+                antes da contabilização.
+              </h3>
+              <p class="tool-description">
+                Importe múltiplos arquivos OFX e tenha uma visão precisa das
+                movimentações financeiras antes da contabilização.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+          </div>
         </div>
 
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/MIT_REAL.html"
-        >
-          <span class="custom-solution-badge">Personalizado</span>
-          <i class="fas fa-file-export tool-icon"></i>
-          <h3 class="tool-name">
-            Gerador de JSON para MIT do e-CAC - Lucro Real
-          </h3>
-          <p class="tool-description">
-            Gere arquivos JSON para o MIT do e-CAC de forma rápida e sem erros.
-            Ideal para quem lida com várias empresas, automatizando o processo.
-          </p>
-          <button class="access-btn">Acessar</button>
+        <div id="tab-analise" class="tab-pane">
+          <div class="tools-grid">
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/financiamentos.html"
+            >
+              <i class="fas fa-file-invoice tool-icon"></i>
+              <h3 class="tool-name">
+                Separador de Prazos - Empréstimos e Financiamentos
+              </h3>
+              <p class="tool-description">
+                Calcula e separa automaticamente os saldos de empréstimos e
+                financiamentos entre curto e longo prazo, facilitando a correta
+                contabilização.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/SPED_CONTRIBUICOES.html"
+            >
+              <i class="fas fa-chart-pie tool-icon"></i>
+              <h3 class="tool-name">
+                Análise de Créditos e Débitos do Sped Contribuições
+              </h3>
+              <p class="tool-description">
+                Extraia em segundos todas as informações sobre créditos e
+                débitos de PIS e COFINS direto do seu arquivo TXT do SPED
+                Contribuições.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/duplicidade.html"
+            >
+              <span class="custom-solution-badge">Personalizado</span>
+              <i class="fas fa-solid fa-check tool-icon"></i>
+              <h3 class="tool-name">Duplicidade em transferências bancárias</h3>
+              <p class="tool-description">
+                Analisa os lançamentos para identificar erros em transferências
+                internas que foram lançadas incorretamente em outras contas.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/distribuicao_socios.html"
+            >
+              <span class="custom-solution-badge">Personalizado</span>
+              <i class="fas fa-solid fa-user tool-icon"></i>
+              <h3 class="tool-name">Distribuição proporcional de lucros</h3>
+              <p class="tool-description">
+                Calcula a distribuição proporcional dos lucros entre sócios e
+                gera um arquivo pronto para importação no sistema Domínio.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/classificador.html"
+            >
+              <span class="custom-solution-badge">Personalizado</span>
+              <i class="fas fa-solid fa-pen tool-icon"></i>
+              <h3 class="tool-name">
+                Classificação Inteligente de Lançamentos
+              </h3>
+              <p class="tool-description">
+                Ferramenta desenvolvida para comparar duas planilhas contábeis
+                de forma automática, para identificar e facilitar a
+                classificação de lançamentos.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/bonificacoes.html"
+            >
+              <span class="custom-solution-badge">Personalizado</span>
+              <i class="fas fa-solid fa-pen tool-icon"></i>
+              <h3 class="tool-name">Análise de Contas a Pagar</h3>
+              <p class="tool-description">
+                Analisa se foram criadas duplicatas para os CFOPs 1.910, 1.949,
+                etc.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/emprestimos_folha.html"
+            >
+              <span class="custom-solution-badge">Personalizado</span>
+              <i class="fas fa-solid fa-money-check-dollar tool-icon"></i>
+              <h3 class="tool-name">Empréstimo consignado INSS</h3>
+              <p class="tool-description">
+                Gera um relatório a partir do arquivo JSON baixado do Portal
+                Emprega Brasil, com foco nas informações de empréstimos
+                consignados do INSS.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/xml_clinica.html"
+            >
+              <span class="custom-solution-badge">Personalizado</span>
+              <i class="fas fa-solid fa-paste tool-icon"></i>
+              <h3 class="tool-name">
+                Análise de descrição de notas fiscais de serviços prestados.
+              </h3>
+              <p class="tool-description">
+                Análise das descrições utilizadas nas notas fiscais, com foco em
+                alinhar a linguagem aos critérios da equiparação hospitalar.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/contas_pagas_contabil.html"
+            >
+              <span class="custom-solution-badge">Personalizado</span>
+              <i class="fas fa-solid fa-barcode tool-icon"></i>
+              <h3 class="tool-name">
+                Encontre diferenças entre duplicatas pagas e lançamentos
+                contábeis.
+              </h3>
+              <p class="tool-description">
+                Encontre diferenças entre as duplicatas pagas e os lançamentos
+                contábeis, garantindo que todos os pagamentos estejam
+                devidamente registrados.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/diferencas_fiscal_contabil.html"
+            >
+              <span class="custom-solution-badge">Personalizado</span>
+              <i class="fas fa-solid fa-cash-register tool-icon"></i>
+              <h3 class="tool-name">
+                Encontre diferenças entre duplicatas geradas e lançamentos
+                contábeis.
+              </h3>
+              <p class="tool-description">
+                Encontre diferenças entre as duplicatas geradas e os lançamentos
+                contábeis, garantindo que todos os pagamentos estejam
+                devidamente registrados.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+          </div>
         </div>
 
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/SPED_CONTRIBUICOES.html"
-        >
-          <i class="fas fa-chart-pie tool-icon"></i>
-          <h3 class="tool-name">
-            Análise de Créditos e Débitos do Sped Contribuições
-          </h3>
-          <p class="tool-description">
-            Extraia em segundos todas as informações sobre créditos e débitos de
-            PIS e COFINS direto do seu arquivo TXT do SPED Contribuições.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/NFS.html"
-        >
-          <i class="fas fa-balance-scale tool-icon"></i>
-          <h3 class="tool-name">
-            Importação de Notas Fiscais para o Domínio Sistemas
-          </h3>
-          <p class="tool-description">
-            Gere um arquivo TXT pronto para importação no Domínio Sistemas a
-            partir de poucas informações das notas fiscais, eliminando o
-            lançamento manual.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/REINF.html"
-        >
-          <span class="custom-solution-badge">Personalizado</span>
-          <i class="fas fa-file-alt tool-icon"></i>
-          <h3 class="tool-name">
-            Geração de TXT para Importação de Lucros (Reinf)
-          </h3>
-          <p class="tool-description">
-            A partir da planilha do Contábil Domínio, gere o TXT para o Fiscal,
-            integrando a distribuição de lucros para a EFD-Reinf.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/Ideal.html"
-        >
-          <span class="custom-solution-badge">Personalizado</span>
-          <i class="fas fa-robot tool-icon"></i>
-          <h3 class="tool-name">Importador Financeiro</h3>
-          <p class="tool-description">
-            Importa automaticamente a movimentação financeira do cliente para o
-            sistema Domínio. Uma solução desenvolvida sob medida.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/irpj_csll.html"
-        >
-          <i class="fas fa-table-cells tool-icon"></i>
-          <h3 class="tool-name">Calculadora IRPJ e CSLL – Lucro Presumido</h3>
-          <p class="tool-description">
-            Informe a receita do período e veja automaticamente os valores de
-            IRPJ e CSLL calculados.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/simples.html"
-        >
-          <i class="fas fa-signal tool-icon"></i>
-          <h3 class="tool-name">Calculadora de Projeção do Simples Nacional</h3>
-          <p class="tool-description">
-            Preencha a planilha com o faturamento projetado e visualize a
-            alíquota do Simples Nacional dos próximos 12 meses.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/calculadora_simples.html"
-        >
-          <i class="fas fa-city tool-icon"></i>
-          <h3 class="tool-name">
-            Alíquota do Simples Nacional<br />Faturamento mensal
-          </h3>
-          <p class="tool-description">
-            Preencha o faturamento mensal e simule da alíquota do Simples
-            Nacional em todos os Anexos.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/simples_rbt12.html"
-        >
-          <i class="fas fa-code-compare tool-icon"></i>
-          <h3 class="tool-name">Alíquota do Simples Nacional<br />RBT12</h3>
-          <p class="tool-description">
-            Preencha o RBT12 e simule da alíquota do Simples Nacional em todos
-            os Anexos.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/duplicidade.html"
-        >
-          <span class="custom-solution-badge">Personalizado</span>
-          <i class="fas fa-solid fa-check tool-icon"></i>
-          <h3 class="tool-name">Duplicidade em transferências bancárias</h3>
-          <p class="tool-description">
-            Analisa os lançamentos para identificar erros em transferências
-            internas que foram lançadas incorretamente em outras contas.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/distribuicao_socios.html"
-        >
-          <span class="custom-solution-badge">Personalizado</span>
-          <i class="fas fa-solid fa-user tool-icon"></i>
-          <h3 class="tool-name">Distribuição proporcional de lucros</h3>
-          <p class="tool-description">
-            Calcula a distribuição proporcional dos lucros entre sócios e gera
-            um arquivo pronto para importação no sistema Domínio.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/provisionador.html"
-        >
-          <i class="fas fa-solid fa-laptop tool-icon"></i>
-          <h3 class="tool-name">Provisionador para Domínio Sistemas</h3>
-          <p class="tool-description">
-            Ganhe tempo com provisões anuais automatizadas. Nosso site agiliza a
-            contabilização e libera sua equipe para focar no que realmente
-            importa.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/classificador.html"
-        >
-          <span class="custom-solution-badge">Personalizado</span>
-          <i class="fas fa-solid fa-pen tool-icon"></i>
-          <h3 class="tool-name">Classificação Inteligente de Lançamentos</h3>
-          <p class="tool-description">
-            Ferramenta desenvolvida para comparar duas planilhas contábeis de
-            forma automática, para identificar e facilitar a classificação de
-            lançamentos.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/importador1.html"
-        >
-          <span class="custom-solution-badge">Personalizado</span>
-          <i class="fas fa-solid fa-gears tool-icon"></i>
-          <h3 class="tool-name">Importador Personalizado</h3>
-          <p class="tool-description">
-            Seu sistema gera o arquivo, nós cuidamos do resto. Lançamentos
-            contábeis prontos para o Domínio Sistemas em segundos!
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/pauta_agua.html"
-        >
-          <span class="custom-solution-badge">Personalizado</span>
-          <i class="fas fa-solid fa-hand-holding-droplet tool-icon"></i>
-          <h3 class="tool-name">Cálculo de ICMS ST de água mineral</h3>
-          <p class="tool-description">
-            Calcule de forma rápida e precisa o ICMS devido por Substituição
-            Tributária em operações com água mineral, conforme a legislação
-            vigente.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/bonificacoes.html"
-        >
-          <span class="custom-solution-badge">Personalizado</span>
-          <i class="fas fa-solid fa-pen tool-icon"></i>
-          <h3 class="tool-name">Análise de Contas a Pagar</h3>
-          <p class="tool-description">
-            Analisa se foram criadas duplicatas para os CFOPs 1.910, 1.949, etc.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/emprestimos_folha.html"
-        >
-          <span class="custom-solution-badge">Personalizado</span>
-          <i class="fas fa-solid fa-money-check-dollar tool-icon"></i>
-          <h3 class="tool-name">Empréstimo consignado INSS</h3>
-          <p class="tool-description">
-            Gera um relatório a partir do arquivo JSON baixado do Portal Emprega
-            Brasil, com foco nas informações de empréstimos consignados do INSS.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/ativo.html"
-        >
-          <i class="fas fa-solid fa-house tool-icon"></i>
-          <h3 class="tool-name">Lançamento de Ativo Imobilizado no Domínio</h3>
-          <p class="tool-description">
-            Preencha o site e gere um arquivo TXT para importação no Dóminio
-            Sistemas. O arquivo gerado é compatível com o módulo Patrimônio.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/ECF.html"
-        >
-          <i class="fas fa-solid fa-diamond tool-icon"></i>
-          <h3 class="tool-name">
-            Extraia informações dos registros N030 e M500 da ECF
-          </h3>
-          <p class="tool-description">
-            Com base no arquivo TXT da ECF, extraia informações dos registros
-            N030 e M500, facilitando a conferência.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/ativo1.html"
-        >
-          <i class="fas fa-solid fa-van-shuttle tool-icon"></i>
-          <h3 class="tool-name">
-            Importe os Ativos Imobilizados do Alterdata para o Domínio
-          </h3>
-          <p class="tool-description">
-            Importe a planilha de BI do Alterdata diretamente para o Domínio
-            Sistemas, facilitando a gestão do ativo imobilizado.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/stone.html"
-        >
-          <i class="fas fa-solid fa-credit-card tool-icon"></i>
-          <h3 class="tool-name">
-            Converta vendas da Stone em arquivos para o Domínio.
-          </h3>
-          <p class="tool-description">
-            Automatize a geração de arquivos contábeis das vendas da Stone para
-            importação direta no Domínio Sistemas.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/ECD.html"
-        >
-          <span class="custom-solution-badge">Personalizado</span>
-          <i class="fas fa-solid fa-magnifying-glass-dollar tool-icon"></i>
-          <h3 class="tool-name">
-            Localize os lançamentos contábeis de uma conta em diversos arquivos
-            da Escrituração Contábil Digital (ECD).
-          </h3>
-          <p class="tool-description">
-            Este recurso permite localizar rapidamente todos os lançamentos
-            contábeis relacionados a uma conta específica em diversos arquivos
-            da Escrituração Contábil Digital (ECD).
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/ofx.html"
-        >
-          <span class="custom-solution-badge">Personalizado</span>
-          <i class="fas fa-solid fa-hand-holding-dollar tool-icon"></i>
-          <h3 class="tool-name">
-            Importe arquivos OFX e tenha uma visão clara das movimentações antes
-            da contabilização.
-          </h3>
-          <p class="tool-description">
-            Importe múltiplos arquivos OFX e tenha uma visão precisa das
-            movimentações financeiras antes da contabilização.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/comparador_ecd.html"
-        >
-          <span class="custom-solution-badge">Personalizado</span>
-          <i class="fas fa-solid fa-bug tool-icon"></i>
-          <h3 class="tool-name">
-            Compare a ECD transmitida com a nova versão, identificando eventuais
-            divergências entre elas.
-          </h3>
-          <p class="tool-description">
-            Realizou alterações na contabilidade que impactaram os saldos da ECD
-            já entregue? Identifique aqui todas as inconsistências geradas.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/xml_clinica.html"
-        >
-          <span class="custom-solution-badge">Personalizado</span>
-          <i class="fas fa-solid fa-paste tool-icon"></i>
-          <h3 class="tool-name">
-            Análise de descrição de notas fiscais de serviços prestados.
-          </h3>
-          <p class="tool-description">
-            Análise das descrições utilizadas nas notas fiscais, com foco em
-            alinhar a linguagem aos critérios da equiparação hospitalar.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/aliquota_iss_simples.html"
-        >
-          <span class="custom-solution-badge">Personalizado</span>
-          <i class="fas fa-solid fa-percent tool-icon"></i>
-          <h3 class="tool-name">
-            Calcule a alíquota de ISS com base na sua Receita Bruta (RBT12)
-          </h3>
-          <p class="tool-description">
-            Calcule a alíquota de ISS com base na sua Receita Bruta (RBT12),
-            para casos de retenção de ISS dentro do Simples Nacional.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/sped_contribuicoes_contas_contabeis.html"
-        >
-          <span class="custom-solution-badge">Personalizado</span>
-          <i class="fas fa-solid fa-wrench tool-icon"></i>
-          <h3 class="tool-name">
-            Informe as contas contabeis nos registros C170 e C175 do Sped
-            Contribuições.
-          </h3>
-          <p class="tool-description">
-            Procurei linhas dos registros C170 e C175 do Sped Contribuições que
-            não possuem a conta contábil informada e informe a conta contábil
-            correta.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/contas_pagas_contabil.html"
-        >
-          <span class="custom-solution-badge">Personalizado</span>
-          <i class="fas fa-solid fa-barcode tool-icon"></i>
-          <h3 class="tool-name">
-            Encontre diferenças entre duplicatas pagas e lançamentos contábeis.
-          </h3>
-          <p class="tool-description">
-            Encontre diferenças entre as duplicatas pagas e os lançamentos
-            contábeis, garantindo que todos os pagamentos estejam devidamente
-            registrados.
-          </p>
-          <button class="access-btn">Acessar</button>
-        </div>
-
-        <div
-          class="tool-card"
-          data-url="https://ferramentas-seven.vercel.app/diferencas_fiscal_contabil.html"
-        >
-          <span class="custom-solution-badge">Personalizado</span>
-          <i class="fas fa-solid fa-cash-register tool-icon"></i>
-          <h3 class="tool-name">
-            Encontre diferenças entre duplicatas geradas e lançamentos
-            contábeis.
-          </h3>
-          <p class="tool-description">
-            Encontre diferenças entre as duplicatas geradas e os lançamentos
-            contábeis, garantindo que todos os pagamentos estejam devidamente
-            registrados.
-          </p>
-          <button class="access-btn">Acessar</button>
+        <div id="tab-cartoes" class="tab-pane">
+          <div class="tools-grid">
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/stone.html"
+            >
+              <i class="fas fa-solid fa-credit-card tool-icon"></i>
+              <h3 class="tool-name">
+                Converta vendas da Stone em arquivos para o Domínio.
+              </h3>
+              <p class="tool-description">
+                Automatize a geração de arquivos contábeis das vendas da Stone
+                para importação direta no Domínio Sistemas.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+          </div>
         </div>
       </div>
     </main>
@@ -831,7 +919,25 @@
     <script>
       // Script para adicionar efeitos e funcionalidades
       document.addEventListener("DOMContentLoaded", function () {
-        // Adiciona funcionalidade para os botões de acesso redirecionarem para URLs
+        // --- NOVO SCRIPT PARA FUNCIONALIDADE DAS ABAS ---
+        const tabLinks = document.querySelectorAll(".tab-link");
+        const tabPanes = document.querySelectorAll(".tab-pane");
+
+        tabLinks.forEach((link) => {
+          link.addEventListener("click", () => {
+            const tabId = link.getAttribute("data-tab");
+
+            // Remove a classe 'active' de todos os links e painéis
+            tabLinks.forEach((item) => item.classList.remove("active"));
+            tabPanes.forEach((pane) => pane.classList.remove("active"));
+
+            // Adiciona a classe 'active' ao link clicado e ao painel correspondente
+            link.classList.add("active");
+            document.getElementById(tabId).classList.add("active");
+          });
+        });
+
+        // Script original para os botões de acesso redirecionarem para URLs
         const toolCards = document.querySelectorAll(".tool-card");
         toolCards.forEach((card) => {
           const url = card.getAttribute("data-url");

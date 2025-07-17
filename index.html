@@ -148,27 +148,28 @@
         color: rgba(255, 255, 255, 0.85);
       }
 
-      /* --- NOVOS ESTILOS PARA AS ABAS --- */
+      /* --- ESTILOS DAS ABAS ATUALIZADOS --- */
       .tabs-container {
         display: flex;
         justify-content: center;
-        gap: 1rem;
+        gap: 0.5rem; /* Reduzido */
         margin-bottom: 2.5rem;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
       }
 
       .tab-link {
-        padding: 10px 20px;
+        padding: 10px 14px; /* Reduzido */
         cursor: pointer;
         border: none;
         background: transparent;
         color: rgba(255, 255, 255, 0.7);
-        font-size: 1rem;
+        font-size: 0.875rem; /* Reduzido */
         font-weight: 600;
         border-bottom: 3px solid transparent;
         transition: var(--transicao);
         text-transform: uppercase;
         letter-spacing: 0.5px;
+        white-space: nowrap;
       }
 
       .tab-link:hover {
@@ -337,6 +338,12 @@
           gap: 10px;
         }
 
+        /* Adiciona rolagem horizontal para as abas em telas muito pequenas */
+        .tabs-container {
+          justify-content: flex-start;
+          overflow-x: auto;
+        }
+
         main {
           margin-top: 150px;
         }
@@ -397,6 +404,9 @@
         </button>
         <button class="tab-link" data-tab="tab-analise">
           Análise e Conferência
+        </button>
+        <button class="tab-link" data-tab="tab-cartoes">
+          Cartões de Crédito
         </button>
       </div>
 
@@ -706,20 +716,6 @@
             </div>
             <div
               class="tool-card"
-              data-url="https://ferramentas-seven.vercel.app/stone.html"
-            >
-              <i class="fas fa-solid fa-credit-card tool-icon"></i>
-              <h3 class="tool-name">
-                Converta vendas da Stone em arquivos para o Domínio.
-              </h3>
-              <p class="tool-description">
-                Automatize a geração de arquivos contábeis das vendas da Stone
-                para importação direta no Domínio Sistemas.
-              </p>
-              <button class="access-btn">Acessar</button>
-            </div>
-            <div
-              class="tool-card"
               data-url="https://ferramentas-seven.vercel.app/ofx.html"
             >
               <span class="custom-solution-badge">Personalizado</span>
@@ -885,6 +881,70 @@
                 Encontre diferenças entre as duplicatas geradas e os lançamentos
                 contábeis, garantindo que todos os pagamentos estejam
                 devidamente registrados.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-cartoes" class="tab-pane">
+          <div class="tools-grid">
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/stone.html"
+            >
+              <i class="fas fa-solid fa-credit-card tool-icon"></i>
+              <h3 class="tool-name">
+                Converta vendas da Stone em arquivos para o Domínio.
+              </h3>
+              <p class="tool-description">
+                Automatize a geração de arquivos contábeis das vendas da Stone
+                para importação direta no Domínio Sistemas.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/Alelo.html"
+            >
+              <i class="fas fa-solid fa-credit-card tool-icon"></i>
+              <h3 class="tool-name">
+                Converta vendas da Alelo em arquivos para o Domínio.
+              </h3>
+              <p class="tool-description">
+                Automatize a geração de arquivos contábeis das vendas da Alelo
+                para importação direta no Domínio Sistemas.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/BrasilCard.html"
+            >
+              <i class="fas fa-solid fa-credit-card tool-icon"></i>
+              <h3 class="tool-name">
+                Converta vendas da Brasil Card em arquivos para o Domínio.
+              </h3>
+              <p class="tool-description">
+                Automatize a geração de arquivos contábeis das vendas da Brasil
+                Card para importação direta no Domínio Sistemas.
+              </p>
+              <button class="access-btn">Acessar</button>
+            </div>
+
+            <div
+              class="tool-card"
+              data-url="https://ferramentas-seven.vercel.app/BoltCard.html"
+            >
+              <i class="fas fa-solid fa-credit-card tool-icon"></i>
+              <h3 class="tool-name">
+                Converta vendas da Bolt Card em arquivos para o Domínio.
+              </h3>
+              <p class="tool-description">
+                Automatize a geração de arquivos contábeis das vendas da Brasil
+                Card para importação direta no Domínio Sistemas.
               </p>
               <button class="access-btn">Acessar</button>
             </div>
