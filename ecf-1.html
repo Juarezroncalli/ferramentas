@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Corretor de Contas SPED |K155| e |K355|</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+
+    <style>
+      :root {
+        --primary-color: #4f0072; --accent-color: #fb0a5e; --background-color: #ffffff;
+        --form-bg-color: #f9f9f9; --text-color: #333333; --border-color: #e0e0e0;
+        --text-color-light: #ffffff; --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease; --primary-dark: #3d005a; --success: #10b981;
+        --error: #ef4444; --text-muted: #64748b; --radius: 0.5rem; --radius-lg: 0.75rem;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh; color: var(--text-color); line-height: 1.6; padding: 2rem 0;
+      }
+      .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+      .header { text-align: center; margin-bottom: 2rem; }
+      .header h1 { color: white; font-size: 2.5rem; font-weight: 700; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+      .header p { color: rgba(255, 255, 255, 0.9); font-size: 1.1rem; }
+      .main-content > section {
+        background: var(--background-color); border-radius: var(--radius-lg);
+        padding: 2rem; box-shadow: var(--sombra); margin-bottom: 2rem;
+      }
+      .upload-area {
+        border: 2px dashed var(--border-color); border-radius: var(--radius); padding: 3rem 2rem;
+        text-align: center; transition: var(--transicao); cursor: pointer;
+      }
+      .upload-area:hover { border-color: var(--primary-color); background: var(--form-bg-color); }
+      .upload-icon { font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; }
+      #file-input { display: none; }
+      .file-info {
+        background: var(--form-bg-color); border-radius: var(--radius); padding: 1rem;
+        margin-top: 1.5rem; display: none; align-items: center; gap: 1rem;
+      }
+      .file-info.show { display: flex; }
+      .btn {
+        background: var(--primary-color); color: var(--text-color-light); border: none;
+        padding: 0.875rem 2rem; border-radius: var(--radius); font-weight: 600;
+        font-size: 1rem; cursor: pointer; transition: var(--transicao);
+        display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;
+      }
+      .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
+      .btn:disabled { background: var(--text-muted); cursor: not-allowed; transform: none; }
+      .btn-process { width: 100%; justify-content: center; margin-top: 1.5rem; }
+      .section-title { font-size: 1.5rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent-color); }
+      .hidden { display: none !important; }
+      .loading { text-align: center; padding: 3rem 2rem; color: var(--text-muted); }
+      .spinner {
+        border: 3px solid var(--border-color); border-top: 3px solid var(--primary-color);
+        border-radius: 50%; width: 40px; height: 40px;
+        animation: spin 1s linear infinite; margin: 0 auto 1rem;
+      }
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      .quarter-block {
+          border: 1px solid var(--border-color);
+          border-radius: var(--radius);
+          padding: 1.5rem;
+          margin-bottom: 2rem;
+          background: #fdfdfd;
+      }
+      .quarter-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-bottom: 1rem;
+          margin-bottom: 1rem;
+          border-bottom: 1px solid var(--border-color);
+      }
+      .quarter-title {
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: var(--primary-dark);
+      }
+      .enable-quarter-toggle { display: flex; align-items: center; gap: 0.5rem; }
+      .enable-quarter-toggle label { font-weight: 600; cursor: pointer; color: var(--text-muted); }
+      .category-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+      }
+      .input-group { 
+        display: flex; 
+        flex-direction: column;
+        margin-bottom: 1.25rem;
+      }
+      .input-group label {
+        font-size: 0.875rem; font-weight: 600; color: var(--text-muted);
+        margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;
+      }
+      .input-group input {
+        padding: 0.75rem; border: 1px solid var(--border-color);
+        border-radius: var(--radius); font-size: 1rem;
+      }
+      .input-group input:disabled { background: #f0f0f0; cursor: not-allowed; }
+      .account-info {
+        font-weight: normal; font-size: 0.8rem; color: var(--success);
+      }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fa-solid fa-wand-magic-sparkles"></i> Corretor de Contas SPED |K155| e |K355|</h1>
+            <p>Faça o upload do seu arquivo SPED (.txt) para corrigir contas contábeis por trimestre</p>
+        </header>
+
+        <main class="main-content">
+            <section id="upload-section">
+                <div class="upload-area" onclick="document.getElementById('file-input').click()">
+                    <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                    <p><strong>Clique para selecionar um arquivo SPED</strong></p>
+                    <p>ou arraste e solte o arquivo .txt aqui</p>
+                    <input type="file" id="file-input" accept=".txt" />
+                </div>
+                <div class="file-info" id="file-info">
+                    <i class="fas fa-file-alt" style="color: var(--success); font-size: 1.5rem;"></i>
+                    <div>
+                        <div id="file-name" style="font-weight: 600;"></div>
+                        <div id="file-size" style="color: var(--text-muted); font-size: 0.875rem;"></div>
+                    </div>
+                </div>
+                <button class="btn btn-process" id="process-btn" disabled>
+                    <i class="fas fa-play"></i> Analisar Arquivo
+                </button>
+            </section>
+
+            <section id="loading-section" class="hidden">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Analisando arquivo e separando trimestres...</p>
+                </div>
+            </section>
+            
+            <section id="correlation-section" class="hidden">
+                <h2 class="section-title"><i class="fas fa-link"></i> Correlação de Contas por Trimestre</h2>
+                <p class="text-muted" style="margin-bottom: 1.5rem;">Para cada trimestre, habilite a alteração e informe a nova conta contábil. As contas informadas serão sincronizadas automaticamente entre todos os trimestres.</p>
+                <div id="correlation-form"></div>
+                <button id="generate-btn" class="btn btn-process"><i class="fas fa-download"></i> Gerar e Baixar Arquivo Corrigido</button>
+            </section>
+        </main>
+    </div>
+
+<script>
+    // --- ELEMENTOS DO DOM ---
+    const fileInput = document.getElementById('file-input');
+    const processBtn = document.getElementById('process-btn');
+    const uploadArea = document.querySelector('.upload-area');
+    const fileInfo = document.getElementById('file-info');
+    const fileNameDiv = document.getElementById('file-name');
+    const fileSizeDiv = document.getElementById('file-size');
+
+    const uploadSection = document.getElementById('upload-section');
+    const loadingSection = document.getElementById('loading-section');
+    const correlationSection = document.getElementById('correlation-section');
+    
+    const correlationForm = document.getElementById('correlation-form');
+    const generateBtn = document.getElementById('generate-btn');
+
+    // --- VARIÁVEIS GLOBAIS ---
+    let originalFileLines = [];
+    let quartersData = [];
+
+    // --- FUNÇÕES DE LÓGICA PRINCIPAL ---
+
+    function handleFileSelect(files) {
+        if (!files || files.length === 0) return;
+        const file = files[0];
+        if (!file.name.toLowerCase().endsWith('.txt')) {
+            alert('Por favor, selecione um arquivo .txt válido.');
+            return;
+        }
+        fileNameDiv.textContent = file.name;
+        fileSizeDiv.textContent = `Tamanho: ${(file.size / 1024).toFixed(2)} KB`;
+        fileInfo.classList.add('show');
+        processBtn.disabled = false;
+        resetUI();
+    }
+
+    async function analyzeFile() {
+        if (!fileInput.files || fileInput.files.length === 0) {
+            alert("Por favor, selecione um arquivo .txt.");
+            return;
+        }
+        showSection('loading');
+        
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+            try {
+                originalFileLines = e.target.result.split(/\r?\n/);
+                if (originalFileLines.length <= 1) {
+                    alert("O arquivo parece estar vazio ou em um formato inesperado.");
+                    showSection('upload');
+                    return;
+                }
+                parseQuarters();
+                displayQuarterForms();
+                showSection('correlation');
+
+            } catch (error) {
+                console.error(error);
+                alert("Ocorreu um erro ao ler o arquivo.\nDetalhes: " + error.message);
+                showSection('upload');
+            }
+        };
+        
+        reader.onerror = () => {
+             alert("Não foi possível ler o arquivo.");
+             showSection('upload');
+        }
+        
+        reader.readAsText(file, 'ISO-8859-1');
+    }
+    
+    function parseQuarters() {
+        quartersData = [];
+        let currentQuarter = null;
+        const parseValue = (val) => parseFloat((val || "0").replace(',', '.')) || 0;
+
+        originalFileLines.forEach((line, index) => {
+            if (line.startsWith('|K030|')) {
+                const fields = line.split('|');
+                const period = `${fields[2]} a ${fields[3]}`;
+                currentQuarter = {
+                    period: period,
+                    k155_accounts: {},
+                    k155_lines: {},
+                    k355_accounts: {},
+                    k355_lines: {}
+                };
+                quartersData.push(currentQuarter);
+            } else if (currentQuarter) {
+                if (line.startsWith('|K155|')) {
+                    const fields = line.split('|');
+                    const originalAccount = fields[2];
+                    if (!originalAccount) return;
+
+                    if (!currentQuarter.k155_accounts[originalAccount]) {
+                        currentQuarter.k155_accounts[originalAccount] = { valueField8: 0 };
+                        currentQuarter.k155_lines[originalAccount] = [];
+                    }
+                    currentQuarter.k155_accounts[originalAccount].valueField8 += parseValue(fields[8]);
+                    currentQuarter.k155_lines[originalAccount].push(index);
+
+                } else if (line.startsWith('|K355|')) {
+                    const fields = line.split('|');
+                    const originalAccount = fields[2];
+                    if (!originalAccount) return;
+                    
+                    if (!currentQuarter.k355_accounts[originalAccount]) {
+                        currentQuarter.k355_accounts[originalAccount] = { valueField4: 0 };
+                        currentQuarter.k355_lines[originalAccount] = [];
+                    }
+                    currentQuarter.k355_accounts[originalAccount].valueField4 += parseValue(fields[4]);
+                    currentQuarter.k355_lines[originalAccount].push(index);
+                }
+            }
+        });
+    }
+
+    function formatBRL(value) {
+        return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function displayQuarterForms() {
+        correlationForm.innerHTML = '';
+        if(quartersData.length === 0) {
+            correlationForm.innerHTML = '<p>Nenhum trimestre (registro |K030|) encontrado no arquivo.</p>';
+            generateBtn.disabled = true;
+            return;
+        }
+
+        quartersData.forEach((quarter, index) => {
+            const quarterBlock = document.createElement('div');
+            quarterBlock.className = 'quarter-block';
+            let contentHTML = '';
+
+            // --- Seção K155 ---
+            const k155Accounts = Object.keys(quarter.k155_accounts).sort();
+            if (k155Accounts.length > 0) {
+                contentHTML += '<h3 class="category-title">Contas do Registro |K155|</h3>';
+                for (const account of k155Accounts) {
+                    const data = quarter.k155_accounts[account];
+                    contentHTML += `
+                        <div class="input-group">
+                            <label for="k155-acc-${index}-${account}">
+                                <span>Conta Original: <strong>${account}</strong></span>
+                                <span class="account-info">Valor (Campo 8): ${formatBRL(data.valueField8)}</span>
+                            </label>
+                            <input type="text" id="k155-acc-${index}-${account}" class="correlation-input"
+                                   data-record-type="k155" data-quarter-index="${index}" data-original-account="${account}"
+                                   placeholder="Nova conta (deixe em branco para manter)" disabled>
+                        </div>
+                    `;
+                }
+            }
+            
+            // --- Seção K355 ---
+            const k355Accounts = Object.keys(quarter.k355_accounts).sort();
+            if (k355Accounts.length > 0) {
+                contentHTML += '<h3 class="category-title">Contas do Registro |K355|</h3>';
+                for (const account of k355Accounts) {
+                    const data = quarter.k355_accounts[account];
+                    contentHTML += `
+                        <div class="input-group">
+                            <label for="k355-acc-${index}-${account}">
+                                <span>Conta Original: <strong>${account}</strong></span>
+                                <span class="account-info">Valor (Campo 4): ${formatBRL(data.valueField4)}</span>
+                            </label>
+                            <input type="text" id="k355-acc-${index}-${account}" class="correlation-input"
+                                   data-record-type="k355" data-quarter-index="${index}" data-original-account="${account}"
+                                   placeholder="Nova conta (deixe em branco para manter)" disabled>
+                        </div>
+                    `;
+                }
+            }
+            
+            if (!contentHTML) {
+                contentHTML = '<p class="text-muted">Nenhum registro |K155| ou |K355| encontrado neste trimestre.</p>';
+            }
+
+            quarterBlock.innerHTML = `
+                <div class="quarter-header">
+                    <span class="quarter-title"><i class="fas fa-calendar-alt"></i> Trimestre: ${quarter.period}</span>
+                    <div class="enable-quarter-toggle">
+                        <label for="enable-q-${index}">Habilitar Alteração</label>
+                        <input type="checkbox" id="enable-q-${index}" data-quarter-index="${index}">
+                    </div>
+                </div>
+                <div>${contentHTML}</div>
+            `;
+            correlationForm.appendChild(quarterBlock);
+        });
+
+        // Adicionar listeners de eventos após a criação dos elementos
+        addUiListeners();
+    }
+    
+    function addUiListeners() {
+        // Listener para os checkboxes que habilitam/desabilitam inputs
+        document.querySelectorAll('input[type="checkbox"][data-quarter-index]').forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => {
+                const qIndex = e.target.dataset.quarterIndex;
+                const isEnabled = e.target.checked;
+                document.querySelectorAll(`input.correlation-input[data-quarter-index="${qIndex}"]`).forEach(input => {
+                    input.disabled = !isEnabled;
+                });
+            });
+        });
+
+        // Listener para o preenchimento automático
+        document.querySelectorAll('input.correlation-input').forEach(input => {
+            input.addEventListener('input', (e) => {
+                const sourceInput = e.target;
+                const recordType = sourceInput.dataset.recordType;
+                const originalAccount = sourceInput.dataset.originalAccount;
+                const newValue = sourceInput.value;
+
+                // Encontra todos os inputs correspondentes em TODOS os trimestres
+                document.querySelectorAll(`input.correlation-input[data-record-type="${recordType}"][data-original-account="${originalAccount}"]`).forEach(targetInput => {
+                    // Atualiza o valor de todos, exceto o que está sendo editado
+                    if (targetInput !== sourceInput) {
+                        targetInput.value = newValue;
+                    }
+                });
+            });
+        });
+    }
+
+    function generateAndDownload() {
+        const mappings = {};
+        document.querySelectorAll('input.correlation-input').forEach(input => {
+            const qIndex = input.dataset.quarterIndex;
+            const originalAccount = input.dataset.originalAccount;
+            const recordType = input.dataset.recordType;
+            const newAccount = input.value.trim();
+            const isQuarterEnabled = document.getElementById(`enable-q-${qIndex}`).checked;
+
+            if (isQuarterEnabled && newAccount) {
+                if (!mappings[qIndex]) mappings[qIndex] = { k155: {}, k355: {} };
+                mappings[qIndex][recordType][originalAccount] = newAccount;
+            }
+        });
+
+        const newFileLines = [...originalFileLines];
+        let linesChanged = 0;
+
+        quartersData.forEach((quarter, qIndex) => {
+            const quarterMap = mappings[qIndex];
+            if (!quarterMap) return;
+
+            // Processar K155
+            for (const originalAccount in quarterMap.k155) {
+                const newAccount = quarterMap.k155[originalAccount];
+                const lineIndexes = quarter.k155_lines[originalAccount] || [];
+                lineIndexes.forEach(lineIndex => {
+                    let fields = newFileLines[lineIndex].split('|');
+                    fields[2] = newAccount;
+                    newFileLines[lineIndex] = fields.join('|');
+                    linesChanged++;
+                });
+            }
+
+            // Processar K355
+            for (const originalAccount in quarterMap.k355) {
+                const newAccount = quarterMap.k355[originalAccount];
+                const lineIndexes = quarter.k355_lines[originalAccount] || [];
+                lineIndexes.forEach(lineIndex => {
+                    let fields = newFileLines[lineIndex].split('|');
+                    fields[2] = newAccount;
+                    newFileLines[lineIndex] = fields.join('|');
+                    linesChanged++;
+                });
+            }
+        });
+        
+        if (linesChanged === 0) {
+            alert('Nenhuma alteração foi realizada. Habilite um trimestre e preencha pelo menos uma nova conta para gerar o arquivo.');
+            return;
+        }
+
+        const txtContent = newFileLines.join('\r\n');
+        const blob = new Blob([txtContent], { type: 'text/plain;charset=iso-8859-1' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        
+        const originalFileName = fileInput.files[0].name.replace(/\.txt$/i, '');
+        link.download = `${originalFileName}_corrigido.txt`;
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // --- FUNÇÕES DE UI ---
+    
+    function showSection(sectionName) {
+        const sections = ['upload', 'loading', 'correlation'];
+        sections.forEach(sec => {
+            document.getElementById(`${sec}-section`).classList.add('hidden');
+        });
+        document.getElementById(`${sectionName}-section`).classList.remove('hidden');
+    }
+
+    function resetUI() {
+        showSection('upload');
+        originalFileLines = [];
+        quartersData = [];
+        correlationForm.innerHTML = '';
+        generateBtn.disabled = false;
+    }
+
+    // --- EVENT LISTENERS ---
+    ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
+        uploadArea.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
+    });
+    uploadArea.addEventListener('drop', (e) => handleFileSelect(e.dataTransfer.files));
+    fileInput.addEventListener('change', (e) => handleFileSelect(e.target.files));
+    processBtn.addEventListener('click', analyzeFile);
+    generateBtn.addEventListener('click', generateAndDownload);
+
+</script>
+</body>
+</html>
