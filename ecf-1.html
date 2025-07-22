@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Corretor de Contas SPED |K155| e |K355|</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
 
     <style>
       :root {
@@ -21,7 +22,7 @@
         min-height: 100vh; color: var(--text-color); line-height: 1.6; padding: 2rem 0;
       }
       .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
-      .header { text-align: center; margin-bottom: 2rem; }
+      .header { text-align: center; margin-bottom: 2rem; position: relative; }
       .header h1 { color: white; font-size: 2.5rem; font-weight: 700; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
       .header p { color: rgba(255, 255, 255, 0.9); font-size: 1.1rem; }
       .main-content > section {
@@ -106,11 +107,70 @@
       .account-info {
         font-weight: normal; font-size: 0.8rem; color: var(--success);
       }
+      
+      /* ESTILOS PARA A JANELA MODAL DE AJUDA */
+      .help-btn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 0.5rem 1rem;
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+      .help-btn:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.6);
+        animation: fadeIn 0.4s;
+      }
+      .modal-content {
+        background-color: #fff;
+        margin: 8% auto;
+        padding: 2rem 2.5rem;
+        border-radius: var(--radius-lg);
+        width: 90%;
+        max-width: 750px;
+        box-shadow: var(--sombra);
+        position: relative;
+      }
+      .modal-content h2 { color: var(--primary-dark); border-bottom: 2px solid var(--accent-color); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+      .modal-content h3 { color: var(--primary-dark); margin-top: 1.5rem; margin-bottom: 0.5rem; }
+      .modal-content p, .modal-content li { color: var(--text-color); line-height: 1.7; }
+      .modal-content ul { padding-left: 2rem; }
+      .close-btn {
+        color: #aaa;
+        position: absolute;
+        top: 1rem;
+        right: 1.5rem;
+        font-size: 2rem;
+        font-weight: bold;
+        transition: color 0.2s;
+      }
+      .close-btn:hover,
+      .close-btn:focus {
+        color: #333;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+
     </style>
 </head>
 <body>
     <div class="container">
         <header class="header">
+             <button id="help-trigger-btn" class="btn help-btn">
+                <i class="fa-solid fa-circle-question"></i> Ajuda
+            </button>
             <h1><i class="fa-solid fa-wand-magic-sparkles"></i> Corretor de Contas SPED |K155| e |K355|</h1>
             <p>Faça o upload do seu arquivo SPED (.txt) para corrigir contas contábeis por trimestre</p>
         </header>
@@ -150,6 +210,28 @@
             </section>
         </main>
     </div>
+    
+    <div id="help-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2><i class="fa-solid fa-rocket"></i> Guia Rápido: Corretor de Contas |K155| e |K355|</h2>
+            <p>Esta ferramenta foi criada para facilitar a correção de contas contábeis nos registros <strong>|K155|</strong> (Detalhe dos Saldos Contábeis) e <strong>|K355|</strong> (Saldos das Contas de Resultado Antes do Encerramento) de um arquivo SPED ECF.</p>
+            <p>Ela é especialmente útil para fazer o "De-Para" de contas de forma massiva e consistente entre todos os trimestres do arquivo.</p>
+            
+            <h3>Como a Ferramenta Funciona?</h3>
+            <ul>
+                <li><strong>Análise do Arquivo:</strong> Ao enviar seu arquivo <code>.txt</code>, a ferramenta identifica os períodos trimestrais (registro <code>|K030|</code>) e lista todas as contas contábeis encontradas nos registros <code>|K155|</code> e <code>|K355|</code> de cada período.</li>
+                <li><strong>Habilitar Alteração:</strong> Para cada trimestre que você desejar modificar, é preciso marcar a caixa de seleção <strong>"Habilitar Alteração"</strong>. Apenas os trimestres habilitados terão suas contas alteradas no arquivo final.</li>
+                <li><strong>Informar a Nova Conta:</strong> Nos campos de texto, você deve informar o novo código da conta que substituirá o original. Se um campo for deixado em branco, a conta original será mantida.</li>
+                <li><strong>Sincronização Automática:</strong> Ao alterar uma conta (ex: de <code>3.01.01</code> para <code>3.01.01.001</code>), a ferramenta <strong>automaticamente preenche a mesma informação</strong> para aquela conta original em <strong>todos os outros trimestres</strong>. Isso garante consistência e agiliza o trabalho.</li>
+                <li><strong>Gerar Arquivo Corrigido:</strong> Após fazer as correções, clique em "Gerar e Baixar Arquivo Corrigido". Um novo arquivo <code>.txt</code>, com o sufixo "_corrigido", será baixado. O seu arquivo original permanece intacto.</li>
+            </ul>
+
+            <h3><i class="fa-solid fa-shield-halved"></i> Segurança e Privacidade</h3>
+            <p>Todo o processo é executado <strong>localmente no seu navegador</strong>. Seu arquivo não é enviado para nenhum servidor, garantindo total segurança e confidencialidade das informações.</p>
+        </div>
+    </div>
+
 
 <script>
     // --- ELEMENTOS DO DOM ---
@@ -166,6 +248,11 @@
     
     const correlationForm = document.getElementById('correlation-form');
     const generateBtn = document.getElementById('generate-btn');
+
+    // --- ELEMENTOS DA JANELA MODAL ---
+    const helpModal = document.getElementById("help-modal");
+    const helpTriggerBtn = document.getElementById("help-trigger-btn");
+    const closeBtn = document.querySelector(".close-btn");
 
     // --- VARIÁVEIS GLOBAIS ---
     let originalFileLines = [];
@@ -184,7 +271,7 @@
         fileSizeDiv.textContent = `Tamanho: ${(file.size / 1024).toFixed(2)} KB`;
         fileInfo.classList.add('show');
         processBtn.disabled = false;
-        resetUI();
+        correlationSection.classList.add('hidden'); // Esconde resultados antigos se carregar novo arquivo
     }
 
     async function analyzeFile() {
@@ -344,12 +431,10 @@
             correlationForm.appendChild(quarterBlock);
         });
 
-        // Adicionar listeners de eventos após a criação dos elementos
         addUiListeners();
     }
     
     function addUiListeners() {
-        // Listener para os checkboxes que habilitam/desabilitam inputs
         document.querySelectorAll('input[type="checkbox"][data-quarter-index]').forEach(checkbox => {
             checkbox.addEventListener('change', (e) => {
                 const qIndex = e.target.dataset.quarterIndex;
@@ -360,7 +445,6 @@
             });
         });
 
-        // Listener para o preenchimento automático
         document.querySelectorAll('input.correlation-input').forEach(input => {
             input.addEventListener('input', (e) => {
                 const sourceInput = e.target;
@@ -368,9 +452,7 @@
                 const originalAccount = sourceInput.dataset.originalAccount;
                 const newValue = sourceInput.value;
 
-                // Encontra todos os inputs correspondentes em TODOS os trimestres
                 document.querySelectorAll(`input.correlation-input[data-record-type="${recordType}"][data-original-account="${originalAccount}"]`).forEach(targetInput => {
-                    // Atualiza o valor de todos, exceto o que está sendo editado
                     if (targetInput !== sourceInput) {
                         targetInput.value = newValue;
                     }
@@ -454,14 +536,6 @@
         document.getElementById(`${sectionName}-section`).classList.remove('hidden');
     }
 
-    function resetUI() {
-        showSection('upload');
-        originalFileLines = [];
-        quartersData = [];
-        correlationForm.innerHTML = '';
-        generateBtn.disabled = false;
-    }
-
     // --- EVENT LISTENERS ---
     ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
         uploadArea.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
@@ -470,6 +544,24 @@
     fileInput.addEventListener('change', (e) => handleFileSelect(e.target.files));
     processBtn.addEventListener('click', analyzeFile);
     generateBtn.addEventListener('click', generateAndDownload);
+
+    // --- FUNCIONALIDADE DA JANELA MODAL ---
+    helpTriggerBtn.onclick = () => {
+        helpModal.style.display = "block";
+    }
+    closeBtn.onclick = () => {
+        helpModal.style.display = "none";
+    }
+    window.onclick = (event) => {
+        if (event.target == helpModal) {
+            helpModal.style.display = "none";
+        }
+    }
+    window.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            helpModal.style.display = 'none';
+        }
+    });
 
 </script>
 </body>

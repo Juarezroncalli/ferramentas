@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analisador de Balancete SPED</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease;
+        --primary-dark: #3d005a;
+        --success: #10b981;
+        --error: #ef4444;
+        --text-muted: #64748b;
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh;
+        color: var(--text-color);
+        line-height: 1.6;
+        padding: 2rem 0;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 2rem;
+        position: relative;
+      }
+      .header h1 {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .header p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+      }
+      .main-content > section {
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--sombra);
+        margin-bottom: 2rem;
+      }
+      .upload-area {
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius);
+        padding: 3rem 2rem;
+        text-align: center;
+        transition: var(--transicao);
+        cursor: pointer;
+      }
+      .upload-area:hover {
+        border-color: var(--primary-color);
+        background: var(--form-bg-color);
+      }
+      .upload-icon {
+        font-size: 3rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+      }
+      #file-input {
+        display: none;
+      }
+      .file-info {
+        background: var(--form-bg-color);
+        border-radius: var(--radius);
+        padding: 1rem;
+        margin-top: 1.5rem;
+        display: none;
+        gap: 1rem;
+      }
+      .file-info.show {
+        display: block;
+      }
+      .file-list {
+        list-style: none;
+        padding-top: 0.5rem;
+      }
+      .file-list-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.25rem 0;
+        color: var(--text-muted);
+      }
+      .btn {
+        background: var(--primary-color);
+        color: var(--text-color-light);
+        border: none;
+        padding: 0.875rem 2rem;
+        border-radius: var(--radius);
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transicao);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+      }
+      .btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+      }
+      .btn:disabled {
+        background: var(--text-muted);
+        cursor: not-allowed;
+        transform: none;
+      }
+      .btn-process {
+        width: 100%;
+        justify-content: center;
+        margin-top: 1.5rem;
+      }
+      .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--accent-color);
+      }
+      .hidden {
+        display: none !important;
+      }
+      .loading {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: var(--text-muted);
+      }
+      .spinner {
+        border: 3px solid var(--border-color);
+        border-top: 3px solid var(--primary-color);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .results-container {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+      .table-container {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+        table-layout: fixed;
+      }
+      th,
+      td {
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border-color);
+        text-align: left;
+      }
+      thead {
+        background: var(--form-bg-color);
+        position: sticky;
+        top: 0;
+      }
+      th {
+        font-weight: 600;
+        color: var(--primary-dark);
+      }
+      td {
+        font-size: 0.9rem;
+      }
+      td.account-name {
+        white-space: normal;
+        word-break: break-word;
+        width: 40%;
+      }
+      td.currency {
+        text-align: right;
+        font-family: "Courier New", Courier, monospace;
+        white-space: nowrap;
+      }
+      
+      /* ***** ESTILOS PARA A JANELA MODAL DE AJUDA ***** */
+      .help-btn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 0.5rem 1rem;
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+      .help-btn:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.6);
+        animation: fadeIn 0.4s;
+      }
+      .modal-content {
+        background-color: #fff;
+        margin: 8% auto;
+        padding: 2rem 2.5rem;
+        border-radius: var(--radius-lg);
+        width: 90%;
+        max-width: 750px;
+        box-shadow: var(--sombra);
+        position: relative;
+      }
+      .modal-content h2 { color: var(--primary-dark); border-bottom: 2px solid var(--accent-color); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+      .modal-content h3 { color: var(--primary-dark); margin-top: 1.5rem; margin-bottom: 0.5rem; }
+      .modal-content p, .modal-content li { color: var(--text-color); line-height: 1.7; }
+      .modal-content ol { padding-left: 2rem; }
+      .close-btn {
+        color: #aaa;
+        position: absolute;
+        top: 1rem;
+        right: 1.5rem;
+        font-size: 2rem;
+        font-weight: bold;
+        transition: color 0.2s;
+      }
+      .close-btn:hover,
+      .close-btn:focus {
+        color: #333;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+
+      /* Estilos para impressão */
+      @media print {
+        body { background: #fff; padding: 0; }
+        .container { max-width: 100%; padding: 0; }
+        .no-print { display: none !important; }
+        .main-content > section { box-shadow: none; border-radius: 0; padding: 0; margin: 0; }
+        h1, h2, h3, h4, h5, h6 { color: #000 !important; page-break-after: avoid; }
+        table { page-break-inside: auto; table-layout: auto; }
+        tr { page-break-inside: avoid; page-break-after: auto; }
+        thead { display: table-header-group; }
+        td.account-name { white-space: normal; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header no-print">
+        <button id="help-trigger-btn" class="btn help-btn">
+            <i class="fa-solid fa-circle-question"></i> Ajuda
+        </button>
+        <h1>
+          <i class="fa-solid fa-chart-pie"></i> Analisador de Balancete SPED
+        </h1>
+        <p>
+          Faça o upload do seu arquivo .txt do SPED para gerar os balancetes
+          trimestrais.
+        </p>
+      </header>
+
+      <main class="main-content">
+        <section id="upload-section" class="no-print">
+          <div
+            class="upload-area"
+            onclick="document.getElementById('file-input').click()"
+          >
+            <div class="upload-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <p><strong>Clique para selecionar o arquivo .TXT</strong></p>
+            <p>ou arraste e solte o arquivo aqui</p>
+            <input type="file" id="file-input" accept=".txt" />
+          </div>
+          <div class="file-info" id="file-info">
+            <div id="file-name" style="font-weight: 600">
+              Arquivo Selecionado:
+            </div>
+            <ul id="file-list" class="file-list"></ul>
+          </div>
+          <button class="btn btn-process" id="process-btn" disabled>
+            <i class="fas fa-play"></i> Processar Arquivo
+          </button>
+        </section>
+
+        <section id="loading-section" class="hidden no-print">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>Analisando o arquivo...</p>
+          </div>
+        </section>
+
+        <section id="results-section" class="hidden">
+          <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h2 class="section-title" style="margin: 0; border: 0;">
+              <i class="fas fa-table"></i> Resultados Trimestrais
+            </h2>
+             <button id="print-btn" class="btn">
+              <i class="fas fa-print"></i> Imprimir
+            </button>
+          </div>
+          <p class="text-muted no-print" style="margin-bottom: 1.5rem">
+            Abaixo estão os totais calculados para cada trimestre encontrado no arquivo.
+          </p>
+          <div id="quarterly-results" class="results-container">
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="help-modal" class="modal no-print">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2><i class="fa-solid fa-rocket"></i> Descritivo da Ferramenta</h2>
+            <p>Esta é uma ferramenta poderosa e simples, projetada para contadores, auditores e profissionais da área fiscal que buscam otimizar a análise de dados contábeis.</p>
+            <p>O principal objetivo da aplicação é ler o arquivo de texto (<code>.txt</code>) da <strong>Escrituração Contábil Digital (SPED ECD)</strong> e transformar os dados brutos em balancetes trimestrais claros, consolidados e fáceis de analisar.</p>
+
+            <h3>Como Funciona?</h3>
+            <ol>
+                <li><strong>Carregue seu Arquivo:</strong> Você começa fazendo o upload do seu arquivo SPED ECD. A interface permite clicar para selecionar o arquivo no seu computador ou simplesmente arrastá-lo e soltá-lo na área indicada.</li>
+                <li><strong>Processamento Inteligente:</strong> Ao clicar em "Processar", a ferramenta lê o arquivo e mapeia o plano de contas (registros <code>|I050|</code>) e extrai os saldos mensais de cada conta (registros <code>|I155|</code>).</li>
+                <li><strong>Consolidação por Trimestre:</strong> A ferramenta agrupa automaticamente os meses em trimestres e calcula os totais (Saldo Inicial, Débitos, Créditos e Saldo Final) para cada conta.</li>
+            </ol>
+
+            <h3>O Resultado</h3>
+            <p>Ao final do processamento, a ferramenta apresenta:</p>
+            <ul>
+                <li><strong>Tabelas Organizadas:</strong> Relatórios claros, com uma tabela separada para cada trimestre.</li>
+                <li><strong>Visualização Aprimorada:</strong> Os nomes das contas são exibidos com quebra de linha para facilitar a leitura.</li>
+                <li><strong>Impressão Facilitada:</strong> Um botão "Imprimir" permite gerar uma versão física ou em PDF dos relatórios.</li>
+            </ul>
+
+            <h3><i class="fa-solid fa-shield-halved"></i> Segurança e Privacidade</h3>
+            <p>Todo o processamento ocorre <strong>localmente no seu navegador</strong>. Seu arquivo SPED não é enviado para nenhum servidor na internet, garantindo total segurança e confidencialidade dos seus dados.</p>
+        </div>
+    </div>
+
+
+    <script>
+      const fileInput = document.getElementById("file-input");
+      const processBtn = document.getElementById("process-btn");
+      const uploadArea = document.querySelector(".upload-area");
+      const fileInfo = document.getElementById("file-info");
+      const fileList = document.getElementById("file-list");
+      const printBtn = document.getElementById("print-btn");
+      const quarterlyResultsContainer = document.getElementById("quarterly-results");
+
+      // ***** ELEMENTOS DA JANELA MODAL *****
+      const helpModal = document.getElementById("help-modal");
+      const helpTriggerBtn = document.getElementById("help-trigger-btn");
+      const closeBtn = document.querySelector(".close-btn");
+
+
+      function showSection(sectionId) {
+        ["upload", "loading", "results"].forEach((id) => {
+          document.getElementById(`${id}-section`).classList.add("hidden");
+        });
+        if (sectionId) {
+          document.getElementById(`${sectionId}-section`).classList.remove("hidden");
+        }
+      }
+
+      function handleFileSelect(event) {
+        const files = event.target.files || (event.dataTransfer && event.dataTransfer.files);
+        if (!files || files.length === 0) return;
+        
+        selectedFile = files[0];
+        
+        if (selectedFile.type !== 'text/plain') {
+            alert('Por favor, selecione um arquivo .txt válido.');
+            resetUI();
+            return;
+        }
+
+        fileList.innerHTML = `<li class="file-list-item"><i class="fas fa-file-alt text-success"></i> ${selectedFile.name}</li>`;
+        fileInfo.classList.add("show");
+        processBtn.disabled = false;
+        document.getElementById('results-section').classList.add('hidden');
+      }
+      
+      function resetUI() {
+          fileInput.value = "";
+          selectedFile = null;
+          fileInfo.classList.remove("show");
+          fileList.innerHTML = "";
+          processBtn.disabled = true;
+          showSection("upload");
+      }
+
+      function parseCurrency(valueStr) {
+        if (!valueStr || typeof valueStr !== 'string') return 0.0;
+        return parseFloat(valueStr.replace(",", ".")) || 0.0;
+      }
+
+      function formatBRL(value) {
+        return value.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+      }
+
+      async function processFile() {
+        if (!selectedFile) {
+          alert("Por favor, selecione um arquivo .txt.");
+          return;
+        }
+        showSection("loading");
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const content = e.target.result;
+            const lines = content.split(/\r?\n/);
+            
+            const accountNames = new Map();
+            for (const line of lines) {
+              if (line.startsWith('|I050|')) {
+                const fields = line.split('|');
+                if (fields.length > 8) {
+                  const codConta = fields[6];
+                  const nomeConta = fields[8];
+                  accountNames.set(codConta, nomeConta);
+                }
+              }
+            }
+
+            let monthlyData = [];
+            let currentMonthRecords = null;
+
+            for (const line of lines) {
+              const fields = line.split("|");
+              if (line.startsWith("|I150|")) {
+                if (currentMonthRecords) {
+                  monthlyData.push(currentMonthRecords);
+                }
+                const dt_fim = fields[3];
+                const month = dt_fim.substring(2,4);
+                const year = dt_fim.substring(4,8);
+                currentMonthRecords = {
+                  period: `${month}/${year}`,
+                  accounts: new Map()
+                };
+              } else if (line.startsWith("|I155|") && currentMonthRecords) {
+                  const conta = fields[2];
+                  const nomeConta = accountNames.get(conta) || 'Descrição não encontrada';
+                  const saldoInicial = parseCurrency(fields[4]);
+                  const debitos = parseCurrency(fields[6]);
+                  const creditos = parseCurrency(fields[7]);
+                  const saldoFinal = parseCurrency(fields[8]);
+
+                  if(!currentMonthRecords.accounts.has(conta)){
+                     currentMonthRecords.accounts.set(conta, { nome: nomeConta, saldoInicial, debitos, creditos, saldoFinal });
+                  }
+              }
+            }
+            if(currentMonthRecords) {
+                monthlyData.push(currentMonthRecords);
+            }
+
+            if(monthlyData.length === 0){
+                throw new Error("Nenhum registro |I150| ou |I155| válido foi encontrado no arquivo.");
+            }
+
+            processQuarters(monthlyData);
+
+          } catch (error) {
+            alert(`Ocorreu um erro ao processar o arquivo: ${error.message}`);
+            showSection("upload");
+          }
+        };
+        reader.onerror = () => {
+             alert("Não foi possível ler o arquivo.");
+             showSection("upload");
+        }
+        reader.readAsText(selectedFile, 'ISO-8859-1');
+      }
+
+      function processQuarters(monthlyData) {
+        quarterlyResultsContainer.innerHTML = '';
+        let quarterCount = 0;
+
+        for (let i = 0; i < monthlyData.length; i += 3) {
+            const quarterMonths = monthlyData.slice(i, i + 3);
+            if (quarterMonths.length === 0) continue;
+
+            quarterCount++;
+            const quarterTotals = new Map();
+
+            quarterMonths.forEach(month => {
+                month.accounts.forEach((values, conta) => {
+                    if (!quarterTotals.has(conta)) {
+                        quarterTotals.set(conta, {
+                            nome: values.nome,
+                            saldoInicial: 0,
+                            debitos: 0,
+                            creditos: 0,
+                            saldoFinal: 0
+                        });
+                    }
+                });
+            });
+
+            quarterTotals.forEach((totals, conta) => {
+                const firstMonthData = quarterMonths[0].accounts.get(conta);
+                totals.saldoInicial = firstMonthData ? firstMonthData.saldoInicial : 0;
+
+                const lastMonthData = quarterMonths[quarterMonths.length - 1].accounts.get(conta);
+                totals.saldoFinal = lastMonthData ? lastMonthData.saldoFinal : 0;
+                
+                quarterMonths.forEach(month => {
+                    const monthAccountData = month.accounts.get(conta);
+                    if (monthAccountData) {
+                        totals.debitos += monthAccountData.debitos;
+                        totals.creditos += monthAccountData.creditos;
+                    }
+                });
+            });
+
+            displayQuarter(quarterCount, quarterMonths[0].period, quarterMonths[quarterMonths.length - 1].period, quarterTotals);
+        }
+        
+        showSection("results");
+      }
+
+      function displayQuarter(quarterNum, startPeriod, endPeriod, quarterTotals) {
+        const year = startPeriod.split('/')[1];
+        const quarterDiv = document.createElement('div');
+        
+        const sortedTotals = new Map([...quarterTotals.entries()].sort());
+
+        let tableHTML = `
+            <h3 class="section-title" style="border-color: var(--primary-color); font-size: 1.2rem;">${quarterNum}º Trimestre de ${year} (Período: ${startPeriod} a ${endPeriod})</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Conta / Descrição</th>
+                            <th>Saldo Inicial</th>
+                            <th>Total Débitos</th>
+                            <th>Total Créditos</th>
+                            <th>Saldo Final</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+        
+        sortedTotals.forEach((values, conta) => {
+            tableHTML += `
+                <tr>
+                    <td class="account-name">${conta} - ${values.nome}</td>
+                    <td class="currency">${formatBRL(values.saldoInicial)}</td>
+                    <td class="currency">${formatBRL(values.debitos)}</td>
+                    <td class="currency">${formatBRL(values.creditos)}</td>
+                    <td class="currency">${formatBRL(values.saldoFinal)}</td>
+                </tr>
+            `;
+        });
+        
+        tableHTML += `</tbody></table></div>`;
+        quarterDiv.innerHTML = tableHTML;
+        quarterlyResultsContainer.appendChild(quarterDiv);
+      }
+      
+      //--- Event Listeners ---
+      ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+        uploadArea.addEventListener(
+          eventName,
+          (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          },
+          false
+        );
+      });
+      uploadArea.addEventListener("drop", handleFileSelect);
+      fileInput.addEventListener("change", handleFileSelect);
+      processBtn.addEventListener("click", processFile);
+      printBtn.addEventListener("click", () => window.print());
+
+      // ***** FUNCIONALIDADE DA JANELA MODAL *****
+      helpTriggerBtn.onclick = () => {
+        helpModal.style.display = "block";
+      }
+      closeBtn.onclick = () => {
+        helpModal.style.display = "none";
+      }
+      window.onclick = (event) => {
+        if (event.target == helpModal) {
+            helpModal.style.display = "none";
+        }
+      }
+      window.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            helpModal.style.display = 'none';
+        }
+      });
+
+    </script>
+  </body>
+</html>
