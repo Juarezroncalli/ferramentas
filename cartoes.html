@@ -71,7 +71,7 @@
       }
       .input-group input { padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius); font-size: 1rem; }
       .table-container { 
-        overflow-x: auto; /* ALTERAÇÃO: Mantém apenas a rolagem horizontal, se necessário */
+        overflow-x: auto;
       }
       table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
       th, td { padding: 0.75rem 1rem; border: 1px solid var(--border-color); text-align: left; }
@@ -176,6 +176,7 @@
                                 <th>Valor Bruto Total</th>
                                 <th>Valor Líquido Total</th>
                                 <th>Valor Taxa Total</th>
+                                <th>% Taxa</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -454,7 +455,7 @@
         const totalTarifasEl = document.getElementById('total-tarifas-valor');
 
         if (processedData.length === 0) {
-            previewTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Nenhum dado válido foi encontrado. Verifique sua planilha.</td></tr>';
+            previewTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Nenhum dado válido foi encontrado. Verifique sua planilha.</td></tr>';
             totalVendasEl.textContent = formatBRL(0);
             totalTarifasEl.textContent = formatBRL(0);
             generateBtn.disabled = true;
@@ -466,11 +467,15 @@
 
         processedData.forEach(data => {
             const row = document.createElement('tr');
+            const taxaPercentual = data.valorBruto > 0 ? (data.valorTaxa / data.valorBruto) : 0;
+            const taxaPercentualStr = taxaPercentual.toLocaleString('pt-BR', { style: 'percent', minimumFractionDigits: 2 });
+            
             row.innerHTML = `
                 <td>${data.data}</td>
                 <td>${formatBRL(data.valorBruto)}</td>
                 <td>${formatBRL(data.valorLiquido)}</td>
                 <td style="color: var(--error);">${formatBRL(data.valorTaxa)}</td>
+                <td>${taxaPercentualStr}</td>
             `;
             previewTableBody.appendChild(row);
         });
