@@ -1,575 +1,964 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gerador de Lançamentos Contábeis</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
 
     <style>
       :root {
-        --primary-color: #4f0072; --accent-color: #fb0a5e; --background-color: #ffffff;
-        --form-bg-color: #f9f9f9; --text-color: #333333; --border-color: #e0e0e0;
-        --text-color-light: #ffffff; --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
-        --transicao: all 0.3s ease; --primary-dark: #3d005a; --success: #10b981;
-        --error: #ef4444; --text-muted: #64748b; --radius: 0.5rem; --radius-lg: 0.75rem;
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease;
+        --primary-dark: #3d005a;
+        --success: #10b981;
+        --error: #ef4444;
+        --text-muted: #64748b;
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
       }
-      * { margin: 0; padding: 0; box-sizing: border-box; }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
       body {
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
         background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
-        min-height: 100vh; color: var(--text-color); line-height: 1.6; padding: 2rem 0;
+        min-height: 100vh;
+        color: var(--text-color);
+        line-height: 1.6;
+        padding: 2rem 0;
       }
-      .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
-      .header { text-align: center; margin-bottom: 2rem; position: relative; }
-      .header h1 { color: white; font-size: 2.5rem; font-weight: 700; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
-      .header p { color: rgba(255, 255, 255, 0.9); font-size: 1.1rem; }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 2rem;
+        position: relative;
+      }
+      .header h1 {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .header p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+      }
       .main-content > section {
-        background: var(--background-color); border-radius: var(--radius-lg);
-        padding: 2rem; box-shadow: var(--sombra); margin-bottom: 2rem;
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--sombra);
+        margin-bottom: 2rem;
       }
       .upload-area {
-        border: 2px dashed var(--border-color); border-radius: var(--radius); padding: 3rem 2rem;
-        text-align: center; transition: var(--transicao); cursor: pointer; margin-top: 1.5rem;
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius);
+        padding: 3rem 2rem;
+        text-align: center;
+        transition: var(--transicao);
+        cursor: pointer;
+        margin-top: 1.5rem;
       }
-      .upload-area:hover { border-color: var(--primary-color); background: var(--form-bg-color); }
-      .upload-icon { font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; }
-      #file-input { display: none; }
+      .upload-area:hover {
+        border-color: var(--primary-color);
+        background: var(--form-bg-color);
+      }
+      .upload-icon {
+        font-size: 3rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+      }
+      #file-input {
+        display: none;
+      }
       .file-info {
-        background: var(--form-bg-color); border-radius: var(--radius); padding: 1rem;
-        margin-top: 1.5rem; display: none; gap: 1rem;
+        background: var(--form-bg-color);
+        border-radius: var(--radius);
+        padding: 1rem;
+        margin-top: 1.5rem;
+        display: none;
+        gap: 1rem;
       }
-      .file-info.show { display: block; }
-      .file-list { list-style: none; padding-top: 0.5rem; }
-      .file-list-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0; color: var(--text-muted); }
+      .file-info.show {
+        display: block;
+      }
+      .file-list {
+        list-style: none;
+        padding-top: 0.5rem;
+      }
+      .file-list-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.25rem 0;
+        color: var(--text-muted);
+      }
       .btn {
-        background: var(--primary-color); color: var(--text-color-light); border: none;
-        padding: 0.875rem 2rem; border-radius: var(--radius); font-weight: 600;
-        font-size: 1rem; cursor: pointer; transition: var(--transicao);
-        display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;
+        background: var(--primary-color);
+        color: var(--text-color-light);
+        border: none;
+        padding: 0.875rem 2rem;
+        border-radius: var(--radius);
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transicao);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
       }
-      .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
-      .btn:disabled { background: var(--text-muted); cursor: not-allowed; transform: none; }
-      .btn-process { width: 100%; justify-content: center; margin-top: 1.5rem; }
-      .btn-secondary { background-color: var(--accent-color); }
-      .btn-secondary:hover { background: #d80952; }
-      .section-title { font-size: 1.5rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent-color); }
-      .hidden { display: none !important; }
-      .loading { text-align: center; padding: 3rem 2rem; color: var(--text-muted); }
+      .btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+      }
+      .btn:disabled {
+        background: var(--text-muted);
+        cursor: not-allowed;
+        transform: none;
+      }
+      .btn-process {
+        width: 100%;
+        justify-content: center;
+        margin-top: 1.5rem;
+      }
+      .btn-secondary {
+        background-color: var(--accent-color);
+      }
+      .btn-secondary:hover {
+        background: #d80952;
+      }
+      .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--accent-color);
+      }
+      .hidden {
+        display: none !important;
+      }
+      .loading {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: var(--text-muted);
+      }
       .spinner {
-        border: 3px solid var(--border-color); border-top: 3px solid var(--primary-color);
-        border-radius: 50%; width: 40px; height: 40px;
-        animation: spin 1s linear infinite; margin: 0 auto 1rem;
+        border: 3px solid var(--border-color);
+        border-top: 3px solid var(--primary-color);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
       }
-      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-      .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 1rem; }
-      .input-group { display: flex; flex-direction: column; }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .input-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+      }
+      .input-group {
+        display: flex;
+        flex-direction: column;
+      }
       .input-group label {
-        font-size: 0.875rem; font-weight: 600; color: var(--text-muted);
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-muted);
         margin-bottom: 0.5rem;
       }
-      .input-group input { padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius); font-size: 1rem; }
-      .table-container { 
+      .input-group input {
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        font-size: 1rem;
+      }
+      .table-container {
         overflow-x: auto;
       }
-      table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-      th, td { padding: 0.75rem 1rem; border: 1px solid var(--border-color); text-align: left; }
-      thead { background: var(--form-bg-color); position: sticky; top: 0; z-index: 10;}
-      th { font-weight: 600; color: var(--primary-dark); }
-      td { font-size: 0.9rem; }
-      .button-group { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-top: 1rem; }
-      .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
-      .modal-overlay.show { opacity: 1; visibility: visible; }
-      .modal-content { background: white; padding: 2.5rem; border-radius: var(--radius-lg); box-shadow: 0 5px 20px rgba(0,0,0,0.2); max-width: 700px; width: 90%; max-height: 90vh; overflow-y: auto; transform: scale(0.9); transition: all 0.3s ease; }
-      .modal-overlay.show .modal-content { transform: scale(1); }
-      .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1rem; }
-      .modal-title { font-size: 1.5rem; color: var(--primary-dark); }
-      .modal-close { background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--text-muted); }
-      .modal-body h3 { color: var(--primary-color); margin-top: 1.5rem; margin-bottom: 0.5rem; }
-      .modal-body p, .modal-body li { color: var(--text-color); margin-bottom: 0.75rem; }
-      .modal-body ul { padding-left: 20px; }
-      .modal-body code { background: #eee; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
-      .btn-info { position: absolute; top: 0; right: 0; background: none; border: 1px solid white; color: white; padding: 0.5rem 1rem; }
-      .btn-info:hover { background: rgba(255,255,255,0.2); }
-      .optional-label { color: var(--text-muted); font-size: 0.8rem; font-weight: 400; margin-left: 8px; }
-      #summary-box {
-        margin-top: 2rem; padding: 1.5rem; background-color: var(--form-bg-color);
-        border-radius: var(--radius); border: 1px solid var(--border-color);
-        display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 1.5rem;
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
       }
-      .summary-item { text-align: center; }
+      th,
+      td {
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border-color);
+        text-align: left;
+      }
+      thead {
+        background: var(--form-bg-color);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+      th {
+        font-weight: 600;
+        color: var(--primary-dark);
+      }
+      td {
+        font-size: 0.9rem;
+      }
+      .button-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 1rem;
+      }
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+      .modal-overlay.show {
+        opacity: 1;
+        visibility: visible;
+      }
+      .modal-content {
+        background: white;
+        padding: 2.5rem;
+        border-radius: var(--radius-lg);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        max-width: 700px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        transform: scale(0.9);
+        transition: all 0.3s ease;
+      }
+      .modal-overlay.show .modal-content {
+        transform: scale(1);
+      }
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+      }
+      .modal-title {
+        font-size: 1.5rem;
+        color: var(--primary-dark);
+      }
+      .modal-close {
+        background: none;
+        border: none;
+        font-size: 2rem;
+        cursor: pointer;
+        color: var(--text-muted);
+      }
+      .modal-body h3 {
+        color: var(--primary-color);
+        margin-top: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+      .modal-body p,
+      .modal-body li {
+        color: var(--text-color);
+        margin-bottom: 0.75rem;
+      }
+      .modal-body ul {
+        padding-left: 20px;
+      }
+      .modal-body code {
+        background: #eee;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: monospace;
+      }
+      .btn-info {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: none;
+        border: 1px solid white;
+        color: white;
+        padding: 0.5rem 1rem;
+      }
+      .btn-info:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+      .optional-label {
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        font-weight: 400;
+        margin-left: 8px;
+      }
+      #summary-box {
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background-color: var(--form-bg-color);
+        border-radius: var(--radius);
+        border: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+      }
+      .summary-item {
+        text-align: center;
+      }
       .summary-label {
-        display: block; font-size: 1rem; font-weight: 600;
-        color: var(--text-muted); margin-bottom: 0.5rem;
+        display: block;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
       }
       .summary-value {
-        font-size: 2rem; font-weight: 700; color: var(--primary-dark);
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-dark);
       }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <header class="header">
-            <h1><i class="fa-solid fa-file-invoice-dollar"></i> Gerador de Lançamentos Contábeis</h1>
-            <p>Importe sua planilha Excel para gerar um arquivo de lançamento .txt consolidado por dia.</p>
-            <button class="btn btn-info" id="info-btn"><i class="fas fa-question-circle"></i> Orientações</button>
-        </header>
+      <header class="header">
+        <h1>
+          <i class="fa-solid fa-file-invoice-dollar"></i> Gerador de Lançamentos
+          Contábeis
+        </h1>
+        <p>
+          Importe sua planilha Excel para gerar um arquivo de lançamento .txt
+          consolidado por dia.
+        </p>
+        <button class="btn btn-info" id="info-btn">
+          <i class="fas fa-question-circle"></i> Orientações
+        </button>
+      </header>
 
-        <main class="main-content">
-            <section id="upload-section">
-                <div class="input-grid">
-                    <div class="input-group">
-                        <label for="conta-clientes"><i class="fa-solid fa-users"></i> CONTA CLIENTES</label>
-                        <input type="text" id="conta-clientes" placeholder="Ex: 11201001">
-                    </div>
-                    <div class="input-group">
-                        <label for="conta-cartao"><i class="fa-solid fa-credit-card"></i> CONTA CARTÃO</label>
-                        <input type="text" id="conta-cartao" placeholder="Ex: 11202001">
-                    </div>
-                    <div class="input-group">
-                        <label for="conta-tarifas"><i class="fa-solid fa-tags"></i> CONTA TARIFAS</label>
-                        <input type="text" id="conta-tarifas" placeholder="Ex: 44101007">
-                    </div>
-                    <div class="input-group">
-                        <label for="bandeira-cartao"><i class="fa-solid fa-flag"></i> NOME DA BANDEIRA <span class="optional-label">(Opcional)</span></label>
-                        <input type="text" id="bandeira-cartao" placeholder="Ex: VISA">
-                    </div>
-                </div>
+      <main class="main-content">
+        <section id="upload-section">
+          <div class="input-grid">
+            <div class="input-group">
+              <label for="conta-clientes"
+                ><i class="fa-solid fa-users"></i> CONTA CLIENTES</label
+              >
+              <input type="text" id="conta-clientes" placeholder="Ex: 27" />
+            </div>
+            <div class="input-group">
+              <label for="conta-cartao"
+                ><i class="fa-solid fa-credit-card"></i> CONTA CARTÃO</label
+              >
+              <input type="text" id="conta-cartao" placeholder="Ex: 31" />
+            </div>
+            <div class="input-group">
+              <label for="conta-tarifas"
+                ><i class="fa-solid fa-tags"></i> CONTA TARIFAS</label
+              >
+              <input type="text" id="conta-tarifas" placeholder="Ex: 957" />
+            </div>
+            <div class="input-group">
+              <label for="bandeira-cartao"
+                ><i class="fa-solid fa-flag"></i> NOME DA BANDEIRA
+                <span class="optional-label">(Opcional)</span></label
+              >
+              <input type="text" id="bandeira-cartao" placeholder="Ex: VISA" />
+            </div>
+          </div>
 
-                <div class="button-group">
-                    <button class="btn btn-secondary" id="generate-model-btn">
-                        <i class="fas fa-file-excel"></i> Gerar Planilha Modelo
-                    </button>
-                </div>
+          <div class="button-group">
+            <button class="btn btn-secondary" id="generate-model-btn">
+              <i class="fas fa-file-excel"></i> Gerar Planilha Modelo
+            </button>
+          </div>
 
-                <div class="upload-area" onclick="document.getElementById('file-input').click()">
-                    <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
-                    <p><strong>Clique para selecionar os arquivos Excel</strong></p>
-                    <p>ou arraste e solte os arquivos .xlsx aqui</p>
-                    <input type="file" id="file-input" accept=".xlsx, .xls" multiple />
-                </div>
-                <div class="file-info" id="file-info">
-                     <div id="file-name" style="font-weight: 600;">Arquivos Selecionados:</div>
-                     <ul id="file-list" class="file-list"></ul>
-                </div>
-                <button class="btn btn-process" id="process-btn" disabled>
-                    <i class="fas fa-cogs"></i> Processar e Consolidar
-                </button>
-            </section>
+          <div
+            class="upload-area"
+            onclick="document.getElementById('file-input').click()"
+          >
+            <div class="upload-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <p><strong>Clique para selecionar os arquivos Excel</strong></p>
+            <p>ou arraste e solte os arquivos .xlsx aqui</p>
+            <input type="file" id="file-input" accept=".xlsx, .xls" multiple />
+          </div>
+          <div class="file-info" id="file-info">
+            <div id="file-name" style="font-weight: 600">
+              Arquivos Selecionados:
+            </div>
+            <ul id="file-list" class="file-list"></ul>
+          </div>
+          <button class="btn btn-process" id="process-btn" disabled>
+            <i class="fas fa-cogs"></i> Processar e Consolidar
+          </button>
+        </section>
 
-            <section id="loading-section" class="hidden">
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <p>Processando e consolidando dados...</p>
-                </div>
-            </section>
-            
-            <section id="preview-section" class="hidden">
-                <h2 class="section-title"><i class="fas fa-table"></i> Prévia dos Dados Consolidados por Dia</h2>
-                <p class="text-muted" style="margin-bottom: 1.5rem;">Confira os totais diários calculados a partir dos arquivos. Se estiver tudo correto, clique para gerar o arquivo .txt.</p>
-                <div class="table-container">
-                    <table id="preview-table">
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Valor Bruto Total</th>
-                                <th>Valor Líquido Total</th>
-                                <th>Valor Taxa Total</th>
-                                <th>% Taxa</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div id="summary-box">
-                    <div class="summary-item">
-                        <span class="summary-label">TOTAL DE VENDAS</span>
-                        <span class="summary-value" id="total-vendas-valor">R$ 0,00</span>
-                    </div>
-                    <div class="summary-item">
-                        <span class="summary-label">TOTAL DE TARIFAS</span>
-                        <span class="summary-value" id="total-tarifas-valor" style="color: var(--error);">R$ 0,00</span>
-                    </div>
-                </div>
+        <section id="loading-section" class="hidden">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>Processando e consolidando dados...</p>
+          </div>
+        </section>
 
-                <button id="generate-btn" class="btn btn-process"><i class="fas fa-download"></i> Gerar e Baixar Arquivo .TXT</button>
-            </section>
-        </main>
+        <section id="preview-section" class="hidden">
+          <h2 class="section-title">
+            <i class="fas fa-table"></i> Prévia dos Dados Consolidados por Dia
+          </h2>
+          <p class="text-muted" style="margin-bottom: 1.5rem">
+            Confira os totais diários calculados a partir dos arquivos. Se
+            estiver tudo correto, clique para gerar o arquivo .txt.
+          </p>
+          <div class="table-container">
+            <table id="preview-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Valor Bruto Total</th>
+                  <th>Valor Líquido Total</th>
+                  <th>Valor Taxa Total</th>
+                  <th>% Taxa</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div id="summary-box">
+            <div class="summary-item">
+              <span class="summary-label">TOTAL DE VENDAS</span>
+              <span class="summary-value" id="total-vendas-valor">R$ 0,00</span>
+            </div>
+            <div class="summary-item">
+              <span class="summary-label">TOTAL DE TARIFAS</span>
+              <span
+                class="summary-value"
+                id="total-tarifas-valor"
+                style="color: var(--error)"
+                >R$ 0,00</span
+              >
+            </div>
+          </div>
+
+          <button id="generate-btn" class="btn btn-process">
+            <i class="fas fa-download"></i> Gerar e Baixar Arquivo .TXT
+          </button>
+        </section>
+      </main>
     </div>
 
     <div class="modal-overlay" id="info-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title"><i class="fas fa-info-circle"></i> Como Usar o Gerador</h2>
-                <button class="modal-close" id="close-modal-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>Esta ferramenta foi criada para simplificar a criação de lançamentos contábeis a partir de extratos de vendas de cartão.</p>
-                <h3>Passo 1: Preencher os Dados</h3>
-                <ul>
-                    <li><strong>Contas Contábeis:</strong> Informe os números das contas de Clientes, Cartão e Tarifas (obrigatório).</li>
-                    <li><strong>Bandeira do Cartão:</strong> Digite o nome da bandeira (opcional). Se informado, aparecerá no histórico do lançamento.</li>
-                </ul>
-                <h3>Passo 2: Preparar a Planilha</h3>
-                <ul>
-                    <li>Clique em <strong>"Gerar Planilha Modelo"</strong> para baixar um arquivo Excel com o formato correto.</li>
-                    <li>As colunas necessárias são: <code>DATA</code>, <code>VALOR BRUTO</code>, <code>VALOR LIQUIDO</code>, e <code>TAXA</code>.</li>
-                    <li>Para que a <strong>tarifa seja gerada</strong>, você deve preencher o <code>VALOR BRUTO</code> e também o <code>VALOR LIQUIDO</code> ou a <code>TAXA</code>.</li>
-                     <li>Se você preencher apenas <code>DATA</code> e <code>VALOR BRUTO</code>, a tarifa será considerada zero e apenas o lançamento de venda será criado.</li>
-                    <li>Você pode ter várias vendas (linhas) para o mesmo dia. O sistema irá somar tudo automaticamente.</li>
-                </ul>
-                <h3>Passo 3: Processar e Gerar</h3>
-                <ul>
-                    <li>Clique na área de upload para selecionar sua planilha preenchida ou arraste o arquivo para lá.</li>
-                    <li>Clique em <strong>"Processar e Consolidar"</strong>.</li>
-                    <li>O sistema irá ler a planilha, calcular os valores, somar os totais por dia e mostrar uma prévia com os totais gerais.</li>
-                    <li>Se a prévia estiver correta, clique em <strong>"Gerar e Baixar Arquivo .TXT"</strong> para obter o arquivo final.</li>
-                </ul>
-            </div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title">
+            <i class="fas fa-info-circle"></i> Como Usar o Gerador
+          </h2>
+          <button class="modal-close" id="close-modal-btn">&times;</button>
         </div>
+        <div class="modal-body">
+          <p>
+            Esta ferramenta foi criada para simplificar a criação de lançamentos
+            contábeis a partir de extratos de vendas de cartão.
+          </p>
+          <h3>Passo 1: Preencher os Dados</h3>
+          <ul>
+            <li>
+              <strong>Contas Contábeis:</strong> Informe os números das contas
+              de Clientes, Cartão e Tarifas (obrigatório).
+            </li>
+            <li>
+              <strong>Bandeira do Cartão:</strong> Digite o nome da bandeira
+              (opcional). Se informado, aparecerá no histórico do lançamento.
+            </li>
+          </ul>
+          <h3>Passo 2: Preparar a Planilha</h3>
+          <ul>
+            <li>
+              Clique em <strong>"Gerar Planilha Modelo"</strong> para baixar um
+              arquivo Excel com o formato correto.
+            </li>
+            <li>
+              As colunas necessárias são: <code>DATA</code>,
+              <code>VALOR BRUTO</code>, <code>VALOR LIQUIDO</code>, e
+              <code>TAXA</code>.
+            </li>
+            <li>
+              Para que a <strong>tarifa seja gerada</strong>, você deve
+              preencher o <code>VALOR BRUTO</code> e também o
+              <code>VALOR LIQUIDO</code> ou a <code>TAXA</code>.
+            </li>
+            <li>
+              Se você preencher apenas <code>DATA</code> e
+              <code>VALOR BRUTO</code>, a tarifa será considerada zero e apenas
+              o lançamento de venda será criado.
+            </li>
+            <li>
+              Você pode ter várias vendas (linhas) para o mesmo dia. O sistema
+              irá somar tudo automaticamente.
+            </li>
+          </ul>
+          <h3>Passo 3: Processar e Gerar</h3>
+          <ul>
+            <li>
+              Clique na área de upload para selecionar sua planilha preenchida
+              ou arraste o arquivo para lá.
+            </li>
+            <li>Clique em <strong>"Processar e Consolidar"</strong>.</li>
+            <li>
+              O sistema irá ler a planilha, calcular os valores, somar os totais
+              por dia e mostrar uma prévia com os totais gerais.
+            </li>
+            <li>
+              Se a prévia estiver correta, clique em
+              <strong>"Gerar e Baixar Arquivo .TXT"</strong> para obter o
+              arquivo final.
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
 
-<script>
-    const fileInput = document.getElementById('file-input');
-    const processBtn = document.getElementById('process-btn');
-    const uploadArea = document.querySelector('.upload-area');
-    const fileInfo = document.getElementById('file-info');
-    const fileList = document.getElementById('file-list');
-    const contaCartaoInput = document.getElementById('conta-cartao');
-    const contaClientesInput = document.getElementById('conta-clientes');
-    const contaTarifasInput = document.getElementById('conta-tarifas');
-    const bandeiraCartaoInput = document.getElementById('bandeira-cartao');
-    const uploadSection = document.getElementById('upload-section');
-    const loadingSection = document.getElementById('loading-section');
-    const previewSection = document.getElementById('preview-section');
-    const previewTableBody = document.querySelector('#preview-table tbody');
-    const generateBtn = document.getElementById('generate-btn');
-    const generateModelBtn = document.getElementById('generate-model-btn');
-    const infoBtn = document.getElementById('info-btn');
-    const infoModal = document.getElementById('info-modal');
-    const closeModalBtn = document.getElementById('close-modal-btn');
-    
-    let processedData = [];
-    let selectedFiles = [];
+    <script>
+      const fileInput = document.getElementById("file-input");
+      const processBtn = document.getElementById("process-btn");
+      const uploadArea = document.querySelector(".upload-area");
+      const fileInfo = document.getElementById("file-info");
+      const fileList = document.getElementById("file-list");
+      const contaCartaoInput = document.getElementById("conta-cartao");
+      const contaClientesInput = document.getElementById("conta-clientes");
+      const contaTarifasInput = document.getElementById("conta-tarifas");
+      const bandeiraCartaoInput = document.getElementById("bandeira-cartao");
+      const uploadSection = document.getElementById("upload-section");
+      const loadingSection = document.getElementById("loading-section");
+      const previewSection = document.getElementById("preview-section");
+      const previewTableBody = document.querySelector("#preview-table tbody");
+      const generateBtn = document.getElementById("generate-btn");
+      const generateModelBtn = document.getElementById("generate-model-btn");
+      const infoBtn = document.getElementById("info-btn");
+      const infoModal = document.getElementById("info-modal");
+      const closeModalBtn = document.getElementById("close-modal-btn");
 
-    ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
-        uploadArea.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
-    });
-    uploadArea.addEventListener('drop', (e) => handleFileSelect(e.dataTransfer.files));
-    fileInput.addEventListener('change', (e) => handleFileSelect(e.target.files));
-    processBtn.addEventListener('click', processFiles);
-    generateBtn.addEventListener('click', generateAndDownload);
-    generateModelBtn.addEventListener('click', generateModelSheet);
-    infoBtn.addEventListener('click', () => infoModal.classList.add('show'));
-    closeModalBtn.addEventListener('click', () => infoModal.classList.remove('show'));
-    infoModal.addEventListener('click', (e) => {
+      let processedData = [];
+      let selectedFiles = [];
+
+      ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+        uploadArea.addEventListener(
+          eventName,
+          (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          },
+          false
+        );
+      });
+      uploadArea.addEventListener("drop", (e) =>
+        handleFileSelect(e.dataTransfer.files)
+      );
+      fileInput.addEventListener("change", (e) =>
+        handleFileSelect(e.target.files)
+      );
+      processBtn.addEventListener("click", processFiles);
+      generateBtn.addEventListener("click", generateAndDownload);
+      generateModelBtn.addEventListener("click", generateModelSheet);
+      infoBtn.addEventListener("click", () => infoModal.classList.add("show"));
+      closeModalBtn.addEventListener("click", () =>
+        infoModal.classList.remove("show")
+      );
+      infoModal.addEventListener("click", (e) => {
         if (e.target === infoModal) {
-            infoModal.classList.remove('show');
+          infoModal.classList.remove("show");
         }
-    });
+      });
 
-    function handleFileSelect(files) {
+      function handleFileSelect(files) {
         if (!files || files.length === 0) return;
         selectedFiles = Array.from(files);
-        fileList.innerHTML = '';
-        selectedFiles.forEach(file => {
-            const listItem = document.createElement('li');
-            listItem.className = 'file-list-item';
-            listItem.innerHTML = `<i class="fas fa-file-excel text-success"></i> ${file.name}`;
-            fileList.appendChild(listItem);
+        fileList.innerHTML = "";
+        selectedFiles.forEach((file) => {
+          const listItem = document.createElement("li");
+          listItem.className = "file-list-item";
+          listItem.innerHTML = `<i class="fas fa-file-excel text-success"></i> ${file.name}`;
+          fileList.appendChild(listItem);
         });
-        fileInfo.classList.add('show');
+        fileInfo.classList.add("show");
         processBtn.disabled = false;
         resetUI(false);
-    }
-    
-    function generateModelSheet() {
+      }
+
+      function generateModelSheet() {
         const wb = XLSX.utils.book_new();
         const ws_data = [
-            ["DATA", "VALOR BRUTO", "VALOR LIQUIDO", "TAXA"],
-            ["01/07/2025", "150,00", "145,50", ""],
-            ["01/07/2025", "200,00", "", "10,00"],
-            ["02/07/2025", "500,00", "", ""],
+          ["DATA", "VALOR BRUTO", "VALOR LIQUIDO", "TAXA"],
+          ["01/07/2025", "150,00", "145,50", ""],
+          ["01/07/2025", "200,00", "", "10,00"],
+          ["02/07/2025", "500,00", "", ""],
         ];
         const ws = XLSX.utils.aoa_to_sheet(ws_data);
-        ws['!cols'] = [ {wch:12}, {wch:15}, {wch:15}, {wch:15} ];
+        ws["!cols"] = [{ wch: 12 }, { wch: 15 }, { wch: 15 }, { wch: 15 }];
         XLSX.utils.book_append_sheet(wb, ws, "Lancamentos");
         XLSX.writeFile(wb, "Modelo_Lancamentos.xlsx");
-    }
+      }
 
-    async function processFiles() {
-        const requiredInputs = [contaCartaoInput, contaClientesInput, contaTarifasInput];
-        if (requiredInputs.some(input => !input.value.trim())) {
-            alert("Por favor, preencha os campos obrigatórios: Conta Clientes, Conta Cartão e Conta Tarifas.");
-            return;
+      async function processFiles() {
+        const requiredInputs = [
+          contaCartaoInput,
+          contaClientesInput,
+          contaTarifasInput,
+        ];
+        if (requiredInputs.some((input) => !input.value.trim())) {
+          alert(
+            "Por favor, preencha os campos obrigatórios: Conta Clientes, Conta Cartão e Conta Tarifas."
+          );
+          return;
         }
         if (selectedFiles.length === 0) {
-            alert("Por favor, selecione pelo menos um arquivo Excel.");
-            return;
+          alert("Por favor, selecione pelo menos um arquivo Excel.");
+          return;
         }
-        showSection('loading');
+        showSection("loading");
         try {
-            const allRows = await readFiles(selectedFiles);
-            const consolidatedData = consolidateData(allRows);
-            processedData = consolidatedData;
-            displayPreview();
-            showSection('preview');
+          const allRows = await readFiles(selectedFiles);
+          const consolidatedData = consolidateData(allRows);
+          processedData = consolidatedData;
+          displayPreview();
+          showSection("preview");
         } catch (error) {
-            alert(`Ocorreu um erro: ${error.message}`);
-            showSection('upload');
+          alert(`Ocorreu um erro: ${error.message}`);
+          showSection("upload");
         }
-    }
+      }
 
-    function generateAndDownload() {
+      function generateAndDownload() {
         if (processedData.length === 0) {
-            alert("Não há dados para gerar o arquivo.");
-            return;
+          alert("Não há dados para gerar o arquivo.");
+          return;
         }
         const contaCartao = contaCartaoInput.value.trim();
         const contaClientes = contaClientesInput.value.trim();
         const contaTarifas = contaTarifasInput.value.trim();
         const bandeira = bandeiraCartaoInput.value.trim().toUpperCase();
 
-        let historicoVenda = "VALOR DE VENDAS C/ CARTAO DE CREDITO/DEBITO, CONF. EXTRATO";
-        let historicoTaxa = "TAXA OPERADORA DE CARTOES CREDITO/DEBITO, CONF. EXTRATO";
+        let historicoVenda =
+          "VALOR DE VENDAS C/ CARTAO DE CREDITO/DEBITO, CONF. EXTRATO";
+        let historicoTaxa =
+          "TAXA OPERADORA DE CARTOES CREDITO/DEBITO, CONF. EXTRATO";
 
         if (bandeira) {
-            historicoVenda += ` ${bandeira}`;
-            historicoTaxa += ` ${bandeira}`;
+          historicoVenda += ` ${bandeira}`;
+          historicoTaxa += ` ${bandeira}`;
         }
-        
+
         let txtContent = [];
-        processedData.forEach(data => {
-            const valorBrutoStr = data.valorBruto.toFixed(2).replace('.', ',');
-            const valorTaxaStr = data.valorTaxa.toFixed(2).replace('.', ',');
-            txtContent.push(`${data.data};${contaCartao};${contaClientes};${valorBrutoStr};;${historicoVenda};;;;`);
-            if (Math.abs(data.valorTaxa) > 0.005) {
-                txtContent.push(`${data.data};${contaTarifas};${contaCartao};${valorTaxaStr};;${historicoTaxa};;;;`);
-            }
+        processedData.forEach((data) => {
+          const valorBrutoStr = data.valorBruto.toFixed(2).replace(".", ",");
+          const valorTaxaStr = data.valorTaxa.toFixed(2).replace(".", ",");
+          txtContent.push(
+            `${data.data};${contaCartao};${contaClientes};${valorBrutoStr};;${historicoVenda};;;;`
+          );
+          if (Math.abs(data.valorTaxa) > 0.005) {
+            txtContent.push(
+              `${data.data};${contaTarifas};${contaCartao};${valorTaxaStr};;${historicoTaxa};;;;`
+            );
+          }
         });
 
-        const blob = new Blob([txtContent.join('\r\n')], { type: 'text/plain;charset=utf-8' });
-        const link = document.createElement('a');
+        const blob = new Blob([txtContent.join("\r\n")], {
+          type: "text/plain;charset=utf-8",
+        });
+        const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         const today = new Date();
-        const dateStr = `${today.getFullYear()}${String(today.getMonth() + 1).padStart(2, '0')}${String(today.getDate()).padStart(2, '0')}`;
-        const fileNameBandeira = bandeira ? bandeira.replace(/\s+/g, '_') : 'GERAL';
+        const dateStr = `${today.getFullYear()}${String(
+          today.getMonth() + 1
+        ).padStart(2, "0")}${String(today.getDate()).padStart(2, "0")}`;
+        const fileNameBandeira = bandeira
+          ? bandeira.replace(/\s+/g, "_")
+          : "GERAL";
         link.download = `LANCAMENTOS_${fileNameBandeira}_${dateStr}.txt`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-    }
-    
-    async function readFiles(files) {
-        const filePromises = files.map(file => {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    try {
-                        const data = new Uint8Array(e.target.result);
-                        const workbook = XLSX.read(data, { type: 'array' });
-                        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                        const jsonData = XLSX.utils.sheet_to_json(worksheet, { raw: true });
-                        if (jsonData.length === 0) return resolve([]);
-                        const firstRow = jsonData[0];
-                        const colMap = {
-                            data: findKeyForColumn(firstRow, "DATA"),
-                            bruto: findKeyForColumn(firstRow, "VALOR BRUTO"),
-                            liquido: findKeyForColumn(firstRow, "VALOR LIQUIDO"),
-                            taxa: findKeyForColumn(firstRow, "TAXA")
-                        };
-                        if (!colMap.data || !colMap.bruto) {
-                            return reject(new Error(`No arquivo "${file.name}", não foi possível encontrar as colunas obrigatórias: "DATA" e "VALOR BRUTO".`));
-                        }
-                        const fileData = [];
-                        jsonData.forEach((row) => {
-                           const dataVenda = row[colMap.data];
-                           const valorBruto = parseCurrency(row[colMap.bruto]);
-                           if(!dataVenda || isNaN(valorBruto) || valorBruto === 0) return;
-                           
-                           let valorLiquido = valorBruto;
-                           let valorTaxa = 0; 
+      }
 
-                           const rawLiquido = parseCurrency(row[colMap.liquido]);
-                           const rawTaxa = parseCurrency(row[colMap.taxa]);
-
-                           if (colMap.liquido && !isNaN(rawLiquido) && rawLiquido > 0) {
-                               valorTaxa = valorBruto - rawLiquido;
-                               valorLiquido = rawLiquido;
-                           } else if (colMap.taxa && !isNaN(rawTaxa)) {
-                               valorTaxa = rawTaxa;
-                               valorLiquido = valorBruto - rawTaxa;
-                           }
-
-                           const formattedDate = formatDate(dataVenda);
-                           if (!formattedDate) return; 
-
-                           fileData.push({
-                               data: formattedDate,
-                               valorBruto: valorBruto,
-                               valorLiquido: valorLiquido,
-                               valorTaxa: valorTaxa
-                           });
-                        });
-                        resolve(fileData);
-                    } catch (error) {
-                        reject(new Error(`Erro ao processar o arquivo "${file.name}": ${error.message}`));
-                    }
+      async function readFiles(files) {
+        const filePromises = files.map((file) => {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: "array" });
+                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+                  raw: true,
+                });
+                if (jsonData.length === 0) return resolve([]);
+                const firstRow = jsonData[0];
+                const colMap = {
+                  data: findKeyForColumn(firstRow, "DATA"),
+                  bruto: findKeyForColumn(firstRow, "VALOR BRUTO"),
+                  liquido: findKeyForColumn(firstRow, "VALOR LIQUIDO"),
+                  taxa: findKeyForColumn(firstRow, "TAXA"),
                 };
-                reader.onerror = () => reject(new Error(`Não foi possível ler o arquivo ${file.name}.`));
-                reader.readAsArrayBuffer(file);
-            });
+                if (!colMap.data || !colMap.bruto) {
+                  return reject(
+                    new Error(
+                      `No arquivo "${file.name}", não foi possível encontrar as colunas obrigatórias: "DATA" e "VALOR BRUTO".`
+                    )
+                  );
+                }
+                const fileData = [];
+                jsonData.forEach((row) => {
+                  const dataVenda = row[colMap.data];
+                  const valorBruto = parseCurrency(row[colMap.bruto]);
+                  if (!dataVenda || isNaN(valorBruto) || valorBruto === 0)
+                    return;
+
+                  let valorLiquido = valorBruto;
+                  let valorTaxa = 0;
+
+                  const rawLiquido = parseCurrency(row[colMap.liquido]);
+                  const rawTaxa = parseCurrency(row[colMap.taxa]);
+
+                  if (colMap.liquido && !isNaN(rawLiquido) && rawLiquido > 0) {
+                    valorTaxa = valorBruto - rawLiquido;
+                    valorLiquido = rawLiquido;
+                  } else if (colMap.taxa && !isNaN(rawTaxa)) {
+                    valorTaxa = rawTaxa;
+                    valorLiquido = valorBruto - rawTaxa;
+                  }
+
+                  const formattedDate = formatDate(dataVenda);
+                  if (!formattedDate) return;
+
+                  fileData.push({
+                    data: formattedDate,
+                    valorBruto: valorBruto,
+                    valorLiquido: valorLiquido,
+                    valorTaxa: valorTaxa,
+                  });
+                });
+                resolve(fileData);
+              } catch (error) {
+                reject(
+                  new Error(
+                    `Erro ao processar o arquivo "${file.name}": ${error.message}`
+                  )
+                );
+              }
+            };
+            reader.onerror = () =>
+              reject(new Error(`Não foi possível ler o arquivo ${file.name}.`));
+            reader.readAsArrayBuffer(file);
+          });
         });
         const results = await Promise.all(filePromises);
         return [].concat(...results);
-    }
+      }
 
-    function consolidateData(rows) {
+      function consolidateData(rows) {
         const dailyTotals = new Map();
-        rows.forEach(row => {
-            if (!row.data) return;
-            const existing = dailyTotals.get(row.data);
-            if (existing) {
-                existing.valorBruto += row.valorBruto;
-                existing.valorLiquido += row.valorLiquido;
-                existing.valorTaxa += row.valorTaxa;
-            } else {
-                dailyTotals.set(row.data, {
-                    data: row.data,
-                    valorBruto: row.valorBruto,
-                    valorLiquido: row.valorLiquido,
-                    valorTaxa: row.valorTaxa
-                });
-            }
+        rows.forEach((row) => {
+          if (!row.data) return;
+          const existing = dailyTotals.get(row.data);
+          if (existing) {
+            existing.valorBruto += row.valorBruto;
+            existing.valorLiquido += row.valorLiquido;
+            existing.valorTaxa += row.valorTaxa;
+          } else {
+            dailyTotals.set(row.data, {
+              data: row.data,
+              valorBruto: row.valorBruto,
+              valorLiquido: row.valorLiquido,
+              valorTaxa: row.valorTaxa,
+            });
+          }
         });
-        return Array.from(dailyTotals.values())
-            .sort((a, b) => a.data.split('/').reverse().join('-').localeCompare(b.data.split('/').reverse().join('-')));
-    }
+        return Array.from(dailyTotals.values()).sort((a, b) =>
+          a.data
+            .split("/")
+            .reverse()
+            .join("-")
+            .localeCompare(b.data.split("/").reverse().join("-"))
+        );
+      }
 
-    function displayPreview() {
-        previewTableBody.innerHTML = '';
-        const totalVendasEl = document.getElementById('total-vendas-valor');
-        const totalTarifasEl = document.getElementById('total-tarifas-valor');
+      function displayPreview() {
+        previewTableBody.innerHTML = "";
+        const totalVendasEl = document.getElementById("total-vendas-valor");
+        const totalTarifasEl = document.getElementById("total-tarifas-valor");
 
         if (processedData.length === 0) {
-            previewTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Nenhum dado válido foi encontrado. Verifique sua planilha.</td></tr>';
-            totalVendasEl.textContent = formatBRL(0);
-            totalTarifasEl.textContent = formatBRL(0);
-            generateBtn.disabled = true;
-            return;
+          previewTableBody.innerHTML =
+            '<tr><td colspan="5" style="text-align:center;">Nenhum dado válido foi encontrado. Verifique sua planilha.</td></tr>';
+          totalVendasEl.textContent = formatBRL(0);
+          totalTarifasEl.textContent = formatBRL(0);
+          generateBtn.disabled = true;
+          return;
         }
-        
-        const totalVendas = processedData.reduce((sum, item) => sum + item.valorBruto, 0);
-        const totalTarifas = processedData.reduce((sum, item) => sum + item.valorTaxa, 0);
 
-        processedData.forEach(data => {
-            const row = document.createElement('tr');
-            const taxaPercentual = data.valorBruto > 0 ? (data.valorTaxa / data.valorBruto) : 0;
-            const taxaPercentualStr = taxaPercentual.toLocaleString('pt-BR', { style: 'percent', minimumFractionDigits: 2 });
-            
-            const estiloTaxaPercentual = taxaPercentual > 0.05 
-                ? 'style="color: var(--error); font-weight: 700; background-color: #fef2f2;"' 
-                : '';
+        const totalVendas = processedData.reduce(
+          (sum, item) => sum + item.valorBruto,
+          0
+        );
+        const totalTarifas = processedData.reduce(
+          (sum, item) => sum + item.valorTaxa,
+          0
+        );
 
-            row.innerHTML = `
+        processedData.forEach((data) => {
+          const row = document.createElement("tr");
+          const taxaPercentual =
+            data.valorBruto > 0 ? data.valorTaxa / data.valorBruto : 0;
+          const taxaPercentualStr = taxaPercentual.toLocaleString("pt-BR", {
+            style: "percent",
+            minimumFractionDigits: 2,
+          });
+
+          const estiloTaxaPercentual =
+            taxaPercentual > 0.05
+              ? 'style="color: var(--error); font-weight: 700; background-color: #fef2f2;"'
+              : "";
+
+          row.innerHTML = `
                 <td>${data.data}</td>
                 <td>${formatBRL(data.valorBruto)}</td>
                 <td>${formatBRL(data.valorLiquido)}</td>
-                <td style="color: var(--error);">${formatBRL(data.valorTaxa)}</td>
+                <td style="color: var(--error);">${formatBRL(
+                  data.valorTaxa
+                )}</td>
                 <td ${estiloTaxaPercentual}>${taxaPercentualStr}</td>
             `;
-            previewTableBody.appendChild(row);
+          previewTableBody.appendChild(row);
         });
-        
+
         totalVendasEl.textContent = formatBRL(totalVendas);
         totalTarifasEl.textContent = formatBRL(totalTarifas);
         generateBtn.disabled = false;
-    }
+      }
 
-    function findKeyForColumn(row, targetColumnName) {
+      function findKeyForColumn(row, targetColumnName) {
         const lowerCaseTarget = targetColumnName.toLowerCase().trim();
         for (const key of Object.keys(row)) {
-            if (key.toLowerCase().trim() === lowerCaseTarget) return key;
+          if (key.toLowerCase().trim() === lowerCaseTarget) return key;
         }
         return null;
-    }
+      }
 
-    function parseCurrency(value) {
+      function parseCurrency(value) {
         if (value === null || value === undefined) return NaN;
-        if (typeof value === 'number') return value;
-        let s = String(value).replace(/[^0-9,.]/g, '');
-        if (s === '') return NaN;
-        const lastComma = s.lastIndexOf(',');
-        const lastDot = s.lastIndexOf('.');
+        if (typeof value === "number") return value;
+        let s = String(value).replace(/[^0-9,.]/g, "");
+        if (s === "") return NaN;
+        const lastComma = s.lastIndexOf(",");
+        const lastDot = s.lastIndexOf(".");
         if (lastComma > lastDot) {
-            s = s.replace(/\./g, '').replace(',', '.');
+          s = s.replace(/\./g, "").replace(",", ".");
         } else {
-            s = s.replace(/,/g, '');
+          s = s.replace(/,/g, "");
         }
         return parseFloat(s) || 0;
-    }
+      }
 
-    function formatDate(excelDate) {
+      function formatDate(excelDate) {
         if (excelDate === null || excelDate === undefined) return null;
-        if (typeof excelDate === 'number') {
-            const jsDate = XLSX.SSF.parse_date_code(excelDate);
-            if (jsDate) {
-                const day = String(jsDate.d).padStart(2, '0');
-                const month = String(jsDate.m).padStart(2, '0');
-                const year = jsDate.y;
-                return `${day}/${month}/${year}`;
-            }
+        if (typeof excelDate === "number") {
+          const jsDate = XLSX.SSF.parse_date_code(excelDate);
+          if (jsDate) {
+            const day = String(jsDate.d).padStart(2, "0");
+            const month = String(jsDate.m).padStart(2, "0");
+            const year = jsDate.y;
+            return `${day}/${month}/${year}`;
+          }
         }
-        if (typeof excelDate === 'string') {
-            const parts = excelDate.split(/[/.-]/);
-            if (parts.length === 3) {
-                let day, month, year;
-                if (parts[2].length === 4) {
-                    day = parts[0];
-                    month = parts[1];
-                    year = parts[2];
-                } else if (parts[0].length === 4) {
-                    day = parts[2];
-                    month = parts[1];
-                    year = parts[0];
-                }
-                if(day && month && year) {
-                     return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
-                }
+        if (typeof excelDate === "string") {
+          const parts = excelDate.split(/[/.-]/);
+          if (parts.length === 3) {
+            let day, month, year;
+            if (parts[2].length === 4) {
+              day = parts[0];
+              month = parts[1];
+              year = parts[2];
+            } else if (parts[0].length === 4) {
+              day = parts[2];
+              month = parts[1];
+              year = parts[0];
             }
+            if (day && month && year) {
+              return `${String(day).padStart(2, "0")}/${String(month).padStart(
+                2,
+                "0"
+              )}/${year}`;
+            }
+          }
         }
         console.warn("Formato de data não reconhecido:", excelDate);
         return null;
-    }
-    
-    function formatBRL(value) {
-        return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    }
+      }
 
+      function formatBRL(value) {
+        return value.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
+      }
 
-
-    function showSection(sectionName) {
-        ['upload', 'loading', 'preview'].forEach(sec => {
-            document.getElementById(`${sec}-section`).classList.add('hidden');
+      function showSection(sectionName) {
+        ["upload", "loading", "preview"].forEach((sec) => {
+          document.getElementById(`${sec}-section`).classList.add("hidden");
         });
         if (sectionName) {
-            document.getElementById(`${sectionName}-section`).classList.remove('hidden');
+          document
+            .getElementById(`${sectionName}-section`)
+            .classList.remove("hidden");
         }
-    }
+      }
 
-    function resetUI(fullReset = true) {
-        showSection('upload');
+      function resetUI(fullReset = true) {
+        showSection("upload");
         if (fullReset) {
-            fileInput.value = '';
-            selectedFiles = [];
-            fileInfo.classList.remove('show');
-            fileList.innerHTML = '';
-            processBtn.disabled = true;
+          fileInput.value = "";
+          selectedFiles = [];
+          fileInfo.classList.remove("show");
+          fileList.innerHTML = "";
+          processBtn.disabled = true;
         }
-    }
-</script>
-</body>
+      }
+    </script>
+  </body>
 </html>
