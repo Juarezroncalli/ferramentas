@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gerador de Capa para Caixa Box</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease;
+        --primary-dark: #3d005a;
+        --success: #10b981;
+        --error: #ef4444;
+        --text-muted: #64748b;
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh;
+        color: var(--text-color);
+        line-height: 1.6;
+        padding: 2rem 0;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 2rem;
+        position: relative;
+      }
+      .header h1 {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .header p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+      }
+      .main-content > section {
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--sombra);
+        margin-bottom: 2rem;
+      }
+      .btn {
+        background: var(--primary-color);
+        color: var(--text-color-light);
+        border: none;
+        padding: 0.875rem 2rem;
+        border-radius: var(--radius);
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transicao);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+      }
+      .btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+      }
+      .btn:disabled {
+        background: var(--text-muted);
+        cursor: not-allowed;
+        transform: none;
+      }
+      .btn-secondary {
+        background-color: var(--accent-color);
+      }
+      .btn-secondary:hover {
+        background: #d80952;
+      }
+      .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--accent-color);
+      }
+      .input-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+      .input-group {
+        display: flex;
+        flex-direction: column;
+      }
+      .input-group label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+      }
+      .input-group input,
+      .input-group select,
+      .input-group textarea {
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        font-size: 1rem;
+        font-family: inherit;
+      }
+      .button-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+      .pasta-item {
+        background: var(--form-bg-color);
+        border-radius: var(--radius);
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid var(--border-color);
+      }
+      .pasta-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+      .pasta-title {
+        font-weight: 600;
+        color: var(--primary-dark);
+      }
+      .remove-pasta {
+        background: var(--error);
+        color: white;
+        border: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+      .pasta-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      .pasta-obs-display {
+        grid-column: 1 / -1;
+        font-style: italic;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        word-break: break-word;
+      }
+      #pasta-list {
+        margin-top: 1.5rem;
+      }
+      .hidden {
+        display: none !important;
+      }
+
+      /* --- ESTILOS DA CAPA PROFISSIONAL --- */
+      #preview-container {
+        font-family: "Montserrat", sans-serif;
+        color: #000;
+        background: white;
+        width: 210mm;
+        height: 297mm;
+        margin: 0 auto;
+        padding: 5cm; /* <<< MARGEM INTERNA DA PÁGINA ALTERADA PARA 2CM */
+        box-sizing: border-box;
+        display: none;
+        flex-direction: column;
+        justify-content: flex-start;
+        position: relative;
+        border: 2px solid black;
+      }
+      .capa-header {
+        text-align: center;
+        margin-bottom: 5mm;
+        border-bottom: 2px solid #000;
+        padding-bottom: 3mm;
+      }
+      .capa-empresa {
+        font-size: 46px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        line-height: 1.2;
+        margin-bottom: 5mm;
+      }
+      .capa-subtitulo {
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 5px;
+        color: #333;
+      }
+      .capa-content {
+        flex-grow: 1;
+      }
+      .conteudo-title {
+        font-weight: 700;
+        font-size: 20px;
+        text-align: center;
+        text-transform: uppercase;
+        margin-bottom: 5mm;
+        letter-spacing: 2px;
+      }
+      #capa-pastas-container {
+        display: flex;
+        flex-direction: column;
+        gap: 8mm;
+      }
+      .pasta-row {
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 4mm;
+        border-bottom: 1px dotted #888;
+      }
+      .pasta-row:last-child {
+        border-bottom: none;
+      }
+      .pasta-row-main {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: baseline;
+        font-size: 20px;
+      }
+      .pasta-nome {
+        font-weight: 1000;
+      }
+      .pasta-periodo {
+        font-weight: 400;
+        text-align: right;
+      }
+      .pasta-observacao {
+        font-size: 14px;
+        font-style: italic;
+        font-weight: 500;
+        color: #444;
+        padding-left: 10px;
+        margin-top: 5px;
+      }
+
+      /* --- ESTILOS DA LOGO NO RODAPÉ --- */
+      #logo-container {
+        position: absolute;
+        bottom: 2cm; /* Ajustado para respeitar a nova margem */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 6cm;
+        height: auto;
+      }
+      #logo-rodape {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      /* Estilos de Impressão */
+      @media print {
+        body,
+        .container,
+        .main-content {
+          margin: 0;
+          padding: 0;
+          background: none;
+          box-shadow: none;
+        }
+        body * {
+          visibility: hidden;
+        }
+        #preview-container,
+        #preview-container * {
+          visibility: visible;
+        }
+        #preview-container {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          border: none;
+          padding: 8cm;
+          width: 100%;
+          height: 100%; /* Garante que a impressão também tenha 2cm */
+        }
+        #logo-container {
+          bottom: 1cm; /* Garante que a posição da logo na impressão seja a mesma */
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1>
+          <i class="fa-solid fa-box-archive"></i> Gerador de Capa para Caixa Box
+        </h1>
+        <p>
+          Preencha os campos abaixo para gerar uma capa para sua caixa de
+          arquivos
+        </p>
+      </header>
+
+      <main class="main-content">
+        <section id="form-section">
+          <h2 class="section-title">
+            <i class="fas fa-edit"></i> Informações da Capa
+          </h2>
+
+          <div class="input-group" style="margin-bottom: 1.5rem">
+            <label for="empresa-nome"
+              ><i class="fa-solid fa-building"></i> NOME DA EMPRESA</label
+            >
+            <input
+              type="text"
+              id="empresa-nome"
+              placeholder="Ex: Empresa XYZ Ltda"
+            />
+          </div>
+
+          <h3
+            style="
+              margin-top: 2rem;
+              margin-bottom: 1rem;
+              color: var(--primary-dark);
+            "
+          >
+            <i class="fa-solid fa-folder"></i> Pastas/Envelopes
+          </h3>
+
+          <div id="nova-pasta-form">
+            <div class="input-grid">
+              <div class="input-group">
+                <label for="pasta-nome">NOME DA PASTA/ENVELOPE</label>
+                <input
+                  type="text"
+                  id="pasta-nome"
+                  placeholder="Ex: Notas Fiscais"
+                />
+              </div>
+              <div class="input-group">
+                <label for="periodo-inicio">PERÍODO INICIAL (mm/aaaa)</label>
+                <input
+                  type="text"
+                  id="periodo-inicio"
+                  placeholder="Ex: 01/2023"
+                />
+              </div>
+              <div class="input-group">
+                <label for="periodo-fim">PERÍODO FINAL (mm/aaaa)</label>
+                <input type="text" id="periodo-fim" placeholder="Ex: 12/2023" />
+              </div>
+            </div>
+            <div class="input-group" style="margin-top: 1rem">
+              <label for="pasta-obs">OBSERVAÇÕES (opcional)</label>
+              <textarea
+                id="pasta-obs"
+                rows="2"
+                placeholder="Ex: Contém recibos importantes"
+              ></textarea>
+            </div>
+
+            <div class="button-group">
+              <button class="btn btn-secondary" id="add-pasta-btn">
+                <i class="fas fa-plus"></i> Adicionar Pasta
+              </button>
+            </div>
+          </div>
+
+          <div id="pasta-list"></div>
+
+          <div
+            class="button-group"
+            style="justify-content: center; margin-top: 2rem"
+          >
+            <button class="btn" id="gerar-capa-btn">
+              <i class="fas fa-eye"></i> Visualizar Capa
+            </button>
+            <button class="btn btn-secondary" id="imprimir-btn" disabled>
+              <i class="fas fa-print"></i> Imprimir Capa
+            </button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="preview-container">
+      <header class="capa-header">
+        <div class="capa-empresa" id="capa-empresa-nome">NOME DA EMPRESA</div>
+        <div class="capa-subtitulo">BOX DE DOCUMENTOS CONTÁBEIS</div>
+      </header>
+
+      <main class="capa-content">
+        <h2 class="conteudo-title">CONTEÚDO</h2>
+        <div id="capa-pastas-container"></div>
+      </main>
+
+      <div id="logo-container">
+        <img id="logo-rodape" src="logo.png" alt="Logo da Empresa" />
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const empresaNomeInput = document.getElementById("empresa-nome");
+        const pastaNomeInput = document.getElementById("pasta-nome");
+        const periodoInicioInput = document.getElementById("periodo-inicio");
+        const periodoFimInput = document.getElementById("periodo-fim");
+        const pastaObsInput = document.getElementById("pasta-obs");
+        const addPastaBtn = document.getElementById("add-pasta-btn");
+        const gerarCapaBtn = document.getElementById("gerar-capa-btn");
+        const imprimirBtn = document.getElementById("imprimir-btn");
+        const pastaList = document.getElementById("pasta-list");
+        const previewContainer = document.getElementById("preview-container");
+        const capaEmpresaNome = document.getElementById("capa-empresa-nome");
+        const capaPastasContainer = document.getElementById(
+          "capa-pastas-container"
+        );
+
+        let pastas = [];
+
+        addPastaBtn.addEventListener("click", function () {
+          const nome = pastaNomeInput.value.trim();
+          const inicio = periodoInicioInput.value.trim();
+          const fim = periodoFimInput.value.trim();
+          const observacao = pastaObsInput.value.trim();
+
+          if (!nome || !inicio || !fim) {
+            alert("Por favor, preencha nome e períodos da pasta.");
+            return;
+          }
+
+          if (!/^\d{2}\/\d{4}$/.test(inicio) || !/^\d{2}\/\d{4}$/.test(fim)) {
+            alert("O período deve estar no formato mm/aaaa (ex: 01/2023)");
+            return;
+          }
+
+          const pasta = {
+            id: Date.now(),
+            nome: nome,
+            inicio: inicio,
+            fim: fim,
+            observacao: observacao,
+          };
+
+          pastas.push(pasta);
+          renderPastaList();
+
+          pastaNomeInput.value = "";
+          periodoInicioInput.value = "";
+          periodoFimInput.value = "";
+          pastaObsInput.value = "";
+          pastaNomeInput.focus();
+
+          updateButtonsState();
+        });
+
+        function renderPastaList() {
+          pastaList.innerHTML = "";
+          if (pastas.length === 0) {
+            pastaList.innerHTML =
+              '<p style="color: var(--text-muted); text-align: center;">Nenhuma pasta adicionada ainda</p>';
+            return;
+          }
+          pastas.forEach((pasta) => {
+            const pastaObsHtml = pasta.observacao
+              ? `<div class="pasta-obs-display">Obs: ${pasta.observacao}</div>`
+              : "";
+            const pastaItem = document.createElement("div");
+            pastaItem.className = "pasta-item";
+            pastaItem.innerHTML = `
+                        <div class="pasta-header">
+                            <div class="pasta-title">${pasta.nome}</div>
+                            <button class="remove-pasta" data-id="${pasta.id}"><i class="fas fa-times"></i></button>
+                        </div>
+                        <div class="pasta-content">
+                            <div>Período Inicial: ${pasta.inicio}</div>
+                            <div>Período Final: ${pasta.fim}</div>
+                            ${pastaObsHtml}
+                        </div>
+                    `;
+            pastaList.appendChild(pastaItem);
+          });
+
+          document.querySelectorAll(".remove-pasta").forEach((btn) => {
+            btn.addEventListener("click", function () {
+              const id = parseInt(this.getAttribute("data-id"));
+              pastas = pastas.filter((p) => p.id !== id);
+              renderPastaList();
+              updateButtonsState();
+            });
+          });
+        }
+
+        gerarCapaBtn.addEventListener("click", function () {
+          const empresaNome = empresaNomeInput.value.trim();
+          if (!empresaNome) {
+            alert("Por favor, informe o nome da empresa.");
+            empresaNomeInput.focus();
+            return;
+          }
+          if (pastas.length === 0) {
+            alert("Por favor, adicione pelo menos uma pasta.");
+            return;
+          }
+
+          capaEmpresaNome.textContent = empresaNome;
+          capaPastasContainer.innerHTML = "";
+
+          pastas.forEach((pasta) => {
+            const pastaRow = document.createElement("div");
+            pastaRow.className = "pasta-row";
+
+            const mainContent = document.createElement("div");
+            mainContent.className = "pasta-row-main";
+            mainContent.innerHTML = `
+                        <div class="pasta-nome">${pasta.nome}</div>
+                        <div class="pasta-periodo">${pasta.inicio} a ${pasta.fim}</div>`;
+            pastaRow.appendChild(mainContent);
+
+            if (pasta.observacao) {
+              const obsContent = document.createElement("div");
+              obsContent.className = "pasta-observacao";
+              obsContent.textContent = `Obs: ${pasta.observacao}`;
+              pastaRow.appendChild(obsContent);
+            }
+
+            capaPastasContainer.appendChild(pastaRow);
+          });
+
+          previewContainer.style.display = "flex";
+          imprimirBtn.disabled = false;
+        });
+
+        imprimirBtn.addEventListener("click", function () {
+          window.print();
+        });
+
+        function updateButtonsState() {
+          const empresaNome = empresaNomeInput.value.trim();
+          const hasInfo = empresaNome && pastas.length > 0;
+          gerarCapaBtn.disabled = !hasInfo;
+          imprimirBtn.disabled = true;
+        }
+
+        empresaNomeInput.addEventListener("input", updateButtonsState);
+
+        renderPastaList();
+        updateButtonsState();
+      });
+    </script>
+  </body>
+</html>

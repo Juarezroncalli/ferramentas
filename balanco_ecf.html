@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gerador de Balanço Patrimonial</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease;
+        --primary-dark: #3d005a;
+        --success: #10b981;
+        --error: #ef4444;
+        --text-muted: #64748b;
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh;
+        color: var(--text-color);
+        line-height: 1.6;
+        padding: 2rem 0;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 2rem;
+        position: relative;
+      }
+      .header h1 {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .header p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+      }
+      .main-content > section {
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--sombra);
+        margin-bottom: 2rem;
+      }
+      .upload-area {
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius);
+        padding: 3rem 2rem;
+        text-align: center;
+        transition: var(--transicao);
+        cursor: pointer;
+        margin-top: 1.5rem;
+      }
+      .upload-area:hover {
+        border-color: var(--primary-color);
+        background: var(--form-bg-color);
+      }
+      .upload-icon {
+        font-size: 3rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+      }
+      #file-input {
+        display: none;
+      }
+      .file-info {
+        background: var(--form-bg-color);
+        border-radius: var(--radius);
+        padding: 1rem;
+        margin-top: 1.5rem;
+        display: none;
+        gap: 1rem;
+      }
+      .file-info.show {
+        display: block;
+      }
+      .file-list {
+        list-style: none;
+        padding-top: 0.5rem;
+      }
+      .file-list-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.25rem 0;
+        color: var(--text-muted);
+      }
+      .section-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 2rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--accent-color);
+      }
+      .hidden {
+        display: none !important;
+      }
+      .loading {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: var(--text-muted);
+      }
+      .spinner {
+        border: 3px solid var(--border-color);
+        border-top: 3px solid var(--primary-color);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .table-container {
+        overflow-x: auto;
+        margin-bottom: 2rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+      }
+      th,
+      td {
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border-color);
+        text-align: left;
+        white-space: nowrap;
+      }
+      thead {
+        background: var(--form-bg-color);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+      th {
+        font-weight: 600;
+        color: var(--primary-dark);
+      }
+      td {
+        font-size: 0.9rem;
+      }
+      td.currency {
+        text-align: right;
+      }
+      .trimester-block {
+        margin-bottom: 3rem;
+        padding: 1.5rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        background-color: #fff;
+      }
+      .trimester-block h3 {
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+      }
+      .account-group-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--accent-color);
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1>
+          <i class="fa-solid fa-file-invoice-dollar"></i> Gerador de Balanço
+          Patrimonial
+        </h1>
+        <p>
+          Importe seu arquivo .txt (SPED ECD/ECF) para gerar o balanço por
+          trimestre.
+        </p>
+      </header>
+
+      <main class="main-content">
+        <section id="upload-section">
+          <div
+            class="upload-area"
+            onclick="document.getElementById('file-input').click()"
+          >
+            <div class="upload-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <p><strong>Clique para selecionar o arquivo .txt</strong></p>
+            <p>ou arraste e solte o arquivo aqui</p>
+            <input type="file" id="file-input" accept=".txt" />
+          </div>
+          <div class="file-info" id="file-info">
+            <div id="file-name" style="font-weight: 600">
+              Arquivo Selecionado:
+            </div>
+            <ul id="file-list" class="file-list"></ul>
+          </div>
+        </section>
+
+        <section id="loading-section" class="hidden">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>Processando arquivo e gerando balanço...</p>
+          </div>
+        </section>
+
+        <section id="results-section" class="hidden">
+          <h2 class="section-title">
+            <i class="fas fa-table"></i> Balanço Patrimonial
+          </h2>
+          <div id="balance-sheet-container"></div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const fileInput = document.getElementById("file-input");
+      const uploadArea = document.querySelector(".upload-area");
+      const fileInfo = document.getElementById("file-info");
+      const fileList = document.getElementById("file-list");
+
+      const uploadSection = document.getElementById("upload-section");
+      const loadingSection = document.getElementById("loading-section");
+      const resultsSection = document.getElementById("results-section");
+      const balanceSheetContainer = document.getElementById(
+        "balance-sheet-container"
+      );
+
+      ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+        uploadArea.addEventListener(
+          eventName,
+          (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          },
+          false
+        );
+      });
+      uploadArea.addEventListener("drop", (e) => handleFileSelect(e.dataTransfer.files));
+      fileInput.addEventListener("change", (e) => handleFileSelect(e.target.files));
+
+      function showSection(sectionName) {
+        ["upload", "loading", "results"].forEach((sec) => {
+          document.getElementById(`${sec}-section`).classList.add("hidden");
+        });
+        if (sectionName) {
+          document
+            .getElementById(`${sectionName}-section`)
+            .classList.remove("hidden");
+        }
+      }
+
+      function handleFileSelect(files) {
+        if (!files || files.length === 0) return;
+        const file = files[0];
+        fileList.innerHTML = `<li class="file-list-item"><i class="fas fa-file-alt text-success"></i> ${file.name}</li>`;
+        processFile(file);
+      }
+
+      function processFile(file) {
+        showSection("loading");
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const fileContent = event.target.result;
+            const data = parseSpedFile(fileContent);
+            if (Object.keys(data.trimesters).length === 0) {
+              alert(
+                "Nenhum dado de balancete (K155) encontrado para os trimestres (K030). Verifique o conteúdo do arquivo."
+              );
+              showSection("upload");
+              return;
+            }
+            renderBalanceSheet(data);
+            showSection("results");
+          } catch (error) {
+            alert(`Erro ao processar o arquivo: ${error.message}`);
+            console.error(error);
+            showSection("upload");
+          }
+        };
+        reader.onerror = () => {
+          alert("Não foi possível ler o arquivo.");
+          showSection("upload");
+        };
+        reader.readAsText(file, "ISO-8859-1");
+      }
+
+      function parseCurrency(valueStr) {
+        if (typeof valueStr !== "string") return 0;
+        return parseFloat(valueStr.replace(",", ".")) || 0;
+      }
+
+      function parseSpedFile(text) {
+        const lines = text.split(/\r?\n/);
+        const accounts = {};
+        const trimesters = {};
+        let currentTrimesterPeriod = null;
+
+        for (const line of lines) {
+          if (line.startsWith("|J050|")) {
+            const fields = line.split("|");
+            const code = fields[6];
+            const type = fields[3];
+            const name = fields[8];
+            if (code) {
+              accounts[code] = { name, type };
+            }
+          }
+        }
+
+        if (Object.keys(accounts).length === 0) {
+            throw new Error("Nenhum plano de contas (J050) encontrado no arquivo.");
+        }
+
+        for (const line of lines) {
+            const fields = line.split("|");
+            if (line.startsWith("|K030|")) {
+                const startDate = fields[2];
+                const endDate = fields[3];
+                currentTrimesterPeriod = `${startDate} a ${endDate}`;
+                trimesters[currentTrimesterPeriod] = {
+                    "01": [], "02": [], "03": [], "outras": []
+                };
+            } else if (line.startsWith("|K155|") && currentTrimesterPeriod) {
+                const accCode = fields[2];
+                const accInfo = accounts[accCode] || { name: `Desconhecida (${accCode})`, type: "outras" };
+                
+                const initialBalance = parseCurrency(fields[4]);
+                const debit = parseCurrency(fields[6]);
+                const credit = parseCurrency(fields[7]);
+                const finalBalance = parseCurrency(fields[8]);
+
+                const accountData = {
+                    code: accCode,
+                    name: accInfo.name,
+                    initial: initialBalance,
+                    debit,
+                    credit,
+                    final: finalBalance
+                };
+                
+                if (trimesters[currentTrimesterPeriod][accInfo.type]) {
+                   trimesters[currentTrimesterPeriod][accInfo.type].push(accountData);
+                }
+            }
+        }
+        return { accounts, trimesters };
+      }
+
+      function formatBRL(value) {
+        return value.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
+      }
+
+      function renderBalanceSheet(data) {
+        balanceSheetContainer.innerHTML = "";
+        
+        for (const period in data.trimesters) {
+            const trimesterData = data.trimesters[period];
+            
+            const trimesterBlock = document.createElement("div");
+            trimesterBlock.className = "trimester-block";
+            
+            let html = `<h3>Período: ${period.replace(/(\d{2})(\d{2})(\d{4})/g, '$1/$2/$3')}</h3>`;
+            
+            const accountGroups = [
+                { title: "Ativo", data: trimesterData["01"] },
+                { title: "Passivo", data: trimesterData["02"] },
+                { title: "Patrimônio Líquido", data: trimesterData["03"] }
+            ];
+
+            accountGroups.forEach(group => {
+                if (group.data.length > 0) {
+                    html += `<h4 class="account-group-title">${group.title}</h4>`;
+                    html += `<div class="table-container"><table>
+                                <thead>
+                                    <tr>
+                                        <th>Conta</th>
+                                        <th>Descrição</th>
+                                        <th style="text-align:right;">Saldo Inicial</th>
+                                        <th style="text-align:right;">Débitos</th>
+                                        <th style="text-align:right;">Créditos</th>
+                                        <th style="text-align:right;">Saldo Final</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
+                    
+                    group.data.sort((a,b) => a.code.localeCompare(b.code)).forEach(acc => {
+                        html += `<tr>
+                                    <td>${acc.code}</td>
+                                    <td>${acc.name}</td>
+                                    <td class="currency">${formatBRL(acc.initial)}</td>
+                                    <td class="currency">${formatBRL(acc.debit)}</td>
+                                    <td class="currency">${formatBRL(acc.credit)}</td>
+                                    <td class="currency"><strong>${formatBRL(acc.final)}</strong></td>
+                                 </tr>`;
+                    });
+
+                    html += `</tbody></table></div>`;
+                }
+            });
+            
+            trimesterBlock.innerHTML = html;
+            balanceSheetContainer.appendChild(trimesterBlock);
+        }
+      }
+    </script>
+  </body>
+</html>
