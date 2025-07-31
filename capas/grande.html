@@ -347,6 +347,50 @@
         #logo-container {
           bottom: 1cm; /* Garante que a posição da logo na impressão seja a mesma */
         }
+
+        /* MARCA DE CORTE E ÍCONES DE TESOURA */
+        #corte-guia {
+          position: absolute;
+          top: 2cm;
+          left: 3.5cm;
+          right: 3.5cm;
+          bottom: 0cm;
+          border: 1px dashed #ccc;
+          z-index: 9999;
+          pointer-events: none;
+          display: none;
+        }
+        .corte-icon {
+          position: absolute;
+          font-size: 12pt;
+          color: #ccc;
+          z-index: 10000;
+          pointer-events: none;
+          display: none;
+        }
+        #corte-top {
+          top: 2cm;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+
+        #corte-left {
+          top: 50%;
+          left: 2.5cm;
+          transform: translateY(-50%) rotate(-90deg);
+        }
+        #corte-right {
+          top: 50%;
+          right: 2.5cm;
+          transform: translateY(-50%) rotate(90deg);
+        }
+
+        @media print {
+          #corte-guia,
+          .corte-icon {
+            display: block;
+          }
+        }
       }
     </style>
   </head>
@@ -376,6 +420,7 @@
               type="text"
               id="empresa-nome"
               placeholder="Ex: Empresa XYZ Ltda"
+              maxlength="25"
             />
           </div>
 
@@ -397,6 +442,7 @@
                   type="text"
                   id="pasta-nome"
                   placeholder="Ex: Notas Fiscais"
+                  maxlength="25"
                 />
               </div>
               <div class="input-group">
@@ -459,6 +505,11 @@
       <div id="logo-container">
         <img id="logo-rodape" src="logo.png" alt="Logo da Empresa" />
       </div>
+      <!-- MARCA DE CORTE E ÍCONES DE TESOURA -->
+      <div id="corte-guia"></div>
+      <div class="corte-icon" id="corte-top">✂</div>
+      <div class="corte-icon" id="corte-left">✂</div>
+      <div class="corte-icon" id="corte-right">✂</div>
     </div>
 
     <script>
