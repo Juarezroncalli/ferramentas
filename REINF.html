@@ -638,6 +638,7 @@
               type: "array",
               cellDates: true,
               cellNF: false,
+              cellText: true,
             });
             const firstSheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[firstSheetName];
@@ -656,8 +657,6 @@
       }
 
       function processExcelData() {
-        // This function's internal logic is preserved from the original file
-        // ... (The entire long function from the original file is here)
         processedDataByQuarter = {};
         notFoundRows = [];
         cpfTotals = {};
@@ -726,9 +725,27 @@
                 return;
             }
             const rowDateStr = formatDate(rowDate);
+            
+            // --- NOVA CORREÇÃO DO CÓDIGO AQUI ---
             let valorString = String(valorRaw).trim();
-            let cleanedValorString = valorString.includes(',') ? valorString.replace(/\./g, "").replace(",", ".") : valorString;
-            const valorNum = Number(cleanedValorString.replace(/[^\d.-]/g, ''));
+            // Primeiro, remove todos os caracteres que não sejam dígitos, vírgula ou ponto
+            valorString = valorString.replace(/[^\d,\.-]/g, '');
+            // Se o último separador for uma vírgula, substitui por ponto (formato brasileiro)
+            const lastCommaIndex = valorString.lastIndexOf(',');
+            const lastDotIndex = valorString.lastIndexOf('.');
+            if (lastCommaIndex > lastDotIndex) {
+              // Se a vírgula é o último separador decimal, trata-se do formato brasileiro.
+              // Remove os pontos de milhar e substitui a vírgula pelo ponto.
+              valorString = valorString.replace(/\./g, '');
+              valorString = valorString.replace(/,/g, '.');
+            } else {
+              // Se o ponto é o último separador, o formato pode ser americano.
+              // Apenas remove as vírgulas de milhar
+              valorString = valorString.replace(/,/g, '');
+            }
+            const valorNum = Number(valorString);
+            // --- FIM DA NOVA CORREÇÃO ---
+
             if (isNaN(valorNum)) {
                 notFoundRows.push({ row: excelRowNum, reason: `Valor inválido ('${valorRaw}')` });
                 return;
