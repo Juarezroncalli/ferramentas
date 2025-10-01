@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analisador de CT-e</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease;
+        --primary-dark: #3d005a;
+        --success: #10b981;
+        --error: #ef4444;
+        --text-muted: #64748b;
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
+        --group-highlight-bg: #f5f5f5;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh;
+        color: var(--text-color);
+        line-height: 1.6;
+        padding: 2rem 0;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 2rem;
+        position: relative;
+      }
+      .header h1 {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .header p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+      }
+      .main-content > section {
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--sombra);
+        margin-bottom: 2rem;
+      }
+      .upload-area {
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius);
+        padding: 3rem 2rem;
+        text-align: center;
+        transition: var(--transicao);
+        cursor: pointer;
+        margin-top: 1.5rem;
+      }
+      .upload-area:hover {
+        border-color: var(--primary-color);
+        background: var(--form-bg-color);
+      }
+      .upload-icon {
+        font-size: 3rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+      }
+      #file-input {
+        display: none;
+      }
+      .file-info {
+        background: var(--form-bg-color);
+        border-radius: var(--radius);
+        padding: 1rem;
+        margin-top: 1.5rem;
+        display: none;
+        gap: 1rem;
+      }
+      .file-info.show {
+        display: block;
+      }
+      .file-list {
+        list-style: none;
+        padding-top: 0.5rem;
+      }
+      .file-list-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.25rem 0;
+        color: var(--text-muted);
+      }
+      .btn {
+        background: var(--primary-color);
+        color: var(--text-color-light);
+        border: none;
+        padding: 0.875rem 2rem;
+        border-radius: var(--radius);
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transicao);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+      }
+      .btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+      }
+      .btn:disabled {
+        background: var(--text-muted);
+        cursor: not-allowed;
+        transform: none;
+      }
+      .btn-process {
+        width: 100%;
+        justify-content: center;
+        margin-top: 1.5rem;
+      }
+      .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--accent-color);
+      }
+      .hidden {
+        display: none !important;
+      }
+      .loading {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: var(--text-muted);
+      }
+      .spinner {
+        border: 3px solid var(--border-color);
+        border-top: 3px solid var(--primary-color);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .table-container {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+      }
+      th,
+      td {
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border-color);
+        text-align: left;
+        transition: var(--transicao);
+      }
+      thead {
+        background: var(--form-bg-color);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+      th {
+        font-weight: 600;
+        color: var(--primary-dark);
+      }
+      td {
+        font-size: 0.9rem;
+      }
+      .tag-highlight {
+        background-color: var(--accent-color);
+        color: white;
+        padding: 0.2em 0.6em;
+        border-radius: 0.25rem;
+        font-family: monospace;
+        font-size: 0.85em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1><i class="fas fa-truck-moving"></i> Analisador de CT-e</h1>
+        <p>
+          Importe arquivos XML de CT-e para visualizar dados consolidados em uma
+          tabela.
+        </p>
+      </header>
+
+      <main class="main-content">
+        <section id="upload-section">
+          <div
+            class="upload-area"
+            onclick="document.getElementById('file-input').click()"
+          >
+            <div class="upload-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <p><strong>Clique para selecionar os arquivos XML</strong></p>
+            <p>ou arraste e solte os arquivos .xml aqui</p>
+            <input type="file" id="file-input" accept=".xml" multiple />
+          </div>
+          <div class="file-info" id="file-info">
+            <div id="file-name" style="font-weight: 600">
+              Arquivos Selecionados:
+            </div>
+            <ul id="file-list" class="file-list"></ul>
+          </div>
+          <button class="btn btn-process" id="process-btn" disabled>
+            <i class="fas fa-cogs"></i> Analisar Arquivos
+          </button>
+        </section>
+
+        <section id="loading-section" class="hidden">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>Analisando e consolidando dados...</p>
+          </div>
+        </section>
+
+        <section id="results-section" class="hidden">
+          <h2 class="section-title">
+            <i class="fas fa-table"></i> Resultados da Análise
+          </h2>
+          <div class="table-container">
+            <table id="results-table">
+              <thead>
+                <tr>
+                  <th>Número do CT-e</th>
+                  <th>Data de Emissão</th>
+                  <th>Emitente</th>
+                  <th>Valor do Serviço (R$)</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <button
+            class="btn btn-process"
+            id="reset-btn"
+            style="margin-top: 2rem"
+          >
+            <i class="fas fa-undo"></i> Analisar Outros Arquivos
+          </button>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const fileInput = document.getElementById("file-input");
+      const processBtn = document.getElementById("process-btn");
+      const resetBtn = document.getElementById("reset-btn");
+      const uploadArea = document.querySelector(".upload-area");
+      const fileInfo = document.getElementById("file-info");
+      const fileList = document.getElementById("file-list");
+      const uploadSection = document.getElementById("upload-section");
+      const loadingSection = document.getElementById("loading-section");
+      const resultsSection = document.getElementById("results-section");
+      const resultsTableBody = document.querySelector("#results-table tbody");
+
+      let selectedFiles = [];
+
+      ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+        uploadArea.addEventListener(
+          eventName,
+          (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          },
+          false
+        );
+      });
+      uploadArea.addEventListener("drop", (e) =>
+        handleFileSelect(e.dataTransfer.files)
+      );
+      fileInput.addEventListener("change", (e) =>
+        handleFileSelect(e.target.files)
+      );
+      processBtn.addEventListener("click", processXmlFiles);
+      resetBtn.addEventListener("click", () => resetUI(true));
+
+      async function handleFileSelect(files) {
+        if (!files || files.length === 0) return;
+        selectedFiles = Array.from(files);
+        fileList.innerHTML = "";
+        selectedFiles.forEach((file) => {
+          const listItem = document.createElement("li");
+          listItem.className = "file-list-item";
+          listItem.innerHTML = `<i class="fas fa-file-code text-success"></i> ${file.name}`;
+          fileList.appendChild(listItem);
+        });
+        fileInfo.classList.add("show");
+        processBtn.disabled = false;
+        resetUI(false);
+      }
+
+      async function processXmlFiles() {
+        if (selectedFiles.length === 0) {
+          alert("Por favor, selecione pelo menos um arquivo XML.");
+          return;
+        }
+        showSection("loading");
+
+        const processedResults = [];
+
+        try {
+          for (const file of selectedFiles) {
+            const fileContent = await readFileAsText(file);
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(
+              fileContent,
+              "application/xml"
+            );
+
+            const errorNode = xmlDoc.querySelector("parsererror");
+            if (errorNode) {
+              console.error(
+                `Erro de parse no arquivo ${file.name}:`,
+                errorNode.textContent
+              );
+              continue;
+            }
+
+            // Busca as tags de CT-e, incluindo o namespace
+            const ctes = xmlDoc.querySelectorAll("CTe, CompCTe");
+
+            for (const cte of ctes) {
+              const infCTe = cte.querySelector("infCte");
+              if (!infCTe) continue;
+
+              const numeroCTe =
+                infCTe.querySelector("nCT")?.textContent || "N/A";
+              const dataEmissao =
+                infCTe.querySelector("dhEmi")?.textContent || "N/A";
+              const nomeEmitente =
+                infCTe.querySelector("emit xNome")?.textContent || "N/A";
+
+              // Busca a tag do valor com um seletor mais específico
+              const valorNode = infCTe.querySelector("vPrest vTPrest");
+              const valorServico = parseFloat(valorNode?.textContent) || 0;
+
+              if (valorServico > 0) {
+                processedResults.push({
+                  numero: numeroCTe,
+                  data: formatDate(dataEmissao),
+                  emitente: nomeEmitente,
+                  valor: valorServico,
+                });
+              }
+            }
+          }
+
+          displayResults(processedResults);
+          showSection("results");
+        } catch (error) {
+          alert(
+            `Ocorreu um erro crítico durante o processamento: ${error.message}`
+          );
+          showSection("upload");
+        }
+      }
+
+      function readFileAsText(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (event) => resolve(event.target.result);
+          reader.onerror = (error) => reject(error);
+          reader.readAsText(file, "UTF-8");
+        });
+      }
+
+      function displayResults(results) {
+        resultsTableBody.innerHTML = "";
+        if (results.length === 0) {
+          resultsTableBody.innerHTML =
+            '<tr><td colspan="4" style="text-align:center;">Nenhum CT-e com valor acima de zero foi encontrado nos arquivos analisados.</td></tr>';
+          return;
+        }
+
+        results.forEach((res) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+                <td>${res.numero}</td>
+                <td>${res.data}</td>
+                <td>${res.emitente}</td>
+                <td>${formatBRL(res.valor)}</td>
+            `;
+          resultsTableBody.appendChild(row);
+        });
+      }
+
+      function formatDate(dateString) {
+        if (!dateString) return "N/A";
+        try {
+          const datePart = dateString.split("T")[0];
+          const parts = datePart.split("-");
+          return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        } catch (e) {
+          return dateString;
+        }
+      }
+
+      function formatBRL(value) {
+        return value.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
+      }
+
+      function showSection(sectionName) {
+        ["upload", "loading", "results"].forEach((sec) => {
+          document.getElementById(`${sec}-section`).classList.add("hidden");
+        });
+        if (sectionName) {
+          document
+            .getElementById(`${sectionName}-section`)
+            .classList.remove("hidden");
+        }
+      }
+
+      function resetUI(fullReset = true) {
+        showSection("upload");
+        if (!fullReset) {
+          resultsSection.classList.add("hidden");
+        }
+        if (fullReset) {
+          fileInput.value = "";
+          selectedFiles = [];
+          resultsTableBody.innerHTML = "";
+          fileInfo.classList.remove("show");
+          processBtn.disabled = true;
+        }
+      }
+    </script>
+  </body>
+</html>
