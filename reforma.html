@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Simulador de Reforma Tributária - Conta IA - Ferramentas Inteligentes para
+      Contabilidade
+    </title>
+    <link rel="icon" href="icone.ico" type="image/x-icon" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      /* Reset e variáveis de cores do modelo ECF.html */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease;
+        --primary-dark: #3d005a;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        --text-muted: #64748b;
+        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh;
+        color: var(--text-color-light);
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
+
+      /* Header */
+      header {
+        background-color: transparent;
+        padding: 24px 0;
+        position: absolute;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .header-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-color-light);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      .logo i {
+        color: var(--accent-color);
+        margin-right: 8px;
+        text-shadow: none;
+      }
+
+      /* Conteúdo principal */
+      main {
+        margin-top: 100px; /* Espaço para o header absoluto */
+      }
+
+      /* Seção de boas-vindas */
+      .welcome-section {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 24px;
+      }
+
+      .welcome-section h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        position: relative;
+        display: inline-block;
+      }
+
+      .welcome-section h1:after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: var(--accent-color);
+        border-radius: 2px;
+      }
+
+      .welcome-section p {
+        font-size: 1.1rem;
+        max-width: 700px;
+        margin: 24px auto 0;
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      .form-section {
+        background-color: var(--background-color);
+        color: var(--text-color);
+        padding: 2.5rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .form-group label {
+        font-weight: 600;
+        color: var(--primary-dark);
+      }
+
+      .form-group input {
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        font-size: 1rem;
+        color: var(--text-color);
+      }
+
+      .form-group input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(79, 0, 114, 0.2);
+      }
+
+      .access-btn {
+        background: var(--primary-color);
+        color: var(--text-color-light);
+        border: none;
+        padding: 12px 24px;
+        border-radius: var(--radius);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: var(--transicao);
+        width: 100%;
+        box-shadow: var(--shadow);
+      }
+
+      .access-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .danfes-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        margin-top: 2.5rem;
+      }
+
+      .danfe-card {
+        background-color: var(--background-color);
+        color: var(--text-color);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border-color);
+      }
+
+      .danfe-card h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+        margin-bottom: 1rem;
+        text-align: center;
+        position: relative;
+        padding-bottom: 10px;
+      }
+
+      .danfe-card h3:after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 3px;
+        background: var(--accent-color);
+        border-radius: 2px;
+      }
+
+      .danfe-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px dashed var(--border-color);
+      }
+
+      .danfe-item:last-child {
+        border-bottom: none;
+      }
+
+      .danfe-item span:first-child {
+        font-weight: 500;
+        color: var(--text-muted);
+      }
+
+      .danfe-item span:last-child {
+        font-weight: 600;
+        color: var(--primary-dark);
+      }
+
+      .danfe-total {
+        padding-top: 1rem;
+        border-top: 2px solid var(--primary-color);
+        margin-top: 1rem;
+      }
+
+      .danfe-total span:last-child {
+        font-size: 1.25rem;
+        color: var(--accent-color);
+      }
+
+      .calculation-section {
+        background-color: var(--background-color);
+        color: var(--text-color);
+        padding: 2.5rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        margin-top: 2.5rem;
+      }
+
+      .calculation-section h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .calculation-details {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .calculation-details p {
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.1rem;
+        color: var(--text-color);
+      }
+
+      .calculation-details p strong {
+        color: var(--primary-dark);
+      }
+
+      .result-aliquot {
+        font-size: 1.5rem;
+        font-weight: 700;
+        text-align: center;
+        margin-top: 1.5rem;
+        color: var(--accent-color);
+      }
+
+      .result-aliquot span {
+        font-size: 1.8rem;
+        color: var(--accent-color);
+      }
+
+      footer {
+        background-color: transparent;
+        color: var(--text-color-light);
+        text-align: center;
+        padding: 48px 24px 24px;
+        margin-top: 48px;
+      }
+
+      .footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        padding-top: 24px;
+      }
+
+      .footer-links {
+        margin-top: 16px;
+      }
+
+      .footer-links a {
+        color: var(--accent-color);
+        margin: 0 8px;
+        text-decoration: none;
+        transition: var(--transicao);
+      }
+
+      .footer-links a:hover {
+        color: var(--text-color-light);
+        text-decoration: underline;
+      }
+
+      /* Responsividade */
+      @media (min-width: 768px) {
+        .danfes-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      @media (max-width: 768px) {
+        body {
+          background: var(--primary-color);
+        }
+        .header-container {
+          flex-direction: column;
+          text-align: center;
+          gap: 10px;
+        }
+
+        main {
+          margin-top: 150px;
+        }
+
+        .welcome-section h1 {
+          font-size: 2rem;
+        }
+
+        .welcome-section p {
+          font-size: 1rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .welcome-section h1 {
+          font-size: 1.8rem;
+        }
+
+        .form-section,
+        .calculation-section {
+          padding: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <div class="header-container">
+        <a href="#" class="logo">
+          <i class="fas fa-calculator"></i>
+          Conta IA
+        </a>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="welcome-section">
+        <h1>Simulador da Reforma Tributária</h1>
+        <p>
+          Simule os valores de IBS e CBS em cenários de compra e venda, e
+          entenda a alíquota efetiva de sua operação.
+        </p>
+      </section>
+
+      <section class="form-section">
+        <div class="form-group">
+          <label for="valorCompra">Preço de Compra (R$)</label>
+          <input
+            type="number"
+            id="valorCompra"
+            placeholder="Ex: 100.00"
+            step="0.01"
+          />
+        </div>
+        <div class="form-group">
+          <label for="valorVenda">Preço de Venda (R$)</label>
+          <input
+            type="number"
+            id="valorVenda"
+            placeholder="Ex: 150.00"
+            step="0.01"
+          />
+        </div>
+        <div class="form-group">
+          <label for="aliquotaImposto">Alíquota IBS e CBS (%)</label>
+          <input
+            type="number"
+            id="aliquotaImposto"
+            placeholder="Ex: 25.4 (Alíquota unificada)"
+            step="0.01"
+          />
+        </div>
+        <button class="access-btn" id="btnSimular">Simular</button>
+      </section>
+
+      <div id="resultados" style="display: none">
+        <div class="danfes-grid">
+          <div class="danfe-card">
+            <h3>DANFE - Operação de Compra</h3>
+            <div class="danfe-item">
+              <span>Preço de Compra:</span>
+              <span id="valorProdutoCompra"></span>
+            </div>
+            <div class="danfe-item">
+              <span>IBS e CBS:</span>
+              <span id="impostoCompra"></span>
+            </div>
+            <div class="danfe-total danfe-item">
+              <span>Valor Total da Nota:</span>
+              <span id="valorTotalCompra"></span>
+            </div>
+          </div>
+
+          <div class="danfe-card">
+            <h3>DANFE - Operação de Venda</h3>
+            <div class="danfe-item">
+              <span>Preço de Venda:</span>
+              <span id="valorProdutoVenda"></span>
+            </div>
+            <div class="danfe-item">
+              <span>IBS e CBS:</span>
+              <span id="impostoVenda"></span>
+            </div>
+            <div class="danfe-total danfe-item">
+              <span>Valor Total da Nota:</span>
+              <span id="valorTotalVenda"></span>
+            </div>
+          </div>
+        </div>
+
+        <section class="calculation-section">
+          <h3>Cálculo da Alíquota Efetiva</h3>
+          <div class="calculation-details">
+            <p>
+              <span>Imposto Devido (Venda):</span>
+              <strong id="impostoVendaDetalhe"></strong>
+            </p>
+            <p>
+              <span>Crédito Adquirido (Compra):</span>
+              <strong id="creditoCompraDetalhe"></strong>
+            </p>
+            <hr
+              style="
+                border: 1px dashed var(--border-color);
+                margin: 0.5rem 0;
+              "
+            />
+            <p>
+              <span>Imposto a Pagar:</span>
+              <strong id="impostoAPagar"></strong>
+            </p>
+          </div>
+          <div class="result-aliquot">
+            <p>
+              Alíquota Efetiva da Operação: <br />
+              <span id="aliquotaEfetiva"></span>
+            </p>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <div class="footer-container">
+        © 2024 Conta IA. Todos os direitos reservados.
+        <div class="footer-links">
+          <a href="#">Termos de Uso</a>
+          <a href="#">Política de Privacidade</a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.getElementById("btnSimular").addEventListener("click", () => {
+        const valorCompra = parseFloat(
+          document.getElementById("valorCompra").value
+        );
+        const valorVenda = parseFloat(
+          document.getElementById("valorVenda").value
+        );
+        const aliquotaImposto =
+          parseFloat(document.getElementById("aliquotaImposto").value) / 100;
+
+        if (
+          isNaN(valorCompra) ||
+          isNaN(valorVenda) ||
+          isNaN(aliquotaImposto)
+        ) {
+          alert("Por favor, preencha todos os campos com valores numéricos.");
+          return;
+        }
+
+        // Simulação de Compra
+        const impostoCompra = valorCompra * aliquotaImposto;
+        const valorTotalCompra = valorCompra + impostoCompra;
+
+        // Simulação de Venda
+        const impostoVenda = valorVenda * aliquotaImposto;
+        const valorTotalVenda = valorVenda + impostoVenda;
+
+        // Exibição dos DANFEs
+        document.getElementById("valorProdutoCompra").textContent = `R$ ${valorCompra.toFixed(2)}`;
+        document.getElementById("impostoCompra").textContent = `R$ ${impostoCompra.toFixed(2)}`;
+        document.getElementById("valorTotalCompra").textContent = `R$ ${valorTotalCompra.toFixed(2)}`;
+
+        document.getElementById("valorProdutoVenda").textContent = `R$ ${valorVenda.toFixed(2)}`;
+        document.getElementById("impostoVenda").textContent = `R$ ${impostoVenda.toFixed(2)}`;
+        document.getElementById("valorTotalVenda").textContent = `R$ ${valorTotalVenda.toFixed(2)}`;
+
+        // Cálculo da Alíquota Efetiva
+        const impostoAPagar = impostoVenda - impostoCompra;
+        const aliquotaEfetiva = (impostoAPagar / valorVenda) * 100;
+
+        document.getElementById("impostoVendaDetalhe").textContent = `R$ ${impostoVenda.toFixed(2)}`;
+        document.getElementById("creditoCompraDetalhe").textContent = `R$ ${impostoCompra.toFixed(2)}`;
+        document.getElementById("impostoAPagar").textContent = `R$ ${impostoAPagar.toFixed(2)}`;
+        document.getElementById("aliquotaEfetiva").textContent = `${aliquotaEfetiva.toFixed(2)}%`;
+
+        document.getElementById("resultados").style.display = "block";
+      });
+    </script>
+  </body>
+</html>
