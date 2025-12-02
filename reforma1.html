@@ -3,15 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calculadora de Alíquotas IBS/CBS</title>
+    <title>Calculadora de Transição Tributária (IBS/CBS + ISS/ICMS)</title>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
     <style>
-      /* Estilos baseados no arquivo anexo */
       body {
-        font-family: Arial, sans-serif;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background: #f4f4f9;
         margin: 0;
         padding: 2rem;
@@ -22,20 +21,25 @@
         background: #fff;
         padding: 2rem;
         border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
       }
       h1 {
         text-align: center;
-        margin-bottom: 1.5rem;
+        margin-bottom: 0.5rem;
         color: #333;
       }
+      p.subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 2rem;
+      }
       .config-area {
-        background: #f0e6fa;
+        background: #f8f0fc;
         padding: 1.5rem;
         border-radius: 8px;
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
         display: flex;
-        gap: 2rem;
+        gap: 1.5rem;
         justify-content: center;
         flex-wrap: wrap;
         border: 1px solid #4f0072;
@@ -43,264 +47,246 @@
       .input-group {
         display: flex;
         flex-direction: column;
-        min-width: 150px;
+        min-width: 140px;
       }
       .input-group label {
         font-weight: bold;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         color: #4f0072;
         margin-bottom: 0.3rem;
       }
       .input-group input {
-        padding: 0.5rem;
+        padding: 0.6rem;
         border: 1px solid #ccc;
         border-radius: 4px;
         font-size: 1rem;
         text-align: right;
+        transition: border-color 0.3s;
+      }
+      .input-group input:focus {
+        border-color: #4f0072;
+        outline: none;
       }
       .btn {
         background: #4f0072;
         color: white;
         border: none;
-        padding: 0.7rem 1.5rem;
-        margin-top: 1.5rem;
+        padding: 0 2rem;
         border-radius: 6px;
         cursor: pointer;
         font-size: 1rem;
+        font-weight: bold;
         transition: background 0.3s;
+        height: 42px; /* Alinha com os inputs */
+        align-self: flex-end; /* Alinha na base */
+        margin-bottom: 1px;
       }
       .btn:hover {
         background: #370052;
       }
       
-      /* Estilos de Tabela */
-      .results-grid {
-        display: flex;
-        gap: 20px;
-        flex-wrap: wrap; 
-        margin-top: 2rem;
-        justify-content: center;
-      }
-      .table-wrapper {
-        flex: 1 1 300px; 
-        min-width: 300px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      /* Tabela Unificada */
+      .results-container {
+        overflow-x: auto;
       }
       table {
         width: 100%;
         border-collapse: collapse;
+        margin-top: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
       }
-      th,
-      td {
-        border: 1px solid #ddd;
-        padding: 0.8rem;
+      th, td {
+        border: 1px solid #e0e0e0;
+        padding: 1rem;
         text-align: center;
       }
       th {
         background: #4f0072;
         color: white;
-        font-size: 1rem;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
-      td {
-        background: #f9f9f9;
+      /* Destacar a coluna de total */
+      th.total-col, td.total-col {
+        background-color: #f0e6fa;
+        font-weight: bold;
+        color: #2d0042;
+        border-left: 2px solid #4f0072;
       }
-      .table-wrapper h3 {
-        color: #4f0072;
-        text-align: center;
-        margin-top: 0;
-        padding: 0.5rem 0;
-        background: #f0e6fa;
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
-        border: 1px solid #4f0072;
-        border-bottom: none;
+      tr:nth-child(even) td:not(.total-col) {
+        background-color: #f9f9f9;
+      }
+      tr:hover td {
+        background-color: #f1f1f1;
       }
       .error {
-        color: red;
-        font-weight: bold;
+        color: #d32f2f;
+        background: #ffebee;
+        padding: 1rem;
+        border-radius: 4px;
         text-align: center;
-        margin-top: 1rem;
+        margin-bottom: 1rem;
+        border: 1px solid #ffcdd2;
       }
     </style>
   </head>
   <body>
     <div class="container">
       <h1>
-        <i class="fa-solid fa-calculator"></i> Calculadora de Alíquotas Transitórias
+        <i class="fa-solid fa-scale-balanced"></i> Calculadora de Transição Tributária
       </h1>
+      <p class="subtitle">Simulação da evolução das alíquotas (2027 - 2033)</p>
 
       <div class="config-area">
         <div class="input-group">
-          <label for="aliquotaIBS">Alíquota Padrão IBS (%)</label>
-          <input type="number" id="aliquotaIBS" value="28" min="0" step="0.01" />
+          <label for="aliquotaIBS">Padrão IBS (%)</label>
+          <input type="number" id="aliquotaIBS" value="28.00" min="0" step="0.01" />
         </div>
         <div class="input-group">
-          <label for="aliquotaCBS">Alíquota Padrão CBS (%)</label>
-          <input type="number" id="aliquotaCBS" value="12.5" min="0" step="0.01" />
+          <label for="aliquotaCBS">Padrão CBS (%)</label>
+          <input type="number" id="aliquotaCBS" value="12.50" min="0" step="0.01" />
+        </div>
+        
+        <div class="input-group">
+          <label for="aliquotaISS">Atual ISS (%)</label>
+          <input type="number" id="aliquotaISS" value="5.00" min="0" step="0.01" />
         </div>
         <div class="input-group">
-          <label for="percentualReducao">Percentual de Redução Aplicável (%)</label>
+          <label for="aliquotaICMS">Atual ICMS (%)</label>
+          <input type="number" id="aliquotaICMS" value="18.00" min="0" step="0.01" />
+        </div>
+
+        <div class="input-group">
+          <label for="percentualReducao">Redução IBS/CBS (%)</label>
           <input type="number" id="percentualReducao" value="60" min="0" max="100" step="0.01" />
         </div>
+
         <button id="calcularBtn" class="btn">
-            <i class="fa-solid fa-play"></i> Calcular
+            <i class="fa-solid fa-calculator"></i> Calcular
         </button>
       </div>
       
       <div id="errorMessage" class="error" style="display: none;"></div>
 
-      <div class="results-grid">
-        <div class="table-wrapper">
-          <h3>Alíquota Efetiva CBS (Redução Aplicada)</h3>
-          <table>
+      <div class="results-container">
+        <h3>Cronograma Integrado de Alíquotas Efetivas</h3>
+        <table>
             <thead>
-              <tr>
-                <th>Ano</th>
-                <th>Alíquota CBS (%)</th>
-              </tr>
+                <tr>
+                    <th>Ano</th>
+                    <th>CBS (Novos)</th>
+                    <th>IBS (Novos)</th>
+                    <th>ISS (Antigos)</th>
+                    <th>ICMS (Antigos)</th>
+                    <th class="total-col">TOTAL (%)</th>
+                </tr>
             </thead>
-            <tbody id="resultadoCBS">
-              </tbody>
-          </table>
-        </div>
-
-        <div class="table-wrapper">
-          <h3>Alíquota Efetiva IBS (Redução Dupla)</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Ano</th>
-                <th>Redução Adicional</th>
-                <th>Alíquota IBS (%)</th>
-              </tr>
-            </thead>
-            <tbody id="resultadoIBS">
-              </tbody>
-          </table>
-        </div>
-
-        <div class="table-wrapper">
-          <h3>ISS/ICMS (Redução na Base)</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>Ano</th>
-                <th>Redução ISS/ICMS</th>
-              </tr>
-            </thead>
-            <tbody id="resultadoISSICMS">
-              </tbody>
-          </table>
-        </div>
-
+            <tbody id="tabelaResultados">
+                </tbody>
+        </table>
       </div>
     </div>
 
     <script>
       document.getElementById("calcularBtn").addEventListener("click", calcular);
       
-      const ANOS_CBS = [2027, 2028, 2029, 2030, 2031, 2032];
-      const ANOS_IBS = [2027, 2028, 2029, 2030, 2031, 2032, 2033]; // Anos para IBS
-      const ANOS_ISSICMS = [2029, 2030, 2031, 2032, 2033]; // Anos para ISS/ICMS
-      
-      const REDUCAO_ADICIONAL_IBS = {
-          2029: 0.10, 
+      // Anos de análise da transição completa
+      const ANOS_TRANSICAO = [2027, 2028, 2029, 2030, 2031, 2032, 2033];
+
+      // Tabela de progressão do IBS (percentual da alíquota cheia)
+      // Nota: 2027 e 2028 são fixos em 0.1% (alíquota teste), tratado no loop
+      const ESCALA_IBS = {
+          2029: 0.10, // 10% da alíquota alvo
           2030: 0.20, 
           2031: 0.30, 
           2032: 0.40, 
-          2033: 1.00, 
+          2033: 1.00  // Alíquota cheia
       };
 
-      const PERC_ISSICMS = {
-          2029: 0.90, 
+      // Tabela de redução do ISS/ICMS (percentual que PERMANECE)
+      const ESCALA_ANTIGOS = {
+          2027: 1.00, // 100% (Sem redução)
+          2028: 1.00, // 100% (Sem redução)
+          2029: 0.90, // Reduz 10%, sobra 90%
           2030: 0.80, 
           2031: 0.70, 
           2032: 0.60, 
-          2033: 0.00, 
+          2033: 0.00  // Extinção
       };
 
       function formatPercent(value) {
-          // Garante que o valor seja exibido com duas casas decimais e vírgula
           return value.toFixed(2).replace('.', ',') + '%';
       }
       
       function calcular() {
-        // 1. Coleta e validação dos dados
-        const aliquotaIBS = parseFloat(document.getElementById("aliquotaIBS").value);
-        const aliquotaCBS = parseFloat(document.getElementById("aliquotaCBS").value);
-        const percentualReducao = parseFloat(document.getElementById("percentualReducao").value) / 100;
-
         const errorMsg = document.getElementById("errorMessage");
         errorMsg.style.display = "none";
-        
-        if (isNaN(aliquotaIBS) || isNaN(aliquotaCBS) || isNaN(percentualReducao)) {
-            errorMsg.textContent = "Por favor, preencha todos os campos com números válidos.";
+
+        // 1. Coleta de dados
+        const aliqIBS_Base = parseFloat(document.getElementById("aliquotaIBS").value);
+        const aliqCBS_Base = parseFloat(document.getElementById("aliquotaCBS").value);
+        const aliqISS_Base = parseFloat(document.getElementById("aliquotaISS").value);
+        const aliqICMS_Base = parseFloat(document.getElementById("aliquotaICMS").value);
+        const percReducao = parseFloat(document.getElementById("percentualReducao").value) / 100;
+
+        // Validação
+        if ([aliqIBS_Base, aliqCBS_Base, aliqISS_Base, aliqICMS_Base, percReducao].some(isNaN)) {
+            errorMsg.textContent = "Por favor, preencha todos os campos corretamente.";
             errorMsg.style.display = "block";
             return;
         }
 
-        // 2. Cálculo CBS (Regra Anterior: 1ª Redução aplicada)
-        const resultadoCBSBody = document.getElementById("resultadoCBS");
-        resultadoCBSBody.innerHTML = "";
-        
-        const aliquotaCBS_Reduzida = aliquotaCBS * (1 - percentualReducao);
+        const tbody = document.getElementById("tabelaResultados");
+        tbody.innerHTML = "";
 
-        ANOS_CBS.forEach(ano => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td>${ano}</td>
-                <td>${formatPercent(aliquotaCBS_Reduzida)}</td>
-            `;
-            resultadoCBSBody.appendChild(tr);
-        });
+        // Alíquotas IBS/CBS já com a redução setorial aplicada (ex: profissionais liberais com 60% de redução na alíquota)
+        const ibsAlvoReduzido = aliqIBS_Base * (1 - percReducao);
+        const cbsAlvoReduzido = aliqCBS_Base * (1 - percReducao);
 
-        // 3. Cálculo IBS (Regras Atualizadas)
-        const resultadoIBSBody = document.getElementById("resultadoIBS");
-        resultadoIBSBody.innerHTML = "";
-        
-        const aliquotaIBS_Reduzida_Base = aliquotaIBS * (1 - percentualReducao);
-        
-        ANOS_IBS.forEach(ano => {
-            let aliquotaIBS_Final;
-            let labelReducaoAdicional;
+        ANOS_TRANSICAO.forEach(ano => {
+            let valCBS = 0;
+            let valIBS = 0;
+            let valISS = 0;
+            let valICMS = 0;
 
+            // --- CÁLCULO CBS ---
+            // CBS entra cheia (ou com sua redução própria) desde 2027
+            valCBS = cbsAlvoReduzido;
+
+            // --- CÁLCULO IBS ---
             if (ano === 2027 || ano === 2028) {
-                // REGRA ATUALIZADA: Alíquota fixa de 0.1% (alíquota teste)
-                aliquotaIBS_Final = 0.1;
-                labelReducaoAdicional = "Alíquota Teste"; 
+                valIBS = 0.1; // Alíquota teste fixa
             } else {
-                // Regra de redução dupla para 2029 em diante
-                const percRedAdicional = REDUCAO_ADICIONAL_IBS[ano];
-                aliquotaIBS_Final = aliquotaIBS_Reduzida_Base * percRedAdicional; 
-                labelReducaoAdicional = formatPercent(percRedAdicional * 100);
+                // De 2029 a 2033 aplica a escala proporcional
+                const fatorIBS = ESCALA_IBS[ano] || 0;
+                valIBS = ibsAlvoReduzido * fatorIBS;
             }
 
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-                <td>${ano}</td>
-                <td>${labelReducaoAdicional}</td>
-                <td>${formatPercent(aliquotaIBS_Final)}</td>
-            `;
-            resultadoIBSBody.appendChild(tr);
-        });
-        
-        // 4. Cálculo ISS/ICMS (Regra Anterior: percentual de ISS/ICMS mantido)
-        const resultadoISSICMSBody = document.getElementById("resultadoISSICMS");
-        resultadoISSICMSBody.innerHTML = "";
-        
-        ANOS_ISSICMS.forEach(ano => {
-            const percISSICMS = PERC_ISSICMS[ano];
+            // --- CÁLCULO ISS e ICMS ---
+            // Aplica o fator de permanência (ex: 0.9 em 2029) sobre a alíquota informada
+            const fatorAntigos = ESCALA_ANTIGOS[ano];
+            valISS = aliqISS_Base * fatorAntigos;
+            valICMS = aliqICMS_Base * fatorAntigos;
 
+            // --- TOTAL ---
+            const total = valCBS + valIBS + valISS + valICMS;
+
+            // Renderização da linha
             const tr = document.createElement("tr");
             tr.innerHTML = `
-                <td>${ano}</td>
-                <td>${formatPercent(percISSICMS * 100)}</td>
+                <td><strong>${ano}</strong></td>
+                <td>${formatPercent(valCBS)}</td>
+                <td>${formatPercent(valIBS)}</td>
+                <td>${formatPercent(valISS)} <small style="color:#666">(${Math.round(fatorAntigos*100)}%)</small></td>
+                <td>${formatPercent(valICMS)} <small style="color:#666">(${Math.round(fatorAntigos*100)}%)</small></td>
+                <td class="total-col">${formatPercent(total)}</td>
             `;
-            resultadoISSICMSBody.appendChild(tr);
+            tbody.appendChild(tr);
         });
       }
       
-      // Executa o cálculo inicial com os valores padrão
+      // Inicializar
       document.addEventListener("DOMContentLoaded", calcular);
     </script>
   </body>
