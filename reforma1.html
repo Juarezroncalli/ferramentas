@@ -77,15 +77,14 @@
         font-size: 1rem;
         font-weight: bold;
         transition: background 0.3s;
-        height: 42px; /* Alinha com os inputs */
-        align-self: flex-end; /* Alinha na base */
+        height: 42px;
+        align-self: flex-end;
         margin-bottom: 1px;
       }
       .btn:hover {
         background: #370052;
       }
       
-      /* Tabela Unificada */
       .results-container {
         overflow-x: auto;
       }
@@ -107,7 +106,6 @@
         text-transform: uppercase;
         letter-spacing: 0.5px;
       }
-      /* Destacar a coluna de total */
       th.total-col, td.total-col {
         background-color: #f0e6fa;
         font-weight: bold;
@@ -141,11 +139,11 @@
       <div class="config-area">
         <div class="input-group">
           <label for="aliquotaIBS">Padrão IBS (%)</label>
-          <input type="number" id="aliquotaIBS" value="18.7" min="0" step="0.01" />
+          <input type="number" id="aliquotaIBS" value="18.70" min="0" step="0.01" />
         </div>
         <div class="input-group">
           <label for="aliquotaCBS">Padrão CBS (%)</label>
-          <input type="number" id="aliquotaCBS" value="9.3" min="0" step="0.01" />
+          <input type="number" id="aliquotaCBS" value="9.30" min="0" step="0.01" />
         </div>
         
         <div class="input-group">
@@ -183,7 +181,7 @@
                 </tr>
             </thead>
             <tbody id="tabelaResultados">
-                </tbody>
+            </tbody>
         </table>
       </div>
     </div>
@@ -191,28 +189,24 @@
     <script>
       document.getElementById("calcularBtn").addEventListener("click", calcular);
       
-      // Anos de análise da transição completa
       const ANOS_TRANSICAO = [2027, 2028, 2029, 2030, 2031, 2032, 2033];
 
-      // Tabela de progressão do IBS (percentual da alíquota cheia)
-      // Nota: 2027 e 2028 são fixos em 0.1% (alíquota teste), tratado no loop
       const ESCALA_IBS = {
-          2029: 0.10, // 10% da alíquota alvo
+          2029: 0.10, 
           2030: 0.20, 
           2031: 0.30, 
           2032: 0.40, 
-          2033: 1.00  // Alíquota cheia
+          2033: 1.00  
       };
 
-      // Tabela de redução do ISS/ICMS (percentual que PERMANECE)
       const ESCALA_ANTIGOS = {
-          2027: 1.00, // 100% (Sem redução)
-          2028: 1.00, // 100% (Sem redução)
-          2029: 0.90, // Reduz 10%, sobra 90%
+          2027: 1.00, 
+          2028: 1.00, 
+          2029: 0.90, 
           2030: 0.80, 
           2031: 0.70, 
           2032: 0.60, 
-          2033: 0.00  // Extinção
+          2033: 0.00  
       };
 
       function formatPercent(value) {
@@ -230,7 +224,6 @@
         const aliqICMS_Base = parseFloat(document.getElementById("aliquotaICMS").value);
         const percReducao = parseFloat(document.getElementById("percentualReducao").value) / 100;
 
-        // Validação
         if ([aliqIBS_Base, aliqCBS_Base, aliqISS_Base, aliqICMS_Base, percReducao].some(isNaN)) {
             errorMsg.textContent = "Por favor, preencha todos os campos corretamente.";
             errorMsg.style.display = "block";
@@ -240,7 +233,7 @@
         const tbody = document.getElementById("tabelaResultados");
         tbody.innerHTML = "";
 
-        // Alíquotas IBS/CBS já com a redução setorial aplicada (ex: profissionais liberais com 60% de redução na alíquota)
+        // Alíquotas com redução já aplicada
         const ibsAlvoReduzido = aliqIBS_Base * (1 - percReducao);
         const cbsAlvoReduzido = aliqCBS_Base * (1 - percReducao);
 
@@ -250,21 +243,19 @@
             let valISS = 0;
             let valICMS = 0;
 
-            // --- CÁLCULO CBS ---
-            // CBS entra cheia (ou com sua redução própria) desde 2027
+            // --- CBS ---
             valCBS = cbsAlvoReduzido;
 
-            // --- CÁLCULO IBS ---
+            // --- IBS ---
             if (ano === 2027 || ano === 2028) {
-                valIBS = 0.1; // Alíquota teste fixa
+                // ALTERAÇÃO: Aplica a redução também na alíquota de teste de 0.1%
+                valIBS = 0.1 * (1 - percReducao); 
             } else {
-                // De 2029 a 2033 aplica a escala proporcional
                 const fatorIBS = ESCALA_IBS[ano] || 0;
                 valIBS = ibsAlvoReduzido * fatorIBS;
             }
 
-            // --- CÁLCULO ISS e ICMS ---
-            // Aplica o fator de permanência (ex: 0.9 em 2029) sobre a alíquota informada
+            // --- ISS e ICMS ---
             const fatorAntigos = ESCALA_ANTIGOS[ano];
             valISS = aliqISS_Base * fatorAntigos;
             valICMS = aliqICMS_Base * fatorAntigos;
@@ -272,7 +263,6 @@
             // --- TOTAL ---
             const total = valCBS + valIBS + valISS + valICMS;
 
-            // Renderização da linha
             const tr = document.createElement("tr");
             tr.innerHTML = `
                 <td><strong>${ano}</strong></td>
@@ -286,7 +276,6 @@
         });
       }
       
-      // Inicializar
       document.addEventListener("DOMContentLoaded", calcular);
     </script>
   </body>
