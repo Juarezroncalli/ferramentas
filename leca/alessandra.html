@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfólio Atleta | Alessandra</title>
     <style>
-        /* Importando fontes modernas e de peso */
+        /* Importando fontes modernas */
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Open+Sans:ital,wght@0,400;0,600;1,400&display=swap');
 
         :root {
-            --primary: #FF5722; /* Laranja vibrante */
+            --primary: #FF5722;
             --dark: #1a1a1a;
             --light: #f4f4f4;
             --gray: #666;
@@ -35,27 +35,22 @@
             text-transform: uppercase;
         }
 
-        /* --- NOVO HERO HEADER MODERNO --- */
+        /* --- HERO HEADER MODERNO --- */
         header {
-            /* Fundo com imagem, overlay escuro gradiente e efeito parallax (fixed) */
             background: linear-gradient(to bottom, rgba(26, 26, 26, 0.7), rgba(26, 26, 26, 0.9)),
                         url('WhatsApp Image 2025-12-16 at 13.19.24.jpeg') center/cover no-repeat fixed;
             color: #fff;
-            /* Aumentei muito o padding para dar imponência */
             padding: 10rem 2rem;
             text-align: center;
             position: relative;
-            /* Borda inferior moderna na cor da marca */
             border-bottom: 5px solid var(--primary);
         }
 
         header h1 {
-            /* Fonte muito maior e mais pesada */
             font-size: 5.5rem;
-            font-weight: 900; /* Ultra bold */
+            font-weight: 900;
             letter-spacing: 4px;
             margin-bottom: 0.5rem;
-            /* Sombra para destacar do fundo */
             text-shadow: 2px 2px 15px rgba(0,0,0,0.7);
             line-height: 1.1;
         }
@@ -68,7 +63,6 @@
             text-transform: uppercase;
             text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
         }
-        /* -------------------------------- */
 
         .container {
             max-width: 1000px;
@@ -116,15 +110,15 @@
             transform: scale(1.08);
         }
 
-        /* CARROSSEL DE FOTOS */
+        /* --- CARROSSEL CORRIGIDO --- */
         .carousel-section {
             background-color: var(--light);
-            padding: 5rem 0;
+            padding: 4rem 0; /* Reduzi um pouco padding vertical */
             text-align: center;
         }
         
         .carousel-section h2 {
-            margin-bottom: 3rem;
+            margin-bottom: 2rem;
             color: var(--dark);
             font-weight: 800;
         }
@@ -133,18 +127,21 @@
             position: relative;
             max-width: 1100px;
             margin: 0 auto;
-            overflow: hidden;
-            padding: 1rem 2rem;
+            /* Padding lateral removido no mobile para aproveitar a tela toda */
+            padding: 0 2rem; 
         }
 
         .carousel-track {
             display: flex;
-            gap: 25px;
+            gap: 15px; /* Gap menor */
             overflow-x: auto;
             scroll-behavior: smooth;
             padding: 20px 5px;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
+            
+            /* EFEITO MAGNÉTICO (SNAP) */
+            scroll-snap-type: x mandatory;
         }
         
         .carousel-track::-webkit-scrollbar { display: none; }
@@ -152,33 +149,35 @@
         .carousel-card {
             min-width: 320px;
             height: 420px;
-            background: #fff;
+            background: #fff; /* Fundo branco caso a imagem demore carregar */
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0,0,0,0.08);
             position: relative;
             flex-shrink: 0;
+            
+            /* ALINHAMENTO DO SNAP */
+            scroll-snap-align: center;
         }
 
         .carousel-card img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
-            background-color: #fafafa;
+            /* AQUI ESTÁ A CORREÇÃO: COVER */
+            object-fit: cover; 
+            object-position: center;
             transition: transform 0.5s ease;
         }
 
-        /* EFEITO ZOOM NO CARROSSEL */
         .carousel-card:hover img {
             transform: scale(1.12);
         }
 
-        /* Setinhas de navegação modernas */
         .nav-btn {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background-color: rgba(255, 87, 34, 0.9); /* Primary com transparência */
+            background-color: rgba(255, 87, 34, 0.9);
             color: white;
             border: none;
             width: 50px;
@@ -255,7 +254,6 @@
             overflow: hidden;
         }
         
-        /* Textura de fundo sutil no CTA */
         .sponsorship::before {
             content: '';
             position: absolute;
@@ -309,19 +307,33 @@
             font-weight: 600;
         }
 
-        /* RESPONSIVIDADE DO NOVO HEADER */
+        /* --- RESPONSIVIDADE CELULAR --- */
         @media (max-width: 768px) {
             header {
                 padding: 6rem 1.5rem;
-                background-attachment: scroll; /* Parallax desativado no mobile para performance */
+                background-attachment: scroll; 
             }
-            header h1 { font-size: 3.5rem; letter-spacing: 2px; }
-            header p { font-size: 1.2rem; letter-spacing: 1px; }
+            header h1 { font-size: 3rem; letter-spacing: 2px; } /* Ajuste de fonte */
+            header p { font-size: 1.1rem; letter-spacing: 1px; }
             
             .about { grid-template-columns: 1fr; gap: 2rem; }
+            .about-img { margin-bottom: 1rem; }
+            
             .achievements-list { grid-template-columns: 1fr; }
-            .carousel-card { min-width: 85vw; height: 380px; }
+            .achievement-item { padding: 1.5rem; }
+            
             .sponsorship h2 { font-size: 2.2rem; }
+            
+            /* AJUSTE DO CARROSSEL NO MOBILE */
+            .carousel-container { padding: 0 1rem; }
+            .nav-btn { display: none; } /* Remove setas no celular (usa dedo) */
+            
+            .carousel-card { 
+                /* Ocupa 80% da tela para ver o próximo card */
+                min-width: 80vw; 
+                /* Altura menor para fotos horizontais */
+                height: 300px; 
+            }
         }
     </style>
 </head>
@@ -444,9 +456,8 @@
     <script>
         function scrollCarousel(direction) {
             const track = document.getElementById('track');
-            // Ajuste fino na quantidade de scroll baseada na largura do card + gap
             const cardWidth = track.querySelector('.carousel-card').offsetWidth;
-            const gap = 25; 
+            const gap = 15; 
             const scrollAmount = cardWidth + gap;
             
             track.scrollBy({
