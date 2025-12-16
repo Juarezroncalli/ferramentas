@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfólio Atleta | Alessandra</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&family=Open+Sans:ital,wght@0,400;0,600;1,400&display=swap');
+
+        :root {
+            --primary: #FF5722;
+            --dark: #1a1a1a;
+            --light: #f4f4f4;
+            --gray: #666;
+            --gold: #C5A059;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: #fff;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+        }
+
+        /* HERO SECTION */
+        header {
+            background-color: var(--dark);
+            color: #fff;
+            padding: 5rem 2rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            font-weight: 300;
+            color: var(--primary);
+            letter-spacing: 1px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* SEÇÃO SOBRE */
+        .about {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+            margin: 4rem 0;
+        }
+
+        .about-text h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 5px solid var(--primary);
+            padding-left: 1rem;
+        }
+
+        .about-text p {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            color: var(--gray);
+        }
+
+        .about-img {
+            overflow: hidden; /* Para o zoom não sair da borda */
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        .about-img img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.5s ease; /* Animação suave */
+        }
+
+        .about-img:hover img {
+            transform: scale(1.1); /* O Efeito de Zoom */
+        }
+
+        /* CARROSSEL DE FOTOS */
+        .carousel-section {
+            background-color: var(--light);
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .carousel-section h2 {
+            margin-bottom: 2rem;
+            color: var(--dark);
+        }
+
+        .carousel-container {
+            position: relative;
+            max-width: 1000px;
+            margin: 0 auto;
+            overflow: hidden;
+            padding: 0 2rem;
+        }
+
+        .carousel-track {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding: 20px 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; /* Firefox */
+        }
+        
+        .carousel-track::-webkit-scrollbar {
+            display: none; /* Chrome/Safari */
+        }
+
+        .carousel-card {
+            min-width: 300px;
+            height: 400px;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            position: relative;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .carousel-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Não corta a imagem */
+            background-color: #f0f0f0;
+            transition: transform 0.4s ease;
+        }
+
+        /* EFEITO ZOOM NO CARROSSEL */
+        .carousel-card:hover img {
+            transform: scale(1.1);
+        }
+
+        /* Setinhas de navegação */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .nav-btn:hover { background-color: #d84315; }
+        .prev-btn { left: 10px; }
+        .next-btn { right: 10px; }
+
+
+        /* RESULTADOS */
+        .achievements {
+            background-color: var(--dark);
+            color: #fff;
+            padding: 4rem 2rem;
+            margin-top: 2rem;
+        }
+
+        .achievements-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .achievements h2 {
+            text-align: center;
+            color: var(--gold);
+            margin-bottom: 3rem;
+            font-size: 2.5rem;
+        }
+
+        .achievements-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .achievement-item {
+            background: rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .medal-icon {
+            font-size: 2rem;
+        }
+
+        /* PATROCINIO / CTA */
+        .sponsorship {
+            position: relative;
+            background-color: var(--primary);
+            color: #fff;
+            text-align: center;
+            padding: 5rem 2rem;
+            overflow: hidden;
+        }
+
+        .sponsorship h2 {
+            font-size: 2.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .sponsorship p {
+            font-size: 1.3rem;
+            max-width: 700px;
+            margin: 0 auto 2rem auto;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #fff;
+            color: var(--primary);
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+        .btn:hover { transform: scale(1.05); }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: #eee;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        /* RESPONSIVIDADE */
+        @media (max-width: 768px) {
+            .about, .achievements-list { grid-template-columns: 1fr; }
+            header h1 { font-size: 2.5rem; }
+            .carousel-card { min-width: 85vw; height: 350px; } /* Cartão maior no celular */
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <h1>ALESSANDRA</h1>
+            <p>55 ANOS • ATLETA MTB • CAMPEÃ</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <section class="about">
+            <div class="about-img">
+                <img src="WhatsApp Image 2025-12-16 at 13.19.24.jpeg" alt="Alessandra Podium Brasileiro">
+            </div>
+            <div class="about-text">
+                <h2>Experiência é Potência</h2>
+                <p>Aos 55 anos, eu não apenas pedalo; eu desafio limites. Enquanto muitos veem a idade como uma barreira, eu a utilizo como minha maior vantagem estratégica. O Mountain Bike exige força mental, resiliência e técnica apurada — qualidades que só o tempo constrói.</p>
+                <p>Sou Alessandra, atleta que concilia a rotina profissional com treinos de alta performance. Já provei meu valor nos pódios mais disputados de Minas Gerais e do Brasil.</p>
+            </div>
+        </section>
+    </div>
+
+    <section class="carousel-section">
+        <div class="container">
+            <h2>Galeria de Conquistas</h2>
+            <div class="carousel-container">
+                <button class="nav-btn prev-btn" onclick="scrollCarousel(-1)">&#10094;</button>
+                
+                <div class="carousel-track" id="track">
+                    <div class="carousel-card">
+                        <img src="WhatsApp Image 2025-12-16 at 13.10.06.jpeg" alt="Campeã Copa Brou">
+                    </div>
+                    <div class="carousel-card">
+                        <img src="WhatsApp Image 2025-12-16 at 13.11.35.jpeg" alt="Pódio Fnaracing">
+                    </div>
+                    <div class="carousel-card">
+                        <img src="WhatsApp Image 2025-12-16 at 13.16.01.jpeg" alt="Medalha Campeonato Mineiro">
+                    </div>
+                    <div class="carousel-card">
+                        <img src="WhatsApp Image 2025-12-16 at 13.13.13.jpeg" alt="Vice Campeã XTERRA">
+                    </div>
+                    <div class="carousel-card">
+                        <img src="WhatsApp Image 2025-12-16 at 13.17.48.jpeg" alt="Pódio Sertão Diamante">
+                    </div>
+                    <div class="carousel-card">
+                        <img src="WhatsApp Image 2025-12-16 at 13.15.24.jpeg" alt="Medalha em destaque">
+                    </div>
+                </div>
+
+                <button class="nav-btn next-btn" onclick="scrollCarousel(1)">&#10095;</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="achievements">
+        <div class="achievements-container">
+            <h2>Títulos & Resultados</h2>
+            <div class="achievements-list">
+                <div class="achievement-item">
+                    <span class="medal-icon">🥇</span>
+                    <div>
+                        <h3>Campeã Copa Brou</h3>
+                        <p>Destaque e vitória em prova tradicional.</p>
+                    </div>
+                </div>
+                <div class="achievement-item">
+                    <span class="medal-icon">🥈</span>
+                    <div>
+                        <h3>Vice-Campeã Brasileira XCO</h3>
+                        <p>Performance de elite nível nacional.</p>
+                    </div>
+                </div>
+                <div class="achievement-item">
+                    <span class="medal-icon">🥇</span>
+                    <div>
+                        <h3>Campeã Mineira XCO</h3>
+                        <p>Domínio técnico nas trilhas de Minas.</p>
+                    </div>
+                </div>
+                <div class="achievement-item">
+                    <span class="medal-icon">🥈</span>
+                    <div>
+                        <h3>Vice-Campeã XTERRA</h3>
+                        <p>Resiliência e força em prova dura.</p>
+                    </div>
+                </div>
+                <div class="achievement-item">
+                    <span class="medal-icon">🥇</span>
+                    <div>
+                        <h3>Campeã Fnaracing</h3>
+                        <p>Vitória expressiva em Sete Lagoas.</p>
+                    </div>
+                </div>
+                <div class="achievement-item">
+                    <span class="medal-icon">🥈</span>
+                    <div>
+                        <h3>Vice-Campeã Sertão Diamante</h3>
+                        <p>Superação em terreno extremo.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="sponsorship">
+        <div class="container">
+            <h2>Vamos Vencer Juntos?</h2>
+            <p>Apoiar a minha jornada é associar sua marca a valores de saúde, longevidade e alta performance. Estou pronta para levar seu nome aos pódios de todo o Brasil.</p>
+            <a href="#" class="btn">Seja um Patrocinador</a>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Alessandra - Atleta MTB. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        function scrollCarousel(direction) {
+            const track = document.getElementById('track');
+            const scrollAmount = 320; // Largura do card + gap
+            track.scrollBy({
+                left: direction * scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+    </script>
+
+</body>
+</html>
