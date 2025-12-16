@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfólio Atleta | Alessandra</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&family=Open+Sans:ital,wght@0,400;0,600;1,400&display=swap');
+        /* Importando fontes modernas e de peso */
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Open+Sans:ital,wght@0,400;0,600;1,400&display=swap');
 
         :root {
-            --primary: #FF5722;
+            --primary: #FF5722; /* Laranja vibrante */
             --dark: #1a1a1a;
             --light: #f4f4f4;
             --gray: #666;
@@ -34,27 +35,40 @@
             text-transform: uppercase;
         }
 
-        /* HERO SECTION */
+        /* --- NOVO HERO HEADER MODERNO --- */
         header {
-            background-color: var(--dark);
+            /* Fundo com imagem, overlay escuro gradiente e efeito parallax (fixed) */
+            background: linear-gradient(to bottom, rgba(26, 26, 26, 0.7), rgba(26, 26, 26, 0.9)),
+                        url('WhatsApp Image 2025-12-16 at 13.19.24.jpeg') center/cover no-repeat fixed;
             color: #fff;
-            padding: 5rem 2rem;
+            /* Aumentei muito o padding para dar imponência */
+            padding: 10rem 2rem;
             text-align: center;
+            position: relative;
+            /* Borda inferior moderna na cor da marca */
+            border-bottom: 5px solid var(--primary);
         }
 
         header h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            letter-spacing: 2px;
+            /* Fonte muito maior e mais pesada */
+            font-size: 5.5rem;
+            font-weight: 900; /* Ultra bold */
+            letter-spacing: 4px;
             margin-bottom: 0.5rem;
+            /* Sombra para destacar do fundo */
+            text-shadow: 2px 2px 15px rgba(0,0,0,0.7);
+            line-height: 1.1;
         }
 
         header p {
-            font-size: 1.2rem;
-            font-weight: 300;
+            font-size: 1.5rem;
+            font-weight: 700;
             color: var(--primary);
-            letter-spacing: 1px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
         }
+        /* -------------------------------- */
 
         .container {
             max-width: 1000px;
@@ -66,9 +80,9 @@
         .about {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 3rem;
+            gap: 4rem;
             align-items: center;
-            margin: 4rem 0;
+            margin: 5rem 0;
         }
 
         .about-text h2 {
@@ -76,110 +90,110 @@
             margin-bottom: 1.5rem;
             border-left: 5px solid var(--primary);
             padding-left: 1rem;
+            font-weight: 800;
         }
 
         .about-text p {
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-            color: var(--gray);
+            margin-bottom: 1.2rem;
+            font-size: 1.15rem;
+            color: #444;
         }
 
         .about-img {
             overflow: hidden;
-            border-radius: 8px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
         }
 
         .about-img img {
             width: 100%;
             height: auto;
             display: block;
-            transition: transform 0.5s ease;
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .about-img:hover img {
-            transform: scale(1.1);
+            transform: scale(1.08);
         }
 
         /* CARROSSEL DE FOTOS */
         .carousel-section {
             background-color: var(--light);
-            padding: 4rem 0;
+            padding: 5rem 0;
             text-align: center;
         }
         
         .carousel-section h2 {
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
             color: var(--dark);
+            font-weight: 800;
         }
 
         .carousel-container {
             position: relative;
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
             overflow: hidden;
-            padding: 0 2rem;
+            padding: 1rem 2rem;
         }
 
         .carousel-track {
             display: flex;
-            gap: 20px;
+            gap: 25px;
             overflow-x: auto;
             scroll-behavior: smooth;
-            padding: 20px 0;
+            padding: 20px 5px;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
         }
         
-        .carousel-track::-webkit-scrollbar {
-            display: none;
-        }
+        .carousel-track::-webkit-scrollbar { display: none; }
 
         .carousel-card {
-            min-width: 300px;
-            height: 400px;
+            min-width: 320px;
+            height: 420px;
             background: #fff;
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
             position: relative;
             flex-shrink: 0;
-            cursor: pointer;
         }
 
         .carousel-card img {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            background-color: #f0f0f0;
-            transition: transform 0.4s ease;
+            background-color: #fafafa;
+            transition: transform 0.5s ease;
         }
 
         /* EFEITO ZOOM NO CARROSSEL */
         .carousel-card:hover img {
-            transform: scale(1.1);
+            transform: scale(1.12);
         }
 
-        /* Setinhas de navegação */
+        /* Setinhas de navegação modernas */
         .nav-btn {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background-color: var(--primary);
+            background-color: rgba(255, 87, 34, 0.9); /* Primary com transparência */
             color: white;
             border: none;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             cursor: pointer;
             z-index: 10;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: background-color 0.3s;
         }
-        .nav-btn:hover { background-color: #d84315; }
+        .nav-btn:hover { background-color: rgb(255, 87, 34); }
         .prev-btn { left: 10px; }
         .next-btn { right: 10px; }
 
@@ -187,9 +201,9 @@
         /* RESULTADOS */
         .achievements {
             background-color: var(--dark);
+            background-image: radial-gradient(circle at top right, #2c2c2c 0%, #1a1a1a 100%);
             color: #fff;
-            padding: 4rem 2rem;
-            margin-top: 2rem;
+            padding: 6rem 2rem;
         }
 
         .achievements-container {
@@ -200,27 +214,35 @@
         .achievements h2 {
             text-align: center;
             color: var(--gold);
-            margin-bottom: 3rem;
-            font-size: 2.5rem;
+            margin-bottom: 4rem;
+            font-size: 3rem;
+            font-weight: 800;
         }
 
         .achievements-list {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 2rem;
+            gap: 2.5rem;
         }
 
         .achievement-item {
-            background: rgba(255,255,255,0.1);
-            padding: 1.5rem;
-            border-radius: 8px;
+            background: rgba(255,255,255,0.08);
+            padding: 2rem;
+            border-radius: 12px;
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s, background 0.3s;
+        }
+        
+        .achievement-item:hover {
+             transform: translateY(-5px);
+             background: rgba(255,255,255,0.12);
         }
 
         .medal-icon {
-            font-size: 2rem;
+            font-size: 2.5rem;
         }
 
         /* PATROCINIO / CTA */
@@ -229,49 +251,77 @@
             background-color: var(--primary);
             color: #fff;
             text-align: center;
-            padding: 5rem 2rem;
+            padding: 6rem 2rem;
             overflow: hidden;
         }
+        
+        /* Textura de fundo sutil no CTA */
+        .sponsorship::before {
+            content: '';
+            position: absolute;
+            top:0; left:0; width: 100%; height: 100%;
+            background: url('WhatsApp Image 2025-12-16 at 13.15.24.jpeg') center/cover;
+            opacity: 0.15;
+            mix-blend-mode: overlay;
+        }
+
+        .sponsorship .container { position: relative; z-index: 1; }
 
         .sponsorship h2 {
-            font-size: 2.8rem;
+            font-size: 3rem;
             margin-bottom: 1.5rem;
+            font-weight: 900;
         }
 
         .sponsorship p {
             font-size: 1.3rem;
             max-width: 700px;
-            margin: 0 auto 2rem auto;
+            margin: 0 auto 2.5rem auto;
+            font-weight: 500;
         }
 
         .btn {
             display: inline-block;
             background-color: #fff;
             color: var(--primary);
-            padding: 1rem 2.5rem;
+            padding: 1.2rem 3rem;
             border-radius: 50px;
-            font-weight: 700;
+            font-weight: 800;
             text-decoration: none;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             text-transform: uppercase;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+            transition: all 0.3s ease;
         }
-        .btn:hover { transform: scale(1.05); }
+        .btn:hover { 
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            background-color: var(--dark);
+            color: #fff;
+        }
 
         footer {
             text-align: center;
-            padding: 2rem;
-            background: #eee;
-            font-size: 0.9rem;
-            color: var(--gray);
+            padding: 3rem 2rem;
+            background: #111;
+            font-size: 1rem;
+            color: #888;
+            font-weight: 600;
         }
 
-        /* RESPONSIVIDADE */
+        /* RESPONSIVIDADE DO NOVO HEADER */
         @media (max-width: 768px) {
-            .about, .achievements-list { grid-template-columns: 1fr; }
-            header h1 { font-size: 2.5rem; }
-            .carousel-card { min-width: 85vw; height: 350px; }
+            header {
+                padding: 6rem 1.5rem;
+                background-attachment: scroll; /* Parallax desativado no mobile para performance */
+            }
+            header h1 { font-size: 3.5rem; letter-spacing: 2px; }
+            header p { font-size: 1.2rem; letter-spacing: 1px; }
+            
+            .about { grid-template-columns: 1fr; gap: 2rem; }
+            .achievements-list { grid-template-columns: 1fr; }
+            .carousel-card { min-width: 85vw; height: 380px; }
+            .sponsorship h2 { font-size: 2.2rem; }
         }
     </style>
 </head>
@@ -394,7 +444,11 @@
     <script>
         function scrollCarousel(direction) {
             const track = document.getElementById('track');
-            const scrollAmount = 320; // Largura do card + gap
+            // Ajuste fino na quantidade de scroll baseada na largura do card + gap
+            const cardWidth = track.querySelector('.carousel-card').offsetWidth;
+            const gap = 25; 
+            const scrollAmount = cardWidth + gap;
+            
             track.scrollBy({
                 left: direction * scrollAmount,
                 behavior: 'smooth'
