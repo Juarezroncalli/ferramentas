@@ -35,7 +35,7 @@
             text-transform: uppercase;
         }
 
-        /* --- HERO HEADER MODERNO --- */
+        /* --- HERO HEADER --- */
         header {
             background: linear-gradient(to bottom, rgba(26, 26, 26, 0.7), rgba(26, 26, 26, 0.9)),
                         url('WhatsApp Image 2025-12-16 at 13.19.24.jpeg') center/cover no-repeat fixed;
@@ -93,28 +93,19 @@
             color: #444;
         }
 
-        .about-img {
-            overflow: hidden;
+        .about-img img {
+            width: 100%;
+            height: auto;
             border-radius: 12px;
             box-shadow: 0 15px 30px rgba(0,0,0,0.2);
         }
 
-        .about-img img {
-            width: 100%;
-            height: auto;
-            display: block;
-            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        .about-img:hover img {
-            transform: scale(1.08);
-        }
-
-        /* --- CARROSSEL CORRIGIDO --- */
+        /* --- CARROSSEL FLEXÍVEL (A CORREÇÃO) --- */
         .carousel-section {
             background-color: var(--light);
-            padding: 4rem 0; /* Reduzi um pouco padding vertical */
+            padding: 4rem 0;
             text-align: center;
+            overflow: hidden; /* Garante que não crie barra de rolagem na página inteira */
         }
         
         .carousel-section h2 {
@@ -125,54 +116,52 @@
 
         .carousel-container {
             position: relative;
-            max-width: 1100px;
-            margin: 0 auto;
-            /* Padding lateral removido no mobile para aproveitar a tela toda */
-            padding: 0 2rem; 
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
 
         .carousel-track {
             display: flex;
-            gap: 15px; /* Gap menor */
+            gap: 20px;
             overflow-x: auto;
             scroll-behavior: smooth;
-            padding: 20px 5px;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
+            padding: 20px 2rem; /* Padding lateral para dar respiro */
             
-            /* EFEITO MAGNÉTICO (SNAP) */
-            scroll-snap-type: x mandatory;
+            /* Isso esconde a barra de rolagem feia mas mantém a função */
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; 
+            
+            /* Alinhamento vertical */
+            align-items: center;
         }
         
         .carousel-track::-webkit-scrollbar { display: none; }
 
-        .carousel-card {
-            min-width: 320px;
-            height: 420px;
-            background: #fff; /* Fundo branco caso a imagem demore carregar */
-            border-radius: 16px;
+        /* O PULO DO GATO: Altura fixa para o container da imagem, largura automática */
+        .carousel-item {
+            /* Altura fixa no Desktop para padronizar */
+            height: 450px; 
+            flex-shrink: 0; /* Impede que a imagem seja espremida */
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            position: relative;
-            flex-shrink: 0;
-            
-            /* ALINHAMENTO DO SNAP */
-            scroll-snap-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            background: #fff;
         }
 
-        .carousel-card img {
-            width: 100%;
-            height: 100%;
-            /* AQUI ESTÁ A CORREÇÃO: COVER */
-            object-fit: cover; 
-            object-position: center;
-            transition: transform 0.5s ease;
+        .carousel-item img {
+            height: 100%; /* Ocupa toda a altura definida */
+            width: auto;  /* A largura se ajusta proporcionalmente (SEM CORTES) */
+            display: block; /* Remove espaços extras */
         }
 
-        .carousel-card:hover img {
-            transform: scale(1.12);
+        .carousel-item:hover {
+            transform: scale(1.03); /* Zoom leve ao passar mouse */
         }
 
+        /* Botões de navegação */
         .nav-btn {
             position: absolute;
             top: 50%;
@@ -189,12 +178,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             transition: background-color 0.3s;
         }
         .nav-btn:hover { background-color: rgb(255, 87, 34); }
-        .prev-btn { left: 10px; }
-        .next-btn { right: 10px; }
+        .prev-btn { left: 20px; }
+        .next-btn { right: 20px; }
 
 
         /* RESULTADOS */
@@ -232,7 +221,7 @@
             align-items: center;
             gap: 1.5rem;
             border: 1px solid rgba(255,255,255,0.1);
-            transition: transform 0.3s, background 0.3s;
+            transition: transform 0.3s;
         }
         
         .achievement-item:hover {
@@ -244,7 +233,7 @@
             font-size: 2.5rem;
         }
 
-        /* PATROCINIO / CTA */
+        /* CTA */
         .sponsorship {
             position: relative;
             background-color: var(--primary);
@@ -293,7 +282,6 @@
         }
         .btn:hover { 
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
             background-color: var(--dark);
             color: #fff;
         }
@@ -304,36 +292,25 @@
             background: #111;
             font-size: 1rem;
             color: #888;
-            font-weight: 600;
         }
 
-        /* --- RESPONSIVIDADE CELULAR --- */
+        /* RESPONSIVIDADE */
         @media (max-width: 768px) {
-            header {
-                padding: 6rem 1.5rem;
-                background-attachment: scroll; 
-            }
-            header h1 { font-size: 3rem; letter-spacing: 2px; } /* Ajuste de fonte */
-            header p { font-size: 1.1rem; letter-spacing: 1px; }
+            header { padding: 6rem 1.5rem; background-attachment: scroll; }
+            header h1 { font-size: 3rem; letter-spacing: 2px; }
+            header p { font-size: 1.1rem; }
             
             .about { grid-template-columns: 1fr; gap: 2rem; }
-            .about-img { margin-bottom: 1rem; }
-            
             .achievements-list { grid-template-columns: 1fr; }
-            .achievement-item { padding: 1.5rem; }
-            
             .sponsorship h2 { font-size: 2.2rem; }
-            
+
             /* AJUSTE DO CARROSSEL NO MOBILE */
-            .carousel-container { padding: 0 1rem; }
-            .nav-btn { display: none; } /* Remove setas no celular (usa dedo) */
-            
-            .carousel-card { 
-                /* Ocupa 80% da tela para ver o próximo card */
-                min-width: 80vw; 
-                /* Altura menor para fotos horizontais */
+            .carousel-item {
+                /* Diminui a altura no celular para caber na tela sem scroll vertical excessivo */
                 height: 300px; 
             }
+            .nav-btn { display: none; } /* Remove setas no mobile (uso intuitivo do dedo) */
+            .carousel-track { padding: 20px 1rem; }
         }
     </style>
 </head>
@@ -360,34 +337,31 @@
     </div>
 
     <section class="carousel-section">
-        <div class="container">
-            <h2>Galeria de Conquistas</h2>
-            <div class="carousel-container">
-                <button class="nav-btn prev-btn" onclick="scrollCarousel(-1)">&#10094;</button>
-                
-                <div class="carousel-track" id="track">
-                    <div class="carousel-card">
-                        <img src="WhatsApp Image 2025-12-16 at 13.10.06.jpeg" alt="Campeã Copa Brou">
-                    </div>
-                    <div class="carousel-card">
-                        <img src="WhatsApp Image 2025-12-16 at 13.11.35.jpeg" alt="Pódio Fnaracing">
-                    </div>
-                    <div class="carousel-card">
-                        <img src="WhatsApp Image 2025-12-16 at 13.16.01.jpeg" alt="Medalha Campeonato Mineiro">
-                    </div>
-                    <div class="carousel-card">
-                        <img src="WhatsApp Image 2025-12-16 at 13.13.13.jpeg" alt="Vice Campeã XTERRA">
-                    </div>
-                    <div class="carousel-card">
-                        <img src="WhatsApp Image 2025-12-16 at 13.17.48.jpeg" alt="Pódio Sertão Diamante">
-                    </div>
-                    <div class="carousel-card">
-                        <img src="WhatsApp Image 2025-12-16 at 13.15.24.jpeg" alt="Medalha em destaque">
-                    </div>
+        <div class="carousel-container">
+            <button class="nav-btn prev-btn" onclick="scrollCarousel(-1)">&#10094;</button>
+            
+            <div class="carousel-track" id="track">
+                <div class="carousel-item">
+                    <img src="WhatsApp Image 2025-12-16 at 13.10.06.jpeg" alt="Campeã Copa Brou">
                 </div>
-
-                <button class="nav-btn next-btn" onclick="scrollCarousel(1)">&#10095;</button>
+                <div class="carousel-item">
+                    <img src="WhatsApp Image 2025-12-16 at 13.11.35.jpeg" alt="Pódio Fnaracing">
+                </div>
+                <div class="carousel-item">
+                    <img src="WhatsApp Image 2025-12-16 at 13.16.01.jpeg" alt="Medalha Campeonato Mineiro">
+                </div>
+                <div class="carousel-item">
+                    <img src="WhatsApp Image 2025-12-16 at 13.13.13.jpeg" alt="Vice Campeã XTERRA">
+                </div>
+                <div class="carousel-item">
+                    <img src="WhatsApp Image 2025-12-16 at 13.17.48.jpeg" alt="Pódio Sertão Diamante">
+                </div>
+                 <div class="carousel-item">
+                    <img src="WhatsApp Image 2025-12-16 at 13.15.24.jpeg" alt="Medalha em destaque">
+                </div>
             </div>
+
+            <button class="nav-btn next-btn" onclick="scrollCarousel(1)">&#10095;</button>
         </div>
     </section>
 
@@ -456,10 +430,8 @@
     <script>
         function scrollCarousel(direction) {
             const track = document.getElementById('track');
-            const cardWidth = track.querySelector('.carousel-card').offsetWidth;
-            const gap = 15; 
-            const scrollAmount = cardWidth + gap;
-            
+            // Rola 300px por vez, independente do tamanho da imagem
+            const scrollAmount = 300; 
             track.scrollBy({
                 left: direction * scrollAmount,
                 behavior: 'smooth'
