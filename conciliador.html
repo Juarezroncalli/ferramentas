@@ -12,11 +12,11 @@
 
     <style>
       :root {
-        --bg-color: #ffe66d; /* Amarelo vibrante */
+        --bg-color: #ffe66d;
         --card-bg: #ffffff;
-        --primary: #ff6b6b; /* Vermelho/Rosa */
-        --secondary: #4ecdc4; /* Verde Água */
-        --accent: #1a535c; /* Azul escuro */
+        --primary: #ff6b6b;
+        --secondary: #4ecdc4;
+        --accent: #1a535c;
         --border-width: 3px;
         --shadow-offset: 6px;
       }
@@ -28,11 +28,11 @@
         padding: 40px 20px;
         margin: 0;
         background-image: radial-gradient(#000 1px, transparent 1px);
-        background-size: 20px 20px; /* Efeito de pontilhados no fundo */
+        background-size: 20px 20px;
       }
 
       .container {
-        max-width: 1000px;
+        max-width: 1100px;
         margin: 0 auto;
         background: var(--card-bg);
         border: var(--border-width) solid #000;
@@ -102,7 +102,6 @@
         cursor: pointer;
       }
 
-      /* Estilização dos Botões Brutalistas */
       button {
         display: inline-block;
         font-family: "Archivo", sans-serif;
@@ -144,7 +143,6 @@
         filter: brightness(1.1);
       }
 
-      /* Tabela Brutalista */
       table {
         width: 100%;
         border-collapse: collapse;
@@ -159,7 +157,7 @@
         padding: 15px;
         text-transform: uppercase;
         font-family: "Archivo", sans-serif;
-        border: 2px solid #fff; /* Contraste interno */
+        border: 2px solid #fff;
       }
 
       td {
@@ -168,7 +166,6 @@
         background-color: #fff;
       }
 
-      /* Tags de Status */
       .tag {
         display: inline-block;
         padding: 5px 10px;
@@ -179,17 +176,10 @@
       }
 
       .tag-ok {
-        background-color: #6bcb77; /* Verde */
+        background-color: #6bcb77;
         box-shadow: 2px 2px 0px #000;
       }
 
-      .tag-err {
-        background-color: #ff6b6b; /* Vermelho */
-        box-shadow: 2px 2px 0px #000;
-        color: #fff;
-      }
-
-      /* Responsividade */
       @media (max-width: 600px) {
         .container {
           padding: 0;
@@ -209,7 +199,7 @@
   <body>
     <div class="container">
       <header>
-        <h1>CONCILIADOR_XML_V1.0</h1>
+        <h1>CONCILIADOR_XML_V1.2</h1>
       </header>
 
       <div class="content">
@@ -241,7 +231,7 @@
         <div id="resultadoArea" style="display: none; margin-top: 40px">
           <div style="border-top: 5px solid #000; padding-top: 20px">
             <h2 style="font-family: 'Archivo'; text-transform: uppercase">
-              Relatório Gerado
+              Relatório Gerado (Apenas Conciliados)
             </h2>
             <button class="primary" onclick="exportarResultado()">
               💾 Salvar Relatório (.xlsx)
@@ -252,6 +242,7 @@
                 <thead>
                   <tr>
                     <th>Arquivo</th>
+                    <th>Nº NFe</th>
                     <th>Emitente</th>
                     <th>Emissão</th>
                     <th>Valores XML</th>
@@ -268,8 +259,6 @@
     </div>
 
     <script>
-      /* LÓGICA JAVASCRIPT (MANTIDA IDÊNTICA, APENAS PEQUENOS AJUSTES DE FORMATO)
-       */
       let valoresExcel = [];
       let dadosRelatorio = [];
 
@@ -323,37 +312,40 @@
             }
           }
 
-          dadosRelatorio.push({
-            Arquivo: dados.arquivo,
-            Emitente: dados.emitente,
-            Emissao: dados.dhEmi,
-            ValoresXML: valoresNfeFloats.join(" | "),
-            Conciliado: conciliado ? "SIM" : "NAO",
-            ValorBatido: valorEncontrado,
-          });
+          // --- FILTRO: Apenas se conciliado ---
+          if (conciliado) {
+            
+            dadosRelatorio.push({
+              Arquivo: dados.arquivo,
+              Numero_NFe: dados.nNF,
+              Emitente: dados.emitente,
+              Emissao: dados.dhEmi,
+              ValoresXML: valoresNfeFloats.join(" | "),
+              Conciliado: "SIM",
+              ValorBatido: valorEncontrado,
+            });
 
-          // HTML da linha da tabela com estilo novo
-          const statusHtml = conciliado
-            ? `<span class="tag tag-ok">CONCILIADO</span>`
-            : `<span class="tag tag-err">PENDENTE</span>`;
-
-          const tr = `<tr>
-                <td><strong>${dados.arquivo}</strong></td>
-                <td>${dados.emitente}</td>
-                <td>${dados.dhEmi}</td>
-                <td style="font-family: monospace;">${valoresNfeFloats.join(
-                  " <br> "
-                )}</td>
-                <td>${statusHtml}</td>
-                <td style="font-weight:bold;">${
-                  valorEncontrado ? "R$ " + valorEncontrado : "-"
-                }</td>
-            </tr>`;
-          tbody.innerHTML += tr;
+            const tr = `<tr>
+                  <td><strong>${dados.arquivo}</strong></td>
+                  <td style="font-weight:bold; color: var(--accent);">${dados.nNF}</td>
+                  <td>${dados.emitente}</td>
+                  <td>${dados.dhEmi}</td>
+                  <td style="font-family: monospace;">${valoresNfeFloats.join(
+                    " <br> "
+                  )}</td>
+                  <td><span class="tag tag-ok">CONCILIADO</span></td>
+                  <td style="font-weight:bold;">R$ ${valorEncontrado}</td>
+              </tr>`;
+            tbody.innerHTML += tr;
+          }
+        }
+        
+        // Verifica se houve algum resultado
+        if (dadosRelatorio.length === 0) {
+            alert("Nenhuma conciliação encontrada com os valores fornecidos.");
         }
 
         document.getElementById("resultadoArea").style.display = "block";
-        // Scroll até o resultado
         document
           .getElementById("resultadoArea")
           .scrollIntoView({ behavior: "smooth" });
@@ -407,6 +399,8 @@
         }
 
         let dhEmi = "";
+        let nNF = ""; 
+
         const ide = xmlDoc.getElementsByTagName("ide")[0];
         if (ide) {
           const dhEl = ide.getElementsByTagName("dhEmi")[0];
@@ -417,6 +411,10 @@
             } catch (e) {
               dhEmi = dhEl.textContent;
             }
+          }
+          const nNFEl = ide.getElementsByTagName("nNF")[0];
+          if (nNFEl) {
+            nNF = nNFEl.textContent;
           }
         }
 
@@ -430,6 +428,7 @@
           arquivo: nomeArquivo,
           emitente: xNome,
           dhEmi: dhEmi,
+          nNF: nNF, 
           valores: valores,
         };
       }
