@@ -3,90 +3,109 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calculadora RBT12 - Neo</title>
+    <title>Calculadora RBT12 [BRUTALISM]</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
       :root {
-        /* Paleta Neo-Brutalismo */
-        --bg-color: #FFFDF5;
+        /* --- PALETA VIBRANTE --- */
+        --bg-body: #06B6D4; /* Ciano (Fundo Azul) */
         --card-bg: #FFFFFF;
-        
-        --primary-green: #2DDD98;
-        --primary-yellow: #FFF59D;
-        --primary-purple: #D6BCFA;
-        --primary-pink: #FF9EB5;
-        --primary-blue: #A5DEFF;
-        
-        --text-main: #000000;
         --border-black: #000000;
         
-        --shadow-hard: 4px 4px 0px 0px #000000;
+        --color-primary: #8B5CF6;   /* Roxo */
+        --color-secondary: #F472B6; /* Rosa */
+        --color-accent: #FACC15;    /* Amarelo */
+        --color-success: #22C55E;   /* Verde */
+        --color-danger: #EF4444;    /* Vermelho */
+        --color-info: #3B82F6;      /* Azul Royal */
+        
+        --shadow-dist: 6px;
         --border-width: 3px;
-        --radius: 12px;
       }
 
       * { margin: 0; padding: 0; box-sizing: border-box; }
 
       body {
-        font-family: 'Inter', sans-serif;
-        background-color: var(--bg-color);
-        color: var(--text-main);
+        font-family: 'Space Grotesk', sans-serif;
+        /* FUNDO AZUL QUADRICULADO */
+        background-color: var(--bg-body);
+        background-image: 
+            linear-gradient(#fff 2px, transparent 2px),
+            linear-gradient(90deg, #fff 2px, transparent 2px);
+        background-size: 40px 40px;
+        background-position: -2px -2px;
+        
+        color: var(--border-black);
         height: 100vh;
-        overflow-x: hidden;
+        overflow: hidden;
         display: flex;
       }
 
-      /* Sidebar (Consistente com o layout anterior) */
+      /* Sidebar */
       .sidebar {
-        width: 250px;
-        background: var(--card-bg);
+        width: 280px;
+        background: var(--color-accent); /* Amarelo */
         border-right: var(--border-width) solid var(--border-black);
         display: flex;
         flex-direction: column;
         padding: 2rem 1.5rem;
         flex-shrink: 0;
+        overflow-y: auto;
+        box-shadow: 4px 0 0 rgba(0,0,0,0.1);
       }
 
       .logo {
-        font-weight: 800;
-        font-size: 1.4rem;
+        font-weight: 900;
+        font-size: 1.5rem;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 15px;
         margin-bottom: 3rem;
+        text-transform: uppercase;
+        letter-spacing: -1px;
       }
 
       .logo i {
-        background: var(--primary-pink);
-        padding: 8px;
+        background: var(--color-secondary); /* Rosa */
+        color: #fff;
+        padding: 10px;
         border: var(--border-width) solid var(--border-black);
-        border-radius: 50%;
-        box-shadow: 2px 2px 0 0 black;
+        box-shadow: 4px 4px 0 0 black;
+        font-size: 1.2rem;
       }
 
       .nav-item {
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 1rem;
+        padding: 15px;
         margin-bottom: 1rem;
-        font-weight: 600;
-        color: #555;
+        font-weight: 800;
+        color: #000;
         cursor: pointer;
-        transition: 0.2s;
-        border-radius: var(--radius);
-        border: 2px solid transparent;
+        transition: 0.1s;
+        border: var(--border-width) solid var(--border-black);
+        background: #fff;
+        box-shadow: 4px 4px 0 0 black;
+        text-transform: uppercase;
+        font-size: 0.9rem;
       }
 
       .nav-item.active {
-        background-color: var(--primary-green);
-        color: black;
-        border: var(--border-width) solid var(--border-black);
-        box-shadow: var(--shadow-hard);
+        background-color: var(--color-primary);
+        color: #fff;
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 0 black;
       }
-      .nav-item:hover:not(.active) { background-color: #f0f0f0; }
+
+      .nav-item:hover:not(.active) {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 0 black;
+      }
 
       .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
 
@@ -95,33 +114,51 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 2rem;
-        background: var(--card-bg);
+        margin-bottom: 2.5rem;
+        background: #fff;
         border: var(--border-width) solid var(--border-black);
-        border-radius: 50px;
-        padding: 1rem 2rem;
-        box-shadow: var(--shadow-hard);
+        padding: 2rem;
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
       }
-      .header-title h1 { font-weight: 800; font-size: 2rem; }
-      .header-title span { font-size: 1rem; font-weight: 600; color: #666; }
+      .header-title h1 { 
+        font-weight: 900; 
+        font-size: 2.5rem; 
+        text-transform: uppercase;
+        text-shadow: 2px 2px 0 #ddd;
+      }
+      .header-title span { 
+        font-family: 'Space Mono', monospace;
+        font-size: 0.9rem; 
+        font-weight: 700; 
+        background: var(--color-success);
+        color: #000;
+        padding: 5px 10px;
+        border: 2px solid #000;
+      }
 
       /* Input Section */
       .input-card {
-        background: var(--card-bg);
+        background: #fff;
         border: var(--border-width) solid var(--border-black);
-        border-radius: var(--radius);
         padding: 2rem;
-        box-shadow: var(--shadow-hard);
-        margin-bottom: 2rem;
-        max-width: 600px;
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
+        margin-bottom: 3rem;
+        max-width: 700px;
+        position: relative;
       }
 
       label {
         font-weight: 800;
         display: block;
-        margin-bottom: 0.5rem;
+        margin-bottom: 1rem;
         font-size: 1.1rem;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 10px;
       }
+      
+      label i { color: var(--color-primary); }
 
       .input-wrapper {
         display: flex;
@@ -131,33 +168,41 @@
 
       .neo-input {
         flex: 1;
-        padding: 1rem;
+        padding: 15px;
         font-size: 1.2rem;
+        font-family: 'Space Mono', monospace;
         font-weight: bold;
         border: var(--border-width) solid var(--border-black);
-        border-radius: var(--radius);
+        background: #F3F4F6;
         outline: none;
         min-width: 200px;
+        transition: all 0.2s;
       }
       .neo-input:focus {
         background-color: #fff;
-        box-shadow: 4px 4px 0 0 rgba(0,0,0,0.1);
+        box-shadow: 5px 5px 0 0 var(--color-primary);
+        transform: translate(-2px, -2px);
       }
 
       .neo-btn {
         padding: 1rem 2rem;
         font-weight: 800;
         font-size: 1.1rem;
+        font-family: 'Space Grotesk', sans-serif;
         border: var(--border-width) solid var(--border-black);
-        border-radius: var(--radius);
         cursor: pointer;
-        box-shadow: var(--shadow-hard);
-        background-color: var(--primary-green);
+        box-shadow: 5px 5px 0 0 black;
+        background-color: var(--color-success);
         color: black;
         display: flex;
         align-items: center;
         gap: 10px;
-        transition: transform 0.1s;
+        text-transform: uppercase;
+        transition: all 0.1s;
+      }
+      .neo-btn:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 7px 7px 0 0 black;
       }
       .neo-btn:active {
         box-shadow: 0 0 0 0 black;
@@ -166,36 +211,40 @@
 
       /* Results Grid */
       .results-area {
-        margin-top: 3rem;
+        margin-top: 2rem;
       }
       
       .results-intro {
-        font-size: 1.2rem;
+        font-family: 'Space Mono', monospace;
+        font-size: 1.1rem;
         font-weight: 600;
         margin-bottom: 1.5rem;
         padding: 1rem;
-        background: #eee;
-        border: 2px solid black;
-        border-radius: var(--radius);
+        background: #fff;
+        border: var(--border-width) solid black;
+        box-shadow: 4px 4px 0 var(--color-secondary);
         display: inline-block;
       }
 
       .grid-container {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
         gap: 1.5rem;
       }
 
       .anexo-card {
         background: white;
         border: var(--border-width) solid black;
-        border-radius: var(--radius);
-        box-shadow: var(--shadow-hard);
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
         overflow: hidden;
         transition: transform 0.2s;
         position: relative;
       }
-      .anexo-card:hover { transform: translate(-4px, -4px); box-shadow: 8px 8px 0 0 black; }
+      .anexo-card:hover { 
+        transform: translate(-4px, -4px); 
+        box-shadow: 10px 10px 0 0 black; 
+        z-index: 2;
+      }
 
       .card-header {
         padding: 1rem;
@@ -205,6 +254,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        color: #000;
       }
       
       .card-body {
@@ -217,43 +267,48 @@
         font-weight: 900;
         display: block;
         margin-bottom: 0.5rem;
+        color: #000;
       }
       
       .percent-label {
         font-size: 0.9rem;
-        font-weight: 600;
-        color: #666;
+        font-family: 'Space Mono', monospace;
+        font-weight: 700;
+        color: #000;
         text-transform: uppercase;
+        background: #eee;
+        padding: 2px 5px;
+        border: 1px solid #000;
       }
 
-      /* Cores dos Cards */
-      .c-green .card-header { background-color: var(--primary-green); }
-      .c-yellow .card-header { background-color: var(--primary-yellow); }
-      .c-purple .card-header { background-color: var(--primary-purple); }
-      .c-pink .card-header { background-color: var(--primary-pink); }
-      .c-blue .card-header { background-color: var(--primary-blue); }
+      /* Cores dos Cards (Mapeamento para variáveis) */
+      .c-green .card-header { background-color: var(--color-success); }
+      .c-yellow .card-header { background-color: var(--color-accent); }
+      .c-purple .card-header { background-color: var(--color-primary); color: #fff; }
+      .c-pink .card-header { background-color: var(--color-secondary); color: #fff; }
+      .c-blue .card-header { background-color: var(--color-info); color: #fff; }
 
       /* Error Message */
       #errorMessage {
         margin-top: 1rem;
         padding: 1rem;
         border: var(--border-width) solid black;
-        background-color: #FF5252;
-        color: black;
+        background-color: var(--color-danger);
+        color: #fff;
         font-weight: bold;
-        border-radius: var(--radius);
         display: none;
-        box-shadow: var(--shadow-hard);
+        box-shadow: 4px 4px 0 #000;
       }
 
       /* Empty State */
       .empty-state {
         text-align: center;
         padding: 3rem;
-        border: 3px dashed #ccc;
-        border-radius: var(--radius);
-        color: #888;
+        background: #fff;
+        border: 3px dashed #000;
+        color: #000;
         font-weight: 600;
+        box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
       }
 
       @media (max-width: 768px) {
@@ -301,16 +356,16 @@
             CALCULAR <i class="fas fa-bolt"></i>
           </button>
         </div>
-        <div style="margin-top: 10px; font-size: 0.9rem; color: #666;">
-          *Use vírgula para centavos.
+        <div style="margin-top: 15px; font-family: 'Space Mono'; font-size: 0.85rem; color: #000;">
+          <i class="fas fa-info-circle"></i> Use vírgula para centavos.
         </div>
         <div id="errorMessage"></div>
       </div>
 
       <div class="results-area" id="resultsOutput">
         <div class="empty-state">
-          <i class="fas fa-search-dollar" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
-          Digite o valor acima e clique em Calcular para ver as alíquotas.
+          <i class="fas fa-search-dollar" style="font-size: 4rem; margin-bottom: 1rem; display: block;"></i>
+          Digite o valor acima e clique em "Calcular" para ver as alíquotas.
         </div>
       </div>
 
@@ -407,7 +462,7 @@
                             <i class="fas fa-tag"></i>
                         </div>
                         <div class="card-body">
-                            <span class="percent-value" style="${!isPercent ? 'font-size: 1.2rem; color: red;' : ''}">
+                            <span class="percent-value" style="${!isPercent ? 'font-size: 1.5rem; color: var(--color-danger);' : ''}">
                                 ${resultText}
                             </span>
                             <span class="percent-label">${anexo.name}</span>

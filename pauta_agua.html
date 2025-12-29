@@ -3,90 +3,109 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ICMS ST Água - Neo</title>
+    <title>ICMS ST Água [BRUTALISM]</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
       :root {
-        /* Paleta Neo-Brutalismo */
-        --bg-color: #FFFDF5;
+        /* --- PALETA VIBRANTE --- */
+        --bg-body: #06B6D4; /* Ciano (Fundo Azul) */
         --card-bg: #FFFFFF;
-        
-        --primary-green: #2DDD98;
-        --primary-yellow: #FFF59D;
-        --primary-purple: #D6BCFA;
-        --primary-pink: #FF9EB5;
-        --primary-blue: #A5DEFF;
-        
-        --text-main: #000000;
         --border-black: #000000;
         
-        --shadow-hard: 4px 4px 0px 0px #000000;
+        --color-primary: #8B5CF6;   /* Roxo */
+        --color-secondary: #F472B6; /* Rosa */
+        --color-accent: #FACC15;    /* Amarelo */
+        --color-success: #22C55E;   /* Verde */
+        --color-danger: #EF4444;    /* Vermelho */
+        --color-info: #3B82F6;      /* Azul Royal */
+        
+        --shadow-dist: 6px;
         --border-width: 3px;
-        --radius: 12px;
       }
 
       * { margin: 0; padding: 0; box-sizing: border-box; }
 
       body {
-        font-family: 'Inter', sans-serif;
-        background-color: var(--bg-color);
-        color: var(--text-main);
+        font-family: 'Space Grotesk', sans-serif;
+        /* FUNDO AZUL QUADRICULADO */
+        background-color: var(--bg-body);
+        background-image: 
+            linear-gradient(#fff 2px, transparent 2px),
+            linear-gradient(90deg, #fff 2px, transparent 2px);
+        background-size: 40px 40px;
+        background-position: -2px -2px;
+        
+        color: var(--border-black);
         height: 100vh;
-        overflow-x: hidden;
+        overflow: hidden;
         display: flex;
       }
 
       /* Sidebar */
       .sidebar {
-        width: 250px;
-        background: var(--card-bg);
+        width: 280px;
+        background: var(--color-accent); /* Amarelo */
         border-right: var(--border-width) solid var(--border-black);
         display: flex;
         flex-direction: column;
         padding: 2rem 1.5rem;
         flex-shrink: 0;
+        overflow-y: auto;
+        box-shadow: 4px 0 0 rgba(0,0,0,0.1);
       }
 
       .logo {
-        font-weight: 800;
-        font-size: 1.4rem;
+        font-weight: 900;
+        font-size: 1.5rem;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 15px;
         margin-bottom: 3rem;
+        text-transform: uppercase;
+        letter-spacing: -1px;
       }
 
       .logo i {
-        background: var(--primary-blue);
-        padding: 8px;
+        background: var(--color-info); /* Azul */
+        color: #fff;
+        padding: 10px;
         border: var(--border-width) solid var(--border-black);
-        border-radius: 50%;
-        box-shadow: 2px 2px 0 0 black;
+        box-shadow: 4px 4px 0 0 black;
+        font-size: 1.2rem;
       }
 
       .nav-item {
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 1rem;
+        padding: 15px;
         margin-bottom: 1rem;
-        font-weight: 600;
-        color: #555;
+        font-weight: 800;
+        color: #000;
         cursor: pointer;
-        transition: 0.2s;
-        border-radius: var(--radius);
-        border: 2px solid transparent;
+        transition: 0.1s;
+        border: var(--border-width) solid var(--border-black);
+        background: #fff;
+        box-shadow: 4px 4px 0 0 black;
+        text-transform: uppercase;
+        font-size: 0.9rem;
       }
 
       .nav-item.active {
-        background-color: var(--primary-green);
-        color: black;
-        border: var(--border-width) solid var(--border-black);
-        box-shadow: var(--shadow-hard);
+        background-color: var(--color-primary);
+        color: #fff;
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 0 black;
       }
-      .nav-item:hover:not(.active) { background-color: #f0f0f0; }
+
+      .nav-item:hover:not(.active) {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 0 black;
+      }
 
       .main-content { flex: 1; padding: 2rem; overflow-y: auto; display: flex; flex-direction: column; }
 
@@ -95,33 +114,56 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 2rem;
-        background: var(--card-bg);
+        margin-bottom: 2.5rem;
+        background: #fff;
         border: var(--border-width) solid var(--border-black);
-        border-radius: 50px;
-        padding: 1rem 2rem;
-        box-shadow: var(--shadow-hard);
+        padding: 2rem;
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
+        flex-shrink: 0;
       }
-      .header-title h1 { font-weight: 800; font-size: 2rem; }
-      .header-title span { font-size: 1rem; font-weight: 600; color: #666; }
+      .header-title h1 { 
+        font-weight: 900; 
+        font-size: 2.5rem; 
+        text-transform: uppercase;
+        text-shadow: 2px 2px 0 #ddd;
+      }
+      .header-title span { 
+        font-family: 'Space Mono', monospace;
+        font-size: 0.9rem; 
+        font-weight: 700; 
+        background: var(--color-success);
+        color: #000;
+        padding: 5px 10px;
+        border: 2px solid #000;
+      }
 
-      /* Container Principal (Duas Colunas) */
+      /* Layout Principal (Duas Colunas) */
       .calc-container {
         display: flex;
         gap: 2rem;
         flex: 1;
         align-items: flex-start;
+        overflow: hidden; /* Para permitir scroll interno se necessário */
       }
 
       /* Coluna Esquerda: Inputs */
       .input-section {
         flex: 1;
-        background: var(--card-bg);
+        background: #fff;
         border: var(--border-width) solid var(--border-black);
-        border-radius: var(--radius);
         padding: 2rem;
-        box-shadow: var(--shadow-hard);
-        min-width: 300px;
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
+        min-width: 320px;
+        height: 100%;
+        overflow-y: auto;
+      }
+
+      .input-section h2 {
+        font-weight: 900;
+        text-transform: uppercase;
+        border-bottom: 3px solid #000;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
       }
 
       label {
@@ -129,38 +171,41 @@
         display: block;
         margin-bottom: 0.5rem;
         font-size: 1rem;
+        text-transform: uppercase;
       }
 
       .form-group { margin-bottom: 1.5rem; }
 
       .neo-input {
         width: 100%;
-        padding: 1rem;
+        padding: 15px;
         font-size: 1.1rem;
-        font-weight: 600;
+        font-family: 'Space Mono', monospace;
+        font-weight: bold;
         border: var(--border-width) solid var(--border-black);
-        border-radius: var(--radius);
+        background: #F3F4F6;
         outline: none;
-        background: #f9f9f9;
+        transition: all 0.2s;
       }
       .neo-input:focus {
         background-color: #fff;
-        box-shadow: 4px 4px 0 0 rgba(0,0,0,0.1);
+        box-shadow: 5px 5px 0 0 var(--color-primary);
+        transform: translate(-2px, -2px);
       }
 
       .neo-btn {
-        padding: 1rem 2rem;
+        padding: 15px;
         font-weight: 800;
         font-size: 1.1rem;
+        font-family: 'Space Grotesk', sans-serif;
         border: var(--border-width) solid var(--border-black);
-        border-radius: var(--radius);
         cursor: pointer;
-        box-shadow: var(--shadow-hard);
+        box-shadow: 5px 5px 0 0 black;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 10px;
-        transition: transform 0.1s;
+        transition: all 0.1s;
         width: 100%;
         text-transform: uppercase;
       }
@@ -169,48 +214,51 @@
         transform: translate(4px, 4px);
       }
 
-      .btn-add { background-color: var(--primary-green); color: black; }
-      .btn-print { background-color: var(--primary-pink); color: black; margin-bottom: 1rem; }
+      .btn-add { background-color: var(--color-success); color: black; }
+      .btn-add:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 0 black; }
+      
+      .btn-print { background-color: var(--color-secondary); color: white; margin-bottom: 1rem; }
+      .btn-print:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 0 black; }
 
       /* Coluna Direita: Recibo */
       .receipt-section {
         flex: 1;
-        background: var(--primary-yellow); /* Fundo amarelo estilo nota */
+        background: var(--color-accent); /* Fundo Amarelo */
         border: var(--border-width) solid var(--border-black);
-        border-radius: var(--radius);
-        padding: 2rem;
-        box-shadow: var(--shadow-hard);
-        min-width: 300px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
+        min-width: 320px;
         display: flex;
         flex-direction: column;
-        max-height: 80vh;
+        height: 100%;
       }
 
       .receipt-paper {
         background: #fff;
-        font-family: 'Space Mono', monospace; /* Fonte monoespaçada para estilo cupom */
+        font-family: 'Space Mono', monospace;
         padding: 1.5rem;
-        border: 2px dashed #ccc;
+        border: 3px dashed #000;
         flex: 1;
         overflow-y: auto;
         font-size: 0.9rem;
-        color: #333;
+        color: #000;
         position: relative;
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
       }
 
       .receipt-header {
         text-align: center;
-        border-bottom: 2px dashed black;
+        border-bottom: 3px dashed black;
         padding-bottom: 1rem;
         margin-bottom: 1rem;
       }
-      .receipt-header h2 { font-size: 1.2rem; margin-bottom: 5px; font-weight: bold; }
+      .receipt-header h2 { font-size: 1.1rem; margin-bottom: 5px; font-weight: 900; text-transform: uppercase; }
       .receipt-header p { margin: 2px 0; font-size: 0.8rem; }
 
       .receipt-item {
-        border-bottom: 1px dashed #ccc;
-        padding-bottom: 0.8rem;
-        margin-bottom: 0.8rem;
+        border-bottom: 1px dashed #000;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
       }
 
       .receipt-total {
@@ -220,23 +268,26 @@
         margin-top: 1rem;
         border-top: 3px solid black;
         padding-top: 1rem;
+        background: #000;
+        color: #fff;
+        padding: 10px;
       }
 
       .calculation-line {
-        margin: 2px 0;
-        font-size: 0.8rem;
+        margin: 4px 0;
+        font-size: 0.85rem;
       }
       
       .error {
-        color: black;
-        background-color: #FF5252;
-        padding: 10px;
+        color: #fff;
+        background-color: var(--color-danger);
+        padding: 15px;
         border: 2px solid black;
-        border-radius: 8px;
         font-weight: bold;
         margin-bottom: 1rem;
         font-size: 0.9rem;
         display: none;
+        box-shadow: 4px 4px 0 0 black;
       }
       .error:not(:empty) { display: block; }
 
@@ -250,15 +301,15 @@
             width: 100%; max-width: 100%; padding: 0; margin: 0; 
             max-height: none; overflow: visible;
         }
-        .receipt-paper { border: none; padding: 0; font-size: 10pt; }
-        .receipt-total { font-size: 14pt; }
+        .receipt-paper { border: 2px solid #000; padding: 20px; font-size: 10pt; }
+        .receipt-total { font-size: 14pt; background: #fff; color: #000; border-top: 2px solid #000; }
       }
 
       @media (max-width: 900px) {
         body { flex-direction: column; overflow: auto; }
         .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 3px solid black; flex-direction: row; align-items: center; overflow-x: auto; padding: 1rem; }
-        .calc-container { flex-direction: column; }
-        .input-section, .receipt-section { width: 100%; }
+        .calc-container { flex-direction: column; height: auto; }
+        .input-section, .receipt-section { width: 100%; height: auto; min-height: 500px; }
       }
     </style>
   </head>
@@ -290,7 +341,7 @@
 
       <div class="calc-container">
         <div class="input-section">
-            <h2 style="margin-bottom: 1.5rem;">📝 Dados da Nota</h2>
+            <h2>📝 Dados da Nota</h2>
             
             <div class="form-group">
                 <label for="invoiceNumber">Número da NF</label>
@@ -323,18 +374,18 @@
                 <div class="receipt-header">
                     <h2>SUPERMERCADO MARQUES & AVILA</h2>
                     <p>CNPJ: 00.000.000/0001-00</p>
-                    <p>MEMÓRIA DE CÁLCULO - ICMS ST</p>
+                    <p><strong>MEMÓRIA DE CÁLCULO - ICMS ST</strong></p>
                     <p>
                       Data: <span id="currentDate"></span> | Hora: <span id="currentTime"></span>
                     </p>
-                    <p style="font-style: italic; font-size: 0.75rem; margin-top: 5px; background: #eee; padding: 2px;">
+                    <p style="font-style: italic; font-size: 0.75rem; margin-top: 5px; background: #eee; padding: 5px; border: 1px solid #000;">
                       Pauta Vigente: R$ 12,96 (Galão 20L)
                     </p>
                 </div>
 
                 <div id="receiptItems">
-                    <div style="text-align: center; color: #999; padding: 20px;">
-                        Nenhum item calculado ainda.
+                    <div style="text-align: center; color: #999; padding: 20px; font-style: italic;">
+                        -- Nenhum item calculado ainda --
                     </div>
                 </div>
 
@@ -412,17 +463,17 @@
           const itemDiv = document.createElement("div");
           itemDiv.className = "receipt-item";
           itemDiv.innerHTML = `
-            <div class="calculation-line" style="font-weight:bold; margin-bottom: 5px;">#${itemCount} - NF: ${invoiceNumber}</div>
+            <div class="calculation-line" style="font-weight:900; margin-bottom: 5px; font-size: 1rem;">#${itemCount} - NF: ${invoiceNumber}</div>
             <div class="calculation-line">Qtd: ${waterQuantity} | Valor NF: R$ ${formatCurrency(invoiceValueCents)}</div>
-            <div class="calculation-line">
+            <div class="calculation-line" style="margin-top: 5px;">
                 Base ST (Pauta): R$ ${formatCurrency(baseIcmsStCents)} <br>
                 Base Reduzida: R$ ${formatCurrency(reducedBaseIcmsStCents)} <br>
                 ICMS ST (18%): R$ ${formatCurrency(icmsStCents)}
             </div>
-            <div class="calculation-line" style="color: #666;">
+            <div class="calculation-line" style="color: #555;">
                 (-) Crédito: R$ ${formatCurrency(icmsCreditCents)}
             </div>
-            <div class="calculation-line" style="font-weight: bold; margin-top: 5px; font-size: 1rem;">
+            <div class="calculation-line" style="font-weight: 900; margin-top: 5px; font-size: 1.1rem; background: #eee; padding: 2px;">
                 = R$ ${formatCurrency(amountToPayCents)}
             </div>
           `;
