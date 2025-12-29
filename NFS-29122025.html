@@ -3,32 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ferramentas Contábeis [BRUTALIST]</title>
+    <title>Ferramentas Contábeis Unificadas</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-
     <style>
-      /* --- NEO-BRUTALISM VARIABLES --- */
+      /* --- ESTILOS GERAIS E VARIÁVEIS --- */
       :root {
-        --bg-color: #f0f0f0;
-        --card-bg: #ffffff;
-        --border-color: #000000;
-        
-        --accent-purple: #a855f7;
-        --accent-yellow: #facc15;
-        --accent-red: #ff4757;
-        --accent-green: #2ed573;
-        --accent-blue: #3b82f6;
-
-        --border-width: 3px;
-        --shadow-offset: 5px;
-        --radius: 0px; /* Brutalism prefers sharp corners */
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease;
+        --primary-dark: #3d005a;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        --text-muted: #64748b;
+        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
       }
 
       * {
@@ -38,13 +40,13 @@
       }
 
       body {
-        font-family: 'Space Grotesk', sans-serif;
-        background-color: var(--bg-color);
-        background-image: radial-gradient(#000 1px, transparent 1px);
-        background-size: 20px 20px;
-        color: var(--border-color);
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
         min-height: 100vh;
-        padding-top: 100px; /* Space for fixed nav */
+        color: var(--text-color);
+        line-height: 1.6;
+        padding-top: 80px; /* Espaço para o menu fixo */
       }
 
       .container {
@@ -53,122 +55,122 @@
         padding: 2rem 1rem;
       }
 
-      /* --- NAVIGATION --- */
+      /* --- ESTILOS DO MENU DE NAVEGAÇÃO --- */
       .main-nav {
-        background-color: var(--accent-yellow);
-        border-bottom: var(--border-width) solid var(--border-color);
+        background-color: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: var(--sombra);
+        padding: 0 2rem;
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
-        z-index: 1000;
-        padding: 10px 0;
-        box-shadow: 0 4px 0 0 rgba(0,0,0,1);
+        z-index: 100;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
-
       .main-nav ul {
         list-style: none;
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 10px;
-        padding: 0 10px;
       }
-
       .main-nav a {
         display: block;
-        padding: 10px 15px;
+        padding: 1.2rem 1rem;
         text-decoration: none;
-        color: var(--border-color);
-        font-weight: 700;
-        font-family: 'Space Mono', monospace;
-        border: var(--border-width) solid var(--border-color);
-        background: #fff;
-        box-shadow: 3px 3px 0 0 var(--border-color);
-        transition: all 0.1s;
-        text-transform: uppercase;
-        font-size: 0.8rem;
+        color: var(--primary-dark);
+        font-weight: 600;
+        position: relative;
+        transition: color 0.3s ease;
       }
-
-      .main-nav a:hover {
-        transform: translate(-2px, -2px);
-        box-shadow: 5px 5px 0 0 var(--border-color);
-        background-color: var(--accent-purple);
-        color: #fff;
+      .main-nav a::after {
+        content: "";
+        position: absolute;
+        bottom: 0.8rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 3px;
+        background-color: var(--accent-color);
+        transition: width 0.3s ease;
       }
-
+      .main-nav a:hover,
       .main-nav a.active {
-        background-color: var(--border-color);
-        color: var(--accent-yellow);
-        box-shadow: none;
-        transform: translate(3px, 3px);
+        color: var(--accent-color);
+      }
+      .main-nav a.active::after {
+        width: 50%;
       }
 
-      /* --- LAYOUT & HEADERS --- */
+      /* --- CONTROLE DE VISIBILIDADE DAS PÁGINAS --- */
+      .page-content {
+        display: none;
+      }
+      .page-content.active {
+        display: block;
+        animation: fadeIn 0.5s ease-in-out;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* --- ESTILOS COMPARTILHADOS PELAS FERRAMENTAS --- */
       .header {
         text-align: center;
         margin-bottom: 3rem;
-        background: var(--card-bg);
-        border: var(--border-width) solid var(--border-color);
-        padding: 2rem;
-        box-shadow: var(--shadow-offset) var(--shadow-offset) 0 0 var(--border-color);
       }
-
       .header h1 {
-        font-size: 2rem;
-        font-weight: 900;
-        text-transform: uppercase;
-        margin-bottom: 10px;
-        letter-spacing: -1px;
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
-
       .header p {
-        font-family: 'Space Mono', monospace;
-        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
       }
-
       .content-card {
-        background: var(--card-bg);
-        border: var(--border-width) solid var(--border-color);
-        padding: 2rem;
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        padding: 2.5rem;
+        box-shadow: var(--sombra);
         margin-bottom: 2rem;
-        box-shadow: var(--shadow-offset) var(--shadow-offset) 0 0 var(--border-color);
-        position: relative;
       }
-
       .content-card h2 {
-        background-color: var(--border-color);
-        color: #fff;
-        display: inline-block;
-        padding: 10px 15px;
-        font-size: 1.2rem;
-        text-transform: uppercase;
-        margin-bottom: 20px;
-        transform: rotate(-1deg);
-        box-shadow: 3px 3px 0 0 var(--accent-purple);
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
       }
-
-      /* --- FORMS & INPUTS --- */
       .form-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 1.5rem;
         align-items: flex-end;
       }
-
       .form-group {
         margin-bottom: 1rem;
       }
-
       label {
         display: block;
-        margin-bottom: 8px;
-        font-weight: 700;
-        font-family: 'Space Mono', monospace;
-        text-transform: uppercase;
-        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--text-muted);
       }
-
       input[type="text"],
       input[type="number"],
       input[type="file"],
@@ -176,334 +178,445 @@
       select,
       textarea {
         width: 100%;
-        padding: 12px;
-        border: var(--border-width) solid var(--border-color);
-        border-radius: 0;
+        padding: 0.8rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
         font-size: 1rem;
-        font-family: 'Space Mono', monospace;
-        background: #f8f9fa;
-        outline: none;
-        transition: all 0.2s;
+        font-family: inherit;
+        background: var(--form-bg-color);
+        transition: var(--transicao);
       }
-
       input:focus,
       select:focus,
       textarea:focus {
-        background: #fff;
-        box-shadow: 4px 4px 0 0 var(--accent-purple);
-        transform: translate(-2px, -2px);
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(79, 0, 114, 0.1);
+        background: var(--background-color);
       }
-
-      /* --- BUTTONS --- */
       .btn {
-        background: var(--card-bg);
-        color: var(--border-color);
-        border: var(--border-width) solid var(--border-color);
-        padding: 12px 24px;
-        font-weight: 800;
+        background: var(--primary-color);
+        color: var(--text-color-light);
+        border: none;
+        padding: 0.875rem 2rem;
+        border-radius: var(--radius);
+        font-weight: 600;
         font-size: 1rem;
         cursor: pointer;
-        font-family: 'Space Grotesk', sans-serif;
-        text-transform: uppercase;
-        box-shadow: 4px 4px 0 0 var(--border-color);
-        transition: all 0.1s;
+        transition: var(--transicao);
+        box-shadow: var(--sombra);
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 0.5rem;
       }
-
-      .btn:hover:not(:disabled) {
-        transform: translate(-2px, -2px);
-        box-shadow: 6px 6px 0 0 var(--border-color);
-        background-color: var(--accent-yellow);
+      .btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
       }
-
-      .btn:active:not(:disabled) {
-        transform: translate(2px, 2px);
-        box-shadow: 0 0 0 0 var(--border-color);
-      }
-
       .btn:disabled {
-        opacity: 0.5;
+        background: var(--text-muted);
         cursor: not-allowed;
-        background: #e5e5e5;
+        transform: none;
         box-shadow: none;
       }
-
       .btn-accent {
-        background-color: var(--accent-purple);
-        color: #fff;
+        background-color: var(--accent-color);
       }
-      
-      .btn-accent:hover:not(:disabled) {
-        background-color: #9333ea;
-        color: #fff;
+      .btn-accent:hover {
+        background-color: #d9094f;
       }
-
-      /* --- UPLOAD AREA --- */
+      .actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        flex-wrap: wrap;
+      }
       .upload-area {
-        border: var(--border-width) dashed var(--border-color);
-        padding: 3rem;
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius);
+        padding: 3rem 2rem;
         text-align: center;
+        transition: var(--transicao);
         cursor: pointer;
-        background: #fff;
-        transition: all 0.2s;
+        position: relative;
+        overflow: hidden;
         margin-top: 1rem;
       }
-
-      .upload-area:hover, .upload-area.dragover {
-        border-style: solid;
-        background-color: #f0fdf4;
-        box-shadow: inset 0 0 0 4px var(--accent-green);
+      .upload-area:hover {
+        border-color: var(--primary-color);
+        background: var(--form-bg-color);
       }
-
+      .upload-area.dragover {
+        border-color: var(--primary-color);
+        background: rgba(79, 0, 114, 0.05);
+        transform: scale(1.02);
+      }
       .upload-icon {
         font-size: 3rem;
+        color: var(--text-muted);
         margin-bottom: 1rem;
-        color: var(--border-color);
+        transition: all 0.3s ease;
       }
-
-      /* --- TABLES --- */
+      .upload-area:hover .upload-icon {
+        color: var(--primary-color);
+        transform: scale(1.1);
+      }
+      .upload-text {
+        font-size: 1.1rem;
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+      }
+      .upload-subtext {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+      .file-info {
+        background: var(--form-bg-color);
+        border-radius: var(--radius);
+        padding: 1rem;
+        margin-top: 1.5rem;
+        display: none;
+        align-items: center;
+        gap: 1rem;
+        border: 1px solid var(--border-color);
+      }
+      .file-info.show {
+        display: flex;
+      }
+      .file-icon {
+        color: var(--success);
+        font-size: 1.5rem;
+      }
+      .file-details {
+        flex: 1;
+      }
+      .file-name {
+        font-weight: 600;
+        color: var(--text-color);
+      }
+      .file-size {
+        color: var(--text-muted);
+        font-size: 0.875rem;
+      }
       table {
         width: 100%;
         border-collapse: collapse;
         margin-top: 1.5rem;
-        border: var(--border-width) solid var(--border-color);
+        box-shadow: var(--shadow);
+        border-radius: var(--radius);
+        overflow: hidden;
       }
-
-      th, td {
-        border: 2px solid var(--border-color);
-        padding: 12px;
+      th,
+      td {
+        border: 1px solid var(--border-color);
+        padding: 0.75rem 1rem;
         text-align: left;
-        font-family: 'Space Mono', monospace;
       }
-
       th {
-        background-color: var(--border-color);
-        color: #fff;
-        text-transform: uppercase;
-        font-weight: 700;
+        background-color: var(--primary-color);
+        color: var(--text-color-light);
+        font-weight: 600;
       }
-
+      td {
+        background-color: var(--background-color);
+      }
       tr:nth-child(even) td {
-        background-color: #f3f3f3;
+        background-color: var(--form-bg-color);
       }
-
-      /* --- ALERTS & INFO --- */
-      .file-info {
-        background: var(--card-bg);
-        border: var(--border-width) solid var(--border-color);
-        padding: 1rem;
-        margin-top: 1rem;
-        display: none;
-        align-items: center;
-        gap: 1rem;
-        box-shadow: 4px 4px 0 0 var(--accent-green);
-      }
-      
-      .file-info.show { display: flex; }
-
       .empty-state {
         text-align: center;
-        padding: 3rem;
-        background-color: #f8f9fa;
-        border: 2px dashed #ccc;
-        font-family: 'Space Mono', monospace;
+        padding: 3rem 2rem;
+        color: var(--text-muted);
       }
-
-      #errorMessage {
-        background-color: var(--accent-red);
-        color: #fff;
-        border: var(--border-width) solid var(--border-color);
+      .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+      .custom-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
         padding: 1rem;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      .custom-modal-overlay.visible {
+        display: flex;
+        opacity: 1;
+      }
+      .custom-modal-content {
+        background-color: var(--background-color);
+        padding: 2.5rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        max-width: 500px;
+        width: 90%;
+        text-align: center;
+        color: var(--text-color);
+        transform: scale(0.95);
+        transition: transform 0.3s ease;
+      }
+      .custom-modal-overlay.visible .custom-modal-content {
+        transform: scale(1);
+      }
+      .custom-modal-text {
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+        line-height: 1.7;
+        white-space: pre-line;
+      }
+      .custom-modal-text h3 {
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+      }
+      .custom-modal-text b {
+        color: var(--primary-dark);
+      }
+      .input-hint,
+      .calculation-note {
+        font-size: 0.85em;
+        color: var(--text-muted);
+        margin-top: 5px;
+      }
+      #errorMessage {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--error);
+        background-color: #f8d7da;
+        color: #721c24;
+        display: none;
+        text-align: center;
         font-weight: bold;
-        box-shadow: 4px 4px 0 0 var(--border-color);
+      }
+      #errorMessage:not(:empty) {
+        display: block;
       }
 
-      /* --- SPECIFIC: NFS GRID --- */
+      /* --- ESTILOS ESPECÍFICOS PARA CADA FERRAMENTA --- */
+
+      /* NFS.html - Grade de Inserção */
       .input-grid-container {
         overflow-x: auto;
         padding-bottom: 10px;
-        border: var(--border-width) solid var(--border-color);
-        padding: 10px;
-        background: #fafafa;
       }
-
-      .input-row-header {
-        display: flex;
-        background: var(--border-color);
-        color: #fff;
-        font-family: 'Space Mono', monospace;
-        font-weight: bold;
-        padding: 10px 0;
-        margin-bottom: 10px;
-      }
-
-      .input-row-header div {
-        flex: 1 1 120px;
-        text-align: center;
-        padding: 0 5px;
-      }
-      
-      .col-cnpj { flex: 1.5 1 200px !important; }
-      .col-valor { flex: 1 1 120px; }
-      .col-action { flex: 0 0 60px; }
-
+      .input-row-header,
       .input-row {
         display: flex;
-        gap: 10px;
+        align-items: center;
         margin-bottom: 10px;
-        padding: 10px;
-        background: #fff;
-        border: 2px solid #e5e5e5;
-        transition: all 0.2s;
+        padding: 5px;
+        border-bottom: 1px solid var(--border-color);
+        gap: 10px;
+        flex-wrap: nowrap;
+        transition: background-color 0.3s ease;
+        border-radius: var(--radius);
       }
-      
-      .input-row:hover {
-        border-color: var(--border-color);
-        box-shadow: 3px 3px 0 0 rgba(0,0,0,0.1);
+      .input-row:last-child {
+        border-bottom: none;
       }
-
+      .input-row-header div {
+        font-weight: 600;
+        color: var(--primary-dark);
+        flex: 1 1 120px;
+        text-align: center;
+        font-size: 0.85em;
+        padding: 0.5rem;
+      }
       .input-row div {
         flex: 1 1 120px;
+        display: flex;
+        align-items: center;
       }
-
+      .col-cnpj {
+        flex: 1.5 1 200px !important;
+      }
+      .col-valor {
+        flex: 1 1 120px;
+      }
+      .col-action {
+        flex: 0 0 50px;
+        justify-content: center;
+      }
+      .input-row label {
+        display: none;
+      }
       .input-row input {
-        padding: 8px;
+        padding: 0.7rem;
         font-size: 0.9rem;
       }
-
+      input.manual-error,
+      input:invalid {
+        border-color: var(--error) !important;
+        background-color: #fff0f0;
+      }
+      .input-row.duplicate-error {
+        background-color: #fff9e6 !important;
+        border: 1px solid var(--warning);
+        box-shadow: 0 0 8px rgba(245, 158, 11, 0.2);
+      }
       .delete-row-btn {
-        background-color: var(--accent-red);
+        background-color: var(--text-muted);
         color: white;
-        border: 2px solid var(--border-color);
-        width: 36px;
-        height: 36px;
+        border: none;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        box-shadow: 2px 2px 0 0 var(--border-color);
+        transition: var(--transicao);
+        font-size: 1rem;
       }
-      
       .delete-row-btn:hover {
-        transform: translate(-1px, -1px);
-        box-shadow: 3px 3px 0 0 var(--border-color);
+        background-color: var(--error);
+        transform: scale(1.1);
       }
-
-      /* --- SPECIFIC: RESULTS BOX --- */
-      #ativo-resultBox, #reinf-report, .preview-box {
-        background-color: #000;
-        color: #00ff00;
-        font-family: 'Courier New', Courier, monospace;
-        border: var(--border-width) solid var(--border-color);
-        padding: 1.5rem;
-        box-shadow: inset 0 0 20px rgba(0, 255, 0, 0.2);
-        max-height: 300px;
-        overflow-y: auto;
-      }
-
-      /* --- SPECIFIC: SIMPLES NACIONAL CARDS --- */
-      .anexo-result {
-        background: #fff;
-        border: var(--border-width) solid var(--border-color);
-        padding: 1.5rem;
-        box-shadow: 4px 4px 0 0 var(--accent-blue);
-        margin-bottom: 10px;
-      }
-      
-      .anexo-result h4 {
-        border-bottom: 2px solid var(--border-color);
-        padding-bottom: 5px;
-        margin-bottom: 10px;
-        font-weight: 900;
-      }
-
-      .anexo-aliquota {
-        font-family: 'Space Mono', monospace;
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--accent-purple);
-      }
-
-      /* --- MODAL --- */
-      .custom-modal-overlay {
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background-color: rgba(255, 228, 230, 0.9); /* Tinted background */
+      .page-nfs .input-row:first-child .delete-row-btn {
         display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 2000;
-        backdrop-filter: blur(5px);
       }
 
-      .custom-modal-overlay.visible { display: flex; }
-
-      .custom-modal-content {
-        background: #fff;
-        border: 4px solid #000;
-        box-shadow: 10px 10px 0 0 #000;
-        padding: 2rem;
-        max-width: 500px;
-        width: 90%;
+      /* Calculadoras Simples Nacional */
+      .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+      }
+      .anexo-result {
+        background: var(--form-bg-color);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        border-left: 4px solid var(--primary-color);
+        transition: var(--transicao);
+      }
+      .anexo-result:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--sombra);
+        border-left-color: var(--accent-color);
+      }
+      .anexo-result h4 {
+        color: var(--primary-dark);
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        font-size: 1.2em;
+      }
+      .anexo-aliquota {
+        font-weight: bold;
+        font-size: 1.1em;
+        color: var(--accent-color);
+        margin: 0;
+      }
+      .results-intro {
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        font-size: 1.1em;
+        color: var(--primary-color);
         text-align: center;
+        background: var(--form-bg-color);
+        padding: 1rem;
+        border-radius: var(--radius);
+        line-height: 1.8;
+      }
+      .results-intro strong {
+        color: var(--accent-color);
+        font-size: 1.1em;
       }
 
-      .custom-modal-content h3 {
-        background: #000;
-        color: #fff;
-        display: inline-block;
-        padding: 5px 10px;
-        margin-bottom: 1rem;
-        text-transform: uppercase;
-      }
-
-      /* --- PAGE VISIBILITY --- */
-      .page-content { display: none; }
-      .page-content.active { display: block; animation: slideUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
-
-      @keyframes slideUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-
-      /* --- RESPONSIVE --- */
+      /* --- RESPONSIVIDADE --- */
       @media (max-width: 992px) {
-        .input-row-header { display: none; }
-        .input-row { flex-direction: column; gap: 5px; position: relative; padding-top: 40px; }
-        .input-row label { display: block; }
-        .col-action { position: absolute; top: 10px; right: 10px; }
+        .page-nfs .input-row-header {
+          display: none;
+        }
+        .page-nfs .input-row {
+          flex-direction: column;
+          border: 1px solid var(--border-color);
+          border-left: 4px solid var(--primary-color);
+          padding: 1.5rem;
+          position: relative;
+          align-items: stretch;
+        }
+        .page-nfs .input-row.duplicate-error {
+          border-left-color: var(--warning);
+        }
+        .page-nfs .input-row label {
+          display: block;
+          font-weight: 600;
+          color: var(--text-muted);
+          font-size: 0.8rem;
+          margin-bottom: 0.25rem;
+        }
+        .page-nfs .input-row div {
+          flex-basis: auto;
+          margin-bottom: 0.75rem;
+        }
+        .page-nfs .input-row .col-action {
+          position: absolute;
+          top: 0.75rem;
+          right: 0.75rem;
+          margin-bottom: 0;
+        }
+        .page-nfs .delete-row-btn {
+          background-color: var(--error);
+        }
       }
-
       @media (max-width: 768px) {
-        .main-nav { overflow-x: auto; white-space: nowrap; justify-content: flex-start; }
-        .main-nav ul { flex-wrap: nowrap; }
-        .header h1 { font-size: 1.5rem; }
+        body {
+          padding-top: 120px;
+        }
+        .container {
+          padding: 1rem;
+        }
+        .header h1 {
+          font-size: 2rem;
+        }
+        .content-card {
+          padding: 1.5rem;
+        }
+        .actions,
+        .button-container {
+          flex-direction: column;
+        }
+        .actions .btn,
+        .button-container .btn {
+          width: 100%;
+        }
+        .main-nav {
+          padding: 0 1rem;
+          justify-content: flex-start;
+          overflow-x: auto;
+        }
+        .main-nav ul {
+          flex-wrap: nowrap;
+        }
       }
     </style>
   </head>
   <body>
-    <nav class="main-nav">
-      <ul>
-        <li><a href="#" class="nav-link active" data-page="page-nfs">NOTA FISCAL (TXT)</a></li>
-        <li><a href="#" class="nav-link" data-page="page-ativo">PATRIMÔNIO (PMBEM)</a></li>
-        <li><a href="#" class="nav-link" data-page="page-reinf">REINF (R-4020)</a></li>
-        <li><a href="#" class="nav-link" data-page="page-ecf">ECF (N030/M500)</a></li>
-        <li><a href="#" class="nav-link" data-page="page-simples-mensal">SIMPLES (MENSAL)</a></li>
-        <li><a href="#" class="nav-link" data-page="page-simples-rbt12">SIMPLES (RBT12)</a></li>
-      </ul>
-    </nav>
-
     <main id="page-nfs" class="page-content active">
       <div class="container">
         <div class="header">
-          <h1>/// Layout de Notas Fiscais ///</h1>
-          <p>Importação Sistema Domínio</p>
+          <h1>
+            <i class="fa-solid fa-file-lines"></i> Gerador de Layout de Notas
+            Fiscais
+          </h1>
+          <p>Para importação no sistema Domínio</p>
         </div>
         <div class="content-card">
-          <h2>1. Dados da Nota Fiscal</h2>
+          <h2>
+            <i class="fa-solid fa-table-list"></i> Inserir Dados da Nota Fiscal
+          </h2>
           <form id="nfs-data-form" novalidate>
             <div class="input-grid-container">
               <div class="input-row-header">
@@ -520,12 +633,16 @@
               </div>
               <div id="nfs-input-rows"></div>
             </div>
-            <div class="actions" style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+            <div class="button-container">
               <button type="button" id="nfs-add-row-btn" class="btn">
-                <i class="fa-solid fa-plus"></i> ADD LINHA
+                <i class="fa-solid fa-plus"></i> Adicionar Linha
               </button>
-              <button type="button" id="nfs-generate-btn" class="btn btn-accent">
-                <i class="fa-solid fa-bolt"></i> GERAR TXT
+              <button
+                type="button"
+                id="nfs-generate-btn"
+                class="btn btn-accent"
+              >
+                <i class="fa-solid fa-file-export"></i> Gerar Arquivo TXT
               </button>
             </div>
           </form>
@@ -536,72 +653,160 @@
     <main id="page-ativo" class="page-content">
       <div class="container">
         <div class="header">
-          <h1>/// Layout Patrimônio ///</h1>
-          <p>Excel -> Layout PMBEM</p>
+          <h1>
+            <i class="fa-solid fa-file-invoice-dollar"></i> Gerador de Layout de
+            Patrimônio
+          </h1>
+          <p>
+            Faça o upload do arquivo Excel e mapeie as contas para gerar o
+            layout (PMBEM)
+          </p>
         </div>
-        
         <div class="content-card" id="ativo-uploadCard">
-          <h2>1. Upload & Config</h2>
+          <h2><i class="fa-solid fa-upload"></i> 1. Carregar Dados e Opções</h2>
           <div class="form-grid">
             <div class="form-group">
-              <label for="ativo-numeroEmpresa">NÚMERO DA EMPRESA (Domínio)</label>
-              <input type="number" id="ativo-numeroEmpresa" required max="99999" maxlength="5" placeholder="Ex: 123" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);">
+              <label for="ativo-numeroEmpresa"
+                >Número da Empresa* (máx. 5 dígitos)</label
+              ><input
+                type="number"
+                id="ativo-numeroEmpresa"
+                required
+                max="99999"
+                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                maxlength="5"
+                placeholder="Ex: 123"
+              />
             </div>
           </div>
-
-          <div class="upload-area" onclick="document.getElementById('ativo-excelFile').click()">
-            <div class="upload-icon"><i class="fas fa-file-excel"></i></div>
-            <div class="upload-text">SELECIONAR PLANILHA EXCEL</div>
-            <div class="upload-subtext">.xlsx ou .xls</div>
-            <input type="file" id="ativo-excelFile" accept=".xlsx, .xls" style="display: none" />
+          <div
+            class="upload-area"
+            onclick="document.getElementById('ativo-excelFile').click()"
+          >
+            <div class="upload-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <div class="upload-text">
+              Clique para selecionar o arquivo Excel
+            </div>
+            <div class="upload-subtext">ou arraste e solte (.xlsx, .xls)</div>
+            <input
+              type="file"
+              id="ativo-excelFile"
+              accept=".xlsx, .xls"
+              style="display: none"
+            />
           </div>
-
           <div class="file-info" id="ativo-file-info">
-            <div class="file-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="file-icon"><i class="fas fa-file-excel"></i></div>
             <div class="file-details">
               <div class="file-name" id="ativo-file-name"></div>
               <div class="file-size" id="ativo-file-size"></div>
             </div>
           </div>
-
-          <div style="margin-top: 1.5rem; background: #fff; border: 2px solid #000; padding: 1rem; display: flex; align-items: center; gap: 10px;">
-            <input type="checkbox" id="ativo-processarBaixadosCheckbox" style="width: 20px; height: 20px;">
-            <label for="ativo-processarBaixadosCheckbox" style="margin: 0;">Incluir itens com status 'Baixa Total'?</label>
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              margin-top: 1.5rem;
+              background: var(--form-bg-color);
+              padding: 1rem;
+              border-radius: var(--radius);
+            "
+          >
+            <input
+              type="checkbox"
+              id="ativo-processarBaixadosCheckbox"
+              style="
+                width: auto;
+                margin-right: 0.75rem;
+                height: 1.2em;
+                accent-color: var(--primary-color);
+              "
+            /><label
+              for="ativo-processarBaixadosCheckbox"
+              style="
+                margin-bottom: 0;
+                font-weight: normal;
+                color: var(--text-color);
+              "
+              >Processar itens com Status 'Baixa Total' na planilha?</label
+            >
           </div>
         </div>
-
         <div class="content-card" id="ativo-mappingCard" style="display: none">
-          <h2>2. Mapeamento De/Para</h2>
-          <p style="margin-bottom: 1rem;">Associe as contas do Excel às Contas Patrimoniais do sistema.</p>
+          <h2><i class="fa-solid fa-right-left"></i> 2. Mapeamento De/Para</h2>
+          <p>
+            Preencha a "Conta Patrimonial" correspondente para cada "Conta
+            Principal".
+          </p>
           <div id="ativo-mappingTableContainer"></div>
-          <div class="actions" style="margin-top: 20px;">
+          <div class="actions">
             <button id="ativo-processExcelBtn" class="btn">
-              <i class="fas fa-cogs"></i> PROCESSAR DADOS
+              <i class="fas fa-cogs"></i> Processar Dados
             </button>
           </div>
         </div>
-
         <div class="content-card" id="ativo-itemsListCard">
-          <h2>3. Itens Processados</h2>
+          <h2>
+            <i class="fa-solid fa-list-check"></i> 3. Itens a Serem Gerados
+          </h2>
           <div id="ativo-itemsContainer" style="display: grid; gap: 1rem"></div>
           <div id="ativo-emptyState" class="empty-state">
-            <div style="font-size: 2rem; margin-bottom: 10px;">📦</div>
+            <div class="empty-icon"><i class="fa-solid fa-box-open"></i></div>
             <h3>Nenhum item processado</h3>
-            <p>Carregue o Excel para começar.</p>
+            <p>
+              Carregue um arquivo Excel e realize o mapeamento para começar.
+            </p>
           </div>
-          <div class="actions" style="margin-top: 20px;">
+          <div class="actions">
             <button id="ativo-gerarTxtBtn" class="btn btn-accent" disabled>
-              GERAR ARQUIVO FINAL
+              <i class="fa-solid fa-file-export"></i> Gerar Arquivo TXT
             </button>
           </div>
         </div>
-
         <div class="content-card" id="ativo-resultArea" style="display: none">
-          <h2 style="background: #000; color: #00ff00;">OUTPUT GERADO</h2>
-          <div id="ativo-resultBox"></div>
-          <div class="actions" style="margin-top: 20px; display: flex; gap: 10px;">
-            <button id="ativo-downloadBtn" class="btn"><i class="fa-solid fa-download"></i> BAIXAR .TXT</button>
-            <button id="ativo-copyBtn" class="btn"><i class="fa-solid fa-copy"></i> COPIAR</button>
+          <div
+            style="
+              background: linear-gradient(
+                135deg,
+                var(--primary-color),
+                var(--primary-dark)
+              );
+              color: var(--text-color-light);
+              padding: 1.5rem 2rem;
+              display: flex;
+              align-items: center;
+              gap: 1rem;
+              border-radius: var(--radius) var(--radius) 0 0;
+            "
+          >
+            <i class="fas fa-file-alt"></i>
+            <div style="font-size: 1.25rem; font-weight: 600">
+              Resultado do Layout (TXT)
+            </div>
+          </div>
+          <div
+            id="ativo-resultBox"
+            style="
+              background-color: var(--form-bg-color);
+              border: 1px solid var(--border-color);
+              border-radius: 0 0 var(--radius) var(--radius);
+              padding: 1.5rem;
+              white-space: pre-wrap;
+              word-break: break-all;
+              max-height: 300px;
+              overflow-y: auto;
+              font-family: 'Monaco', 'Menlo', monospace;
+              font-size: 0.9rem;
+            "
+          ></div>
+          <div class="actions">
+            <button id="ativo-downloadBtn" class="btn">
+              <i class="fa-solid fa-download"></i> Baixar Arquivo TXT</button
+            ><button id="ativo-copyBtn" class="btn">
+              <i class="fa-solid fa-copy"></i> Copiar Conteúdo
+            </button>
           </div>
         </div>
       </div>
@@ -610,33 +815,50 @@
     <main id="page-reinf" class="page-content">
       <div class="container">
         <div class="header">
-          <h1>/// Gerador REINF ///</h1>
-          <p>Mapeamento Nome > CPF</p>
+          <h1>
+            <i class="fa-solid fa-file-invoice"></i> Gerador de TXT para REINF
+          </h1>
+          <p>
+            Mapeie nomes para CPFs, importe sua planilha e gere os arquivos de
+            importação
+          </p>
         </div>
-
         <div class="content-card">
-          <h2>1. Mapeamento (DE/PARA)</h2>
-          <p style="margin-bottom: 15px;">Adicione nomes (ou trechos) da coluna 'Histórico' para encontrar o CPF.</p>
-          
-          <div class="form-grid">
+          <h2>
+            <i class="fa-solid fa-address-book"></i> 1. Mapeamento Nome x CPF
+          </h2>
+          <p>
+            Adicione os nomes (ou partes deles) a serem buscados na coluna
+            'Histórico' e seus respectivos CPFs.
+          </p>
+          <div class="form-grid" style="margin-top: 1.5rem">
             <div class="form-group">
-              <label>Nome (Busca)</label>
-              <input type="text" id="reinf-nameInput" placeholder="Ex: JOÃO">
+              <label for="reinf-nameInput">Nome a ser Buscado</label
+              ><input
+                type="text"
+                id="reinf-nameInput"
+                placeholder="Ex: JOÃO SILVA ou apenas JOAO"
+              />
             </div>
             <div class="form-group">
-              <label>CPF Destino</label>
-              <input type="text" id="reinf-cpfInput" placeholder="Apenas números">
+              <label for="reinf-cpfInput">CPF Correspondente</label
+              ><input
+                type="text"
+                id="reinf-cpfInput"
+                placeholder="Somente números (Ex: 01234567890)"
+              />
             </div>
             <div class="form-group">
-              <label>&nbsp;</label>
-              <button id="reinf-addMappingBtn" class="btn"><i class="fa-solid fa-plus"></i> ADD</button>
+              <label>&nbsp;</label
+              ><button id="reinf-addMappingBtn" class="btn">
+                <i class="fa-solid fa-plus"></i> Adicionar
+              </button>
             </div>
           </div>
-
           <table id="reinf-mapping-table">
             <thead>
               <tr>
-                <th>Nome Buscado</th>
+                <th>Nome Buscado (Original)</th>
                 <th>CPF</th>
                 <th>Ação</th>
               </tr>
@@ -644,44 +866,108 @@
             <tbody id="reinf-mapping-body"></tbody>
           </table>
         </div>
-
         <div class="content-card">
-          <h2>2. Processamento</h2>
-          <div class="upload-area" onclick="document.getElementById('reinf-excelFile').click()">
-            <div class="upload-icon"><i class="fas fa-file-excel"></i></div>
-            <div class="upload-text">UPLOAD EXCEL</div>
-            <div class="upload-subtext">Colunas necessárias: Histórico, Valor, Data</div>
-            <input type="file" id="reinf-excelFile" accept=".xlsx, .xls" style="display: none" />
+          <h2>
+            <i class="fa-solid fa-upload"></i> 2. Importar Planilha e Processar
+          </h2>
+          <p>
+            A planilha deve conter as colunas: <strong>Histórico</strong>,
+            <strong>Valor</strong>, <strong>Data</strong> e opcionalmente
+            <strong>Razão Social Empresa</strong>.
+          </p>
+          <div
+            class="upload-area"
+            onclick="document.getElementById('reinf-excelFile').click()"
+          >
+            <div class="upload-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <div class="upload-text">
+              Clique para selecionar o arquivo Excel
+            </div>
+            <div class="upload-subtext">ou arraste e solte (.xlsx, .xls)</div>
+            <input
+              type="file"
+              id="reinf-excelFile"
+              accept=".xlsx, .xls"
+              style="display: none"
+            />
           </div>
-
           <div class="file-info" id="reinf-file-info">
-            <div class="file-icon"><i class="fas fa-check"></i></div>
+            <div class="file-icon"><i class="fas fa-file-excel"></i></div>
             <div class="file-details">
               <div class="file-name" id="reinf-file-name"></div>
               <div class="file-size" id="reinf-file-size"></div>
             </div>
           </div>
-
-          <button id="reinf-processButton" class="btn btn-accent" style="margin-top: 20px; width: 100%;" disabled>
-            PROCESSAR PLANILHA
-          </button>
+          <div class="actions">
+            <button id="reinf-processButton" class="btn" disabled>
+              <i class="fas fa-cogs"></i> Processar Planilha e Gerar TXT(s)
+            </button>
+          </div>
         </div>
-
         <div class="content-card">
-          <h2>3. Resultados</h2>
-          <div id="reinf-status" style="padding: 1rem; border: 2px solid #000; margin-bottom: 1rem;">Aguardando...</div>
-          
-          <div id="reinf-cpfTotalsSection" style="display: none; margin-bottom: 1rem;">
-            <h3>Conferência (Totais)</h3>
+          <h2>
+            <i class="fa-solid fa-chart-bar"></i> 3. Resultado do Processamento
+          </h2>
+          <div
+            id="reinf-companyNameDisplay"
+            style="
+              display: none;
+              font-weight: bold;
+              color: var(--primary-dark);
+              margin-bottom: 1rem;
+              padding: 1rem;
+              border-radius: var(--radius);
+              background-color: #e2e3e5;
+              border: 1px solid var(--border-color);
+            "
+          ></div>
+          <div
+            id="reinf-status"
+            style="
+              margin-top: 1rem;
+              padding: 1.25rem;
+              border-radius: var(--radius);
+              word-wrap: break-word;
+              border: 1px solid transparent;
+            "
+          >
+            Aguardando processamento...
+          </div>
+          <div id="reinf-cpfTotalsSection" style="display: none">
+            <h3>Totais por CPF (para Conferência)</h3>
             <table id="reinf-cpfTotalsTable">
-              <thead><tr><th>CPF</th><th>Total (R$)</th></tr></thead>
+              <thead>
+                <tr>
+                  <th>CPF</th>
+                  <th>Valor Total (R$)</th>
+                </tr>
+              </thead>
               <tbody id="reinf-cpfTotalsTableBody"></tbody>
             </table>
           </div>
-
-          <button id="reinf-downloadButton" class="btn" style="display: none; width: 100%;" disabled>
-            <i class="fa-solid fa-download"></i> BAIXAR ARQUIVOS
-          </button>
+          <div
+            id="reinf-report"
+            style="
+              display: none;
+              margin-top: 1rem;
+              padding: 1.25rem;
+              border-radius: var(--radius);
+              word-wrap: break-word;
+              border: 1px solid transparent;
+            "
+          ></div>
+          <div class="actions">
+            <button
+              id="reinf-downloadButton"
+              class="btn btn-accent"
+              style="display: none"
+              disabled
+            >
+              <i class="fa-solid fa-download"></i> Baixar Arquivo(s) TXT
+            </button>
+          </div>
         </div>
       </div>
     </main>
@@ -689,35 +975,81 @@
     <main id="page-ecf" class="page-content">
       <div class="container">
         <div class="header">
-          <h1>/// Leitor ECF ///</h1>
-          <p>Extração N030 / M500</p>
+          <h1><i class="fas fa-file-alt"></i> Processador de Arquivo ECF</h1>
+          <p>Extraia e visualize dados dos registros N030 e M500</p>
         </div>
-
         <div class="content-card">
-          <div class="upload-area" onclick="document.getElementById('ecf-file-input').click()">
-            <div class="upload-icon"><i class="fas fa-file-alt"></i></div>
-            <div class="upload-text">SELECIONAR ARQUIVO .TXT</div>
-            <input type="file" id="ecf-file-input" accept=".txt" style="display: none" />
+          <div
+            class="upload-area"
+            onclick="document.getElementById('ecf-file-input').click()"
+          >
+            <div class="upload-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <div class="upload-text">Clique para selecionar um arquivo</div>
+            <div class="upload-subtext">
+              ou arraste e solte um arquivo .txt aqui
+            </div>
+            <input
+              type="file"
+              id="ecf-file-input"
+              accept=".txt"
+              style="display: none"
+            />
           </div>
-          
           <div class="file-info" id="ecf-file-info">
-            <div class="file-name" id="ecf-file-name"></div>
-            <div class="file-size" id="ecf-file-size"></div>
+            <div class="file-icon"><i class="fas fa-file-text"></i></div>
+            <div class="file-details">
+              <div class="file-name" id="ecf-file-name"></div>
+              <div class="file-size" id="ecf-file-size"></div>
+            </div>
           </div>
-
-          <button class="btn btn-accent" id="ecf-process-btn" style="margin-top: 20px; width: 100%;" disabled>
-            LER ARQUIVO
-          </button>
+          <div class="actions">
+            <button class="btn" id="ecf-process-btn" disabled>
+              <i class="fas fa-cogs"></i>Processar Arquivo
+            </button>
+          </div>
         </div>
-
-        <div class="content-card" id="ecf-loading" style="display: none; text-align: center;">
-          <div style="font-size: 2rem; animation: spin 1s infinite linear;">⚙️</div>
-          <p>LENDO DADOS...</p>
+        <div
+          class="content-card"
+          id="ecf-loading"
+          style="display: none; text-align: center"
+        >
+          <div
+            style="
+              border: 3px solid var(--border-color);
+              border-top: 3px solid var(--primary-color);
+              border-radius: 50%;
+              width: 40px;
+              height: 40px;
+              animation: spin 1s linear infinite;
+              margin: 0 auto 1rem;
+            "
+          ></div>
+          <p>Processando arquivo...</p>
         </div>
-
-        <div class="content-card" id="ecf-results" style="display: none;">
-          <h2>Resultados</h2>
-          <div id="ecf-results-content"></div>
+        <div class="content-card" id="ecf-results" style="display: none">
+          <div
+            style="
+              background: linear-gradient(
+                135deg,
+                var(--primary-color),
+                var(--primary-dark)
+              );
+              color: var(--text-color-light);
+              padding: 1.5rem 2rem;
+              display: flex;
+              align-items: center;
+              gap: 1rem;
+              border-radius: var(--radius) var(--radius) 0 0;
+            "
+          >
+            <i class="fas fa-chart-line"></i>
+            <h2 style="color: white; margin: 0; font-size: 1.25rem">
+              Resultados do Processamento
+            </h2>
+          </div>
+          <div id="ecf-results-content" style="padding: 1.5rem"></div>
         </div>
       </div>
     </main>
@@ -725,26 +1057,52 @@
     <main id="page-simples-mensal" class="page-content">
       <div class="container" style="max-width: 800px">
         <div class="header">
-          <h1>/// Simples Nacional ///</h1>
-          <p>Cálculo por Faturamento Mensal</p>
+          <h1>
+            <i class="fa-solid fa-calculator"></i> Calculadora Simples Nacional
+          </h1>
+          <p>Calcule a alíquota efetiva com base no seu faturamento mensal</p>
         </div>
         <div class="content-card">
-          <h2>1. Entrada</h2>
+          <h2>
+            <i class="fa-solid fa-calendar-day"></i> 1. Informar Faturamento
+            Mensal
+          </h2>
           <div class="form-group">
-            <label>Faturamento Mês (R$)</label>
-            <input type="text" id="sm-monthlyRevenueInput" placeholder="Ex: 10000,00" inputmode="decimal">
+            <label for="sm-monthlyRevenueInput"
+              >Valor do Faturamento Mensal:</label
+            ><input
+              type="text"
+              id="sm-monthlyRevenueInput"
+              placeholder="Ex: 10500,00"
+              inputmode="decimal"
+            />
+            <p class="input-hint">Use vírgula (,) como separador decimal.</p>
           </div>
-          <div style="background: #ffeb3b; border: 2px solid #000; padding: 10px; margin-bottom: 20px; font-size: 0.9rem;">
-            ⚠ O sistema projetará o RBT12 multiplicando este valor por 12.
-          </div>
-          <button id="sm-calculateButton" class="btn btn-accent" style="width: 100%;">CALCULAR</button>
-          <div id="sm-errorMessage" style="display: none; margin-top: 10px;"></div>
+          <p
+            class="calculation-note"
+            style="
+              background-color: var(--form-bg-color);
+              padding: 0.75rem;
+              border-radius: var(--radius);
+              border: 1px dashed var(--border-color);
+            "
+          >
+            * Para este cálculo, o sistema simula o RBT12 (faturamento anual)
+            multiplicando o valor mensal informado por 12.
+          </p>
+          <button id="sm-calculateButton" class="btn">
+            <i class="fa-solid fa-play"></i> Calcular Alíquotas
+          </button>
+          <div id="sm-errorMessage" class="error-message"></div>
         </div>
-
         <div class="content-card">
-          <h2>2. Alíquotas Efetivas</h2>
+          <h2>
+            <i class="fa-solid fa-file-contract"></i> 2. Resultados por Anexo
+          </h2>
           <div id="sm-resultsOutput">
-            <div class="empty-state">Aguardando valor...</div>
+            <div class="empty-state">
+              <p>Informe o valor e clique em "Calcular Alíquotas".</p>
+            </div>
           </div>
         </div>
       </div>
@@ -753,23 +1111,41 @@
     <main id="page-simples-rbt12" class="page-content">
       <div class="container" style="max-width: 800px">
         <div class="header">
-          <h1>/// Simples Nacional ///</h1>
-          <p>Cálculo por RBT12</p>
+          <h1>
+            <i class="fa-solid fa-calculator"></i> Calculadora Simples Nacional
+          </h1>
+          <p>
+            Calcule a alíquota efetiva com base na sua Receita Bruta (RBT12)
+          </p>
         </div>
         <div class="content-card">
-          <h2>1. Entrada</h2>
+          <h2>
+            <i class="fa-solid fa-hand-holding-dollar"></i> 1. Informar RBT12
+          </h2>
           <div class="form-group">
-            <label>RBT12 (Últimos 12 meses)</label>
-            <input type="text" id="rbt12-rbt12Input" placeholder="Ex: 120000,00" inputmode="decimal">
+            <label for="rbt12-rbt12Input"
+              >Faturamento Bruto dos Últimos 12 Meses (RBT12):</label
+            ><input
+              type="text"
+              id="rbt12-rbt12Input"
+              placeholder="Ex: 126000,00"
+              inputmode="decimal"
+            />
+            <p class="input-hint">Use vírgula (,) como separador decimal.</p>
           </div>
-          <button id="rbt12-calculateButton" class="btn btn-accent" style="width: 100%;">CALCULAR</button>
-          <div id="rbt12-errorMessage" style="display: none; margin-top: 10px;"></div>
+          <button id="rbt12-calculateButton" class="btn">
+            <i class="fa-solid fa-play"></i> Calcular Alíquotas
+          </button>
+          <div id="rbt12-errorMessage" class="error-message"></div>
         </div>
-
         <div class="content-card">
-          <h2>2. Alíquotas Efetivas</h2>
+          <h2>
+            <i class="fa-solid fa-file-contract"></i> 2. Resultados por Anexo
+          </h2>
           <div id="rbt12-resultsOutput">
-            <div class="empty-state">Aguardando valor...</div>
+            <div class="empty-state">
+              <p>Informe o valor do RBT12 e clique em "Calcular Alíquotas".</p>
+            </div>
           </div>
         </div>
       </div>
@@ -777,9 +1153,11 @@
 
     <div id="generic-modal" class="custom-modal-overlay">
       <div class="custom-modal-content">
-        <h3 id="generic-modal-title">AVISO</h3>
-        <p id="generic-modal-text" style="font-family: 'Space Mono', monospace; margin: 20px 0; font-size: 1.1rem;"></p>
-        <button id="generic-modal-close-btn" class="btn">ENTENDIDO</button>
+        <h3 id="generic-modal-title" style="margin-top: 0"></h3>
+        <p id="generic-modal-text"></p>
+        <div class="actions" style="justify-content: center">
+          <button id="generic-modal-close-btn" class="btn">OK</button>
+        </div>
       </div>
     </div>
 
@@ -801,9 +1179,11 @@
           if (targetPage) targetPage.classList.add("active");
           if (targetLink) targetLink.classList.add("active");
 
+          // Não alterar o hash se for a página inicial para manter a URL limpa
           if (pageId !== "page-nfs") {
             window.location.hash = pageId.replace("page-", "");
           } else if (window.location.hash) {
+            // Limpa o hash se estiver voltando para a página inicial
             history.pushState(
               "",
               document.title,
@@ -824,7 +1204,7 @@
         if (initialPage && document.getElementById("page-" + initialPage)) {
           showPage("page-" + initialPage);
         } else {
-          showPage("page-nfs");
+          showPage("page-nfs"); // Página padrão
         }
       });
 
@@ -859,6 +1239,7 @@
         const generateBtn = page.querySelector("#nfs-generate-btn");
         const form = page.querySelector("#nfs-data-form");
 
+        // Crie um template a partir do HTML, depois remova-o do DOM
         const rowTemplateHTML = `
             <div class="input-row">
                 <div><label>Espécie</label><input type="text" name="especie" placeholder="Ex: 39" required /></div>
@@ -958,7 +1339,8 @@
             if (firstInvalid) firstInvalid.classList.add("manual-error");
             showGenericModal(
               "Preencha corretamente todos os campos obrigatórios.",
-              "ERRO DE VALIDAÇÃO"
+              "error",
+              "Erro de Validação"
             );
             return;
           }
@@ -990,8 +1372,9 @@
 
           if (hasDuplicates) {
             showGenericModal(
-              "Foram encontradas linhas duplicadas. Remova ou corrija.",
-              "ERRO DE DUPLICIDADE"
+              "Foram encontradas linhas duplicadas (marcadas em amarelo). Remova ou corrija.",
+              "warning",
+              "Erro de Duplicidade"
             );
             return;
           }
@@ -1029,7 +1412,8 @@
           if (!txtContent.trim()) {
             showGenericModal(
               "Nenhum dado válido para gerar o arquivo.",
-              "ATENÇÃO"
+              "info",
+              "Atenção"
             );
             return;
           }
@@ -1044,7 +1428,8 @@
           URL.revokeObjectURL(link.href);
           showGenericModal(
             "Arquivo TXT gerado com sucesso!",
-            "SUCESSO"
+            "success",
+            "Sucesso"
           );
         });
 
@@ -1122,7 +1507,7 @@
                 const valor = parseFloat(
                   String(item.valorAquisicao).replace(",", ".")
                 );
-                return `<div class="anexo-result" style="border-left-width: 3px; position:relative;">
+                return `<div class="anexo-result" style="border-left-width:0; position:relative;">
                       <button class="delete-row-btn" data-index="${index}" title="Remover item" style="position:absolute; top:1rem; right:1rem;">✕</button>
                       <h4 style="padding-right:35px;">${
                         item.nome || "Nome não informado"
@@ -1161,7 +1546,8 @@
           if (!file || !/\.(xlsx|xls)$/i.test(file.name)) {
             showGenericModal(
               "Por favor, selecione um arquivo Excel (.xlsx ou .xls) válido.",
-              "FORMATO INVÁLIDO"
+              "Erro",
+              "Formato Inválido"
             );
             return;
           }
@@ -1183,7 +1569,7 @@
                 workbook.Sheets[workbook.SheetNames[0]]
               );
               if (!excelData.length) {
-                showGenericModal("A planilha parece estar vazia.", "ATENÇÃO");
+                showGenericModal("A planilha parece estar vazia.", "Atenção");
                 return;
               }
               const required = [
@@ -1199,7 +1585,7 @@
                   `Colunas obrigatórias não encontradas:<br><b>${missing.join(
                     ", "
                   )}</b>`,
-                  "ERRO NA PLANILHA"
+                  "Erro na Planilha"
                 );
                 return;
               }
@@ -1211,14 +1597,15 @@
               mappingTableContainer.innerHTML = `<table><thead><tr><th>Conta Principal (do Excel)</th><th>Conta Patrimonial (De/Para)*</th></tr></thead><tbody>${contas
                 .map(
                   (c) =>
-                    `<tr><td>${c}</td><td><input type="text" class="conta-patrimonial-input" data-conta-principal="${c}" required placeholder="Digite a conta"></td></tr>`
+                    `<tr><td>${c}</td><td><input type="text" class="conta-patrimonial-input" data-conta-principal="${c}" required placeholder="Digite a conta patrimonial"></td></tr>`
                 )
                 .join("")}</tbody></table>`;
               mappingCard.style.display = "block";
             } catch (err) {
               showGenericModal(
                 `Erro ao ler o arquivo Excel: ${err.message}`,
-                "ERRO DE LEITURA"
+                "Erro",
+                "Erro de Leitura"
               );
             }
           };
@@ -1252,7 +1639,8 @@
           if (!numeroEmpresaInput.value) {
             showGenericModal(
               "Informe o Número da Empresa.",
-              "CAMPO OBRIGATÓRIO"
+              "Erro",
+              "Campo Obrigatório"
             );
             return;
           }
@@ -1264,7 +1652,8 @@
           if (Array.from(deParaMap.values()).some((v) => !v)) {
             showGenericModal(
               "Preencha todas as Contas Patrimoniais.",
-              "MAPEAMENTO INCOMPLETO"
+              "Erro",
+              "Mapeamento Incompleto"
             );
             return;
           }
@@ -1303,7 +1692,7 @@
             });
           renderItems();
           if (items.length) {
-            showGenericModal("Dados processados com sucesso!", "SUCESSO");
+            showGenericModal("Dados processados com sucesso!", "Sucesso");
             mappingCard.style.display = "none";
           }
         });
@@ -1346,10 +1735,10 @@
 
         copyBtn.addEventListener("click", () => {
           navigator.clipboard.writeText(resultBox.textContent).then(() => {
-            copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> COPIADO!';
+            copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copiado!';
             setTimeout(() => {
               copyBtn.innerHTML =
-                '<i class="fa-solid fa-copy"></i> COPIAR';
+                '<i class="fa-solid fa-copy"></i> Copiar Conteúdo';
             }, 2000);
           });
         });
@@ -1430,7 +1819,7 @@
           } else {
             showGenericModal(
               "Por favor, insira um nome e um CPF válido de 11 dígitos.",
-              "ERRO"
+              "Erro"
             );
           }
         });
@@ -1460,7 +1849,7 @@
           } else {
             showGenericModal(
               "Por favor, selecione um arquivo Excel válido.",
-              "ERRO"
+              "Erro"
             );
           }
         };
@@ -1634,7 +2023,7 @@
           } else {
             showGenericModal(
               "Por favor, selecione um arquivo .txt válido",
-              "ERRO"
+              "Erro"
             );
           }
         };
@@ -1898,7 +2287,7 @@
             let rbt12Value =
               calc.inputType === "monthly" ? inputValue * 12 : inputValue;
 
-            resultsOutput.innerHTML = `<p class="results-intro" style="font-family:'Space Mono'; margin-bottom: 20px;">${
+            resultsOutput.innerHTML = `<p class="results-intro">${
               calc.inputType === "monthly"
                 ? `Faturamento Mensal = <strong>${formatCurrency(
                     inputValue
@@ -1910,10 +2299,6 @@
 
             const grid = document.createElement("div");
             grid.className = "results-grid";
-            grid.style.display = "grid";
-            grid.style.gap = "1rem";
-            grid.style.gridTemplateColumns = "repeat(auto-fit, minmax(280px, 1fr))";
-
             const createBlock = (title, result) =>
               `<div class="anexo-result"><h4>${title}</h4><p class="anexo-aliquota">${result}</p></div>`;
             grid.innerHTML += createBlock(
