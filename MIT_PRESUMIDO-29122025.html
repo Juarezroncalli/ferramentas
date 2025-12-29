@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gerador de JSON para MIT</title>
+    <style>
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+      }
+
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        line-height: 1.6;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--accent-color) 100%
+        );
+        color: var(--text-color);
+      }
+
+      .container {
+        background-color: var(--background-color);
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      }
+
+      .logo-container {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .logo {
+        max-width: 180px;
+        margin-bottom: 10px;
+      }
+
+      h1 {
+        color: var(--primary-color);
+        text-align: center;
+        font-weight: 600;
+        margin-bottom: 25px;
+        font-size: 28px;
+      }
+
+      h2 {
+        color: var(--primary-color);
+        font-size: 20px;
+        font-weight: 500;
+        margin-top: 5px;
+        margin-bottom: 15px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 6px;
+        color: var(--text-color);
+      }
+
+      input[type="number"],
+      input[type="text"],
+      input[type="email"],
+      select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        box-sizing: border-box;
+        font-size: 16px;
+        transition: border-color 0.3s;
+      }
+
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(79, 0, 114, 0.1);
+      }
+
+      button {
+        background-color: var(--accent-color);
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        display: block;
+        margin: 25px auto;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(251, 10, 94, 0.3);
+      }
+
+      button:hover {
+        background-color: #e00050;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(251, 10, 94, 0.4);
+      }
+
+      #resultado {
+        margin-top: 25px;
+        padding: 15px;
+        background-color: #f8f8f8;
+        border-radius: 6px;
+        white-space: pre-wrap;
+        display: none;
+        border: 1px solid var(--border-color);
+        font-family: monospace;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .copy-button {
+        background-color: var(--primary-color);
+        margin-top: 10px;
+        box-shadow: 0 2px 5px rgba(79, 0, 114, 0.3);
+      }
+
+      .copy-button:hover {
+        background-color: #3b0056;
+        box-shadow: 0 4px 8px rgba(79, 0, 114, 0.4);
+      }
+
+      .secao {
+        border-left: 3px solid var(--primary-color);
+        padding-left: 15px;
+        margin-bottom: 25px;
+        background-color: var(--form-bg-color);
+        padding: 20px;
+        border-radius: 8px;
+      }
+
+      .destacado {
+        background-color: #f9f3ff;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        border-left: 3px solid var(--primary-color);
+      }
+
+      small {
+        color: #666;
+        font-size: 13px;
+        display: block;
+        margin-top: 5px;
+      }
+
+      .small-input {
+        width: 100px;
+        display: inline-block;
+      }
+
+      .grupo-telefone {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .grupo-telefone input:first-child {
+        width: 80px;
+      }
+
+      .grupo-salvar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 15px;
+      }
+
+      .btn-salvar {
+        margin: 0;
+        background-color: var(--primary-color);
+        padding: 8px 15px;
+      }
+
+      .btn-salvar:hover {
+        background-color: #3b0056;
+      }
+
+      .info-armazenada {
+        background-color: #eefaff;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        border-left: 3px solid #0077cc;
+      }
+
+      /* Estilos do modal */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      .modal-content {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        width: 50%;
+        margin: 15% auto;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        position: relative;
+      }
+
+      .close-modal {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 24px;
+        cursor: pointer;
+      }
+
+      #estadoUF {
+        width: 100%;
+      }
+      .voltar-inicio {
+        text-align: center;
+        margin: 40px 0 20px;
+        padding: 20px 0;
+      }
+
+      .botao-inicio {
+        display: inline-block;
+        padding: 12px 24px;
+        background-color: var(--primary-color);
+        color: white;
+        text-decoration: none;
+        border-radius: 30px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: 2px solid var(--primary-color);
+      }
+
+      .botao-inicio:hover {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="logo-container">
+        <!-- SVG Logo atualizada sem cor branca -->
+        <svg
+          class="logo"
+          viewBox="0 0 200 70"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <rect
+            x="40"
+            y="10"
+            width="120"
+            height="50"
+            rx="5"
+            fill="#f9f3ff"
+            stroke="#4f0072"
+            stroke-width="2"
+          />
+          <path d="M60 20 L80 20 L80 50 L60 50 Z" fill="#4f0072" />
+          <path d="M90 20 L110 20 L110 50 L90 50 Z" fill="#fb0a5e" />
+          <path d="M120 20 L140 20 L140 50 L120 50 Z" fill="#4f0072" />
+          <text
+            x="100"
+            y="65"
+            font-family="Arial"
+            font-size="12"
+            text-anchor="middle"
+            fill="#4f0072"
+            font-weight="bold"
+          ></text>
+        </svg>
+      </div>
+
+      <h1>Gerador de JSON para MIT (Lucro Presumido) - Versão 1.2</h1>
+
+      <!-- Exibição dos dados salvos -->
+      <div id="infoArmazenada" class="info-armazenada" style="display: none">
+        <h2>Dados do Responsável Armazenados</h2>
+        <p><strong>CPF:</strong> <span id="cpfSalvo"></span></p>
+        <p>
+          <strong>Telefone:</strong> (<span id="dddSalvo"></span>)
+          <span id="telefoneSalvo"></span>
+        </p>
+        <p><strong>Email:</strong> <span id="emailSalvo"></span></p>
+        <p>
+          <strong>CRC:</strong> <span id="crcSalvo"></span> (<span
+            id="ufSalvo"
+          ></span
+          >)
+        </p>
+      </div>
+
+      <form id="formJson">
+        <div class="destacado">
+          <div class="form-group">
+            <label for="cnpjRaiz">Número Raiz do CNPJ (8 dígitos):</label>
+            <input
+              type="text"
+              id="cnpjRaiz"
+              maxlength="8"
+              pattern="[0-9]{8}"
+              required
+              placeholder="Ex: 12345678"
+            />
+            <small>Apenas os 8 primeiros dígitos, sem pontuação</small>
+          </div>
+        </div>
+
+        <div class="secao">
+          <h2>Período de Apuração</h2>
+          <div class="form-group">
+            <label for="mesApuracao">Mês de Apuração:</label>
+            <input
+              type="number"
+              id="mesApuracao"
+              min="1"
+              max="12"
+              required
+              placeholder="Ex: 1"
+            />
+          </div>
+          <div class="form-group">
+            <label for="anoApuracao">Ano de Apuração:</label>
+            <input
+              type="number"
+              id="anoApuracao"
+              min="2000"
+              max="2100"
+              required
+              placeholder="Ex: 2025"
+            />
+          </div>
+        </div>
+
+        <div class="secao">
+          <h2>Dados do Responsável pela Apuração</h2>
+          <div class="form-group">
+            <label for="cpfResponsavel">CPF do Responsável:</label>
+            <input
+              type="text"
+              id="cpfResponsavel"
+              maxlength="11"
+              pattern="[0-9]{11}"
+              required
+              placeholder="Ex: 99999999999"
+            />
+            <small>Apenas números, sem pontuação</small>
+          </div>
+          <div class="form-group">
+            <label for="telefoneResponsavel">Telefone do Responsável:</label>
+            <div class="grupo-telefone">
+              <input
+                type="text"
+                id="dddResponsavel"
+                maxlength="2"
+                pattern="[0-9]{2}"
+                required
+                placeholder="DDD"
+              />
+              <input
+                type="text"
+                id="numTelefone"
+                maxlength="9"
+                pattern="[0-9]{8,9}"
+                required
+                placeholder="Número"
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="emailResponsavel">Email do Responsável:</label>
+            <input
+              type="email"
+              id="emailResponsavel"
+              required
+              placeholder="Ex: contato@exemplo.com.br"
+            />
+          </div>
+          <div class="form-group">
+            <label for="estadoUF">UF do Registro CRC:</label>
+            <select id="estadoUF" required>
+              <option value="">Selecione a UF</option>
+              <option value="AC">AC</option>
+              <option value="AL">AL</option>
+              <option value="AP">AP</option>
+              <option value="AM">AM</option>
+              <option value="BA">BA</option>
+              <option value="CE">CE</option>
+              <option value="DF">DF</option>
+              <option value="ES">ES</option>
+              <option value="GO">GO</option>
+              <option value="MA">MA</option>
+              <option value="MT">MT</option>
+              <option value="MS">MS</option>
+              <option value="MG">MG</option>
+              <option value="PA">PA</option>
+              <option value="PB">PB</option>
+              <option value="PR">PR</option>
+              <option value="PE">PE</option>
+              <option value="PI">PI</option>
+              <option value="RJ">RJ</option>
+              <option value="RN">RN</option>
+              <option value="RS">RS</option>
+              <option value="RO">RO</option>
+              <option value="RR">RR</option>
+              <option value="SC">SC</option>
+              <option value="SP">SP</option>
+              <option value="SE">SE</option>
+              <option value="TO">TO</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="numRegistroCRC">Número do Registro CRC:</label>
+            <input
+              type="text"
+              id="numRegistroCRC"
+              required
+              placeholder="Ex: MG000000"
+            />
+          </div>
+          <div class="grupo-salvar">
+            <small>Estes dados serão salvos para futuras declarações</small>
+            <button type="button" id="salvarDados" class="btn-salvar">
+              Salvar Dados
+            </button>
+          </div>
+        </div>
+
+        <div class="secao">
+          <h2>Valores de Débitos</h2>
+          <div class="form-group">
+            <label for="valorDebitoPisPasep"
+              >Valor do Débito PIS/PASEP (Cód: 8109):</label
+            >
+            <input
+              type="number"
+              id="valorDebitoPisPasep"
+              step="0.01"
+              min="0"
+              required
+              placeholder="Ex: 0,00"
+            />
+            <small>Deixe em branco caso não tenha valor a declarar</small>
+          </div>
+          <div class="form-group">
+            <label for="valorDebitoCofins"
+              >Valor do Débito COFINS (Cód: 2172):</label
+            >
+            <input
+              type="number"
+              id="valorDebitoCofins"
+              step="0.01"
+              min="0"
+              required
+              placeholder="Ex: 0,00"
+            />
+            <small>Deixe em branco caso não tenha valor a declarar</small>
+          </div>
+        </div>
+
+        <div class="secao">
+          <h2>Valores de Débitos (Preencher apenas nos trimestres.)</h2>
+          <div class="form-group">
+            <label for="valorDebitoIrpj"
+              >Valor do Débito IRPJ (Cód: 2089):</label
+            >
+            <input
+              type="number"
+              id="valorDebitoIrpj"
+              step="0.01"
+              min="0"
+              required
+              placeholder="Ex: 0,00"
+            />
+            <small>Deixe em branco caso não tenha valor a declarar</small>
+          </div>
+          <div class="form-group">
+            <label for="valorDebitoCsll"
+              >Valor do Débito CSLL (Cód: 2372):</label
+            >
+            <input
+              type="number"
+              id="valorDebitoCsll"
+              step="0.01"
+              min="0"
+              required
+              placeholder="Ex: 0,00"
+            />
+            <small>Deixe em branco caso não tenha valor a declarar</small>
+          </div>
+        </div>
+
+        <button type="button" id="gerarJson">Gerar JSON</button>
+      </form>
+
+      <div id="resultado"></div>
+      <button
+        type="button"
+        id="copiarJson"
+        class="copy-button"
+        style="display: none"
+      >
+        Copiar JSON
+      </button>
+    </div>
+
+    <!-- Modal de alerta -->
+    <div id="alertModal" class="modal">
+      <div class="modal-content">
+        <span class="close-modal" id="fecharModal">&times;</span>
+        <h2>ATENÇÃO!</h2>
+        <p>
+          <strong
+            >É fundamental a conferência dos dados após a importação no
+            E-cac.</strong
+          >
+        </p>
+        <p>
+          Certifique-se de verificar todas as informações importadas antes de
+          transmitir sua declaração.
+        </p>
+        <p>
+          O arquivo JSON foi gerado com sucesso e o download será iniciado
+          automaticamente.
+        </p>
+        <button id="confirmarModal">Entendi</button>
+      </div>
+    </div>
+
+    <script>
+      // Constante para nome do localStorage
+      const STORAGE_KEY = "mitResponsavelData";
+
+      // Carrega os dados salvos ao iniciar a página
+      document.addEventListener("DOMContentLoaded", function () {
+        carregarDadosSalvos();
+      });
+
+      // Função para carregar os dados salvos
+      function carregarDadosSalvos() {
+        const dadosSalvos = localStorage.getItem(STORAGE_KEY);
+
+        if (dadosSalvos) {
+          const dados = JSON.parse(dadosSalvos);
+
+          // Preenche os campos do formulário
+          document.getElementById("cpfResponsavel").value = dados.cpf || "";
+          document.getElementById("dddResponsavel").value = dados.ddd || "";
+          document.getElementById("numTelefone").value = dados.telefone || "";
+          document.getElementById("emailResponsavel").value = dados.email || "";
+          document.getElementById("estadoUF").value = dados.uf || "";
+          document.getElementById("numRegistroCRC").value =
+            dados.registroCrc || "";
+
+          // Exibe os dados salvos na seção de informações
+          document.getElementById("cpfSalvo").textContent = dados.cpf || "";
+          document.getElementById("dddSalvo").textContent = dados.ddd || "";
+          document.getElementById("telefoneSalvo").textContent =
+            dados.telefone || "";
+          document.getElementById("emailSalvo").textContent = dados.email || "";
+          document.getElementById("crcSalvo").textContent =
+            dados.registroCrc || "";
+          document.getElementById("ufSalvo").textContent = dados.uf || "";
+
+          // Mostra o bloco de informações armazenadas
+          document.getElementById("infoArmazenada").style.display = "block";
+        }
+      }
+
+      // Função para salvar os dados do responsável
+      document
+        .getElementById("salvarDados")
+        .addEventListener("click", function () {
+          const cpf = document.getElementById("cpfResponsavel").value;
+          const ddd = document.getElementById("dddResponsavel").value;
+          const telefone = document.getElementById("numTelefone").value;
+          const email = document.getElementById("emailResponsavel").value;
+          const uf = document.getElementById("estadoUF").value;
+          const registroCrc = document.getElementById("numRegistroCRC").value;
+
+          // Validação básica
+          if (!cpf || !ddd || !telefone || !email || !uf || !registroCrc) {
+            alert(
+              "Por favor, preencha todos os campos do responsável antes de salvar."
+            );
+            return;
+          }
+
+          // Criar objeto com os dados
+          const dadosResponsavel = {
+            cpf: cpf,
+            ddd: ddd,
+            telefone: telefone,
+            email: email,
+            uf: uf,
+            registroCrc: registroCrc,
+          };
+
+          // Salvar no localStorage
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(dadosResponsavel));
+
+          // Atualizar a exibição dos dados salvos
+          document.getElementById("cpfSalvo").textContent = cpf;
+          document.getElementById("dddSalvo").textContent = ddd;
+          document.getElementById("telefoneSalvo").textContent = telefone;
+          document.getElementById("emailSalvo").textContent = email;
+          document.getElementById("crcSalvo").textContent = registroCrc;
+          document.getElementById("ufSalvo").textContent = uf;
+
+          // Mostrar o bloco de informações armazenadas
+          document.getElementById("infoArmazenada").style.display = "block";
+
+          alert("Dados do responsável salvos com sucesso!");
+        });
+
+      // Validação do campo CNPJ e geração do JSON
+      document
+        .getElementById("gerarJson")
+        .addEventListener("click", function () {
+          // Obter os valores do formulário
+          const cnpjRaiz = document.getElementById("cnpjRaiz").value;
+          const mesApuracao = parseInt(
+            document.getElementById("mesApuracao").value
+          );
+          const anoApuracao = parseInt(
+            document.getElementById("anoApuracao").value
+          );
+          const valorDebitoIrpj = parseFloat(
+            document.getElementById("valorDebitoIrpj").value || 0
+          );
+          const valorDebitoCsll = parseFloat(
+            document.getElementById("valorDebitoCsll").value || 0
+          );
+          const valorDebitoPisPasep = parseFloat(
+            document.getElementById("valorDebitoPisPasep").value || 0
+          );
+          const valorDebitoCofins = parseFloat(
+            document.getElementById("valorDebitoCofins").value || 0
+          );
+
+          // Dados do responsável
+          const cpfResponsavel =
+            document.getElementById("cpfResponsavel").value;
+          const dddResponsavel =
+            document.getElementById("dddResponsavel").value;
+          const numTelefone = document.getElementById("numTelefone").value;
+          const emailResponsavel =
+            document.getElementById("emailResponsavel").value;
+          const ufRegistro = document.getElementById("estadoUF").value;
+          const numRegistro = document.getElementById("numRegistroCRC").value;
+
+          // Validar os campos
+          if (cnpjRaiz.length !== 8) {
+            alert("Por favor, informe os 8 dígitos da raiz do CNPJ.");
+            return;
+          }
+
+          if (!mesApuracao || !anoApuracao) {
+            alert(
+              "Por favor, preencha o mês e o ano de apuração corretamente."
+            );
+            return;
+          }
+
+          // Validar os campos do responsável
+          if (
+            !cpfResponsavel ||
+            !dddResponsavel ||
+            !numTelefone ||
+            !emailResponsavel ||
+            !ufRegistro ||
+            !numRegistro
+          ) {
+            alert(
+              "Por favor, preencha todos os campos do responsável pela apuração."
+            );
+            return;
+          }
+
+          // Criar o objeto JSON
+          const jsonObj = {
+            PeriodoApuracao: {
+              MesApuracao: mesApuracao,
+              AnoApuracao: anoApuracao,
+            },
+            DadosIniciais: {
+              SemMovimento: false,
+              QualificacaoPj: 1,
+              TributacaoLucro: 3,
+              VariacoesMonetarias: 1,
+              ResponsavelApuracao: {
+                CpfResponsavel: cpfResponsavel,
+                TelResponsavel: {
+                  Ddd: dddResponsavel,
+                  NumTelefone: numTelefone,
+                },
+                EmailResponsavel: emailResponsavel,
+                RegistroCrc: {
+                  UfRegistro: ufRegistro,
+                  NumRegistro: numRegistro,
+                },
+              },
+            },
+            Debitos: {},
+          };
+
+          // Contador para o IdDebito
+          let idDebitoCounter = 1;
+
+          // Adicionar débitos apenas se o valor for maior que zero
+          if (valorDebitoIrpj > 0) {
+            jsonObj.Debitos.Irpj = {
+              ListaDebitos: [
+                {
+                  IdDebito: idDebitoCounter++,
+                  CodigoDebito: "208901",
+                  ValorDebito: valorDebitoIrpj,
+                },
+              ],
+            };
+          }
+
+          if (valorDebitoCsll > 0) {
+            jsonObj.Debitos.Csll = {
+              ListaDebitos: [
+                {
+                  IdDebito: idDebitoCounter++,
+                  CodigoDebito: "237201",
+                  ValorDebito: valorDebitoCsll,
+                },
+              ],
+            };
+          }
+
+          if (valorDebitoPisPasep > 0) {
+            jsonObj.Debitos.PisPasep = {
+              ListaDebitos: [
+                {
+                  IdDebito: idDebitoCounter++,
+                  CodigoDebito: "810902",
+                  ValorDebito: valorDebitoPisPasep,
+                },
+              ],
+            };
+          }
+
+          if (valorDebitoCofins > 0) {
+            jsonObj.Debitos.Cofins = {
+              ListaDebitos: [
+                {
+                  IdDebito: idDebitoCounter++,
+                  CodigoDebito: "217201",
+                  ValorDebito: valorDebitoCofins,
+                },
+              ],
+            };
+          }
+
+          // Exibir o JSON formatado na tela
+          const jsonString = JSON.stringify(jsonObj, null, 2);
+          const resultadoDiv = document.getElementById("resultado");
+          resultadoDiv.textContent = jsonString;
+          resultadoDiv.style.display = "block";
+
+          // Mostrar o botão de copiar
+          document.getElementById("copiarJson").style.display = "block";
+
+          // Criar e disparar o download do arquivo
+          downloadJson(jsonObj, cnpjRaiz);
+
+          // Exibir o modal de alerta
+          document.getElementById("alertModal").style.display = "block";
+        });
+
+      function downloadJson(jsonData, cnpjRaiz) {
+        // Criar o nome do arquivo com base no CNPJ e período de apuração
+        const mesApuracao = document
+          .getElementById("mesApuracao")
+          .value.padStart(2, "0");
+        const anoApuracao = document.getElementById("anoApuracao").value;
+        const nomeArquivo = `${cnpjRaiz}-MIT-${anoApuracao}${mesApuracao}.json`;
+
+        // Converter o objeto JSON em uma string formatada
+        const jsonString = JSON.stringify(jsonData, null, 2);
+
+        // Criar um objeto Blob com o conteúdo JSON
+        const blob = new Blob([jsonString], { type: "application/json" });
+
+        // Criar uma URL temporária para o Blob
+        const url = URL.createObjectURL(blob);
+
+        // Criar um elemento <a> para iniciar o download
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = nomeArquivo;
+
+        // Adicionar temporariamente à página e clicar para iniciar o download
+        document.body.appendChild(link);
+        link.click();
+
+        // Limpar após o download
+        setTimeout(() => {
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }, 100);
+      }
+
+      document
+        .getElementById("copiarJson")
+        .addEventListener("click", function () {
+          const resultadoDiv = document.getElementById("resultado");
+          const textoParaCopiar = resultadoDiv.textContent;
+
+          navigator.clipboard
+            .writeText(textoParaCopiar)
+            .then(() => {
+              alert("JSON copiado para a área de transferência!");
+            })
+            .catch((err) => {
+              console.error("Erro ao copiar texto: ", err);
+              alert(
+                "Não foi possível copiar o texto. Por favor, copie manualmente."
+              );
+            });
+        });
+
+      // Fechar o modal ao clicar no botão "Entendi" ou no "X"
+      document
+        .getElementById("confirmarModal")
+        .addEventListener("click", function () {
+          document.getElementById("alertModal").style.display = "none";
+        });
+
+      document
+        .getElementById("fecharModal")
+        .addEventListener("click", function () {
+          document.getElementById("alertModal").style.display = "none";
+        });
+
+      // Fechar o modal ao clicar fora dele
+      window.onclick = function (event) {
+        let modal = document.getElementById("alertModal");
+        if (event.target === modal) {
+          modal.style.display = "none";
+        }
+      };
+    </script>
+    <div class="voltar-inicio">
+      <a href="index.html" class="botao-inicio">← Voltar à Página Inicial</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadora Simples Nacional por Anexo (RBT12)</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary-color: #4f0072;
+        --accent-color: #fb0a5e;
+        --background-color: #ffffff;
+        --form-bg-color: #f9f9f9;
+        --text-color: #333333;
+        --border-color: #e0e0e0;
+        --text-color-light: #ffffff;
+        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
+        --transicao: all 0.3s ease;
+        --primary-dark: #3d005a;
+        --success: #10b981;
+        --error: #ef4444;
+        --text-muted: #64748b;
+        --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --radius: 0.5rem;
+        --radius-lg: 0.75rem;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
+        min-height: 100vh;
+        color: var(--text-color);
+        line-height: 1.6;
+        padding: 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+
+      .header h1 {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .header p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+      }
+
+      .content-card {
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        box-shadow: var(--sombra);
+        margin-bottom: 2rem;
+        transition: var(--transicao);
+      }
+
+      .content-card h2 {
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .form-group {
+        margin-bottom: 1rem;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--text-muted);
+      }
+
+      input[type="text"] {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        font-size: 1rem;
+        transition: var(--transicao);
+        font-family: inherit;
+        background: var(--form-bg-color);
+      }
+
+      input[type="text"]:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(79, 0, 114, 0.1);
+        background: var(--background-color);
+      }
+      .input-hint {
+        font-size: 0.85em;
+        color: var(--text-muted);
+        margin-top: 5px;
+      }
+
+      .btn {
+        background: var(--primary-color);
+        color: var(--text-color-light);
+        border: none;
+        padding: 0.875rem 2rem;
+        border-radius: var(--radius);
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: var(--transicao);
+        box-shadow: var(--sombra);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        margin-top: 1rem;
+      }
+      .btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+      .btn:disabled {
+        background: var(--text-muted);
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      #errorMessage {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: var(--radius);
+        word-wrap: break-word;
+        border: 1px solid var(--error);
+        background-color: #f8d7da;
+        color: #721c24;
+        display: none;
+        text-align: center;
+        font-weight: bold;
+      }
+      #errorMessage:not(:empty) {
+        display: block;
+      }
+
+      #resultsOutput {
+        margin-top: 1rem;
+      }
+      #resultsOutput .results-intro {
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        font-size: 1.1em;
+        color: var(--primary-color);
+        text-align: center;
+        background: var(--form-bg-color);
+        padding: 1rem;
+        border-radius: var(--radius);
+      }
+      #resultsOutput .results-intro strong {
+        color: var(--accent-color);
+        font-size: 1.1em;
+      }
+      #resultsOutput .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-muted);
+      }
+
+      .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem; /* Espaço entre o grid e o card de ISS */
+      }
+
+      .anexo-result {
+        background: var(--form-bg-color);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        border-left: 4px solid var(--primary-color);
+        transition: var(--transicao);
+      }
+      .anexo-result:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--sombra);
+        border-left-color: var(--accent-color);
+      }
+      .anexo-result h4 {
+        color: var(--primary-dark);
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        font-size: 1.2em;
+      }
+      .anexo-aliquota {
+        font-weight: bold;
+        font-size: 1.1em;
+        color: var(--accent-color);
+        margin: 0;
+      }
+
+      .iss-result-highlight {
+        background: #f0e6ff; /* Light purple background */
+        border-radius: var(--radius);
+        padding: 1.5rem 2rem;
+        border-top: 4px solid var(--primary-color);
+        border-bottom: 4px solid var(--primary-color);
+        text-align: center;
+      }
+      .iss-result-highlight h4 {
+        color: var(--primary-dark);
+        font-size: 1.3em;
+        margin-bottom: 0.5rem;
+      }
+      .iss-result-highlight p {
+        font-weight: 700; /* Bold */
+        font-size: 2.2rem; /* Fonte grande */
+        color: var(--primary-color);
+        margin: 0;
+      }
+
+      @media (max-width: 768px) {
+        .header h1 {
+          font-size: 2rem;
+        }
+        .content-card {
+          padding: 1.5rem;
+        }
+        .iss-result-highlight p {
+          font-size: 1.8rem; /* Ajuste para telas menores */
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>
+          <i class="fa-solid fa-calculator"></i> Calculadora Simples Nacional
+        </h1>
+        <p>Calcule a alíquota de ISS com base na sua Receita Bruta (RBT12)</p>
+      </div>
+
+      <div class="content-card">
+        <h2>
+          <i class="fa-solid fa-hand-holding-dollar"></i> 1. Informar RBT12
+        </h2>
+        <div class="form-group">
+          <label for="rbt12Input"
+            >Faturamento Bruto dos Últimos 12 Meses (RBT12):</label
+          >
+          <input
+            type="text"
+            id="rbt12Input"
+            placeholder="Ex: 126000,00"
+            inputmode="decimal"
+          />
+          <p class="input-hint">Use vírgula (,) como separador decimal.</p>
+        </div>
+
+        <button id="calculateButton" class="btn">
+          <i class="fa-solid fa-play"></i> Calcular Alíquotas
+        </button>
+        <div id="errorMessage"></div>
+      </div>
+
+      <div class="content-card">
+        <h2>
+          <i class="fa-solid fa-file-contract"></i> 2. Resultados por Anexo
+        </h2>
+        <div id="resultsOutput">
+          <div class="empty-state">
+            <p>Informe o valor do RBT12 e clique em "Calcular Alíquotas".</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const rbt12Input = document.getElementById("rbt12Input");
+      const calculateButton = document.getElementById("calculateButton");
+      const resultsOutput = document.getElementById("resultsOutput");
+      const errorMessageDiv = document.getElementById("errorMessage");
+
+      function parseCurrencyInput(inputString) {
+        if (typeof inputString !== "string" || inputString.trim() === "") {
+          return null;
+        }
+        let cleanedString = inputString
+          .replace(/R\$\s?/g, "")
+          .replace(/\./g, "")
+          .trim();
+        cleanedString = cleanedString.replace(",", ".");
+        if (!/^-?\d+(\.\d+)?$/.test(cleanedString) || cleanedString === "-") {
+          return null;
+        }
+        const numValue = parseFloat(cleanedString);
+        return isNaN(numValue) ? null : numValue;
+      }
+
+      function formatCurrency(value) {
+        let numValue =
+          typeof value === "number" ? value : parseCurrencyInput(String(value));
+        if (numValue === null || isNaN(numValue)) {
+          return "";
+        }
+        return numValue.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
+      }
+
+      function formatPercentage(value) {
+        if (typeof value !== "number" || isNaN(value)) {
+          return "";
+        }
+        return `${value.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}%`;
+      }
+
+      function clearStatus() {
+        errorMessageDiv.textContent = "";
+        errorMessageDiv.style.display = "none";
+        resultsOutput.innerHTML =
+          '<div class="empty-state"><p>Informe o valor do RBT12 e clique em "Calcular Alíquotas".</p></div>';
+      }
+
+      function displayError(message) {
+        errorMessageDiv.textContent = message;
+        errorMessageDiv.style.display = "block";
+        resultsOutput.innerHTML = `<div class="empty-state" style="color: var(--error);"><p>Cálculo não realizado devido a erro no valor informado.</p></div>`;
+      }
+
+      rbt12Input.addEventListener("blur", () => {
+        const numericValue = parseCurrencyInput(rbt12Input.value);
+        if (numericValue !== null) {
+          rbt12Input.value = formatCurrency(numericValue).replace(/R\$\s?/, "");
+        }
+      });
+
+      calculateButton.addEventListener("click", () => {
+        const rbt12Value = parseCurrencyInput(rbt12Input.value);
+        if (rbt12Value === null) {
+          displayError("Valor do RBT12 inválido. Insira um número válido.");
+          rbt12Input.focus();
+          return;
+        }
+        if (rbt12Value < 0) {
+          displayError("O valor do RBT12 não pode ser negativo.");
+          rbt12Input.focus();
+          return;
+        }
+        clearStatus();
+        performCalculation(rbt12Value);
+      });
+
+      rbt12Input.addEventListener("input", () => {
+        if (errorMessageDiv.style.display === "block") {
+          errorMessageDiv.textContent = "";
+          errorMessageDiv.style.display = "none";
+        }
+      });
+
+      function createResultBlock(
+        title,
+        resultText,
+        customClass = "anexo-result"
+      ) {
+        const container = document.createElement("div");
+        container.className = customClass;
+        const titleEl = document.createElement("h4");
+        titleEl.textContent = title;
+        container.appendChild(titleEl);
+        const resultEl = document.createElement("p");
+        if (customClass === "anexo-result") {
+          resultEl.className = "anexo-aliquota";
+        }
+        resultEl.innerHTML = resultText;
+        container.appendChild(resultEl);
+        return container;
+      }
+
+      function performCalculation(rbt12Value) {
+        resultsOutput.innerHTML = "";
+        const intro = document.createElement("p");
+        intro.className = "results-intro";
+        intro.innerHTML = `Para RBT12 = <strong>${formatCurrency(
+          rbt12Value
+        )}</strong>:`;
+        resultsOutput.appendChild(intro);
+
+        const resultsGrid = document.createElement("div");
+        resultsGrid.className = "results-grid";
+
+        try {
+          const anexos = {
+            "Anexo I (Comércio)": calculateAnexoI(rbt12Value),
+            "Anexo II (Indústria)": calculateAnexoII(rbt12Value),
+            "Anexo III (Serviços)": calculateAnexoIII(rbt12Value),
+            "Anexo IV (Serviços)": calculateAnexoIV(rbt12Value),
+            "Anexo V (Serviços)": calculateAnexoV(rbt12Value),
+          };
+
+          for (const [title, result] of Object.entries(anexos)) {
+            const resultValue =
+              typeof result === "number" ? formatPercentage(result) : result;
+            resultsGrid.appendChild(createResultBlock(title, resultValue));
+          }
+
+          resultsOutput.appendChild(resultsGrid);
+
+          const resultIIIRaw = anexos["Anexo III (Serviços)"];
+          if (typeof resultIIIRaw === "number") {
+            const issResult = calculateISS(rbt12Value, resultIIIRaw);
+            const issDisplayValue =
+              typeof issResult === "number"
+                ? formatPercentage(issResult)
+                : issResult;
+
+            const issBlock = createResultBlock(
+              "Alíquota Final de ISS (Estimada)",
+              issDisplayValue,
+              "iss-result-highlight"
+            );
+            resultsOutput.appendChild(issBlock);
+          }
+        } catch (error) {
+          displayError(`Erro inesperado durante cálculo: ${error.message}`);
+        }
+      }
+
+      function getEffectiveRate(acumulado, aliquotaNominal, parcelaDeducao) {
+        if (acumulado > 4800000) return "Excede o limite do Simples.";
+        if (acumulado === 0) return aliquotaNominal * 100;
+        return (
+          ((acumulado * aliquotaNominal - parcelaDeducao) / acumulado) * 100
+        );
+      }
+
+      // MODIFICADO: Lógica atualizada com nova faixa e teto de 5%
+      function calculateISS(rbt12, anexoIIIRate) {
+        let calculatedIss;
+
+        if (rbt12 > 3600000) {
+          return "?";
+        }
+
+        if (rbt12 <= 180000) {
+          calculatedIss = anexoIIIRate * 0.335; // Faixa 1 (até 180k)
+        } else if (rbt12 <= 360000) {
+          calculatedIss = anexoIIIRate * 0.32; // Faixa 2 (180k a 360k)
+        } else if (rbt12 <= 1800000) {
+          calculatedIss = anexoIIIRate * 0.325; // Faixa 3 (360k a 1.8M)
+        } else if (rbt12 <= 3600000) {
+          calculatedIss = anexoIIIRate * 0.335; // Faixa 4 (1.8M a 3.6M) -> REGRA ATUALIZADA
+        } else {
+          return "?"; // Não deve ser alcançado
+        }
+
+        // Aplica o teto de 5% ao resultado final
+        if (calculatedIss > 5) {
+          return 5;
+        } else {
+          return calculatedIss;
+        }
+      }
+
+      function calculateAnexoI(acumulado) {
+        if (acumulado > 4800000) return `Excede o limite do Simples.`;
+        if (acumulado <= 180000) return getEffectiveRate(acumulado, 0.04, 0);
+        if (acumulado <= 360000)
+          return getEffectiveRate(acumulado, 0.073, 5940);
+        if (acumulado <= 720000)
+          return getEffectiveRate(acumulado, 0.095, 13860);
+        if (acumulado <= 1800000)
+          return getEffectiveRate(acumulado, 0.107, 22500);
+        if (acumulado <= 3600000)
+          return getEffectiveRate(acumulado, 0.143, 87300);
+        return getEffectiveRate(acumulado, 0.19, 378000);
+      }
+
+      function calculateAnexoII(acumulado) {
+        if (acumulado > 4800000) return `Excede o limite do Simples.`;
+        if (acumulado <= 180000) return getEffectiveRate(acumulado, 0.045, 0);
+        if (acumulado <= 360000)
+          return getEffectiveRate(acumulado, 0.078, 5940);
+        if (acumulado <= 720000) return getEffectiveRate(acumulado, 0.1, 13860);
+        if (acumulado <= 1800000)
+          return getEffectiveRate(acumulado, 0.112, 22500);
+        if (acumulado <= 3600000)
+          return getEffectiveRate(acumulado, 0.147, 85500);
+        return getEffectiveRate(acumulado, 0.3, 720000);
+      }
+
+      function calculateAnexoIII(acumulado) {
+        const limiteSimples = 4800000;
+        if (acumulado > limiteSimples) return `Excede o limite do Simples.`;
+        if (acumulado <= 180000) return getEffectiveRate(acumulado, 0.06, 0);
+        if (acumulado <= 360000)
+          return getEffectiveRate(acumulado, 0.112, 9360);
+        if (acumulado <= 720000)
+          return getEffectiveRate(acumulado, 0.135, 17640);
+        if (acumulado <= 1800000)
+          return getEffectiveRate(acumulado, 0.16, 35640);
+        if (acumulado <= 3600000)
+          return getEffectiveRate(acumulado, 0.21, 125640);
+        return getEffectiveRate(acumulado, 0.33, 648000);
+      }
+
+      function calculateAnexoIV(acumulado) {
+        const limiteSimples = 4800000;
+        if (acumulado > limiteSimples) return `Excede o limite do Simples.`;
+        if (acumulado <= 180000) return getEffectiveRate(acumulado, 0.045, 0);
+        if (acumulado <= 360000) return getEffectiveRate(acumulado, 0.09, 8100);
+        if (acumulado <= 720000)
+          return getEffectiveRate(acumulado, 0.102, 12420);
+        if (acumulado <= 1800000)
+          return getEffectiveRate(acumulado, 0.14, 39780);
+        if (acumulado <= 3600000)
+          return getEffectiveRate(acumulado, 0.22, 183780);
+        return getEffectiveRate(acumulado, 0.33, 828000);
+      }
+
+      function calculateAnexoV(acumulado) {
+        const limiteSimples = 4800000;
+        if (acumulado > limiteSimples) return `Excede o limite do Simples.`;
+        if (acumulado <= 180000) return getEffectiveRate(acumulado, 0.155, 0);
+        if (acumulado <= 360000) return getEffectiveRate(acumulado, 0.18, 4500);
+        if (acumulado <= 720000)
+          return getEffectiveRate(acumulado, 0.195, 9900);
+        if (acumulado <= 1800000)
+          return getEffectiveRate(acumulado, 0.205, 17100);
+        if (acumulado <= 3600000)
+          return getEffectiveRate(acumulado, 0.23, 62100);
+        return getEffectiveRate(acumulado, 0.305, 540000);
+      }
+
+      // Initial clear
+      clearStatus();
+    </script>
+  </body>
+</html>

@@ -3,552 +3,570 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gerador de Lançamentos Contábeis</title>
+    <title>Gerador Contábil Neo</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
     <style>
       :root {
-        --primary-color: #4f0072;
-        --accent-color: #fb0a5e;
-        --background-color: #ffffff;
-        --form-bg-color: #f9f9f9;
-        --text-color: #333333;
-        --border-color: #e0e0e0;
-        --text-color-light: #ffffff;
-        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
-        --transicao: all 0.3s ease;
-        --primary-dark: #3d005a;
-        --success: #10b981;
-        --error: #ef4444;
-        --text-muted: #64748b;
-        --radius: 0.5rem;
-        --radius-lg: 0.75rem;
+        /* Paleta Neo-Brutalismo baseada na imagem */
+        --bg-color: #FFFDF5; /* Creme suave */
+        --card-bg: #FFFFFF;
+        
+        --primary-green: #2DDD98; /* Verde menta vibrante */
+        --primary-yellow: #FFF59D; /* Amarelo pastel */
+        --primary-purple: #D6BCFA; /* Lilás */
+        --primary-pink: #FF9EB5;
+        
+        --text-main: #000000;
+        --border-black: #000000;
+        
+        --shadow-hard: 4px 4px 0px 0px #000000;
+        --shadow-hover: 2px 2px 0px 0px #000000;
+        
+        --border-width: 3px;
+        --radius: 12px;
       }
+
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
+
       body {
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-          Roboto, sans-serif;
-        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
-        min-height: 100vh;
-        color: var(--text-color);
-        line-height: 1.6;
-        padding: 2rem 0;
-      }
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem 1rem;
-      }
-      .header {
-        text-align: center;
-        margin-bottom: 2rem;
-        position: relative;
-      }
-      .header h1 {
-        color: white;
-        font-size: 2.5rem;
-        font-weight: 700;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-      .header p {
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 1.1rem;
-      }
-      .main-content > section {
-        background: var(--background-color);
-        border-radius: var(--radius-lg);
-        padding: 2rem;
-        box-shadow: var(--sombra);
-        margin-bottom: 2rem;
-      }
-      .upload-area {
-        border: 2px dashed var(--border-color);
-        border-radius: var(--radius);
-        padding: 3rem 2rem;
-        text-align: center;
-        transition: var(--transicao);
-        cursor: pointer;
-        margin-top: 1.5rem;
-      }
-      .upload-area:hover {
-        border-color: var(--primary-color);
-        background: var(--form-bg-color);
-      }
-      .upload-icon {
-        font-size: 3rem;
-        color: var(--text-muted);
-        margin-bottom: 1rem;
-      }
-      #file-input {
-        display: none;
-      }
-      .file-info {
-        background: var(--form-bg-color);
-        border-radius: var(--radius);
-        padding: 1rem;
-        margin-top: 1.5rem;
-        display: none;
-        gap: 1rem;
-      }
-      .file-info.show {
-        display: block;
-      }
-      .file-list {
-        list-style: none;
-        padding-top: 0.5rem;
-      }
-      .file-list-item {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        height: 100vh;
+        overflow-x: hidden;
         display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.25rem 0;
-        color: var(--text-muted);
       }
-      .btn {
-        background: var(--primary-color);
-        color: var(--text-color-light);
-        border: none;
-        padding: 0.875rem 2rem;
-        border-radius: var(--radius);
-        font-weight: 600;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: var(--transicao);
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        text-decoration: none;
-      }
-      .btn:hover {
-        background: var(--primary-dark);
-        transform: translateY(-2px);
-      }
-      .btn:disabled {
-        background: var(--text-muted);
-        cursor: not-allowed;
-        transform: none;
-      }
-      .btn-process {
-        width: 100%;
-        justify-content: center;
-        margin-top: 1.5rem;
-      }
-      .btn-secondary {
-        background-color: var(--accent-color);
-      }
-      .btn-secondary:hover {
-        background: #d80952;
-      }
-      .section-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary-dark);
-        margin-bottom: 1.5rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid var(--accent-color);
-      }
-      .hidden {
-        display: none !important;
-      }
-      .loading {
-        text-align: center;
-        padding: 3rem 2rem;
-        color: var(--text-muted);
-      }
-      .spinner {
-        border: 3px solid var(--border-color);
-        border-top: 3px solid var(--primary-color);
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        animation: spin 1s linear infinite;
-        margin: 0 auto 1rem;
-      }
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-      .input-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 1rem;
-      }
-      .input-group {
+
+      /* --- Layout Sidebar + Content --- */
+      .sidebar {
+        width: 250px;
+        background: var(--card-bg);
+        border-right: var(--border-width) solid var(--border-black);
         display: flex;
         flex-direction: column;
+        padding: 2rem 1.5rem;
+        flex-shrink: 0;
       }
-      .input-group label {
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: var(--text-muted);
-        margin-bottom: 0.5rem;
-      }
-      .input-group input {
-        padding: 0.75rem;
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius);
-        font-size: 1rem;
-      }
-      .table-container {
-        overflow-x: auto;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 1rem;
-      }
-      th,
-      td {
-        padding: 0.75rem 1rem;
-        border: 1px solid var(--border-color);
-        text-align: left;
-      }
-      thead {
-        background: var(--form-bg-color);
-        position: sticky;
-        top: 0;
-        z-index: 10;
-      }
-      th {
-        font-weight: 600;
-        color: var(--primary-dark);
-      }
-      td {
-        font-size: 0.9rem;
-      }
-      .button-group {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        justify-content: center;
-        margin-top: 1rem;
-      }
-      .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.6);
-        z-index: 100;
+
+      .logo {
+        font-weight: 800;
+        font-size: 1.4rem;
         display: flex;
         align-items: center;
-        justify-content: center;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
+        gap: 10px;
+        margin-bottom: 3rem;
       }
-      .modal-overlay.show {
-        opacity: 1;
-        visibility: visible;
+
+      .logo i {
+        background: var(--primary-yellow);
+        padding: 8px;
+        border: var(--border-width) solid var(--border-black);
+        border-radius: 50%;
+        box-shadow: 2px 2px 0 0 black;
       }
-      .modal-content {
-        background: white;
-        padding: 2.5rem;
-        border-radius: var(--radius-lg);
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-        max-width: 700px;
-        width: 90%;
-        max-height: 90vh;
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+        color: #555;
+        cursor: pointer;
+        transition: 0.2s;
+        border-radius: var(--radius);
+        border: 2px solid transparent;
+      }
+
+      .nav-item.active {
+        background-color: var(--primary-green);
+        color: black;
+        border: var(--border-width) solid var(--border-black);
+        box-shadow: var(--shadow-hard);
+      }
+
+      .nav-item:hover:not(.active) {
+        background-color: #f0f0f0;
+      }
+
+      .main-content {
+        flex: 1;
+        padding: 2rem;
         overflow-y: auto;
-        transform: scale(0.9);
-        transition: all 0.3s ease;
       }
-      .modal-overlay.show .modal-content {
-        transform: scale(1);
+
+      /* --- Componentes Neo-Brutalist --- */
+      .neo-card {
+        background: var(--card-bg);
+        border: var(--border-width) solid var(--border-black);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-hard);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
       }
-      .modal-header {
+
+      .neo-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-bottom: 1px solid var(--border-color);
-        padding-bottom: 1rem;
-        margin-bottom: 1rem;
+        margin-bottom: 2rem;
+        background: var(--card-bg);
+        border: var(--border-width) solid var(--border-black);
+        border-radius: 50px; /* Pill shape */
+        padding: 1rem 2rem;
+        box-shadow: var(--shadow-hard);
       }
-      .modal-title {
-        font-size: 1.5rem;
-        color: var(--primary-dark);
-      }
-      .modal-close {
-        background: none;
-        border: none;
+
+      .header-title h1 {
+        font-weight: 800;
         font-size: 2rem;
-        cursor: pointer;
-        color: var(--text-muted);
       }
-      .modal-body h3 {
-        color: var(--primary-color);
-        margin-top: 1.5rem;
-        margin-bottom: 0.5rem;
-      }
-      .modal-body p,
-      .modal-body li {
-        color: var(--text-color);
-        margin-bottom: 0.75rem;
-      }
-      .modal-body ul {
-        padding-left: 20px;
-      }
-      .modal-body code {
-        background: #eee;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-family: monospace;
-      }
-      .btn-info {
-        position: absolute;
-        top: 0;
-        right: 0;
-        background: none;
-        border: 1px solid white;
-        color: white;
-        padding: 0.5rem 1rem;
-      }
-      .btn-info:hover {
-        background: rgba(255, 255, 255, 0.2);
-      }
-      .optional-label {
-        color: var(--text-muted);
-        font-size: 0.8rem;
-        font-weight: 400;
-        margin-left: 8px;
-      }
-      #summary-box {
-        margin-top: 2rem;
-        padding: 1.5rem;
-        background-color: var(--form-bg-color);
-        border-radius: var(--radius);
-        border: 1px solid var(--border-color);
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 1.5rem;
-      }
-      .summary-item {
-        text-align: center;
-      }
-      .summary-label {
-        display: block;
+      .header-title span {
         font-size: 1rem;
         font-weight: 600;
-        color: var(--text-muted);
-        margin-bottom: 0.5rem;
+        color: #666;
       }
-      .summary-value {
-        font-size: 2rem;
+
+      /* Inputs Grid */
+      .config-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .config-item {
+        background: var(--card-bg);
+        border: var(--border-width) solid var(--border-black);
+        border-radius: var(--radius);
+        padding: 1rem;
+        box-shadow: var(--shadow-hard);
+        position: relative;
+        transition: transform 0.2s;
+      }
+      
+      .config-item:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 0 black;
+      }
+
+      /* Cores específicas para os cards de input */
+      .config-item:nth-child(1) { background-color: #fdf2f8; /* Pink tint */ }
+      .config-item:nth-child(1) .icon-box { background: var(--primary-pink); }
+      
+      .config-item:nth-child(2) { background-color: #f0fdf4; /* Green tint */ }
+      .config-item:nth-child(2) .icon-box { background: var(--primary-green); }
+
+      .config-item:nth-child(3) { background-color: #fffbeb; /* Yellow tint */ }
+      .config-item:nth-child(3) .icon-box { background: var(--primary-yellow); }
+      
+      .config-item:nth-child(4) { background-color: #f3e8ff; /* Purple tint */ }
+      .config-item:nth-child(4) .icon-box { background: var(--primary-purple); }
+
+      .config-item label {
         font-weight: 700;
-        color: var(--primary-dark);
+        font-size: 0.9rem;
+        display: block;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .icon-box {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid black;
+        border-radius: 6px;
+        font-size: 0.8rem;
+      }
+
+      .neo-input {
+        width: 100%;
+        padding: 0.8rem;
+        border: 2px solid var(--border-black);
+        border-radius: 8px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        outline: none;
+      }
+      .neo-input:focus {
+        background-color: #fff;
+        box-shadow: 2px 2px 0 0 black;
+      }
+
+      /* Upload Area */
+      .upload-container {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .upload-section {
+        flex: 2;
+        min-width: 300px;
+      }
+
+      .actions-section {
+        flex: 1;
+        min-width: 250px;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .upload-area {
+        background: #fff;
+        border: 3px dashed var(--border-black);
+        border-radius: var(--radius);
+        padding: 3rem;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.3s;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .upload-area:hover {
+        background-color: #f9f9f9;
+        border-style: solid;
+        transform: translate(-2px, -2px);
+        box-shadow: var(--shadow-hard);
+      }
+
+      .upload-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        color: var(--text-main);
+      }
+
+      /* Buttons */
+      .neo-btn {
+        padding: 1rem 1.5rem;
+        font-weight: 800;
+        font-size: 1rem;
+        border: var(--border-width) solid var(--border-black);
+        border-radius: var(--radius);
+        cursor: pointer;
+        box-shadow: var(--shadow-hard);
+        transition: all 0.1s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .neo-btn:active {
+        box-shadow: 0 0 0 0 black;
+        transform: translate(4px, 4px);
+      }
+      
+      .neo-btn:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: translate(4px, 4px);
+      }
+
+      .btn-primary { background-color: var(--primary-green); color: black; }
+      .btn-secondary { background-color: var(--primary-purple); color: black; }
+      .btn-warning { background-color: var(--primary-yellow); color: black; }
+      .btn-black { background-color: black; color: white; }
+
+      /* File Info */
+      .file-info {
+        margin-top: 1rem;
+        background: #eee;
+        border: 2px solid black;
+        padding: 1rem;
+        border-radius: 8px;
+        display: none;
+      }
+      .file-info.show { display: block; }
+      
+      /* Tabela e Resultados */
+      .results-area {
+        margin-top: 2rem;
+      }
+
+      .summary-cards {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+      
+      .summary-card {
+        flex: 1;
+        background: black;
+        color: white;
+        padding: 1.5rem;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-hard);
+      }
+      .summary-card.negative {
+        background: #FF5252;
+        border: var(--border-width) solid black;
+        color: black;
+      }
+      
+      .summary-label { font-size: 0.8rem; text-transform: uppercase; opacity: 0.8; }
+      .summary-value { font-size: 1.8rem; font-weight: 800; margin-top: 5px; }
+
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        border: var(--border-width) solid black;
+        border-radius: var(--radius);
+        overflow: hidden;
+        background: white;
+      }
+
+      th {
+        background: var(--primary-yellow);
+        border-bottom: var(--border-width) solid black;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 800;
+      }
+      
+      td {
+        padding: 1rem;
+        border-bottom: 1px solid #ddd;
+        font-weight: 500;
+      }
+      
+      tr:last-child td { border-bottom: none; }
+      tr:hover td { background-color: #fafafa; }
+
+      /* Modal */
+      .modal-overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(4px);
+        z-index: 999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0; pointer-events: none;
+        transition: 0.3s;
+      }
+      .modal-overlay.show { opacity: 1; pointer-events: all; }
+      
+      .modal-content {
+        background: white;
+        width: 600px;
+        max-width: 90%;
+        border: var(--border-width) solid black;
+        box-shadow: 8px 8px 0 0 black;
+        border-radius: var(--radius);
+        padding: 2rem;
+        position: relative;
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 1rem; right: 1rem;
+        background: #FF5252;
+        border: 2px solid black;
+        width: 30px; height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: bold;
+      }
+
+      .hidden { display: none !important; }
+      
+      .loading-spinner {
+        border: 4px solid rgba(0,0,0,0.1);
+        border-left: 4px solid black;
+        border-radius: 50%;
+        width: 40px; height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 2rem auto;
+      }
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+      /* Responsividade */
+      @media (max-width: 768px) {
+        body { flex-direction: column; }
+        .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 3px solid black; flex-direction: row; align-items: center; overflow-x: auto; padding: 1rem; }
+        .logo { margin-bottom: 0; margin-right: 2rem; }
+        .nav-item { margin-bottom: 0; white-space: nowrap; }
+        .neo-header { flex-direction: column; gap: 1rem; text-align: center; border-radius: var(--radius); }
+        .config-grid { grid-template-columns: 1fr; }
+        .upload-container { flex-direction: column; }
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <header class="header">
-        <h1>
-          <i class="fa-solid fa-file-invoice-dollar"></i> Gerador de Lançamentos
-          Contábeis
-        </h1>
-        <p>
-          Importe sua planilha Excel para gerar um arquivo de lançamento .txt
-          consolidado por dia.
-        </p>
-        <button class="btn btn-info" id="info-btn">
-          <i class="fas fa-question-circle"></i> Orientações
+    
+    <aside class="sidebar">
+      <div class="logo">
+        <i class="fas fa-wallet"></i>
+        <span>ContabilApp</span>
+      </div>
+      <nav>
+        <div class="nav-item active">
+          <i class="fas fa-file-invoice-dollar"></i> Gerador
+        </div>
+        <div class="nav-item" onclick="document.getElementById('info-modal').classList.add('show')">
+          <i class="fas fa-question-circle"></i> Ajuda
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      
+      <div class="neo-header">
+        <div class="header-title">
+          <h1>Olá, Contador! 👋</h1>
+          <span>Vamos consolidar os lançamentos de hoje?</span>
+        </div>
+        <button class="neo-btn btn-black" id="info-btn">
+          <i class="fas fa-info"></i> Instruções
         </button>
-      </header>
+      </div>
 
-      <main class="main-content">
-        <section id="upload-section">
-          <div class="input-grid">
-            <div class="input-group">
-              <label for="conta-clientes"
-                ><i class="fa-solid fa-users"></i> CONTA CLIENTES</label
-              >
-              <input type="text" id="conta-clientes" placeholder="Ex: 27" />
-            </div>
-            <div class="input-group">
-              <label for="conta-cartao"
-                ><i class="fa-solid fa-credit-card"></i> CONTA CARTÃO</label
-              >
-              <input type="text" id="conta-cartao" placeholder="Ex: 31" />
-            </div>
-            <div class="input-group">
-              <label for="conta-tarifas"
-                ><i class="fa-solid fa-tags"></i> CONTA TARIFAS</label
-              >
-              <input type="text" id="conta-tarifas" placeholder="Ex: 957" />
-            </div>
-            <div class="input-group">
-              <label for="bandeira-cartao"
-                ><i class="fa-solid fa-flag"></i> NOME DA BANDEIRA
-                <span class="optional-label">(Opcional)</span></label
-              >
-              <input type="text" id="bandeira-cartao" placeholder="Ex: VISA" />
-            </div>
-          </div>
+      <div class="config-grid">
+        <div class="config-item">
+          <label>
+            <div class="icon-box"><i class="fa-solid fa-users"></i></div>
+            CONTA CLIENTES
+          </label>
+          <input type="text" class="neo-input" id="conta-clientes" placeholder="Ex: 27" />
+        </div>
+        <div class="config-item">
+          <label>
+            <div class="icon-box"><i class="fa-solid fa-credit-card"></i></div>
+            CONTA CARTÃO
+          </label>
+          <input type="text" class="neo-input" id="conta-cartao" placeholder="Ex: 31" />
+        </div>
+        <div class="config-item">
+          <label>
+            <div class="icon-box"><i class="fa-solid fa-tags"></i></div>
+            CONTA TARIFAS
+          </label>
+          <input type="text" class="neo-input" id="conta-tarifas" placeholder="Ex: 957" />
+        </div>
+        <div class="config-item">
+          <label>
+            <div class="icon-box"><i class="fa-solid fa-flag"></i></div>
+            BANDEIRA (Opcional)
+          </label>
+          <input type="text" class="neo-input" id="bandeira-cartao" placeholder="Ex: VISA" />
+        </div>
+      </div>
 
-          <div class="button-group">
-            <button class="btn btn-secondary" id="generate-model-btn">
-              <i class="fas fa-file-excel"></i> Gerar Planilha Modelo
-            </button>
-          </div>
-
-          <div
-            class="upload-area"
-            onclick="document.getElementById('file-input').click()"
-          >
+      <section id="upload-section" class="upload-container">
+        
+        <div class="upload-section">
+          <div class="upload-area" onclick="document.getElementById('file-input').click()">
             <div class="upload-icon">
-              <i class="fas fa-cloud-upload-alt"></i>
+              <i class="fas fa-cloud-upload-alt fa-bounce"></i>
             </div>
-            <p><strong>Clique para selecionar os arquivos Excel</strong></p>
-            <p>ou arraste e solte os arquivos .xlsx aqui</p>
-            <input type="file" id="file-input" accept=".xlsx, .xls" multiple />
+            <h3>Arraste sua planilha aqui</h3>
+            <p style="color: #666; margin-top: 0.5rem;">ou clique para buscar arquivos .xlsx</p>
+            <input type="file" id="file-input" accept=".xlsx, .xls" multiple style="display: none;" />
           </div>
+          
           <div class="file-info" id="file-info">
-            <div id="file-name" style="font-weight: 600">
-              Arquivos Selecionados:
-            </div>
-            <ul id="file-list" class="file-list"></ul>
+            <strong><i class="fas fa-check-circle"></i> Arquivos prontos:</strong>
+            <ul id="file-list" style="margin-top: 0.5rem; padding-left: 1.2rem;"></ul>
           </div>
-          <button class="btn btn-process" id="process-btn" disabled>
-            <i class="fas fa-cogs"></i> Processar e Consolidar
+        </div>
+
+        <div class="actions-section">
+          <button class="neo-btn btn-secondary" id="generate-model-btn">
+            <i class="fas fa-file-excel"></i> Baixar Modelo
           </button>
-        </section>
+          
+          <button class="neo-btn btn-primary" id="process-btn" disabled style="height: 100%;">
+            <i class="fas fa-cogs"></i> PROCESSAR DADOS
+          </button>
+        </div>
 
-        <section id="loading-section" class="hidden">
-          <div class="loading">
-            <div class="spinner"></div>
-            <p>Processando e consolidando dados...</p>
-          </div>
-        </section>
+      </section>
 
-        <section id="preview-section" class="hidden">
-          <h2 class="section-title">
-            <i class="fas fa-table"></i> Prévia dos Dados Consolidados por Dia
-          </h2>
-          <p class="text-muted" style="margin-bottom: 1.5rem">
-            Confira os totais diários calculados a partir dos arquivos. Se
-            estiver tudo correto, clique para gerar o arquivo .txt.
-          </p>
-          <div class="table-container">
+      <section id="loading-section" class="hidden" style="text-align: center; padding: 3rem;">
+        <div class="loading-spinner"></div>
+        <h3>Processando números...</h3>
+      </section>
+
+      <section id="preview-section" class="hidden results-area">
+        <h2 style="margin-bottom: 1rem; border-bottom: 4px solid var(--primary-green); display: inline-block;">
+          Resultados Consolidados
+        </h2>
+        
+        <div class="summary-cards">
+            <div class="summary-card" style="background: black;">
+                <span class="summary-label">Total Bruto</span>
+                <div class="summary-value" id="total-vendas-valor" style="color: var(--primary-green);">R$ 0,00</div>
+            </div>
+            <div class="summary-card negative">
+                <span class="summary-label" style="color: black;">Total Tarifas</span>
+                <div class="summary-value" id="total-tarifas-valor">R$ 0,00</div>
+            </div>
+            <div class="summary-card" style="background: white; color: black; border: 3px solid black;">
+                <span class="summary-label">Líquido Estimado</span>
+                <div class="summary-value" id="total-liquido-calc">R$ 0,00</div>
+            </div>
+        </div>
+
+        <div style="overflow-x: auto;">
             <table id="preview-table">
               <thead>
                 <tr>
                   <th>Data</th>
-                  <th>Valor Bruto Total</th>
-                  <th>Valor Líquido Total</th>
-                  <th>Valor Taxa Total</th>
+                  <th>Valor Bruto</th>
+                  <th>Valor Líquido</th>
+                  <th>Valor Taxa</th>
                   <th>% Taxa</th>
                 </tr>
               </thead>
               <tbody></tbody>
             </table>
-          </div>
+        </div>
 
-          <div id="summary-box">
-            <div class="summary-item">
-              <span class="summary-label">TOTAL DE VENDAS</span>
-              <span class="summary-value" id="total-vendas-valor">R$ 0,00</span>
-            </div>
-            <div class="summary-item">
-              <span class="summary-label">TOTAL DE TARIFAS</span>
-              <span
-                class="summary-value"
-                id="total-tarifas-valor"
-                style="color: var(--error)"
-                >R$ 0,00</span
-              >
-            </div>
-          </div>
+        <button id="generate-btn" class="neo-btn btn-primary" style="width: 100%; margin-top: 2rem;">
+            <i class="fas fa-download"></i> BAIXAR ARQUIVO .TXT FINAL
+        </button>
+      </section>
 
-          <button id="generate-btn" class="btn btn-process">
-            <i class="fas fa-download"></i> Gerar e Baixar Arquivo .TXT
-          </button>
-        </section>
-      </main>
-    </div>
+    </main>
 
     <div class="modal-overlay" id="info-modal">
       <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title">
-            <i class="fas fa-info-circle"></i> Como Usar o Gerador
-          </h2>
-          <button class="modal-close" id="close-modal-btn">&times;</button>
+        <button class="modal-close" id="close-modal-btn">&times;</button>
+        <h2 style="margin-bottom: 1rem;">Como usar o Gerador</h2>
+        
+        <div style="background: var(--primary-yellow); padding: 1rem; border: 2px solid black; border-radius: 8px; margin-bottom: 1rem;">
+            <strong>Passo 1:</strong> Preencha as contas contábeis no topo.
         </div>
-        <div class="modal-body">
-          <p>
-            Esta ferramenta foi criada para simplificar a criação de lançamentos
-            contábeis a partir de extratos de vendas de cartão.
-          </p>
-          <h3>Passo 1: Preencher os Dados</h3>
-          <ul>
-            <li>
-              <strong>Contas Contábeis:</strong> Informe os números das contas
-              de Clientes, Cartão e Tarifas (obrigatório).
-            </li>
-            <li>
-              <strong>Bandeira do Cartão:</strong> Digite o nome da bandeira
-              (opcional). Se informado, aparecerá no histórico do lançamento.
-            </li>
-          </ul>
-          <h3>Passo 2: Preparar a Planilha</h3>
-          <ul>
-            <li>
-              Clique em <strong>"Gerar Planilha Modelo"</strong> para baixar um
-              arquivo Excel com o formato correto.
-            </li>
-            <li>
-              As colunas necessárias são: <code>DATA</code>,
-              <code>VALOR BRUTO</code>, <code>VALOR LIQUIDO</code>, e
-              <code>TAXA</code>.
-            </li>
-            <li>
-              Para que a <strong>tarifa seja gerada</strong>, você deve
-              preencher o <code>VALOR BRUTO</code> e também o
-              <code>VALOR LIQUIDO</code> ou a <code>TAXA</code>.
-            </li>
-            <li>
-              Se você preencher apenas <code>DATA</code> e
-              <code>VALOR BRUTO</code>, a tarifa será considerada zero e apenas
-              o lançamento de venda será criado.
-            </li>
-            <li>
-              Você pode ter várias vendas (linhas) para o mesmo dia. O sistema
-              irá somar tudo automaticamente.
-            </li>
-          </ul>
-          <h3>Passo 3: Processar e Gerar</h3>
-          <ul>
-            <li>
-              Clique na área de upload para selecionar sua planilha preenchida
-              ou arraste o arquivo para lá.
-            </li>
-            <li>Clique em <strong>"Processar e Consolidar"</strong>.</li>
-            <li>
-              O sistema irá ler a planilha, calcular os valores, somar os totais
-              por dia e mostrar uma prévia com os totais gerais.
-            </li>
-            <li>
-              Se a prévia estiver correta, clique em
-              <strong>"Gerar e Baixar Arquivo .TXT"</strong> para obter o
-              arquivo final.
-            </li>
-          </ul>
+        <div style="background: var(--primary-pink); padding: 1rem; border: 2px solid black; border-radius: 8px; margin-bottom: 1rem;">
+            <strong>Passo 2:</strong> Use o botão "Baixar Modelo" se não souber o formato da planilha. As colunas DATA e VALOR BRUTO são obrigatórias.
+        </div>
+        <div style="background: var(--primary-green); padding: 1rem; border: 2px solid black; border-radius: 8px;">
+            <strong>Passo 3:</strong> Arraste o arquivo, clique em Processar e depois baixe o TXT.
         </div>
       </div>
     </div>
@@ -611,13 +629,12 @@
         fileList.innerHTML = "";
         selectedFiles.forEach((file) => {
           const listItem = document.createElement("li");
-          listItem.className = "file-list-item";
-          listItem.innerHTML = `<i class="fas fa-file-excel text-success"></i> ${file.name}`;
+          listItem.innerHTML = `${file.name}`;
           fileList.appendChild(listItem);
         });
         fileInfo.classList.add("show");
         processBtn.disabled = false;
-        resetUI(false);
+        showSection("upload");
       }
 
       function generateModelSheet() {
@@ -642,12 +659,12 @@
         ];
         if (requiredInputs.some((input) => !input.value.trim())) {
           alert(
-            "Por favor, preencha os campos obrigatórios: Conta Clientes, Conta Cartão e Conta Tarifas."
+            "⚠️ Por favor, preencha os campos de contas (Clientes, Cartão e Tarifas)."
           );
           return;
         }
         if (selectedFiles.length === 0) {
-          alert("Por favor, selecione pelo menos um arquivo Excel.");
+          alert("⚠️ Selecione pelo menos um arquivo Excel.");
           return;
         }
         showSection("loading");
@@ -738,7 +755,7 @@
                 if (!colMap.data || !colMap.bruto) {
                   return reject(
                     new Error(
-                      `No arquivo "${file.name}", não foi possível encontrar as colunas obrigatórias: "DATA" e "VALOR BRUTO".`
+                      `No arquivo "${file.name}", colunas "DATA" e "VALOR BRUTO" não encontradas.`
                     )
                   );
                 }
@@ -777,13 +794,13 @@
               } catch (error) {
                 reject(
                   new Error(
-                    `Erro ao processar o arquivo "${file.name}": ${error.message}`
+                    `Erro ao ler "${file.name}": ${error.message}`
                   )
                 );
               }
             };
             reader.onerror = () =>
-              reject(new Error(`Não foi possível ler o arquivo ${file.name}.`));
+              reject(new Error(`Erro leitura arquivo ${file.name}.`));
             reader.readAsArrayBuffer(file);
           });
         });
@@ -822,12 +839,14 @@
         previewTableBody.innerHTML = "";
         const totalVendasEl = document.getElementById("total-vendas-valor");
         const totalTarifasEl = document.getElementById("total-tarifas-valor");
+        const totalLiquidoEl = document.getElementById("total-liquido-calc");
 
         if (processedData.length === 0) {
           previewTableBody.innerHTML =
-            '<tr><td colspan="5" style="text-align:center;">Nenhum dado válido foi encontrado. Verifique sua planilha.</td></tr>';
+            '<tr><td colspan="5" style="text-align:center; padding: 2rem;">Nenhum dado válido encontrado.</td></tr>';
           totalVendasEl.textContent = formatBRL(0);
           totalTarifasEl.textContent = formatBRL(0);
+          if(totalLiquidoEl) totalLiquidoEl.textContent = formatBRL(0);
           generateBtn.disabled = true;
           return;
         }
@@ -840,6 +859,7 @@
           (sum, item) => sum + item.valorTaxa,
           0
         );
+        const totalLiquido = totalVendas - totalTarifas;
 
         processedData.forEach((data) => {
           const row = document.createElement("tr");
@@ -852,14 +872,14 @@
 
           const estiloTaxaPercentual =
             taxaPercentual > 0.05
-              ? 'style="color: var(--error); font-weight: 700; background-color: #fef2f2;"'
+              ? 'style="color: red; font-weight: 800;"'
               : "";
 
           row.innerHTML = `
                 <td>${data.data}</td>
                 <td>${formatBRL(data.valorBruto)}</td>
                 <td>${formatBRL(data.valorLiquido)}</td>
-                <td style="color: var(--error);">${formatBRL(
+                <td style="color: #FF5252; font-weight:bold;">${formatBRL(
                   data.valorTaxa
                 )}</td>
                 <td ${estiloTaxaPercentual}>${taxaPercentualStr}</td>
@@ -869,6 +889,8 @@
 
         totalVendasEl.textContent = formatBRL(totalVendas);
         totalTarifasEl.textContent = formatBRL(totalTarifas);
+        if(totalLiquidoEl) totalLiquidoEl.textContent = formatBRL(totalLiquido);
+        
         generateBtn.disabled = false;
       }
 
@@ -927,7 +949,6 @@
             }
           }
         }
-        console.warn("Formato de data não reconhecido:", excelDate);
         return null;
       }
 
@@ -940,24 +961,11 @@
 
       function showSection(sectionName) {
         ["upload", "loading", "preview"].forEach((sec) => {
-          document.getElementById(`${sec}-section`).classList.add("hidden");
+            const el = document.getElementById(`${sec}-section`);
+            if(el) el.classList.add("hidden");
         });
-        if (sectionName) {
-          document
-            .getElementById(`${sectionName}-section`)
-            .classList.remove("hidden");
-        }
-      }
-
-      function resetUI(fullReset = true) {
-        showSection("upload");
-        if (fullReset) {
-          fileInput.value = "";
-          selectedFiles = [];
-          fileInfo.classList.remove("show");
-          fileList.innerHTML = "";
-          processBtn.disabled = true;
-        }
+        const target = document.getElementById(`${sectionName}-section`);
+        if (target) target.classList.remove("hidden");
       }
     </script>
   </body>

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conciliador NFe [Brutal Mode]</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
+    <style>
+      :root {
+        --bg-color: #ffe66d; /* Amarelo vibrante */
+        --card-bg: #ffffff;
+        --primary: #ff6b6b; /* Vermelho/Rosa */
+        --secondary: #4ecdc4; /* Verde Água */
+        --accent: #1a535c; /* Azul escuro */
+        --border-width: 3px;
+        --shadow-offset: 6px;
+      }
+
+      body {
+        font-family: "Space Mono", monospace;
+        background-color: var(--bg-color);
+        color: #000;
+        padding: 40px 20px;
+        margin: 0;
+        background-image: radial-gradient(#000 1px, transparent 1px);
+        background-size: 20px 20px; /* Efeito de pontilhados no fundo */
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        background: var(--card-bg);
+        border: var(--border-width) solid #000;
+        box-shadow: var(--shadow-offset) var(--shadow-offset) 0px #000;
+        padding: 0;
+      }
+
+      header {
+        background-color: #000;
+        color: #fff;
+        padding: 20px;
+        text-align: center;
+        border-bottom: var(--border-width) solid #000;
+      }
+
+      h1 {
+        font-family: "Archivo", sans-serif;
+        text-transform: uppercase;
+        font-size: 2.5rem;
+        margin: 0;
+        letter-spacing: -1px;
+      }
+
+      .content {
+        padding: 30px;
+      }
+
+      .section {
+        background: #f4f4f4;
+        border: var(--border-width) solid #000;
+        margin-bottom: 30px;
+        padding: 20px;
+        box-shadow: 4px 4px 0px #000;
+        transition: transform 0.2s;
+      }
+
+      .section:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0px #000;
+      }
+
+      h3 {
+        font-family: "Archivo", sans-serif;
+        font-size: 1.5rem;
+        margin-top: 0;
+        background-color: #000;
+        color: #fff;
+        display: inline-block;
+        padding: 5px 10px;
+        transform: rotate(-1deg);
+      }
+
+      label {
+        display: block;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        font-weight: bold;
+        font-size: 1.1rem;
+      }
+
+      input[type="file"] {
+        width: 100%;
+        padding: 10px;
+        background: #fff;
+        border: 2px solid #000;
+        box-sizing: border-box;
+        cursor: pointer;
+      }
+
+      /* Estilização dos Botões Brutalistas */
+      button {
+        display: inline-block;
+        font-family: "Archivo", sans-serif;
+        font-size: 1rem;
+        text-transform: uppercase;
+        padding: 15px 30px;
+        border: var(--border-width) solid #000;
+        box-shadow: 5px 5px 0px #000;
+        cursor: pointer;
+        transition: all 0.1s;
+        margin-right: 15px;
+        margin-bottom: 10px;
+        font-weight: 800;
+      }
+
+      button.primary {
+        background-color: var(--primary);
+        color: #fff;
+      }
+
+      button.secondary {
+        background-color: var(--secondary);
+        color: #000;
+      }
+
+      button.action {
+        background-color: #000;
+        color: #fff;
+        width: 100%;
+        font-size: 1.2rem;
+      }
+
+      button:active {
+        box-shadow: 0px 0px 0px #000;
+        transform: translate(5px, 5px);
+      }
+
+      button:hover {
+        filter: brightness(1.1);
+      }
+
+      /* Tabela Brutalista */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        border: var(--border-width) solid #000;
+        font-size: 0.9rem;
+      }
+
+      th {
+        background-color: #000;
+        color: #fff;
+        padding: 15px;
+        text-transform: uppercase;
+        font-family: "Archivo", sans-serif;
+        border: 2px solid #fff; /* Contraste interno */
+      }
+
+      td {
+        border: 2px solid #000;
+        padding: 12px;
+        background-color: #fff;
+      }
+
+      /* Tags de Status */
+      .tag {
+        display: inline-block;
+        padding: 5px 10px;
+        border: 2px solid #000;
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+      }
+
+      .tag-ok {
+        background-color: #6bcb77; /* Verde */
+        box-shadow: 2px 2px 0px #000;
+      }
+
+      .tag-err {
+        background-color: #ff6b6b; /* Vermelho */
+        box-shadow: 2px 2px 0px #000;
+        color: #fff;
+      }
+
+      /* Responsividade */
+      @media (max-width: 600px) {
+        .container {
+          padding: 0;
+          border: none;
+          box-shadow: none;
+        }
+        .section {
+          box-shadow: none;
+        }
+        button {
+          width: 100%;
+          margin-bottom: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>CONCILIADOR_XML_V1.0</h1>
+      </header>
+
+      <div class="content">
+        <div class="section">
+          <h3>PASSO 01: O MODELO</h3>
+          <p>
+            Preciso saber o que procurar. Baixe o modelo e preencha a coluna
+            <strong>VALORES</strong>.
+          </p>
+          <button class="secondary" onclick="baixarModelo()">
+            ⬇️ Baixar Planilha Modelo
+          </button>
+        </div>
+
+        <div class="section">
+          <h3>PASSO 02: OS ARQUIVOS</h3>
+
+          <label>1. Upload do Excel preenchido (.xlsx):</label>
+          <input type="file" id="inputExcel" accept=".xlsx, .xls" />
+
+          <label>2. Upload dos XMLs (NFe):</label>
+          <input type="file" id="inputXml" accept=".xml" multiple />
+        </div>
+
+        <button class="action" onclick="processarConciliacao()">
+          ⚡ INICIAR CONCILIAÇÃO ⚡
+        </button>
+
+        <div id="resultadoArea" style="display: none; margin-top: 40px">
+          <div style="border-top: 5px solid #000; padding-top: 20px">
+            <h2 style="font-family: 'Archivo'; text-transform: uppercase">
+              Relatório Gerado
+            </h2>
+            <button class="primary" onclick="exportarResultado()">
+              💾 Salvar Relatório (.xlsx)
+            </button>
+
+            <div style="overflow-x: auto">
+              <table id="tabelaResultados">
+                <thead>
+                  <tr>
+                    <th>Arquivo</th>
+                    <th>Emitente</th>
+                    <th>Emissão</th>
+                    <th>Valores XML</th>
+                    <th>Status</th>
+                    <th>Match</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /* LÓGICA JAVASCRIPT (MANTIDA IDÊNTICA, APENAS PEQUENOS AJUSTES DE FORMATO)
+       */
+      let valoresExcel = [];
+      let dadosRelatorio = [];
+
+      function baixarModelo() {
+        const wb = XLSX.utils.book_new();
+        const ws_data = [["VALORES"], [100.5], [2550.0], [50.0]];
+        const ws = XLSX.utils.aoa_to_sheet(ws_data);
+        XLSX.utils.book_append_sheet(wb, ws, "Modelo");
+        XLSX.writeFile(wb, "modelo_brutal.xlsx");
+      }
+
+      async function processarConciliacao() {
+        const excelInput = document.getElementById("inputExcel").files[0];
+        const xmlInput = document.getElementById("inputXml").files;
+
+        if (!excelInput || xmlInput.length === 0) {
+          alert("⚠️ ERRO: Selecione o Excel e pelo menos um XML.");
+          return;
+        }
+
+        valoresExcel = await lerExcel(excelInput);
+        if (valoresExcel.length === 0) {
+          alert("⚠️ ERRO: Coluna 'VALORES' não encontrada ou vazia.");
+          return;
+        }
+
+        const tbody = document.querySelector("#tabelaResultados tbody");
+        tbody.innerHTML = "";
+        dadosRelatorio = [];
+
+        for (let i = 0; i < xmlInput.length; i++) {
+          const file = xmlInput[i];
+          const textoXml = await lerArquivoTexto(file);
+          const dados = extrairDadosXml(textoXml, file.name);
+
+          const valoresNfeFloats = dados.valores.map((v) =>
+            parseFloat(v).toFixed(2)
+          );
+          const valoresExcelFloats = valoresExcel.map((v) =>
+            parseFloat(v).toFixed(2)
+          );
+
+          let conciliado = false;
+          let valorEncontrado = "";
+
+          for (let v of valoresNfeFloats) {
+            if (valoresExcelFloats.includes(v)) {
+              conciliado = true;
+              valorEncontrado = v;
+              break;
+            }
+          }
+
+          dadosRelatorio.push({
+            Arquivo: dados.arquivo,
+            Emitente: dados.emitente,
+            Emissao: dados.dhEmi,
+            ValoresXML: valoresNfeFloats.join(" | "),
+            Conciliado: conciliado ? "SIM" : "NAO",
+            ValorBatido: valorEncontrado,
+          });
+
+          // HTML da linha da tabela com estilo novo
+          const statusHtml = conciliado
+            ? `<span class="tag tag-ok">CONCILIADO</span>`
+            : `<span class="tag tag-err">PENDENTE</span>`;
+
+          const tr = `<tr>
+                <td><strong>${dados.arquivo}</strong></td>
+                <td>${dados.emitente}</td>
+                <td>${dados.dhEmi}</td>
+                <td style="font-family: monospace;">${valoresNfeFloats.join(
+                  " <br> "
+                )}</td>
+                <td>${statusHtml}</td>
+                <td style="font-weight:bold;">${
+                  valorEncontrado ? "R$ " + valorEncontrado : "-"
+                }</td>
+            </tr>`;
+          tbody.innerHTML += tr;
+        }
+
+        document.getElementById("resultadoArea").style.display = "block";
+        // Scroll até o resultado
+        document
+          .getElementById("resultadoArea")
+          .scrollIntoView({ behavior: "smooth" });
+      }
+
+      function lerExcel(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: "array" });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            const json = XLSX.utils.sheet_to_json(worksheet);
+            let valores = [];
+            json.forEach((row) => {
+              const keys = Object.keys(row);
+              const key = keys.find(
+                (k) => k.toUpperCase().trim() === "VALORES"
+              );
+              if (key) valores.push(row[key]);
+            });
+            resolve(valores);
+          };
+          reader.readAsArrayBuffer(file);
+        });
+      }
+
+      function lerArquivoTexto(file) {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target.result);
+          reader.readAsText(file);
+        });
+      }
+
+      function extrairDadosXml(texto, nomeArquivo) {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(texto, "text/xml");
+
+        const getTag = (tag) => {
+          const el = xmlDoc.getElementsByTagName(tag)[0];
+          return el ? el.textContent : "";
+        };
+
+        let xNome = getTag("xNome");
+        const emit = xmlDoc.getElementsByTagName("emit")[0];
+        if (emit) {
+          const nomeEl = emit.getElementsByTagName("xNome")[0];
+          if (nomeEl) xNome = nomeEl.textContent;
+        }
+
+        let dhEmi = "";
+        const ide = xmlDoc.getElementsByTagName("ide")[0];
+        if (ide) {
+          const dhEl = ide.getElementsByTagName("dhEmi")[0];
+          if (dhEl) {
+            try {
+              let dataRaw = new Date(dhEl.textContent);
+              dhEmi = dataRaw.toLocaleDateString("pt-BR");
+            } catch (e) {
+              dhEmi = dhEl.textContent;
+            }
+          }
+        }
+
+        let valores = [];
+        const vLiq = xmlDoc.getElementsByTagName("vLiq");
+        for (let i = 0; i < vLiq.length; i++) valores.push(vLiq[i].textContent);
+        const vDup = xmlDoc.getElementsByTagName("vDup");
+        for (let i = 0; i < vDup.length; i++) valores.push(vDup[i].textContent);
+
+        return {
+          arquivo: nomeArquivo,
+          emitente: xNome,
+          dhEmi: dhEmi,
+          valores: valores,
+        };
+      }
+
+      function exportarResultado() {
+        if (dadosRelatorio.length === 0) return;
+        const ws = XLSX.utils.json_to_sheet(dadosRelatorio);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Resultado");
+        XLSX.writeFile(wb, "Relatorio_Conciliacao_Brutal.xlsx");
+      }
+    </script>
+  </body>
+</html>
