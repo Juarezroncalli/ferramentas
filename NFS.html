@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ferramentas Contábeis Unificadas</title>
+    <title>Ferramentas Contábeis [COLOR_BRUTALISM]</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -14,22 +14,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
-      /* --- VARIÁVEIS NEO-BRUTALISMO --- */
+      /* --- VARIÁVEIS VIBRANTES --- */
       :root {
-        --bg-color: #f0f0f0;
-        --card-bg: #ffffff;
+        --bg-body: #FFF7ED; /* Bege claro fundo */
+        --card-bg: #FFFFFF;
         --border-color: #000000;
         
-        /* Cores de destaque vibrantes */
-        --primary-color: #8b5cf6; /* Roxo */
-        --accent-color: #facc15;  /* Amarelo */
-        --success: #2ed573;       /* Verde */
-        --error: #ff4757;         /* Vermelho */
-        --text-color: #000000;
+        /* Paleta Neo-Brutalista Colorida */
+        --color-primary: #8B5CF6;   /* Roxo Elétrico */
+        --color-secondary: #F472B6; /* Rosa Chiclete */
+        --color-accent: #FACC15;    /* Amarelo Sol */
+        --color-info: #06B6D4;      /* Ciano */
+        --color-success: #22C55E;   /* Verde Lima */
+        --color-danger: #EF4444;    /* Vermelho Vivo */
         
         --border-width: 3px;
-        --shadow-offset: 5px;
-        --radius: 0px; /* Cantos retos */
+        --shadow-dist: 6px;
       }
 
       * {
@@ -39,120 +39,128 @@
       }
 
       body {
-        font-family: "Space Grotesk", sans-serif;
-        background-color: var(--bg-color);
-        /* Padrão de fundo pontilhado */
-        background-image: radial-gradient(#000 1px, transparent 1px);
-        background-size: 20px 20px;
-        color: var(--text-color);
+        font-family: 'Space Grotesk', sans-serif;
+        background-color: var(--color-info); /* Fundo Ciano vibrante */
+        background-image: 
+            linear-gradient(#fff 2px, transparent 2px),
+            linear-gradient(90deg, #fff 2px, transparent 2px);
+        background-size: 40px 40px;
+        background-position: -2px -2px;
+        color: var(--border-color);
         min-height: 100vh;
         padding: 20px;
+        padding-top: 100px; /* Espaço para o menu */
       }
 
       .container {
-        max-width: 1200px;
+        max-width: 1100px;
         margin: 0 auto;
-        padding: 1rem;
       }
 
-      /* --- ESTILOS DO MENU (MANTIDOS CASO SEJA INJETADO) --- */
+      /* --- NAVEGAÇÃO SUPERIOR --- */
       .main-nav {
-        background-color: var(--accent-color);
+        background-color: var(--color-accent); /* Amarelo */
         border-bottom: var(--border-width) solid var(--border-color);
-        padding: 1rem;
+        padding: 1rem 0;
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
-        z-index: 100;
-        display: flex;
-        justify-content: center;
-        box-shadow: 0 4px 0 0 rgba(0,0,0,1);
+        z-index: 500;
+        box-shadow: 0 4px 0 rgba(0,0,0,1);
       }
+
       .main-nav ul {
         list-style: none;
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 10px;
-      }
-      .main-nav a {
-        display: block;
-        padding: 10px 15px;
-        text-decoration: none;
-        color: var(--text-color);
-        font-weight: 700;
-        font-family: 'Space Mono', monospace;
-        border: var(--border-width) solid var(--border-color);
-        background: #fff;
-        box-shadow: 3px 3px 0 0 var(--border-color);
-        transition: all 0.1s;
-        text-transform: uppercase;
-      }
-      .main-nav a:hover,
-      .main-nav a.active {
-        background-color: var(--primary-color);
-        color: #fff;
-        transform: translate(-2px, -2px);
-        box-shadow: 5px 5px 0 0 var(--border-color);
+        gap: 15px;
+        padding: 0 20px;
       }
 
-      /* --- VISIBILIDADE DAS PÁGINAS --- */
+      .main-nav a {
+        text-decoration: none;
+        color: #000;
+        font-weight: 800;
+        font-family: 'Space Mono', monospace;
+        text-transform: uppercase;
+        background: #fff;
+        padding: 10px 15px;
+        border: var(--border-width) solid #000;
+        box-shadow: 4px 4px 0 #000;
+        transition: transform 0.1s, box-shadow 0.1s;
+      }
+
+      .main-nav a:hover, .main-nav a.active {
+        background-color: var(--color-secondary); /* Rosa no hover/active */
+        color: #fff;
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 #000;
+      }
+
+      /* --- LAYOUT BÁSICO --- */
       .page-content {
         display: none;
+        animation: slideIn 0.4s cubic-bezier(0.25, 1, 0.5, 1);
       }
+      
       .page-content.active {
         display: block;
-        animation: fadeIn 0.3s ease-in-out;
       }
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
+
+      @keyframes slideIn {
+        from { opacity: 0; transform: translateY(30px); }
         to { opacity: 1; transform: translateY(0); }
       }
 
-      /* --- CABEÇALHO --- */
       .header {
         text-align: center;
         margin-bottom: 3rem;
-        background: var(--card-bg);
-        border: var(--border-width) solid var(--border-color);
+        background: var(--color-primary);
+        border: var(--border-width) solid #000;
         padding: 2rem;
-        box-shadow: var(--shadow-offset) var(--shadow-offset) 0 0 var(--border-color);
-      }
-      .header h1 {
-        color: var(--text-color);
-        font-size: 2.5rem;
-        font-weight: 900;
-        text-transform: uppercase;
-        margin-bottom: 0.5rem;
-        letter-spacing: -1px;
-      }
-      .header p {
-        color: var(--text-color);
-        font-family: 'Space Mono', monospace;
-        font-size: 1rem;
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
+        color: #fff;
       }
 
-      /* --- CARDS E CONTEÚDO --- */
-      .content-card {
-        background: var(--card-bg);
-        border: var(--border-width) solid var(--border-color);
-        border-radius: var(--radius);
-        padding: 2rem;
-        box-shadow: var(--shadow-offset) var(--shadow-offset) 0 0 var(--border-color);
-        margin-bottom: 2rem;
-      }
-      .content-card h2 {
-        background-color: var(--text-color);
-        color: #fff;
-        display: inline-block;
-        padding: 10px 15px;
-        font-size: 1.2rem;
-        font-weight: 700;
-        margin-bottom: 1.5rem;
+      .header h1 {
+        font-size: 2.5rem;
         text-transform: uppercase;
-        box-shadow: 4px 4px 0 0 var(--primary-color);
+        text-shadow: 3px 3px 0 #000;
+        margin-bottom: 0.5rem;
+      }
+
+      .header p {
+        font-family: 'Space Mono', monospace;
+        font-size: 1.1rem;
+        background: #000;
+        color: var(--color-accent);
+        display: inline-block;
+        padding: 5px 10px;
+      }
+
+      /* --- CARDS --- */
+      .content-card {
+        background: #fff;
+        border: var(--border-width) solid #000;
+        border-radius: 0;
+        padding: 2.5rem;
+        margin-bottom: 2.5rem;
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
+        position: relative;
+      }
+
+      .content-card h2 {
+        background-color: var(--color-accent);
+        border: var(--border-width) solid #000;
+        padding: 10px 20px;
+        display: inline-block;
+        margin-bottom: 2rem;
+        font-weight: 900;
+        text-transform: uppercase;
         transform: rotate(-1deg);
+        box-shadow: 4px 4px 0 #000;
       }
 
       /* --- FORMULÁRIOS --- */
@@ -162,349 +170,299 @@
         gap: 1.5rem;
         align-items: flex-end;
       }
-      .form-group {
-        margin-bottom: 1rem;
-      }
+
+      .form-group { margin-bottom: 1rem; }
+
       label {
         display: block;
         margin-bottom: 8px;
-        font-weight: 700;
+        font-weight: 800;
         font-family: 'Space Mono', monospace;
         text-transform: uppercase;
-        font-size: 0.85rem;
-        color: var(--text-color);
+        font-size: 0.9rem;
       }
+
       input[type="text"],
       input[type="number"],
-      input[type="file"],
       input[type="date"],
-      select,
-      textarea {
+      select {
         width: 100%;
-        padding: 12px;
-        border: var(--border-width) solid var(--border-color);
-        border-radius: 0;
-        font-size: 1rem;
+        padding: 15px;
+        border: var(--border-width) solid #000;
         font-family: 'Space Mono', monospace;
-        background: #f8f9fa;
-        color: var(--text-color);
+        font-size: 1rem;
+        background: #F3F4F6;
         outline: none;
         transition: all 0.2s;
       }
-      input:focus,
-      select:focus,
-      textarea:focus {
+
+      input:focus {
         background: #fff;
-        box-shadow: 4px 4px 0 0 var(--primary-color);
-        transform: translate(-2px, -2px);
+        box-shadow: 5px 5px 0 var(--color-primary);
+        transform: translate(-3px, -3px);
       }
 
       /* --- BOTÕES --- */
       .btn {
-        background: var(--card-bg);
-        color: var(--text-color);
-        border: var(--border-width) solid var(--border-color);
-        padding: 12px 24px;
-        border-radius: var(--radius);
+        border: var(--border-width) solid #000;
+        padding: 15px 30px;
         font-weight: 800;
         font-family: 'Space Grotesk', sans-serif;
         text-transform: uppercase;
-        font-size: 1rem;
         cursor: pointer;
-        transition: all 0.1s;
-        box-shadow: 4px 4px 0 0 var(--border-color);
+        font-size: 1rem;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 0.5rem;
-      }
-      .btn:hover:not(:disabled) {
-        transform: translate(-2px, -2px);
-        box-shadow: 6px 6px 0 0 var(--border-color);
-        background-color: var(--accent-color);
-      }
-      .btn:active:not(:disabled) {
-        transform: translate(2px, 2px);
-        box-shadow: 0 0 0 0 var(--border-color);
-      }
-      .btn:disabled {
-        background: #e5e5e5;
-        cursor: not-allowed;
-        box-shadow: none;
-        opacity: 0.6;
-      }
-      .btn-accent {
-        background-color: var(--primary-color);
-        color: #fff;
-      }
-      .btn-accent:hover:not(:disabled) {
-        background-color: #7c3aed;
-        color: #fff;
+        gap: 10px;
+        background-color: #fff;
+        box-shadow: 5px 5px 0 #000;
+        transition: all 0.1s;
       }
 
-      .actions {
-        display: flex;
-        gap: 1rem;
-        margin-top: 1.5rem;
-        flex-wrap: wrap;
+      .btn:hover:not(:disabled) {
+        transform: translate(-3px, -3px);
+        box-shadow: 8px 8px 0 #000;
       }
+
+      .btn:active {
+        transform: translate(0, 0);
+        box-shadow: 0 0 0 #000;
+      }
+
+      .btn:disabled {
+        background: #e5e5e5;
+        color: #888;
+        box-shadow: none;
+        cursor: not-allowed;
+      }
+
+      /* Cores específicas de botões */
+      #nfs-add-row-btn, #reinf-addMappingBtn { background-color: var(--color-info); }
+      #nfs-generate-btn, #ativo-gerarTxtBtn, #reinf-downloadButton { background-color: var(--color-secondary); color: #fff; text-shadow: 1px 1px 0 #000; }
+      #sm-calculateButton, #rbt12-calculateButton { background-color: var(--color-success); }
+      #ativo-processExcelBtn, #reinf-processButton { background-color: var(--color-primary); color: #fff; }
 
       /* --- UPLOAD --- */
       .upload-area {
-        border: var(--border-width) dashed var(--border-color);
-        border-radius: var(--radius);
-        padding: 3rem 2rem;
+        background-color: #FEF9C3; /* Amarelo pálido */
+        border: 3px dashed #000;
+        padding: 3rem;
         text-align: center;
-        transition: all 0.2s;
         cursor: pointer;
-        position: relative;
-        overflow: hidden;
-        margin-top: 1rem;
-        background-color: #fff;
+        transition: all 0.2s;
+        margin-top: 1.5rem;
       }
+
       .upload-area:hover {
-        background: #f0fdf4;
+        background-color: var(--color-accent);
         border-style: solid;
-        box-shadow: inset 0 0 0 4px var(--success);
+        box-shadow: 6px 6px 0 #000;
+        transform: translate(-2px, -2px);
       }
+
       .upload-icon {
         font-size: 3rem;
-        color: var(--text-color);
-        margin-bottom: 1rem;
+        margin-bottom: 10px;
+        color: #000;
       }
-      .upload-text {
-        font-size: 1.1rem;
-        color: var(--text-color);
-        margin-bottom: 0.5rem;
-        font-weight: 700;
-        text-transform: uppercase;
-      }
+      
+      .upload-text { font-weight: bold; font-size: 1.2rem; }
+
+      /* --- FILE INFO --- */
       .file-info {
-        background: var(--card-bg);
-        border: var(--border-width) solid var(--border-color);
-        padding: 1rem;
-        margin-top: 1.5rem;
+        background: #fff;
+        border: var(--border-width) solid #000;
+        padding: 15px;
+        margin-top: 15px;
         display: none;
         align-items: center;
-        gap: 1rem;
-        box-shadow: 4px 4px 0 0 var(--success);
+        gap: 15px;
+        box-shadow: 5px 5px 0 var(--color-success);
       }
-      .file-info.show {
-        display: flex;
-      }
-      .file-icon {
-        color: var(--success);
-        font-size: 1.5rem;
-      }
+      .file-info.show { display: flex; }
+      .file-icon { color: var(--color-success); font-size: 1.5rem; }
 
       /* --- TABELAS --- */
       table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 1.5rem;
-        border: var(--border-width) solid var(--border-color);
-      }
-      th, td {
-        border: 2px solid var(--border-color);
-        padding: 12px;
-        text-align: left;
-        font-family: 'Space Mono', monospace;
-      }
-      th {
-        background-color: var(--border-color);
-        color: #fff;
-        font-weight: 700;
-        text-transform: uppercase;
-      }
-      tr:nth-child(even) td {
-        background-color: #f3f3f3;
+        margin-top: 2rem;
+        border: var(--border-width) solid #000;
       }
 
-      .empty-state {
-        text-align: center;
-        padding: 3rem 2rem;
-        color: var(--text-color);
-        border: 2px dashed #ccc;
-        background: #f9f9f9;
+      th {
+        background: #000;
+        color: #fff;
+        padding: 15px;
+        text-align: left;
         font-family: 'Space Mono', monospace;
+        text-transform: uppercase;
+      }
+
+      td {
+        border: 2px solid #000;
+        padding: 12px;
+        background: #fff;
+        font-family: 'Space Mono', monospace;
+      }
+      
+      tr:nth-child(even) td { background-color: #F0FDFA; } /* Cyan muito claro */
+
+      /* --- INPUT GRID (NFS) --- */
+      .input-grid-container {
+        border: var(--border-width) solid #000;
+        padding: 15px;
+        background: var(--color-primary); /* Fundo roxo */
+        overflow-x: auto;
+      }
+
+      .input-row-header {
+        display: flex;
+        background: #000;
+        color: #fff;
+        padding: 10px;
+        font-family: 'Space Mono', monospace;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .input-row-header div { flex: 1; text-align: center; }
+      .col-cnpj { flex: 2 !important; }
+      .col-action { flex: 0.5 !important; }
+
+      .input-row {
+        display: flex;
+        background: #fff;
+        border: 3px solid #000;
+        padding: 10px;
+        margin-bottom: 10px;
+        gap: 10px;
+        box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+      }
+      
+      .input-row div { flex: 1; }
+      
+      .input-row input {
+        border: 2px solid #ccc;
+        padding: 5px;
+        font-size: 0.9rem;
+      }
+      
+      .delete-row-btn {
+        background: var(--color-danger);
+        color: #fff;
+        border: 2px solid #000;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+      }
+
+      /* --- RESULTADOS / TERMINAL --- */
+      #ativo-resultBox, #reinf-report, .preview-box, #ecf-results-content {
+        background-color: #1e1e1e;
+        color: #33ff00;
+        font-family: 'Courier New', Courier, monospace;
+        padding: 1.5rem;
+        border: var(--border-width) solid #000;
+        box-shadow: 8px 8px 0 var(--color-secondary);
+        max-height: 400px;
+        overflow-y: auto;
+        margin-top: 1rem;
+      }
+      
+      .anexo-result {
+        background: #fff;
+        border: 3px solid #000;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 5px 5px 0 var(--color-info);
+      }
+
+      .anexo-aliquota {
+        font-size: 2rem;
+        color: var(--color-primary);
+        font-weight: 800;
       }
 
       /* --- MODAL --- */
       .custom-modal-overlay {
         position: fixed;
         top: 0; left: 0; width: 100%; height: 100%;
-        background-color: rgba(255, 228, 230, 0.9);
+        background-color: rgba(139, 92, 246, 0.8); /* Roxo translúcido */
         display: none;
         justify-content: center;
         align-items: center;
-        z-index: 1000;
+        z-index: 2000;
         backdrop-filter: blur(5px);
       }
-      .custom-modal-overlay.visible {
-        display: flex;
-        opacity: 1;
-      }
-      .custom-modal-content {
-        background-color: var(--card-bg);
-        padding: 2.5rem;
-        border: 4px solid var(--border-color);
-        box-shadow: 10px 10px 0 0 var(--border-color);
-        max-width: 500px;
-        width: 90%;
-        text-align: center;
-        color: var(--text-color);
-      }
-      .custom-modal-content h3 {
-        background: var(--text-color);
-        color: #fff;
-        display: inline-block;
-        padding: 5px 10px;
-        margin-bottom: 1rem;
-        text-transform: uppercase;
-      }
-
-      /* --- MENSAGEM DE ERRO --- */
-      #errorMessage, .input-hint, .calculation-note {
-        font-family: 'Space Mono', monospace;
-        font-size: 0.85rem;
-      }
-      #errorMessage {
-        margin-top: 1rem;
-        padding: 1rem;
-        border: var(--border-width) solid var(--border-color);
-        background-color: var(--error);
-        color: #fff;
-        display: none;
-        text-align: center;
-        font-weight: bold;
-        box-shadow: 4px 4px 0 0 var(--border-color);
-      }
-      #errorMessage:not(:empty) {
-        display: block;
-      }
-
-      /* --- ESTILOS NFS ESPECÍFICOS --- */
-      .input-grid-container {
-        overflow-x: auto;
-        padding-bottom: 10px;
-        border: var(--border-width) solid var(--border-color);
-        padding: 10px;
-        background: #fafafa;
-      }
-      .input-row-header {
-        display: flex;
-        background: var(--border-color);
-        color: #fff;
-        font-family: 'Space Mono', monospace;
-        font-weight: bold;
-        padding: 10px 0;
-        margin-bottom: 10px;
-      }
-      .input-row-header div {
-        flex: 1 1 120px;
-        text-align: center;
-        padding: 0 5px;
-      }
-      .input-row {
-        display: flex;
-        align-items: center;
-        margin-bottom: 10px;
-        padding: 10px;
-        border: 2px solid #e5e5e5;
-        background: #fff;
-        gap: 10px;
-        transition: all 0.2s;
-      }
-      .input-row:hover {
-        border-color: var(--border-color);
-        box-shadow: 3px 3px 0 0 rgba(0,0,0,0.1);
-      }
-      .input-row div {
-        flex: 1 1 120px;
-      }
-      .col-cnpj { flex: 1.5 1 200px !important; }
-      .col-valor { flex: 1 1 120px; }
-      .col-action { flex: 0 0 60px; justify-content: center; }
       
-      .delete-row-btn {
-        background-color: var(--error);
-        color: white;
-        border: 2px solid var(--border-color);
-        border-radius: 0;
-        width: 35px;
-        height: 35px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        box-shadow: 2px 2px 0 0 var(--border-color);
-      }
-      .delete-row-btn:hover {
-        transform: translate(-1px, -1px);
-        box-shadow: 3px 3px 0 0 var(--border-color);
-      }
+      .custom-modal-overlay.visible { display: flex; }
 
-      /* --- RESULTADOS (Preto e Verde tipo terminal) --- */
-      #ativo-resultBox, #reinf-report, .preview-box {
-        background-color: #000;
-        color: #00ff00;
-        font-family: 'Courier New', Courier, monospace;
-        border: var(--border-width) solid var(--border-color);
-        padding: 1.5rem;
-        box-shadow: inset 0 0 20px rgba(0, 255, 0, 0.2);
-        max-height: 300px;
-        overflow-y: auto;
-      }
-
-      /* --- SIMPLES NACIONAL --- */
-      .anexo-result {
+      .custom-modal-content {
         background: #fff;
-        border: var(--border-width) solid var(--border-color);
-        padding: 1.5rem;
-        box-shadow: 4px 4px 0 0 #3b82f6;
-        margin-bottom: 15px;
+        border: 5px solid #000;
+        padding: 2rem;
+        max-width: 500px;
+        box-shadow: 15px 15px 0 #000;
+        text-align: center;
       }
-      .anexo-result h4 {
-        border-bottom: 2px solid var(--border-color);
-        padding-bottom: 5px;
-        margin-bottom: 10px;
-        font-weight: 900;
-        color: var(--text-color);
-      }
-      .anexo-aliquota {
-        font-family: 'Space Mono', monospace;
+
+      .custom-modal-content h3 {
+        background: var(--color-accent);
+        border: 3px solid #000;
+        display: inline-block;
+        padding: 10px 20px;
         font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary-color);
-      }
-      .results-intro {
-        font-family: 'Space Mono', monospace;
         margin-bottom: 20px;
-        padding: 1rem;
-        border: 1px dashed var(--border-color);
+      }
+
+      .empty-state {
+        border: 3px dashed #000;
+        padding: 2rem;
+        text-align: center;
+        background: #fdfdfd;
+        color: #888;
+      }
+
+      /* Mensagens de erro e alertas */
+      #errorMessage {
+        background: var(--color-danger);
+        color: #fff;
+        border: 3px solid #000;
+        padding: 10px;
+        font-weight: bold;
+        display: none;
+        margin-top: 10px;
+        box-shadow: 4px 4px 0 #000;
       }
 
       @media (max-width: 992px) {
         .input-row-header { display: none; }
-        .input-row { flex-direction: column; position: relative; padding-top: 40px; }
-        .input-row label { display: block; }
-        .col-action { position: absolute; top: 10px; right: 10px; }
+        .input-row { flex-direction: column; }
+      }
+      
+      @media (max-width: 768px) {
+        .main-nav { overflow-x: auto; white-space: nowrap; justify-content: flex-start; }
       }
     </style>
   </head>
   <body>
+    
+    
+
     <main id="page-nfs" class="page-content active">
       <div class="container">
         <div class="header">
-          <h1>
-            <i class="fa-solid fa-file-lines"></i> Layout de Notas Fiscais
-          </h1>
-          <p>Para importação no sistema Domínio</p>
+          <h1>Layout Notas Fiscais</h1>
+          <p>Importação Sistema Domínio</p>
         </div>
         <div class="content-card">
-          <h2>
-            <i class="fa-solid fa-table-list"></i> Dados da Nota Fiscal
-          </h2>
+          <h2><i class="fa-solid fa-bolt"></i> Inserir Dados</h2>
           <form id="nfs-data-form" novalidate>
             <div class="input-grid-container">
               <div class="input-row-header">
@@ -521,16 +479,12 @@
               </div>
               <div id="nfs-input-rows"></div>
             </div>
-            <div class="actions">
+            <div class="actions" style="margin-top: 20px;">
               <button type="button" id="nfs-add-row-btn" class="btn">
-                <i class="fa-solid fa-plus"></i> Adicionar Linha
+                <i class="fa-solid fa-plus"></i> Add Linha
               </button>
-              <button
-                type="button"
-                id="nfs-generate-btn"
-                class="btn btn-accent"
-              >
-                <i class="fa-solid fa-bolt"></i> Gerar Arquivo TXT
+              <button type="button" id="nfs-generate-btn" class="btn btn-accent">
+                <i class="fa-solid fa-file-export"></i> GERAR TXT
               </button>
             </div>
           </form>
@@ -541,140 +495,72 @@
     <main id="page-ativo" class="page-content">
       <div class="container">
         <div class="header">
-          <h1>
-            <i class="fa-solid fa-file-invoice-dollar"></i> Layout de Patrimônio
-          </h1>
-          <p>
-            Upload Excel -> Layout (PMBEM)
-          </p>
+          <h1>Layout Patrimônio</h1>
+          <p>Excel para PMBEM</p>
         </div>
+        
         <div class="content-card" id="ativo-uploadCard">
-          <h2><i class="fa-solid fa-upload"></i> 1. Carregar Dados</h2>
+          <h2>1. Configuração</h2>
           <div class="form-grid">
             <div class="form-group">
-              <label for="ativo-numeroEmpresa"
-                >Número da Empresa (Domínio)*</label
-              ><input
-                type="number"
-                id="ativo-numeroEmpresa"
-                required
-                max="99999"
-                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                maxlength="5"
-                placeholder="Ex: 123"
-              />
+              <label for="ativo-numeroEmpresa">Número da Empresa (Domínio)*</label>
+              <input type="number" id="ativo-numeroEmpresa" required max="99999" maxlength="5" placeholder="Ex: 123" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);">
             </div>
           </div>
-          <div
-            class="upload-area"
-            onclick="document.getElementById('ativo-excelFile').click()"
-          >
-            <div class="upload-icon">
-              <i class="fas fa-cloud-upload-alt"></i>
-            </div>
-            <div class="upload-text">
-              SELECIONAR EXCEL
-            </div>
-            <div class="upload-subtext">ou arraste e solte (.xlsx, .xls)</div>
-            <input
-              type="file"
-              id="ativo-excelFile"
-              accept=".xlsx, .xls"
-              style="display: none"
-            />
+          
+          <div class="upload-area" onclick="document.getElementById('ativo-excelFile').click()">
+            <div class="upload-icon"><i class="fas fa-file-excel"></i></div>
+            <div class="upload-text">CLIQUE PARA CARREGAR EXCEL</div>
+            <div class="upload-subtext">.xlsx ou .xls</div>
+            <input type="file" id="ativo-excelFile" accept=".xlsx, .xls" style="display: none" />
           </div>
+
           <div class="file-info" id="ativo-file-info">
-            <div class="file-icon"><i class="fas fa-file-excel"></i></div>
+            <div class="file-icon"><i class="fas fa-check-circle"></i></div>
             <div class="file-details">
               <div class="file-name" id="ativo-file-name"></div>
               <div class="file-size" id="ativo-file-size"></div>
             </div>
           </div>
-          <div
-            style="
-              display: flex;
-              align-items: center;
-              margin-top: 1.5rem;
-              background: #fff;
-              border: 2px solid #000;
-              padding: 1rem;
-            "
-          >
-            <input
-              type="checkbox"
-              id="ativo-processarBaixadosCheckbox"
-              style="
-                width: auto;
-                margin-right: 0.75rem;
-                height: 1.2em;
-              "
-            /><label
-              for="ativo-processarBaixadosCheckbox"
-              style="
-                margin-bottom: 0;
-                font-weight: normal;
-                color: var(--text-color);
-              "
-              >Processar itens com Status 'Baixa Total'?</label
-            >
+
+          <div style="margin-top: 1.5rem; background: #fff; border: 3px solid #000; padding: 10px; display: inline-flex; align-items: center; gap: 10px; box-shadow: 4px 4px 0 #ccc;">
+            <input type="checkbox" id="ativo-processarBaixadosCheckbox" style="width: 20px; height: 20px; margin:0;">
+            <label for="ativo-processarBaixadosCheckbox" style="margin:0; cursor:pointer;">Incluir itens com 'Baixa Total'?</label>
           </div>
         </div>
+
         <div class="content-card" id="ativo-mappingCard" style="display: none">
-          <h2><i class="fa-solid fa-right-left"></i> 2. Mapeamento De/Para</h2>
-          <p style="margin-bottom: 15px;">
-            Preencha a "Conta Patrimonial" correspondente para cada "Conta
-            Principal".
-          </p>
+          <h2>2. Mapeamento</h2>
+          <p style="margin-bottom: 1rem;">Informe a Conta Patrimonial para cada Conta do Excel.</p>
           <div id="ativo-mappingTableContainer"></div>
-          <div class="actions">
+          <div class="actions" style="margin-top: 20px;">
             <button id="ativo-processExcelBtn" class="btn">
-              <i class="fas fa-cogs"></i> Processar Dados
+              <i class="fas fa-cogs"></i> PROCESSAR DADOS
             </button>
           </div>
         </div>
+
         <div class="content-card" id="ativo-itemsListCard">
-          <h2>
-            <i class="fa-solid fa-list-check"></i> 3. Itens Processados
-          </h2>
+          <h2>3. Itens Gerados</h2>
           <div id="ativo-itemsContainer" style="display: grid; gap: 1rem"></div>
           <div id="ativo-emptyState" class="empty-state">
-            <div class="empty-icon"><i class="fa-solid fa-box-open"></i></div>
-            <h3>Nenhum item</h3>
-            <p>
-              Carregue um arquivo Excel e realize o mapeamento.
-            </p>
+            <div style="font-size: 3rem;">📂</div>
+            <h3>Nada aqui ainda</h3>
+            <p>Carregue o arquivo acima para começar.</p>
           </div>
-          <div class="actions">
-            <button id="ativo-gerarTxtBtn" class="btn btn-accent" disabled>
-              <i class="fa-solid fa-file-export"></i> Gerar Arquivo TXT
+          <div class="actions" style="margin-top: 20px;">
+            <button id="ativo-gerarTxtBtn" class="btn" disabled>
+              <i class="fa-solid fa-download"></i> BAIXAR ARQUIVO FINAL
             </button>
           </div>
         </div>
+
         <div class="content-card" id="ativo-resultArea" style="display: none">
-          <div
-            style="
-              background: #000;
-              color: #00ff00;
-              padding: 1rem;
-              display: flex;
-              align-items: center;
-              gap: 1rem;
-              border: 3px solid #000;
-              border-bottom: none;
-            "
-          >
-            <i class="fas fa-file-alt"></i>
-            <div style="font-size: 1.25rem; font-weight: 600; font-family: 'Space Mono';">
-              OUTPUT GERADO
-            </div>
-          </div>
+          <h2 style="background: #000; color: #33ff00; transform: none;">RESULTADO</h2>
           <div id="ativo-resultBox"></div>
-          <div class="actions">
-            <button id="ativo-downloadBtn" class="btn">
-              <i class="fa-solid fa-download"></i> Baixar TXT</button
-            ><button id="ativo-copyBtn" class="btn">
-              <i class="fa-solid fa-copy"></i> Copiar
-            </button>
+          <div class="actions" style="margin-top: 20px;">
+            <button id="ativo-downloadBtn" class="btn"><i class="fa-solid fa-download"></i> Download</button>
+            <button id="ativo-copyBtn" class="btn"><i class="fa-solid fa-copy"></i> Copiar</button>
           </div>
         </div>
       </div>
@@ -683,41 +569,25 @@
     <main id="page-reinf" class="page-content">
       <div class="container">
         <div class="header">
-          <h1>
-            <i class="fa-solid fa-file-invoice"></i> Gerador REINF
-          </h1>
-          <p>
-            Mapeamento Nome x CPF
-          </p>
+          <h1>Gerador REINF</h1>
+          <p>Mapeamento Nome > CPF</p>
         </div>
+
         <div class="content-card">
-          <h2>
-            <i class="fa-solid fa-address-book"></i> 1. Mapeamento
-          </h2>
-          <p style="margin-bottom: 15px;">
-            Adicione os nomes (ou partes deles) da coluna 'Histórico' e seus CPFs.
-          </p>
-          <div class="form-grid" style="margin-top: 1.5rem">
+          <h2>1. Mapeamento</h2>
+          <div class="form-grid">
             <div class="form-group">
-              <label for="reinf-nameInput">Nome (Busca)</label
-              ><input
-                type="text"
-                id="reinf-nameInput"
-                placeholder="Ex: JOÃO"
-              />
+              <label>Nome (Busca)</label>
+              <input type="text" id="reinf-nameInput" placeholder="Ex: JOÃO">
             </div>
             <div class="form-group">
-              <label for="reinf-cpfInput">CPF Correspondente</label
-              ><input
-                type="text"
-                id="reinf-cpfInput"
-                placeholder="Somente números"
-              />
+              <label>CPF Destino</label>
+              <input type="text" id="reinf-cpfInput" placeholder="Somente números">
             </div>
             <div class="form-group">
-              <label>&nbsp;</label
-              ><button id="reinf-addMappingBtn" class="btn">
-                <i class="fa-solid fa-plus"></i> ADD
+              <label>&nbsp;</label>
+              <button id="reinf-addMappingBtn" class="btn" style="width: 100%;">
+                <i class="fa-solid fa-plus"></i>
               </button>
             </div>
           </div>
@@ -732,97 +602,43 @@
             <tbody id="reinf-mapping-body"></tbody>
           </table>
         </div>
+
         <div class="content-card">
-          <h2>
-            <i class="fa-solid fa-upload"></i> 2. Importar Planilha
-          </h2>
-          <div
-            class="upload-area"
-            onclick="document.getElementById('reinf-excelFile').click()"
-          >
-            <div class="upload-icon">
-              <i class="fas fa-cloud-upload-alt"></i>
-            </div>
-            <div class="upload-text">
-              SELECIONAR EXCEL
-            </div>
-            <div class="upload-subtext">Colunas: Histórico, Valor, Data</div>
-            <input
-              type="file"
-              id="reinf-excelFile"
-              accept=".xlsx, .xls"
-              style="display: none"
-            />
+          <h2>2. Processamento</h2>
+          <div class="upload-area" onclick="document.getElementById('reinf-excelFile').click()">
+            <div class="upload-icon"><i class="fas fa-file-excel"></i></div>
+            <div class="upload-text">UPLOAD EXCEL</div>
+            <input type="file" id="reinf-excelFile" accept=".xlsx, .xls" style="display: none" />
           </div>
+
           <div class="file-info" id="reinf-file-info">
-            <div class="file-icon"><i class="fas fa-file-excel"></i></div>
+            <div class="file-icon"><i class="fas fa-check"></i></div>
             <div class="file-details">
               <div class="file-name" id="reinf-file-name"></div>
               <div class="file-size" id="reinf-file-size"></div>
             </div>
           </div>
-          <div class="actions">
-            <button id="reinf-processButton" class="btn" disabled>
-              <i class="fas fa-cogs"></i> Processar Planilha
-            </button>
-          </div>
+
+          <button id="reinf-processButton" class="btn" style="width: 100%; margin-top: 20px;" disabled>
+            PROCESSAR E GERAR
+          </button>
         </div>
+
         <div class="content-card">
-          <h2>
-            <i class="fa-solid fa-chart-bar"></i> 3. Resultados
-          </h2>
-          <div
-            id="reinf-companyNameDisplay"
-            style="
-              display: none;
-              font-weight: bold;
-              margin-bottom: 1rem;
-              padding: 1rem;
-              border: 2px solid #000;
-              background-color: #eee;
-            "
-          ></div>
-          <div
-            id="reinf-status"
-            style="
-              margin-top: 1rem;
-              padding: 1.25rem;
-              border: 2px solid #000;
-              margin-bottom: 1rem;
-            "
-          >
-            Aguardando processamento...
-          </div>
-          <div id="reinf-cpfTotalsSection" style="display: none">
+          <h2>3. Resultados</h2>
+          <div id="reinf-status" style="border: 2px solid #000; padding: 10px; margin-bottom: 10px;">Aguardando...</div>
+          
+          <div id="reinf-cpfTotalsSection" style="display: none; margin-bottom: 20px;">
             <h3>Totais por CPF</h3>
             <table id="reinf-cpfTotalsTable">
-              <thead>
-                <tr>
-                  <th>CPF</th>
-                  <th>Valor Total (R$)</th>
-                </tr>
-              </thead>
+              <thead><tr><th>CPF</th><th>Total (R$)</th></tr></thead>
               <tbody id="reinf-cpfTotalsTableBody"></tbody>
             </table>
           </div>
-          <div
-            id="reinf-report"
-            style="
-              display: none;
-              margin-top: 1rem;
-              padding: 1.25rem;
-            "
-          ></div>
-          <div class="actions">
-            <button
-              id="reinf-downloadButton"
-              class="btn btn-accent"
-              style="display: none"
-              disabled
-            >
-              <i class="fa-solid fa-download"></i> Baixar Arquivo(s)
-            </button>
-          </div>
+
+          <button id="reinf-downloadButton" class="btn" style="display: none; width: 100%;" disabled>
+            <i class="fa-solid fa-download"></i> BAIXAR TXT(s)
+          </button>
         </div>
       </div>
     </main>
@@ -830,70 +646,34 @@
     <main id="page-ecf" class="page-content">
       <div class="container">
         <div class="header">
-          <h1><i class="fas fa-file-alt"></i> Processador ECF</h1>
-          <p>Registros N030 e M500</p>
+          <h1>Leitor ECF</h1>
+          <p>N030 e M500</p>
         </div>
+
         <div class="content-card">
-          <div
-            class="upload-area"
-            onclick="document.getElementById('ecf-file-input').click()"
-          >
-            <div class="upload-icon">
-              <i class="fas fa-cloud-upload-alt"></i>
-            </div>
+          <div class="upload-area" onclick="document.getElementById('ecf-file-input').click()">
+            <div class="upload-icon"><i class="fas fa-file-alt"></i></div>
             <div class="upload-text">SELECIONAR ARQUIVO .TXT</div>
-            <input
-              type="file"
-              id="ecf-file-input"
-              accept=".txt"
-              style="display: none"
-            />
+            <input type="file" id="ecf-file-input" accept=".txt" style="display: none" />
           </div>
+          
           <div class="file-info" id="ecf-file-info">
-            <div class="file-icon"><i class="fas fa-file-text"></i></div>
-            <div class="file-details">
-              <div class="file-name" id="ecf-file-name"></div>
-              <div class="file-size" id="ecf-file-size"></div>
-            </div>
+            <div class="file-name" id="ecf-file-name"></div>
+            <div class="file-size" id="ecf-file-size"></div>
           </div>
-          <div class="actions">
-            <button class="btn" id="ecf-process-btn" disabled>
-              <i class="fas fa-cogs"></i>Ler Arquivo
-            </button>
-          </div>
+
+          <button class="btn btn-accent" id="ecf-process-btn" style="width: 100%; margin-top: 20px;" disabled>
+            LER ARQUIVO
+          </button>
         </div>
-        <div
-          class="content-card"
-          id="ecf-loading"
-          style="display: none; text-align: center"
-        >
-          <div
-            style="
-              border: 5px solid var(--border-color);
-              border-top: 5px solid var(--primary-color);
-              width: 50px;
-              height: 50px;
-              animation: spin 1s linear infinite;
-              margin: 0 auto 1rem;
-            "
-          ></div>
-          <p>LENDO...</p>
+
+        <div class="content-card" id="ecf-loading" style="display: none; text-align: center;">
+          <div style="font-size: 3rem; animation: spin 1s infinite linear;">⚙️</div>
+          <p>Processando...</p>
         </div>
-        <div class="content-card" id="ecf-results" style="display: none">
-          <div
-            style="
-              background: #000;
-              color: #fff;
-              padding: 1rem;
-              border: 3px solid #000;
-              margin-bottom: 20px;
-            "
-          >
-            <i class="fas fa-chart-line"></i>
-            <h2 style="color: white; margin: 0; font-size: 1.25rem; display:inline; box-shadow:none; background:none; padding:0; transform:none;">
-              RESULTADOS
-            </h2>
-          </div>
+
+        <div class="content-card" id="ecf-results" style="display: none;">
+          <h2>Resultados</h2>
           <div id="ecf-results-content"></div>
         </div>
       </div>
@@ -902,51 +682,24 @@
     <main id="page-simples-mensal" class="page-content">
       <div class="container" style="max-width: 800px">
         <div class="header">
-          <h1>
-            <i class="fa-solid fa-calculator"></i> Simples Nacional
-          </h1>
-          <p>Cálculo por Faturamento Mensal</p>
+          <h1>Simples Nacional</h1>
+          <p>Cálculo Mensal</p>
         </div>
         <div class="content-card">
-          <h2>
-            <i class="fa-solid fa-calendar-day"></i> 1. Faturamento Mês
-          </h2>
+          <h2>1. Dados</h2>
           <div class="form-group">
-            <label for="sm-monthlyRevenueInput"
-              >Valor (R$):</label
-            ><input
-              type="text"
-              id="sm-monthlyRevenueInput"
-              placeholder="Ex: 10500,00"
-              inputmode="decimal"
-            />
+            <label>Faturamento Mensal (R$)</label>
+            <input type="text" id="sm-monthlyRevenueInput" placeholder="10000,00" inputmode="decimal">
           </div>
-          <p
-            class="calculation-note"
-            style="
-              background-color: #ffeb3b;
-              padding: 0.75rem;
-              border: 2px solid #000;
-              margin-bottom: 1rem;
-              font-weight: bold;
-            "
-          >
-            ⚠ O sistema simula o RBT12 multiplicando este valor por 12.
-          </p>
-          <button id="sm-calculateButton" class="btn">
-            <i class="fa-solid fa-play"></i> Calcular
-          </button>
-          <div id="sm-errorMessage" class="error-message"></div>
+          <div style="background: var(--color-accent); border: 3px solid #000; padding: 10px; margin-bottom: 20px; font-weight: bold;">
+            ⚠ O sistema multiplicará este valor por 12.
+          </div>
+          <button id="sm-calculateButton" class="btn" style="width: 100%;">CALCULAR</button>
+          <div id="sm-errorMessage"></div>
         </div>
         <div class="content-card">
-          <h2>
-            <i class="fa-solid fa-file-contract"></i> 2. Resultados
-          </h2>
-          <div id="sm-resultsOutput">
-            <div class="empty-state">
-              <p>Aguardando valor...</p>
-            </div>
-          </div>
+          <h2>2. Resultado</h2>
+          <div id="sm-resultsOutput"><div class="empty-state">Aguardando cálculo...</div></div>
         </div>
       </div>
     </main>
@@ -954,52 +707,30 @@
     <main id="page-simples-rbt12" class="page-content">
       <div class="container" style="max-width: 800px">
         <div class="header">
-          <h1>
-            <i class="fa-solid fa-calculator"></i> Simples Nacional
-          </h1>
-          <p>
-            Cálculo por Receita Bruta (RBT12)
-          </p>
+          <h1>Simples Nacional</h1>
+          <p>Cálculo RBT12</p>
         </div>
         <div class="content-card">
-          <h2>
-            <i class="fa-solid fa-hand-holding-dollar"></i> 1. Informar RBT12
-          </h2>
+          <h2>1. Dados</h2>
           <div class="form-group">
-            <label for="rbt12-rbt12Input"
-              >Faturamento Bruto (12 Meses):</label
-            ><input
-              type="text"
-              id="rbt12-rbt12Input"
-              placeholder="Ex: 126000,00"
-              inputmode="decimal"
-            />
+            <label>RBT12 (Últimos 12 meses)</label>
+            <input type="text" id="rbt12-rbt12Input" placeholder="120000,00" inputmode="decimal">
           </div>
-          <button id="rbt12-calculateButton" class="btn">
-            <i class="fa-solid fa-play"></i> Calcular
-          </button>
-          <div id="rbt12-errorMessage" class="error-message"></div>
+          <button id="rbt12-calculateButton" class="btn" style="width: 100%;">CALCULAR</button>
+          <div id="rbt12-errorMessage"></div>
         </div>
         <div class="content-card">
-          <h2>
-            <i class="fa-solid fa-file-contract"></i> 2. Resultados
-          </h2>
-          <div id="rbt12-resultsOutput">
-            <div class="empty-state">
-              <p>Aguardando valor...</p>
-            </div>
-          </div>
+          <h2>2. Resultado</h2>
+          <div id="rbt12-resultsOutput"><div class="empty-state">Aguardando cálculo...</div></div>
         </div>
       </div>
     </main>
 
     <div id="generic-modal" class="custom-modal-overlay">
       <div class="custom-modal-content">
-        <h3 id="generic-modal-title" style="margin-top: 0"></h3>
-        <p id="generic-modal-text"></p>
-        <div class="actions" style="justify-content: center">
-          <button id="generic-modal-close-btn" class="btn">ENTENDIDO</button>
-        </div>
+        <h3 id="generic-modal-title">AVISO</h3>
+        <p id="generic-modal-text" style="font-family: 'Space Mono', monospace; font-size: 1.1rem; margin: 20px 0;"></p>
+        <button id="generic-modal-close-btn" class="btn">ENTENDIDO</button>
       </div>
     </div>
 
@@ -1021,11 +752,9 @@
           if (targetPage) targetPage.classList.add("active");
           if (targetLink) targetLink.classList.add("active");
 
-          // Não alterar o hash se for a página inicial para manter a URL limpa
           if (pageId !== "page-nfs") {
             window.location.hash = pageId.replace("page-", "");
           } else if (window.location.hash) {
-            // Limpa o hash se estiver voltando para a página inicial
             history.pushState(
               "",
               document.title,
@@ -1046,7 +775,7 @@
         if (initialPage && document.getElementById("page-" + initialPage)) {
           showPage("page-" + initialPage);
         } else {
-          showPage("page-nfs"); // Página padrão
+          showPage("page-nfs"); 
         }
       });
 
@@ -1081,7 +810,6 @@
         const generateBtn = page.querySelector("#nfs-generate-btn");
         const form = page.querySelector("#nfs-data-form");
 
-        // Crie um template a partir do HTML, depois remova-o do DOM
         const rowTemplateHTML = `
             <div class="input-row">
                 <div><label>Espécie</label><input type="text" name="especie" placeholder="Ex: 39" required /></div>
@@ -1213,7 +941,7 @@
 
           if (hasDuplicates) {
             showGenericModal(
-              "Foram encontradas linhas duplicadas (marcadas em amarelo). Remova ou corrija.",
+              "Foram encontradas linhas duplicadas. Remova ou corrija.",
               "Erro de Duplicidade"
             );
             return;
@@ -1345,12 +1073,12 @@
                 const valor = parseFloat(
                   String(item.valorAquisicao).replace(",", ".")
                 );
-                return `<div class="anexo-result" style="border-left-width:0; position:relative;">
-                      <button class="delete-row-btn" data-index="${index}" title="Remover item" style="position:absolute; top:1rem; right:1rem;">✕</button>
-                      <h4 style="padding-right:35px;">${
+                return `<div class="anexo-result" style="border-left-width: 3px; position:relative;">
+                      <button class="delete-row-btn" data-index="${index}" title="Remover item" style="position:absolute; top:1rem; right:1rem; width: 40px; height: 40px;">✕</button>
+                      <h4 style="padding-right:35px; border-bottom: none; background: none; box-shadow: none; display: block; margin: 0; transform: none; padding: 0;">${
                         item.nome || "Nome não informado"
                       } (Cód: ${item.codigo})</h4>
-                      <div class="item-details" style="display:grid; gap:0.5rem 1rem; font-size:0.9rem; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
+                      <div class="item-details" style="display:grid; gap:0.5rem 1rem; font-size:0.9rem; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); margin-top: 10px;">
                           <div><strong>Empresa:</strong> ${
                             item.numeroEmpresa
                           }</div>
@@ -1434,7 +1162,7 @@
               mappingTableContainer.innerHTML = `<table><thead><tr><th>Conta Principal (do Excel)</th><th>Conta Patrimonial (De/Para)*</th></tr></thead><tbody>${contas
                 .map(
                   (c) =>
-                    `<tr><td>${c}</td><td><input type="text" class="conta-patrimonial-input" data-conta-principal="${c}" required placeholder="Digite a conta patrimonial"></td></tr>`
+                    `<tr><td>${c}</td><td><input type="text" class="conta-patrimonial-input" data-conta-principal="${c}" required placeholder="Digite a conta"></td></tr>`
                 )
                 .join("")}</tbody></table>`;
               mappingCard.style.display = "block";
@@ -1572,7 +1300,7 @@
             copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copiado!';
             setTimeout(() => {
               copyBtn.innerHTML =
-                '<i class="fa-solid fa-copy"></i> Copiar Conteúdo';
+                '<i class="fa-solid fa-copy"></i> Copiar';
             }, 2000);
           });
         });
@@ -1632,7 +1360,7 @@
               const row = document.createElement("tr");
               row.innerHTML = `<td>${name}</td><td>${formatCPF(
                 mappings[name]
-              )}</td><td><button class="delete-row-btn reinf-remove" data-name="${name}">&times;</button></td>`;
+              )}</td><td><button class="delete-row-btn reinf-remove" data-name="${name}">✕</button></td>`;
               mappingBody.appendChild(row);
             });
           }
@@ -2105,7 +1833,7 @@
           const clearStatus = () => {
             errorMessage.textContent = "";
             errorMessage.style.display = "none";
-            resultsOutput.innerHTML = `<div class="empty-state"><p>Informe o valor e clique em "Calcular Alíquotas".</p></div>`;
+            resultsOutput.innerHTML = `<div class="empty-state"><p>Aguardando valor...</p></div>`;
           };
 
           button.addEventListener("click", () => {
@@ -2121,7 +1849,7 @@
             let rbt12Value =
               calc.inputType === "monthly" ? inputValue * 12 : inputValue;
 
-            resultsOutput.innerHTML = `<p class="results-intro">${
+            resultsOutput.innerHTML = `<p class="results-intro" style="font-family:'Space Mono'; margin-bottom: 20px; text-align:center;">${
               calc.inputType === "monthly"
                 ? `Faturamento Mensal = <strong>${formatCurrency(
                     inputValue
@@ -2133,6 +1861,10 @@
 
             const grid = document.createElement("div");
             grid.className = "results-grid";
+            grid.style.display = "grid";
+            grid.style.gap = "1rem";
+            grid.style.gridTemplateColumns = "repeat(auto-fit, minmax(280px, 1fr))";
+
             const createBlock = (title, result) =>
               `<div class="anexo-result"><h4>${title}</h4><p class="anexo-aliquota">${result}</p></div>`;
             grid.innerHTML += createBlock(
