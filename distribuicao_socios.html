@@ -5,10 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Distribuidor de Lucros [Brutalist]</title>
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
       :root {
         --bg-color: #e0e7ff; /* Azul claro pálido */
@@ -18,7 +21,7 @@
         --accent-secondary: #facc15; /* Amarelo */
         --accent-danger: #ff4757; /* Vermelho */
         --accent-success: #2ed573; /* Verde */
-        
+
         --border-width: 3px;
         --shadow-offset: 5px;
         --radius: 0px; /* Cantos retos típicos do brutalismo, ou levemente arredondados */
@@ -35,7 +38,7 @@
         background-image: radial-gradient(#000 1px, transparent 1px);
         background-size: 20px 20px;
         color: var(--border-color);
-        font-family: 'Space Grotesk', sans-serif;
+        font-family: "Space Grotesk", sans-serif;
         min-height: 100vh;
       }
 
@@ -47,7 +50,8 @@
       h1 {
         background-color: var(--accent-secondary);
         border: var(--border-width) solid var(--border-color);
-        box-shadow: var(--shadow-offset) var(--shadow-offset) 0 0 var(--border-color);
+        box-shadow: var(--shadow-offset) var(--shadow-offset) 0 0
+          var(--border-color);
         padding: 20px;
         text-align: center;
         text-transform: uppercase;
@@ -72,7 +76,8 @@
       .card {
         background-color: var(--card-bg);
         border: var(--border-width) solid var(--border-color);
-        box-shadow: var(--shadow-offset) var(--shadow-offset) 0 0 var(--border-color);
+        box-shadow: var(--shadow-offset) var(--shadow-offset) 0 0
+          var(--border-color);
         padding: 30px;
         margin-bottom: 30px;
         position: relative;
@@ -86,7 +91,7 @@
         display: block;
         margin-bottom: 8px;
         font-weight: 700;
-        font-family: 'Space Mono', monospace;
+        font-family: "Space Mono", monospace;
         text-transform: uppercase;
         font-size: 0.9rem;
       }
@@ -97,7 +102,7 @@
         width: 100%;
         padding: 15px;
         border: var(--border-width) solid var(--border-color);
-        font-family: 'Space Mono', monospace;
+        font-family: "Space Mono", monospace;
         font-size: 1rem;
         background-color: #f8f9fa;
         outline: none;
@@ -121,7 +126,7 @@
         padding: 15px 25px;
         cursor: pointer;
         font-weight: 800;
-        font-family: 'Space Grotesk', sans-serif;
+        font-family: "Space Grotesk", sans-serif;
         text-transform: uppercase;
         font-size: 1rem;
         background-color: var(--card-bg);
@@ -181,7 +186,7 @@
       }
 
       .total-percentual {
-        font-family: 'Space Mono', monospace;
+        font-family: "Space Mono", monospace;
         font-weight: 700;
         font-size: 1.2rem;
         text-align: right;
@@ -197,7 +202,7 @@
         color: #33ff00;
         padding: 20px;
         border: var(--border-width) solid var(--border-color);
-        font-family: 'Courier New', Courier, monospace;
+        font-family: "Courier New", Courier, monospace;
         white-space: pre-wrap;
         max-height: 400px;
         overflow-y: auto;
@@ -240,7 +245,7 @@
         .socio-item {
           flex-direction: column;
         }
-        
+
         button {
           width: 100%;
           margin-right: 0;
@@ -264,11 +269,16 @@
       </div>
 
       <div class="card">
-          <h2>2. CONFIGURAÇÃO</h2>
-          <div class="form-group">
-              <label for="conta-debito">CONTA DÉBITO (CONTÁBIL)</label>
-              <input type="text" id="conta-debito" placeholder="Ex: 961" value="961">
-          </div>
+        <h2>2. CONFIGURAÇÃO</h2>
+        <div class="form-group">
+          <label for="conta-debito">CONTA DÉBITO (CONTÁBIL)</label>
+          <input
+            type="text"
+            id="conta-debito"
+            placeholder="Ex: 961"
+            value="961"
+          />
+        </div>
       </div>
 
       <div class="card">
@@ -288,10 +298,8 @@
           </div>
         </div>
 
-        <div class="actions" style="margin-bottom: 20px;">
-          <button type="button" id="adicionar-socio">
-            + Adicionar Sócio
-          </button>
+        <div class="actions" style="margin-bottom: 20px">
+          <button type="button" id="adicionar-socio">+ Adicionar Sócio</button>
         </div>
 
         <div class="total-percentual">
@@ -302,10 +310,8 @@
           ⚠ A SOMA DEVE SER EXATAMENTE 100%.
         </div>
 
-        <div class="actions" style="margin-top: 30px;">
-          <button type="button" id="processar">
-            PROCESSAR DADOS ⚡
-          </button>
+        <div class="actions" style="margin-top: 30px">
+          <button type="button" id="processar">PROCESSAR DADOS ⚡</button>
         </div>
       </div>
 
@@ -398,7 +404,7 @@
             const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
             if (json.length < 2) {
-                 throw new Error("A planilha deve conter cabeçalho e dados.");
+              throw new Error("A planilha deve conter cabeçalho e dados.");
             }
 
             const headers = json[0];
@@ -406,16 +412,22 @@
             const creditoColIndex = headers.indexOf("Cta. Crédito");
             const valorColIndex = headers.indexOf("Valor");
 
-            if (dataColIndex === -1 || creditoColIndex === -1 || valorColIndex === -1) {
-                throw new Error("A planilha deve conter as colunas: Data, Cta. Crédito e Valor.");
+            if (
+              dataColIndex === -1 ||
+              creditoColIndex === -1 ||
+              valorColIndex === -1
+            ) {
+              throw new Error(
+                "A planilha deve conter as colunas: Data, Cta. Crédito e Valor."
+              );
             }
 
-            dadosPlanilha = json.slice(1).map(row => {
-                return {
-                    Data: row[dataColIndex],
-                    "Cta. Crédito": row[creditoColIndex],
-                    Valor: row[valorColIndex]
-                };
+            dadosPlanilha = json.slice(1).map((row) => {
+              return {
+                Data: row[dataColIndex],
+                "Cta. Crédito": row[creditoColIndex],
+                Valor: row[valorColIndex],
+              };
             });
 
             fileAlert.classList.add("hidden");
@@ -439,9 +451,9 @@
 
         const contaDebito = contaDebitoInput.value.trim();
         if (!contaDebito) {
-            alert("Por favor, informe a Conta Débito.");
-            contaDebitoInput.focus();
-            return;
+          alert("Por favor, informe a Conta Débito.");
+          contaDebitoInput.focus();
+          return;
         }
 
         atualizarTotalPercentual();
@@ -475,11 +487,13 @@
         dadosPlanilha.forEach((linha) => {
           const data = linha["Data"];
           const contaCredito = linha["Cta. Crédito"];
-          const valorTotal = parseFloat(String(linha["Valor"]).replace(",", "."));
+          const valorTotal = parseFloat(
+            String(linha["Valor"]).replace(",", ".")
+          );
 
           if (isNaN(valorTotal)) {
-               console.warn("Linha ignorada devido a valor inválido:", linha);
-               return;
+            console.warn("Linha ignorada devido a valor inválido:", linha);
+            return;
           }
 
           let valoresSocios = socios.map((socio) => {
@@ -490,20 +504,32 @@
             };
           });
 
-          const somaValoresArredondados = parseFloat(valoresSocios.reduce(
-            (sum, socio) => sum + socio.valorCalculado,
-            0
-          ).toFixed(2));
+          const somaValoresArredondados = parseFloat(
+            valoresSocios
+              .reduce((sum, socio) => sum + socio.valorCalculado, 0)
+              .toFixed(2)
+          );
 
-          const diferenca = parseFloat((valorTotal - somaValoresArredondados).toFixed(2));
+          const diferenca = parseFloat(
+            (valorTotal - somaValoresArredondados).toFixed(2)
+          );
 
           if (Math.abs(diferenca) > 0.01) {
-             let maiorValorSocioIndex = 0;
-             if (valoresSocios.length > 1) {
-                 maiorValorSocioIndex = valoresSocios.reduce((maxIndex, socio, index, arr) =>
-                     socio.valorCalculado > arr[maxIndex].valorCalculado ? index : maxIndex, 0);
-             }
-             valoresSocios[maiorValorSocioIndex].valorCalculado = parseFloat((valoresSocios[maiorValorSocioIndex].valorCalculado + diferenca).toFixed(2));
+            let maiorValorSocioIndex = 0;
+            if (valoresSocios.length > 1) {
+              maiorValorSocioIndex = valoresSocios.reduce(
+                (maxIndex, socio, index, arr) =>
+                  socio.valorCalculado > arr[maxIndex].valorCalculado
+                    ? index
+                    : maxIndex,
+                0
+              );
+            }
+            valoresSocios[maiorValorSocioIndex].valorCalculado = parseFloat(
+              (
+                valoresSocios[maiorValorSocioIndex].valorCalculado + diferenca
+              ).toFixed(2)
+            );
           }
 
           valoresSocios.forEach((socio) => {
@@ -514,29 +540,37 @@
             let dataFormatada = data;
             if (typeof data === "number") {
               const dataExcel = new Date(
-                Math.round(((data > 25569 ? data : data - 1) - 25569) * 86400 * 1000)
+                Math.round(
+                  ((data > 25569 ? data : data - 1) - 25569) * 86400 * 1000
+                )
               );
-              const dia = String(dataExcel.getDate()).padStart(2, "0");
-              const mes = String(dataExcel.getMonth() + 1).padStart(2, "0");
-              const ano = dataExcel.getFullYear();
+              const dia = String(dataExcel.getUTCDate()).padStart(2, "0");
+              const mes = String(dataExcel.getUTCMonth() + 1).padStart(2, "0");
+              const ano = dataExcel.getUTCFullYear();
               dataFormatada = `${dia}/${mes}/${ano}`;
             } else if (typeof data === "string" && data.includes("-")) {
               const partes = data.split("-");
               if (partes.length === 3) {
-                dataFormatada = `${partes[2].padStart(2, "0")}/${partes[1].padStart(2, "0")}/${partes[0]}`;
+                dataFormatada = `${partes[2].padStart(
+                  2,
+                  "0"
+                )}/${partes[1].padStart(2, "0")}/${partes[0]}`;
               }
             } else if (typeof data === "string" && data.includes("/")) {
-               const partes = data.split("/");
-               if (partes.length === 3) {
-                   const [p1, p2, p3] = partes;
-                   if (p3.length === 4) {
-                        dataFormatada = `${p1.padStart(2,"0")}/${p2.padStart(2,"0")}/${p3}`;
-                   } else {
-                       dataFormatada = data;
-                   }
-               }
+              const partes = data.split("/");
+              if (partes.length === 3) {
+                const [p1, p2, p3] = partes;
+                if (p3.length === 4) {
+                  dataFormatada = `${p1.padStart(2, "0")}/${p2.padStart(
+                    2,
+                    "0"
+                  )}/${p3}`;
+                } else {
+                  dataFormatada = data;
+                }
+              }
             } else {
-                dataFormatada = String(data);
+              dataFormatada = String(data);
             }
 
             const linha = `${dataFormatada};${contaDebito};${contaCredito};${valorFormatado};;VALOR PAGO AO SOCIO ${socio.nome}, REF. LUCROS DISTRIBUIDOS;;;;`;
