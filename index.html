@@ -11,47 +11,53 @@
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Conta IA - Dashboard Neo</title>
+    <title>Conta IA - Dashboard [BRUTALISM]</title>
     <link rel="icon" href="icone.ico" type="image/x-icon" />
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
       :root {
-        /* Paleta Neo-Brutalismo */
-        --bg-color: #FFFDF5;
+        /* --- PALETA VIBRANTE --- */
+        --bg-body: #06B6D4; /* Ciano (Fundo Azul) */
         --card-bg: #FFFFFF;
-        
-        --primary-green: #2DDD98;
-        --primary-yellow: #FFF59D;
-        --primary-purple: #D6BCFA;
-        --primary-pink: #FF9EB5;
-        --primary-blue: #A5DEFF;
-        
-        --text-main: #000000;
         --border-black: #000000;
         
-        --shadow-hard: 4px 4px 0px 0px #000000;
+        --color-primary: #8B5CF6;   /* Roxo */
+        --color-secondary: #F472B6; /* Rosa */
+        --color-accent: #FACC15;    /* Amarelo */
+        --color-success: #22C55E;   /* Verde */
+        --color-danger: #EF4444;    /* Vermelho */
+        
+        --shadow-dist: 6px;
         --border-width: 3px;
-        --radius: 12px;
       }
 
       * { margin: 0; padding: 0; box-sizing: border-box; }
 
       body {
-        font-family: 'Inter', sans-serif;
-        background-color: var(--bg-color);
-        color: var(--text-main);
+        font-family: 'Space Grotesk', sans-serif;
+        /* FUNDO AZUL QUADRICULADO */
+        background-color: var(--bg-body);
+        background-image: 
+            linear-gradient(#fff 2px, transparent 2px),
+            linear-gradient(90deg, #fff 2px, transparent 2px);
+        background-size: 40px 40px;
+        background-position: -2px -2px;
+        
+        color: var(--border-black);
         height: 100vh;
-        overflow: hidden; /* Sidebar fixa, conteúdo rola */
+        overflow: hidden;
         display: flex;
       }
 
       /* --- Sidebar --- */
       .sidebar {
-        width: 280px;
-        background: var(--card-bg);
+        width: 300px;
+        background: var(--color-accent); /* Amarelo destaque */
         border-right: var(--border-width) solid var(--border-black);
         display: flex;
         flex-direction: column;
@@ -59,74 +65,83 @@
         flex-shrink: 0;
         overflow-y: auto;
         z-index: 10;
+        box-shadow: 4px 0 0 rgba(0,0,0,0.2);
       }
 
       .logo {
         font-weight: 900;
-        font-size: 1.5rem;
+        font-size: 1.8rem;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 15px;
         margin-bottom: 0.5rem;
         text-decoration: none;
-        color: var(--text-main);
+        color: var(--border-black);
+        text-transform: uppercase;
+        letter-spacing: -1px;
       }
 
       .logo i {
-        background: var(--primary-purple);
-        padding: 8px;
+        background: var(--color-primary);
+        color: #fff;
+        padding: 10px;
         border: var(--border-width) solid var(--border-black);
-        border-radius: 50%;
-        box-shadow: 2px 2px 0 0 black;
+        box-shadow: 4px 4px 0 0 black;
         font-size: 1.2rem;
+        border-radius: 0; /* Cantos retos */
       }
       
       .slogan {
-        font-size: 0.8rem;
-        color: #666;
-        margin-bottom: 2rem;
-        font-weight: 600;
+        font-family: 'Space Mono', monospace;
+        font-size: 0.85rem;
+        color: #000;
+        margin-bottom: 2.5rem;
+        font-weight: 700;
         line-height: 1.4;
+        border-bottom: 3px solid #000;
+        padding-bottom: 10px;
       }
 
       .nav-group {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
+        gap: 15px;
       }
 
       .nav-item {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 1rem;
-        font-weight: 700;
-        color: #555;
+        gap: 15px;
+        padding: 15px;
+        font-weight: 800;
+        color: #000;
         cursor: pointer;
-        transition: 0.2s;
-        border-radius: var(--radius);
-        border: 2px solid transparent;
-        background: transparent;
+        transition: 0.1s;
+        border: var(--border-width) solid var(--border-black);
+        background: #fff;
+        box-shadow: 4px 4px 0 0 black;
+        text-transform: uppercase;
+        font-size: 0.9rem;
       }
 
       .nav-item:hover {
-        background-color: #f0f0f0;
-        transform: translateX(5px);
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 0 black;
+        background-color: #fff;
       }
 
       .nav-item.active {
-        background-color: var(--primary-green);
-        color: black;
-        border: var(--border-width) solid var(--border-black);
-        box-shadow: var(--shadow-hard);
-        transform: none;
+        background-color: var(--color-primary);
+        color: #fff;
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 0 black;
       }
       
-      /* Cores específicas para active states opcionais */
-      .nav-item[data-tab="tab-sped"].active { background-color: var(--primary-yellow); }
-      .nav-item[data-tab="tab-importacao"].active { background-color: var(--primary-blue); }
-      .nav-item[data-tab="tab-analise"].active { background-color: var(--primary-pink); }
-      .nav-item[data-tab="tab-cartoes"].active { background-color: var(--primary-purple); }
+      /* Cores específicas para abas ativas */
+      .nav-item[data-tab="tab-sped"].active { background-color: var(--color-secondary); color: #fff; }
+      .nav-item[data-tab="tab-importacao"].active { background-color: #3B82F6; color: #fff; } /* Azul forte */
+      .nav-item[data-tab="tab-analise"].active { background-color: var(--color-danger); color: #fff; }
+      .nav-item[data-tab="tab-cartoes"].active { background-color: var(--color-success); color: #000; }
 
       /* --- Main Content --- */
       .main-content {
@@ -137,12 +152,11 @@
       }
 
       .header-section {
-        margin-bottom: 2rem;
-        background: var(--card-bg);
+        margin-bottom: 2.5rem;
+        background: #fff;
         border: var(--border-width) solid var(--border-black);
-        border-radius: var(--radius);
         padding: 2rem;
-        box-shadow: var(--shadow-hard);
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -151,114 +165,132 @@
       }
 
       .header-text h1 {
-        font-weight: 800;
-        font-size: 2rem;
+        font-weight: 900;
+        font-size: 2.5rem;
         margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        text-shadow: 2px 2px 0 #ddd;
       }
       .header-text p {
-        font-weight: 500;
-        color: #666;
-        max-width: 600px;
+        font-family: 'Space Mono', monospace;
+        font-weight: 700;
+        color: #000;
+        background: var(--color-accent);
+        display: inline-block;
+        padding: 5px 10px;
+        border: 2px solid #000;
       }
 
       /* --- Tabs & Grid --- */
       .tab-pane {
         display: none;
-        animation: fadeIn 0.3s ease;
+        animation: slideUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
       }
-      .tab-pane.active {
-        display: block;
-      }
+      .tab-pane.active { display: block; }
       
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
+      @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
+      }
+
+      .tab-pane h2 {
+        background: #000;
+        color: #fff;
+        display: inline-block;
+        padding: 10px 20px;
+        margin-bottom: 1.5rem;
+        text-transform: uppercase;
+        font-size: 1.5rem;
+        box-shadow: 4px 4px 0 var(--color-success);
+        transform: rotate(-1deg);
       }
 
       .tools-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 24px;
-        padding-bottom: 4rem; /* Espaço para scroll */
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 30px;
+        padding-bottom: 4rem;
       }
 
       /* --- Tool Card Style --- */
       .tool-card {
         background-color: var(--card-bg);
         border: var(--border-width) solid var(--border-black);
-        border-radius: var(--radius);
         padding: 1.5rem;
-        box-shadow: var(--shadow-hard);
-        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
+        transition: transform 0.1s, box-shadow 0.1s;
         display: flex;
         flex-direction: column;
         cursor: pointer;
         position: relative;
-        overflow: hidden;
       }
 
       .tool-card:hover {
         transform: translate(-4px, -4px);
-        box-shadow: 8px 8px 0 0 black;
-        border-color: black;
+        box-shadow: 10px 10px 0 0 #000;
+        background-color: #fff;
+        z-index: 5;
       }
 
       .tool-icon {
-        font-size: 2.5rem;
+        font-size: 2rem;
         margin-bottom: 1rem;
-        color: black;
+        color: #000;
         width: 60px;
         height: 60px;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #f0f0f0;
-        border: 2px solid black;
-        border-radius: 50%;
+        background: var(--color-accent);
+        border: var(--border-width) solid #000;
+        box-shadow: 3px 3px 0 0 #000;
       }
       
-      /* Variação de cores de ícone no hover do card */
-      .tool-card:hover .tool-icon { background: var(--primary-yellow); }
+      .tool-card:hover .tool-icon { 
+        background: var(--color-primary); 
+        color: #fff;
+      }
 
       .tool-name {
         font-size: 1.2rem;
         font-weight: 800;
         margin-bottom: 0.8rem;
-        line-height: 1.3;
+        line-height: 1.2;
+        text-transform: uppercase;
       }
 
       .tool-description {
-        font-size: 0.9rem;
-        color: #555;
+        font-family: 'Space Mono', monospace;
+        font-size: 0.85rem;
+        color: #000;
         margin-bottom: 1.5rem;
         flex-grow: 1;
-        font-weight: 500;
+        line-height: 1.4;
       }
 
       /* Badge Personalizado */
       .custom-solution-badge {
         position: absolute;
-        top: 12px;
-        right: 12px;
-        background-color: var(--primary-pink);
-        color: black;
-        border: 2px solid black;
-        padding: 4px 8px;
-        font-size: 0.7rem;
+        top: -10px;
+        right: -10px;
+        background-color: var(--color-secondary);
+        color: #fff;
+        border: var(--border-width) solid #000;
+        padding: 5px 10px;
+        font-size: 0.75rem;
         font-weight: 800;
         text-transform: uppercase;
-        border-radius: 4px;
-        box-shadow: 2px 2px 0 0 black;
+        box-shadow: 3px 3px 0 0 #000;
+        transform: rotate(3deg);
       }
 
       /* Botão Acessar */
       .access-btn {
-        background: black;
-        color: white;
-        border: 2px solid black;
-        padding: 10px;
-        border-radius: 8px;
-        font-weight: 700;
+        background: #fff;
+        color: #000;
+        border: var(--border-width) solid #000;
+        padding: 12px;
+        font-weight: 800;
         text-transform: uppercase;
         cursor: pointer;
         transition: 0.1s;
@@ -268,32 +300,42 @@
         align-items: center;
         justify-content: center;
         gap: 8px;
+        box-shadow: 3px 3px 0 0 #000;
       }
 
       .tool-card:hover .access-btn {
-        background: var(--primary-green);
-        color: black;
-        box-shadow: 4px 4px 0 0 black;
+        background: var(--color-success);
+        box-shadow: 5px 5px 0 0 #000;
+        transform: translate(-2px, -2px);
       }
 
       /* Footer */
       footer {
         margin-top: auto;
         padding-top: 2rem;
-        border-top: 2px solid #ddd;
+        border-top: var(--border-width) solid #000;
         text-align: center;
         font-size: 0.9rem;
-        font-weight: 600;
-        color: #888;
+        font-family: 'Space Mono', monospace;
+        font-weight: 700;
+        color: #000;
+        background: #fff;
+        padding-bottom: 1rem;
       }
       
       .footer-links a {
-        color: black;
+        color: #000;
         margin: 0 10px;
         text-decoration: none;
-        font-weight: 800;
+        background: var(--color-accent);
+        padding: 2px 5px;
+        border: 2px solid #000;
       }
-      .footer-links a:hover { text-decoration: underline; color: var(--primary-purple); }
+      .footer-links a:hover { 
+        background: var(--color-primary); 
+        color: #fff; 
+        box-shadow: 3px 3px 0 #000;
+      }
 
       /* Responsividade */
       @media (max-width: 900px) {
@@ -302,7 +344,7 @@
           width: 100%; 
           height: auto; 
           border-right: none; 
-          border-bottom: 3px solid black; 
+          border-bottom: var(--border-width) solid #000; 
           padding: 1rem;
         }
         .nav-group {
@@ -323,7 +365,7 @@
         <i class="fas fa-robot"></i>
         Conta IA
       </a>
-      <div class="slogan">Ferramentas inteligentes para o contador moderno.</div>
+      <div class="slogan">Ferramentas inteligentes v2.0</div>
       
       <nav class="nav-group">
         <div class="nav-item active" data-tab="tab-calculos">
@@ -342,9 +384,6 @@
           <i class="fas fa-credit-card"></i> Cartões
         </div>
       </nav>
-      
-      <div style="margin-top: auto; padding-top: 2rem; display: none;">
-         </div>
     </aside>
 
     <main class="main-content">
@@ -352,15 +391,15 @@
       <section class="header-section">
         <div class="header-text">
           <h1>Olá, Contador! 👋</h1>
-          <p>Centralize sua rotina. Selecione uma categoria ao lado para acessar as ferramentas automatizadas.</p>
+          <p>Centralize sua rotina. Escolha uma categoria ao lado.</p>
         </div>
-        <div style="font-size: 3rem; color: var(--primary-purple);">
+        <div style="font-size: 3.5rem; color: var(--color-primary); filter: drop-shadow(4px 4px 0px #000);">
             <i class="fas fa-cubes-stacked"></i>
         </div>
       </section>
 
       <div id="tab-calculos" class="tab-pane active">
-        <h2 style="margin-bottom: 1.5rem; font-weight: 900;">Cálculos e Simulações</h2>
+        <h2>Cálculos e Simulações</h2>
         <div class="tools-grid">
             <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/irpj_csll.html">
               <div class="tool-icon"><i class="fas fa-table-cells"></i></div>
@@ -391,7 +430,7 @@
             </div>
 
             <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/pauta_agua.html">
-              <span class="custom-solution-badge">Personalizado</span>
+              <span class="custom-solution-badge">Novo</span>
               <div class="tool-icon"><i class="fas fa-hand-holding-droplet"></i></div>
               <h3 class="tool-name">ICMS ST Água Mineral</h3>
               <p class="tool-description">Cálculo rápido de ICMS ST para operações com água mineral.</p>
@@ -399,7 +438,6 @@
             </div>
 
             <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/aliquota_iss_simples.html">
-              <span class="custom-solution-badge">Personalizado</span>
               <div class="tool-icon"><i class="fas fa-percent"></i></div>
               <h3 class="tool-name">Alíquota ISS (Retenção)</h3>
               <p class="tool-description">Calcule o ISS para retenção dentro do Simples Nacional via RBT12.</p>
@@ -409,7 +447,7 @@
       </div>
 
       <div id="tab-sped" class="tab-pane">
-        <h2 style="margin-bottom: 1.5rem; font-weight: 900;">SPED e Obrigações</h2>
+        <h2>SPED e Obrigações</h2>
         <div class="tools-grid">
             <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/h010.html">
                 <div class="tool-icon"><i class="fas fa-calculator"></i></div>
@@ -435,7 +473,6 @@
             </div>
 
             <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/REINF.html">
-                <span class="custom-solution-badge">Personalizado</span>
                 <div class="tool-icon"><i class="fas fa-file-alt"></i></div>
                 <h3 class="tool-name">Reinf (Lucros)</h3>
                 <p class="tool-description">Gere TXT para integrar distribuição de lucros na EFD-Reinf.</p>
@@ -467,33 +504,26 @@
 
             <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/sped_contribuicoes_contas_contabeis.html">
                 <div class="tool-icon"><i class="fas fa-wrench"></i></div>
-                <h3 class="tool-name">SPED Contribuições (C170/C175)</h3>
+                <h3 class="tool-name">SPED Contribuições</h3>
                 <p class="tool-description">Preencha contas contábeis faltantes nos registros C170 e C175.</p>
                 <button class="access-btn">Acessar <i class="fas fa-arrow-right"></i></button>
             </div>
 
             <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/ecf-1.html">
                 <div class="tool-icon"><i class="fas fa-code"></i></div>
-                <h3 class="tool-name">Corretor K155/K355 (ECF)</h3>
+                <h3 class="tool-name">Corretor K155/K355</h3>
                 <p class="tool-description">Corrija contas na ECF quando houver duas ECDs no período.</p>
-                <button class="access-btn">Acessar <i class="fas fa-arrow-right"></i></button>
-            </div>
-
-            <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/ecd-1.html">
-                <div class="tool-icon"><i class="fas fa-pen-to-square"></i></div>
-                <h3 class="tool-name">Gerador de Balanços</h3>
-                <p class="tool-description">Monte balanços trimestrais automaticamente com base na ECD.</p>
                 <button class="access-btn">Acessar <i class="fas fa-arrow-right"></i></button>
             </div>
         </div>
       </div>
 
       <div id="tab-importacao" class="tab-pane">
-        <h2 style="margin-bottom: 1.5rem; font-weight: 900;">Importação e Integração</h2>
+        <h2>Importação e Integração</h2>
         <div class="tools-grid">
             <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/NFS.html">
                 <div class="tool-icon"><i class="fas fa-balance-scale"></i></div>
-                <h3 class="tool-name">Importador NF-e (Domínio)</h3>
+                <h3 class="tool-name">Importador NF-e</h3>
                 <p class="tool-description">Gere TXT para importar notas fiscais no Domínio Sistemas.</p>
                 <button class="access-btn">Acessar <i class="fas fa-arrow-right"></i></button>
             </div>
@@ -540,18 +570,11 @@
                 <p class="tool-description">Analise movimentações de múltiplos arquivos OFX antes de contabilizar.</p>
                 <button class="access-btn">Acessar <i class="fas fa-arrow-right"></i></button>
             </div>
-
-            <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/importa_recibos.html">
-                <div class="tool-icon"><i class="fas fa-magnifying-glass-dollar"></i></div>
-                <h3 class="tool-name">Importador de Recibos</h3>
-                <p class="tool-description">Importe recibos de aluguéis via planilha para o sistema.</p>
-                <button class="access-btn">Acessar <i class="fas fa-arrow-right"></i></button>
-            </div>
         </div>
       </div>
 
       <div id="tab-analise" class="tab-pane">
-        <h2 style="margin-bottom: 1.5rem; font-weight: 900;">Análise e Conferência</h2>
+        <h2>Análise e Conferência</h2>
         <div class="tools-grid">
             <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/financiamentos.html">
                 <div class="tool-icon"><i class="fas fa-file-invoice"></i></div>
@@ -588,20 +611,6 @@
                 <p class="tool-description">Compare planilhas para identificar classificações de lançamentos.</p>
                 <button class="access-btn">Acessar <i class="fas fa-arrow-right"></i></button>
             </div>
-
-            <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/bonificacoes.html">
-                <div class="tool-icon"><i class="fas fa-pen"></i></div>
-                <h3 class="tool-name">Análise Contas a Pagar</h3>
-                <p class="tool-description">Verifica duplicatas indevidas para CFOPs específicos (1.910, etc).</p>
-                <button class="access-btn">Acessar <i class="fas fa-arrow-right"></i></button>
-            </div>
-
-            <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/emprestimos_folha.html">
-                <div class="tool-icon"><i class="fas fa-money-check-dollar"></i></div>
-                <h3 class="tool-name">Consignado INSS</h3>
-                <p class="tool-description">Relatório de empréstimos consignados via JSON do Emprega Brasil.</p>
-                <button class="access-btn">Acessar <i class="fas fa-arrow-right"></i></button>
-            </div>
             
              <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/xml_clinica.html">
                 <div class="tool-icon"><i class="fas fa-paste"></i></div>
@@ -618,22 +627,6 @@
                 <button class="access-btn">Acessar <i class="fas fa-arrow-right"></i></button>
             </div>
 
-            <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/diferencas_fiscal_contabil.html">
-                <span class="custom-solution-badge">Concilia</span>
-                <div class="tool-icon"><i class="fas fa-cash-register"></i></div>
-                <h3 class="tool-name">Conciliação Fiscal x Contábil</h3>
-                <p class="tool-description">Diferenças entre duplicatas geradas e lançamentos contábeis.</p>
-                <button class="access-btn">Acessar <i class="fas fa-arrow-right"></i></button>
-            </div>
-
-            <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/retencao_xml.html">
-                <span class="custom-solution-badge">Beta</span>
-                <div class="tool-icon"><i class="fas fa-square-caret-up"></i></div>
-                <h3 class="tool-name">Análise Retenção XML</h3>
-                <p class="tool-description">Analisa retenções de impostos em XMLs de serviços prestados.</p>
-                <button class="access-btn">Acessar <i class="fas fa-arrow-right"></i></button>
-            </div>
-
             <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/cte.html">
                 <span class="custom-solution-badge">Beta</span>
                 <div class="tool-icon"><i class="fas fa-truck"></i></div>
@@ -641,52 +634,23 @@
                 <p class="tool-description">Dados consolidados de XMLs de CTe em tabela.</p>
                 <button class="access-btn">Acessar <i class="fas fa-arrow-right"></i></button>
             </div>
-			
-			<div class="tool-card" data-url="https://ferramentas-seven.vercel.app/conciliador.html">
-                <span class="custom-solution-badge">Beta</span>
-                <div class="tool-icon"><i class="fas fa-truck"></i></div>
-                <h3 class="tool-name">Conciliar xml com planilha</h3>
-                <p class="tool-description">Importa a condição de pagamento do xml e compara com uma planilha</p>
-                <button class="access-btn">Acessar <i class="fas fa-arrow-right"></i></button>
-            </div>
         </div>
       </div>
 
       <div id="tab-cartoes" class="tab-pane">
-        <h2 style="margin-bottom: 1.5rem; font-weight: 900;">Conciliação de Cartões</h2>
+        <h2>Conciliação de Cartões</h2>
         <div class="tools-grid">
             <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/stone.html">
-                <div class="tool-icon" style="color: #2DDD98;"><i class="fas fa-credit-card"></i></div>
+                <div class="tool-icon" style="background: #2DDD98; color: #000;"><i class="fas fa-credit-card"></i></div>
                 <h3 class="tool-name">Stone > Domínio</h3>
                 <p class="tool-description">Conversor de vendas Stone para importação contábil.</p>
                 <button class="access-btn">Acessar <i class="fas fa-arrow-right"></i></button>
             </div>
 
             <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/Alelo.html">
-                <div class="tool-icon" style="color: #007f5f;"><i class="fas fa-credit-card"></i></div>
+                <div class="tool-icon" style="background: #007f5f; color: #fff;"><i class="fas fa-credit-card"></i></div>
                 <h3 class="tool-name">Alelo > Domínio</h3>
                 <p class="tool-description">Conversor de vendas Alelo para importação contábil.</p>
-                <button class="access-btn">Acessar <i class="fas fa-arrow-right"></i></button>
-            </div>
-
-            <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/BrasilCard.html">
-                <div class="tool-icon" style="color: #FFB703;"><i class="fas fa-credit-card"></i></div>
-                <h3 class="tool-name">Brasil Card > Domínio</h3>
-                <p class="tool-description">Conversor de vendas Brasil Card para importação contábil.</p>
-                <button class="access-btn">Acessar <i class="fas fa-arrow-right"></i></button>
-            </div>
-
-            <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/BoltCard.html">
-                <div class="tool-icon" style="color: #3A0CA3;"><i class="fas fa-credit-card"></i></div>
-                <h3 class="tool-name">Bolt Card > Domínio</h3>
-                <p class="tool-description">Conversor de vendas Bolt Card para importação contábil.</p>
-                <button class="access-btn">Acessar <i class="fas fa-arrow-right"></i></button>
-            </div>
-
-            <div class="tool-card" data-url="https://ferramentas-seven.vercel.app/Rede.html">
-                <div class="tool-icon" style="color: #F72585;"><i class="fas fa-credit-card"></i></div>
-                <h3 class="tool-name">Rede > Domínio</h3>
-                <p class="tool-description">Conversor de vendas Rede para importação contábil.</p>
                 <button class="access-btn">Acessar <i class="fas fa-arrow-right"></i></button>
             </div>
 
@@ -701,7 +665,7 @@
 
       <footer>
         <div class="footer-container">
-          © 2025 Conta IA. Todos os direitos reservados.
+          <p style="margin-bottom: 10px;">© 2025 Conta IA - Design Brutalista</p>
           <div class="footer-links">
             <a href="#">Termos</a>
             <a href="#">Privacidade</a>
