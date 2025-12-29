@@ -3,93 +3,112 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gerador MIT (Presumido) - Neo</title>
+    <title>Gerador MIT (Presumido) [BRUTALISM]</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
       :root {
-        /* Paleta Neo-Brutalismo */
-        --bg-color: #FFFDF5;
+        /* --- PALETA VIBRANTE --- */
+        --bg-body: #06B6D4; /* Ciano (Fundo Azul) */
         --card-bg: #FFFFFF;
-        
-        --primary-green: #2DDD98;
-        --primary-yellow: #FFF59D;
-        --primary-purple: #D6BCFA;
-        --primary-pink: #FF9EB5;
-        --primary-blue: #A5DEFF;
-        
-        --text-main: #000000;
         --border-black: #000000;
         
-        --shadow-hard: 4px 4px 0px 0px #000000;
+        --color-primary: #8B5CF6;   /* Roxo */
+        --color-secondary: #F472B6; /* Rosa */
+        --color-accent: #FACC15;    /* Amarelo */
+        --color-success: #22C55E;   /* Verde */
+        --color-danger: #EF4444;    /* Vermelho */
+        --color-info: #3B82F6;      /* Azul Royal */
+        
+        --shadow-dist: 6px;
         --border-width: 3px;
-        --radius: 12px;
       }
 
       * { margin: 0; padding: 0; box-sizing: border-box; }
 
       body {
-        font-family: 'Inter', sans-serif;
-        background-color: var(--bg-color);
-        color: var(--text-main);
+        font-family: 'Space Grotesk', sans-serif;
+        /* FUNDO AZUL QUADRICULADO */
+        background-color: var(--bg-body);
+        background-image: 
+            linear-gradient(#fff 2px, transparent 2px),
+            linear-gradient(90deg, #fff 2px, transparent 2px);
+        background-size: 40px 40px;
+        background-position: -2px -2px;
+        
+        color: var(--border-black);
         height: 100vh;
-        overflow-x: hidden;
+        overflow: hidden;
         display: flex;
       }
 
       /* Sidebar */
       .sidebar {
-        width: 250px;
-        background: var(--card-bg);
+        width: 280px;
+        background: var(--color-accent); /* Amarelo */
         border-right: var(--border-width) solid var(--border-black);
         display: flex;
         flex-direction: column;
         padding: 2rem 1.5rem;
         flex-shrink: 0;
+        overflow-y: auto;
+        box-shadow: 4px 0 0 rgba(0,0,0,0.1);
       }
 
       .logo {
-        font-weight: 800;
-        font-size: 1.4rem;
+        font-weight: 900;
+        font-size: 1.5rem;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 15px;
         margin-bottom: 3rem;
         text-decoration: none;
-        color: black;
+        color: var(--border-black);
+        text-transform: uppercase;
+        letter-spacing: -1px;
       }
 
       .logo i {
-        background: var(--primary-green);
-        padding: 8px;
+        background: var(--color-success); /* Verde */
+        color: #000;
+        padding: 10px;
         border: var(--border-width) solid var(--border-black);
-        border-radius: 50%;
-        box-shadow: 2px 2px 0 0 black;
+        box-shadow: 4px 4px 0 0 black;
+        font-size: 1.2rem;
       }
 
       .nav-item {
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 1rem;
+        padding: 15px;
         margin-bottom: 1rem;
-        font-weight: 600;
-        color: #555;
+        font-weight: 800;
+        color: #000;
         cursor: pointer;
-        transition: 0.2s;
-        border-radius: var(--radius);
-        border: 2px solid transparent;
+        transition: 0.1s;
+        border: var(--border-width) solid var(--border-black);
+        background: #fff;
+        box-shadow: 4px 4px 0 0 black;
+        text-transform: uppercase;
+        font-size: 0.9rem;
         text-decoration: none;
       }
 
       .nav-item.active {
-        background-color: var(--primary-purple);
-        color: black;
-        border: var(--border-width) solid var(--border-black);
-        box-shadow: var(--shadow-hard);
+        background-color: var(--color-primary);
+        color: #fff;
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 0 black;
       }
-      .nav-item:hover:not(.active) { background-color: #f0f0f0; }
+
+      .nav-item:hover:not(.active) {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 0 black;
+      }
 
       .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
 
@@ -98,25 +117,42 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 2rem;
-        background: var(--card-bg);
+        margin-bottom: 2.5rem;
+        background: #fff;
         border: var(--border-width) solid var(--border-black);
-        border-radius: 50px;
-        padding: 1rem 2rem;
-        box-shadow: var(--shadow-hard);
+        padding: 2rem;
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
       }
-      .header-title h1 { font-weight: 800; font-size: 2rem; }
-      .header-title span { font-size: 1rem; font-weight: 600; color: #666; }
+      .header-title h1 { 
+        font-weight: 900; 
+        font-size: 2.5rem; 
+        text-transform: uppercase;
+        text-shadow: 2px 2px 0 #ddd;
+      }
+      .header-title span { 
+        font-family: 'Space Mono', monospace;
+        font-size: 0.9rem; 
+        font-weight: 700; 
+        background: var(--color-secondary);
+        color: #fff;
+        padding: 5px 10px;
+        border: 2px solid #000;
+      }
 
       /* Cards */
       .neo-card {
-        background: var(--card-bg);
+        background: #fff;
         border: var(--border-width) solid var(--border-black);
-        border-radius: var(--radius);
         padding: 2rem;
-        box-shadow: var(--shadow-hard);
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
         margin-bottom: 2rem;
         position: relative;
+        transition: transform 0.2s;
+      }
+      .neo-card:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 8px 8px 0 0 black;
+        z-index: 2;
       }
 
       .card-title {
@@ -127,15 +163,15 @@
         align-items: center;
         gap: 10px;
         text-transform: uppercase;
-        border-bottom: 2px solid #eee;
+        border-bottom: 3px solid #000;
         padding-bottom: 10px;
       }
       
-      /* Cores de borda superior para diferenciar seções */
-      .border-top-purple { border-top: 6px solid var(--primary-purple); }
-      .border-top-green { border-top: 6px solid var(--primary-green); }
-      .border-top-pink { border-top: 6px solid var(--primary-pink); }
-      .border-top-blue { border-top: 6px solid var(--primary-blue); }
+      /* Cores de borda superior */
+      .border-top-purple { border-top: 6px solid var(--color-primary); }
+      .border-top-green { border-top: 6px solid var(--color-success); }
+      .border-top-pink { border-top: 6px solid var(--color-secondary); }
+      .border-top-blue { border-top: 6px solid var(--color-info); }
 
       /* Formulários */
       .form-grid {
@@ -147,35 +183,41 @@
       .form-group { margin-bottom: 1rem; }
       
       label {
-        font-weight: 700;
+        font-weight: 800;
         display: block;
         margin-bottom: 0.5rem;
         font-size: 0.9rem;
+        text-transform: uppercase;
+        font-family: 'Space Mono', monospace;
       }
 
       .neo-input {
         width: 100%;
-        padding: 0.8rem;
+        padding: 12px;
         font-size: 1rem;
-        font-weight: 500;
+        font-family: 'Space Mono', monospace;
+        font-weight: bold;
         border: var(--border-width) solid var(--border-black);
-        border-radius: var(--radius);
+        background: #F3F4F6;
         outline: none;
-        background: #f9f9f9;
-        transition: 0.1s;
+        transition: all 0.2s;
       }
       .neo-input:focus {
         background-color: #fff;
-        box-shadow: 4px 4px 0 0 rgba(0,0,0,0.1);
+        box-shadow: 5px 5px 0 0 var(--color-primary);
         transform: translate(-2px, -2px);
       }
 
       small {
         display: block;
         margin-top: 5px;
-        font-size: 0.8rem;
-        color: #666;
-        font-weight: 600;
+        font-size: 0.75rem;
+        color: #000;
+        font-weight: 700;
+        background: var(--color-accent);
+        display: inline-block;
+        padding: 2px 5px;
+        border: 1px solid #000;
       }
 
       /* Botões */
@@ -183,15 +225,15 @@
         padding: 1rem 2rem;
         font-weight: 800;
         font-size: 1rem;
+        font-family: 'Space Grotesk', sans-serif;
         border: var(--border-width) solid var(--border-black);
-        border-radius: var(--radius);
         cursor: pointer;
-        box-shadow: var(--shadow-hard);
+        box-shadow: 5px 5px 0 0 black;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 10px;
-        transition: transform 0.1s;
+        transition: all 0.1s;
         text-transform: uppercase;
       }
       .neo-btn:active {
@@ -199,37 +241,53 @@
         transform: translate(4px, 4px);
       }
 
-      .btn-save { background-color: var(--primary-green); color: black; width: 100%; margin-top: 1rem; }
-      .btn-generate { background-color: var(--primary-purple); color: black; font-size: 1.2rem; width: 100%; }
-      .btn-copy { background-color: var(--primary-blue); color: black; margin-top: 1rem; display: none; }
+      .btn-save { background-color: var(--color-success); color: black; width: 100%; margin-top: 1rem; }
+      .btn-generate { background-color: var(--color-primary); color: #fff; font-size: 1.1rem; width: 100%; }
+      .btn-copy { background-color: var(--color-info); color: #fff; margin-top: 1rem; display: none; }
+
+      .btn-save:hover, .btn-generate:hover, .btn-copy:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 7px 7px 0 0 black;
+      }
 
       /* Info Box */
       .info-box {
-        background: #eefaff;
+        background: #fff;
         border: var(--border-width) solid black;
-        border-radius: var(--radius);
         padding: 1.5rem;
         margin-bottom: 2rem;
-        box-shadow: var(--shadow-hard);
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 var(--color-info);
       }
-      .info-box h2 { font-size: 1.1rem; font-weight: 800; margin-bottom: 1rem; }
-      .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
-      .info-item strong { display: block; font-size: 0.8rem; color: #555; }
+      .info-box h2 { 
+        font-size: 1.2rem; 
+        font-weight: 900; 
+        margin-bottom: 1rem; 
+        text-transform: uppercase;
+        display: flex; 
+        align-items: center; 
+        gap: 10px;
+      }
+      .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+      .info-item {
+        background: #f9f9f9;
+        border: 2px solid #000;
+        padding: 10px;
+      }
+      .info-item strong { display: block; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; }
 
       /* Resultado JSON */
       #resultado {
         margin-top: 2rem;
         padding: 1.5rem;
-        background: #1a1a1a;
+        background: #000;
         color: #00ff00;
         border: var(--border-width) solid black;
-        border-radius: var(--radius);
-        font-family: 'Space Mono', monospace;
+        font-family: 'Courier New', Courier, monospace;
         white-space: pre-wrap;
         display: none;
         max-height: 400px;
         overflow-y: auto;
-        box-shadow: var(--shadow-hard);
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #fff;
       }
 
       /* Modal */
@@ -241,19 +299,19 @@
         top: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(4px);
+        background-color: rgba(139, 92, 246, 0.8); /* Roxo translúcido */
+        backdrop-filter: blur(5px);
+        align-items: center;
+        justify-content: center;
       }
 
       .modal-content {
-        background-color: var(--primary-yellow);
-        margin: 10% auto;
-        padding: 2rem;
-        border: var(--border-width) solid black;
-        border-radius: var(--radius);
+        background-color: #fff;
+        padding: 2.5rem;
+        border: 4px solid black;
         width: 90%;
         max-width: 500px;
-        box-shadow: 8px 8px 0 0 black;
+        box-shadow: 12px 12px 0 0 black;
         position: relative;
         text-align: center;
       }
@@ -263,17 +321,18 @@
         top: 10px;
         right: 15px;
         font-size: 28px;
-        font-weight: bold;
+        font-weight: 900;
         cursor: pointer;
-        color: black;
+        color: var(--color-danger);
       }
       
       .modal-btn {
-        background: black;
+        background: #000;
         color: white;
         margin-top: 20px;
+        width: 100%;
       }
-      .modal-btn:hover { background: #333; }
+      .modal-btn:hover { background: #333; box-shadow: 7px 7px 0 0 var(--color-accent); color: white; }
 
       @media (max-width: 768px) {
         body { flex-direction: column; }
@@ -310,7 +369,7 @@
       </div>
 
       <div id="infoArmazenada" class="info-box" style="display: none">
-        <h2><i class="fas fa-user-check"></i> Responsável Salvo</h2>
+        <h2><i class="fas fa-user-check" style="color: var(--color-success);"></i> Responsável Salvo</h2>
         <div class="info-grid">
             <div class="info-item"><strong>CPF</strong> <span id="cpfSalvo"></span></div>
             <div class="info-item"><strong>Telefone</strong> (<span id="dddSalvo"></span>) <span id="telefoneSalvo"></span></div>
@@ -420,14 +479,14 @@
     <div id="alertModal" class="modal">
       <div class="modal-content">
         <span class="close-modal" id="fecharModal">&times;</span>
-        <h2 style="font-weight:900; font-size: 1.5rem; margin-bottom: 1rem;"><i class="fas fa-exclamation-triangle"></i> ATENÇÃO!</h2>
-        <p style="font-weight:600; margin-bottom: 1rem;">
+        <h2 style="font-weight:900; font-size: 1.5rem; margin-bottom: 1rem; text-transform: uppercase;"><i class="fas fa-exclamation-triangle" style="color: var(--color-danger);"></i> ATENÇÃO!</h2>
+        <p style="font-weight:700; margin-bottom: 1rem; font-family: 'Space Mono';">
           É fundamental a conferência dos dados após a importação no E-CAC.
         </p>
         <p>
             O arquivo JSON foi gerado com sucesso e o download iniciará automaticamente.
         </p>
-        <button id="confirmarModal" class="neo-btn modal-btn">ENTENDI</button>
+        <button id="confirmarModal" class="neo-btn modal-btn">ENTENDIDO</button>
       </div>
     </div>
 
@@ -539,7 +598,7 @@
           document.getElementById("copiarJson").style.display = "block";
           
           downloadJson(jsonObj, cnpjRaiz);
-          document.getElementById("alertModal").style.display = "block";
+          document.getElementById("alertModal").style.display = "flex"; // Changed from block to flex for centering
       });
 
       function downloadJson(jsonData, cnpjRaiz) {
