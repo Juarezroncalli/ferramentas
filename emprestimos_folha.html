@@ -1,970 +1,776 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatório de Contratos</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Relatório de Contratos [BRUTALISM]</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
-        :root {
-            --primary-color: #4f0072;
-            --accent-color: #fb0a5e;
-            --background-color: #ffffff;
-            --form-bg-color: #f9f9f9;
-            --text-color: #333333;
-            --border-color: #e0e0e0;
-            --text-color-light: #ffffff;
-            --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
-            --transicao: all 0.3s ease;
-        }
+      :root {
+        --bg-body: #06b6d4; /* Ciano */
+        --card-bg: #ffffff;
+        --border-black: #000000;
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        --color-primary: #8b5cf6; /* Roxo */
+        --color-secondary: #f472b6; /* Rosa */
+        --color-accent: #facc15; /* Amarelo */
+        --color-success: #22c55e; /* Verde */
 
+        --shadow-dist: 6px;
+        --border-width: 3px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Space Grotesk", sans-serif;
+        background-color: var(--bg-body);
+        background-image: linear-gradient(#fff 2px, transparent 2px),
+          linear-gradient(90deg, #fff 2px, transparent 2px);
+        background-size: 40px 40px;
+        color: var(--border-black);
+        min-height: 100vh;
+        display: flex;
+        overflow: hidden;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 280px;
+        background: var(--color-accent);
+        border-right: var(--border-width) solid var(--border-black);
+        display: flex;
+        flex-direction: column;
+        padding: 2rem 1.5rem;
+        flex-shrink: 0;
+        box-shadow: 4px 0 0 rgba(0, 0, 0, 0.1);
+      }
+
+      .logo {
+        font-weight: 900;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 3rem;
+        text-decoration: none;
+        color: var(--border-black);
+        text-transform: uppercase;
+      }
+
+      .logo i {
+        background: var(--color-primary);
+        color: #fff;
+        padding: 10px;
+        border: var(--border-width) solid var(--border-black);
+        box-shadow: 4px 4px 0 0 black;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 15px;
+        margin-bottom: 1rem;
+        font-weight: 800;
+        color: #000;
+        border: var(--border-width) solid var(--border-black);
+        background: #fff;
+        box-shadow: 4px 4px 0 0 black;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        text-decoration: none;
+      }
+
+      .nav-item.active {
+        background-color: var(--color-primary);
+        color: #fff;
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 0 black;
+      }
+
+      .main-content {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+      }
+
+      /* Neo Header */
+      .neo-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2.5rem;
+        background: #fff;
+        border: var(--border-width) solid var(--border-black);
+        padding: 2rem;
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
+      }
+      .header-title h1 {
+        font-weight: 900;
+        font-size: 2.2rem;
+        text-transform: uppercase;
+      }
+      #date-display {
+        font-family: "Space Mono", monospace;
+        background: var(--color-secondary);
+        color: #fff;
+        padding: 5px 15px;
+        border: 2px solid #000;
+        font-weight: 700;
+      }
+
+      /* Cards */
+      .neo-card {
+        background: #fff;
+        border: var(--border-width) solid var(--border-black);
+        padding: 2rem;
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
+        margin-bottom: 2rem;
+      }
+      .card-title {
+        font-weight: 900;
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-transform: uppercase;
+        border-bottom: 3px solid #000;
+        padding-bottom: 10px;
+      }
+
+      .border-top-purple {
+        border-top: 8px solid var(--color-primary);
+      }
+      .border-top-pink {
+        border-top: 8px solid var(--color-secondary);
+      }
+
+      /* Upload Area */
+      .upload-container {
+        border: 4px dashed var(--border-black);
+        padding: 3rem;
+        text-align: center;
+        background: #f3f4f6;
+        cursor: pointer;
+        margin-bottom: 1.5rem;
+        transition: 0.2s;
+      }
+      .upload-container:hover {
+        background: #fff;
+        border-style: solid;
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 0 black;
+      }
+
+      /* Buttons */
+      .btn {
+        padding: 1rem 2rem;
+        font-weight: 900;
+        border: var(--border-width) solid var(--border-black);
+        cursor: pointer;
+        box-shadow: 5px 5px 0 0 black;
+        text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+      }
+      .btn:active {
+        transform: translate(4px, 4px);
+        box-shadow: 0 0 0 0 black;
+      }
+      .btn-primary {
+        background: var(--color-primary);
+        color: #fff;
+      }
+      .btn-accent {
+        background: var(--color-success);
+        color: #000;
+      }
+
+      /* Summary Grid */
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+      .summary-card {
+        background: #fff;
+        border: 2px solid #000;
+        padding: 1.5rem;
+        box-shadow: 4px 4px 0 0 black;
+      }
+      .summary-label {
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: #666;
+        margin-bottom: 5px;
+      }
+      .summary-value {
+        font-size: 1.5rem;
+        font-weight: 900;
+        font-family: "Space Mono", monospace;
+      }
+
+      /* Contract Card */
+      .contract-card {
+        background: #fff;
+        border: var(--border-width) solid #000;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 6px 6px 0 0 black;
+      }
+      .contract-header {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 3px solid #000;
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .contract-title {
+        font-weight: 900;
+        font-size: 1.3rem;
+        text-transform: uppercase;
+      }
+      .contract-number {
+        background: var(--color-accent);
+        padding: 2px 10px;
+        border: 2px solid #000;
+        font-weight: 800;
+        font-size: 0.9rem;
+      }
+
+      .contract-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+      }
+      .info-label {
+        font-size: 0.7rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: #444;
+      }
+      .info-value {
+        font-family: "Space Mono", monospace;
+        font-weight: 700;
+        font-size: 0.95rem;
+      }
+
+      /* Pagination */
+      .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 2rem 0;
+      }
+      .page-btn {
+        background: #fff;
+        border: var(--border-width) solid #000;
+        padding: 8px 15px;
+        font-weight: 900;
+        cursor: pointer;
+        box-shadow: 4px 4px 0 0 black;
+      }
+      .page-btn.active {
+        background: var(--color-primary);
+        color: #fff;
+        transform: translate(2px, 2px);
+        box-shadow: 0 0 0 0 black;
+      }
+
+      .employees-names li {
+        background: #f3f3f3;
+        border: 2px solid #000;
+        margin-bottom: 8px;
+        padding: 10px 15px;
+        font-weight: 700;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .employees-names li::before {
+        content: "";
+        width: 10px;
+        height: 10px;
+        background: var(--color-secondary);
+        border: 1px solid #000;
+      }
+
+      .loader-container {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(6, 182, 212, 0.8);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+      .loader {
+        width: 60px;
+        height: 60px;
+        border: 8px solid #000;
+        border-top: 8px solid var(--color-primary);
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      #error-message {
+        background: var(--color-danger);
+        color: white;
+        padding: 1rem;
+        border: 3px solid #000;
+        margin-top: 1rem;
+        font-weight: 900;
+        display: none;
+      }
+
+      @media (max-width: 768px) {
         body {
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.6;
+          flex-direction: column;
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+        .sidebar {
+          width: 100%;
+          flex-direction: row;
+          border-right: none;
+          border-bottom: 3px solid #000;
+          padding: 1rem;
         }
-
-        header {
-            background-color: var(--primary-color);
-            color: var(--text-color-light);
-            padding: 20px 0;
-            box-shadow: var(--sombra);
-            margin-bottom: 30px;
+        .main-content {
+          padding: 1rem;
         }
-
-        header .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        h1 {
-            font-size: 28px;
-            font-weight: 600;
-        }
-
-        .upload-section {
-            background-color: var(--form-bg-color);
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: var(--sombra);
-            margin-bottom: 30px;
-            transition: var(--transicao);
-            display: block; /* Garantir que esteja visível */
-        }
-
-        .upload-container {
-            border: 2px dashed var(--border-color);
-            border-radius: 6px;
-            padding: 40px;
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transicao);
-        }
-
-        .upload-container:hover {
-            border-color: var(--accent-color);
-        }
-
-        .upload-icon {
-            font-size: 48px;
-            color: var(--primary-color);
-            margin-bottom: 15px;
-        }
-
-        .upload-text {
-            font-size: 18px;
-            margin-bottom: 15px;
-        }
-
-        .upload-subtext {
-            font-size: 14px;
-            color: #666;
-        }
-
-        #file-input {
-            display: none;
-        }
-
-        .btn {
-            background-color: var(--primary-color);
-            color: var(--text-color-light);
-            border: none;
-            padding: 12px 24px;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: var(--transicao);
-            display: inline-block;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .btn:hover {
-            background-color: #3b0057;
-            box-shadow: var(--sombra);
-        }
-
-        .btn-accent {
-            background-color: var(--accent-color);
-        }
-
-        .btn-accent:hover {
-            background-color: #d9084e;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            justify-content: center;
-        }
-
-        .report-section {
-            display: none;
-            margin-bottom: 30px;
-        }
-
-        .report-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .report-title {
-            font-size: 24px;
-            color: var(--primary-color);
-        }
-
-        .report-actions {
-            display: flex;
-            gap: 15px;
-            justify-content: flex-end; /* Ajustado para alinhar o botão à direita */
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
-        }
-
-        .page-btn {
-            background-color: var(--form-bg-color);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: var(--transicao);
-        }
-
-        .page-btn:hover, .page-btn.active {
-            background-color: var(--primary-color);
-            color: var(--text-color-light);
-        }
-
-        .page-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .report-content {
-            background-color: var(--background-color);
-            border-radius: 8px;
-            box-shadow: var(--sombra);
-            overflow: hidden; /* Importante para a paginação web */
-        }
-
-        .report-page {
-            display: none; /* Controlado pelo JS para paginação web */
-            padding: 30px;
-        }
-
-        .report-page.active {
-            display: block; /* Controlado pelo JS para paginação web */
-        }
-
-        .contract-card {
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 25px;
-            margin-bottom: 25px;
-            transition: var(--transicao);
-            page-break-inside: avoid; /* Para impressão geral e arquivo baixado */
-        }
-
-        .contract-card:hover {
-            box-shadow: var(--sombra);
-        }
-
-        .contract-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
-        }
-
-        .contract-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-
-        .contract-number {
-            font-weight: 600;
-            color: var(--accent-color);
-        }
-
-        .contract-info {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-
-        .info-group {
-            margin-bottom: 15px;
-        }
-
-        .info-label {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        .info-value {
-            font-size: 16px;
-            font-weight: 500;
-        }
-
-        .financial-info {
-            background-color: var(--form-bg-color);
-            border-radius: 6px;
-            padding: 15px;
-            margin-top: 20px;
-        }
-
-        .financial-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--primary-color);
-        }
-
-        .financial-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-        }
-
-        .summary-section {
-            margin-top: 30px;
-            padding: 20px;
-            background-color: var(--form-bg-color);
-            border-radius: 8px;
-            box-shadow: var(--sombra);
-            page-break-inside: avoid; /* Para impressão geral e arquivo baixado */
-        }
-
-        .summary-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 15px;
-        }
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
-
-        .summary-card {
-            background-color: var(--background-color);
-            border-radius: 6px;
-            padding: 15px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .summary-label {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        .summary-value {
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-
-        .summary-value.accent {
-            color: var(--accent-color);
-        }
-
-        .report-datetime {
-            margin-top: 20px;
-            padding: 12px 15px;
-            background-color: var(--form-bg-color);
-            border-radius: 6px;
-            border-left: 4px solid var(--accent-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .datetime-value {
-            font-size: 16px;
-            font-weight: 500;
-            color: var(--accent-color);
-        }
-
-        .company-info {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: var(--form-bg-color);
-            border-radius: 6px;
-            border-left: 4px solid var(--primary-color);
-            page-break-inside: avoid; /* Para impressão geral e arquivo baixado */
-        }
-
-        .company-name {
-            font-size: 18px;
-            margin-top: 5px;
-        }
-
-        .employees-list {
-            margin-top: 20px;
-            page-break-inside: avoid; /* Para impressão geral e arquivo baixado */
-        }
-
-        .employees-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 15px;
-        }
-
-        .employees-names {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .employees-names li {
-            padding: 10px 10px 10px 35px;
-            margin-bottom: 8px;
-            background-color: var(--form-bg-color);
-            border-radius: 4px;
-            font-size: 15px;
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .employees-names li::before {
-            content: "";
-            position: absolute;
-            left: 12px;
-            width: 12px;
-            height: 12px;
-            background-color: var(--accent-color);
-            border-radius: 50%;
-        }
-
-        /* Estilos para impressão (usados pelo navegador ao imprimir a página web diretamente) */
-        @media print {
-            header, .upload-section, .report-header, .pagination, .btn-group {
-                display: none !important;
-            }
-
-            .container {
-                max-width: 100%;
-                padding: 0;
-            }
-
-            .report-section {
-                display: block !important;
-                margin: 0 !important;
-            }
-
-            .report-content {
-                box-shadow: none;
-                overflow: visible; /* Para impressão, mostrar todo o conteúdo */
-            }
-
-            .report-page {
-                display: block !important; /* Mostrar todas as páginas do relatório web */
-                padding: 0 !important; /* Remover padding para impressão direta */
-                 /* page-break-after: always; */ /* Removido para tentar agrupar, mas o @page controlará melhor */
-            }
-
-            .contract-card {
-                border: 1px solid #ddd;
-                box-shadow: none !important;
-                margin-bottom: 15mm; /* Espaçamento maior entre cards na impressão direta */
-            }
-
-            body {
-                background-color: white;
-                font-size: 10pt; /* Ajuste para impressão direta */
-            }
-
-            .contract-info {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        /* Loader */
-        .loader-container {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .loader {
-            width: 50px;
-            height: 50px;
-            border: 5px solid var(--form-bg-color);
-            border-top: 5px solid var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Mensagem de erro */
-        .error-message {
-            display: none;
-            background-color: #ffebee;
-            color: #c62828;
-            padding: 15px;
-            border-radius: 4px;
-            margin-top: 15px;
-            border-left: 4px solid #c62828;
-        }
+      }
     </style>
-</head>
-<body>
-    <div class="loader-container">
-        <div class="loader"></div>
-    </div>
+  </head>
+  <body>
+    <div class="loader-container"><div class="loader"></div></div>
 
-    <header>
-        <div class="container">
-            <h1>Relatório de Contratos</h1>
-            <div id="date-display"></div>
+    <aside class="sidebar">
+      <div class="logo">
+        <i class="fas fa-file-contract"></i>
+        <span>Relatórios</span>
+      </div>
+      <nav>
+        <div class="nav-item active">
+          <i class="fas fa-upload"></i> Importação
         </div>
-    </header>
+      </nav>
+    </aside>
 
-    <div class="container">
-        <section class="upload-section">
-            <div class="upload-container" id="upload-area">
-                <div class="upload-icon">📁</div>
-                <div class="upload-text">Arraste e solte seu arquivo JSON aqui</div>
-                <div class="upload-subtext">ou clique para selecionar um arquivo</div>
-                <input type="file" id="file-input" accept=".json">
-            </div>
-            <div class="error-message" id="error-message"></div>
-            <div class="btn-group">
-                <button class="btn" id="upload-btn">Selecionar Arquivo</button>
-            </div>
-        </section>
+    <main class="main-content">
+      <header class="neo-header">
+        <div class="header-title">
+          <h1>Relatório de Contratos 📁</h1>
+          <span>Processamento de Arquivos JSON</span>
+        </div>
+        <div id="date-display"></div>
+      </header>
 
-        <section class="report-section" id="report-section">
-            <div class="report-header">
-                <h2 class="report-title">Relatório de Contratos</h2>
-                <div class="report-actions">
-                    <button class="btn btn-accent" id="download-btn">Baixar Relatório</button>
-                </div>
-            </div>
+      <section class="neo-card border-top-purple">
+        <div class="card-title">
+          <i class="fas fa-file-import"></i> 1. Carregar Dados
+        </div>
+        <div class="upload-container" id="upload-area">
+          <i
+            class="fas fa-cloud-upload-alt"
+            style="font-size: 3rem; margin-bottom: 1rem"
+          ></i>
+          <div class="upload-text">Arraste o JSON ou clique aqui</div>
+          <input
+            type="file"
+            id="file-input"
+            accept=".json"
+            style="display: none"
+          />
+        </div>
+        <div id="error-message"></div>
+        <div style="text-align: center">
+          <button class="btn btn-primary" id="upload-btn">
+            Selecionar Arquivo
+          </button>
+        </div>
+      </section>
 
-            <div class="summary-section" id="summary-section">
-                <h3 class="summary-title">Resumo</h3>
-                <div class="summary-grid">
-                    <div class="summary-card">
-                        <div class="summary-label">Total de Contratos</div>
-                        <div class="summary-value" id="total-contracts">0</div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="summary-label">Valor Total Empréstimos</div>
-                        <div class="summary-value" id="total-loan-amount">R$ 0,00</div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="summary-label">Valor Total Liberado</div>
-                        <div class="summary-value accent" id="total-released-amount">R$ 0,00</div>
-                    </div>
-                </div>
-                <div class="report-datetime">
-                    <div class="summary-label">Data e Hora de Geração</div>
-                    <div class="datetime-value" id="report-datetime">-</div>
-                </div>
-                <div class="company-info" id="company-info">
-                    <div class="summary-label">Empresa</div>
-                    <div class="summary-value company-name" id="company-name">-</div>
-                </div>
+      <section class="report-section" id="report-section" style="display: none">
+        <div class="neo-header">
+          <h2 class="header-title" style="font-size: 1.5rem">
+            Visualização do Relatório
+          </h2>
+          <button class="btn btn-accent" id="download-btn">
+            <i class="fas fa-download"></i> Baixar Relatório
+          </button>
+        </div>
 
-                <div class="employees-list" id="employees-list">
-                    <h4 class="employees-title">Funcionários</h4>
-                    <ul class="employees-names" id="employees-names">
-                        <!-- Lista de funcionários será adicionada aqui -->
-                    </ul>
-                </div>
+        <div class="neo-card border-top-pink" id="summary-section">
+          <div class="card-title">
+            <i class="fas fa-chart-bar"></i> Resumo Geral
+          </div>
+          <div class="summary-grid">
+            <div class="summary-card">
+              <div class="summary-label">Total Contratos</div>
+              <div class="summary-value" id="total-contracts">0</div>
             </div>
+            <div class="summary-card">
+              <div class="summary-label">Total Empréstimos</div>
+              <div class="summary-value" id="total-loan-amount">R$ 0,00</div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-label">Total Liberado</div>
+              <div
+                class="summary-value"
+                id="total-released-amount"
+                style="color: var(--color-primary)"
+              >
+                R$ 0,00
+              </div>
+            </div>
+          </div>
 
-            <div class="pagination" id="pagination">
-                <!-- Botões de paginação serão adicionados aqui -->
+          <div class="summary-grid">
+            <div class="summary-card">
+              <div class="summary-label">Empresa</div>
+              <div
+                class="summary-value"
+                id="company-name"
+                style="font-size: 1.1rem"
+              >
+                -
+              </div>
             </div>
+            <div class="summary-card">
+              <div class="summary-label">Gerado em</div>
+              <div
+                class="summary-value"
+                id="report-datetime"
+                style="font-size: 1.1rem"
+              >
+                -
+              </div>
+            </div>
+          </div>
 
-            <div class="report-content" id="report-content">
-                <!-- Conteúdo do relatório (os .report-page) será adicionado aqui -->
-            </div>
+          <div
+            class="employees-list"
+            id="employees-list"
+            style="margin-top: 1.5rem"
+          >
+            <h4
+              class="card-title"
+              style="font-size: 1rem; border: none; margin-bottom: 0.5rem"
+            >
+              Lista de Funcionários
+            </h4>
+            <ul class="employees-names" id="employees-names"></ul>
+          </div>
+        </div>
 
-            <div class="pagination" id="pagination-bottom">
-                <!-- Botões de paginação serão adicionados aqui (duplicados no final) -->
-            </div>
-        </section>
-    </div>
+        <div class="pagination" id="pagination"></div>
+        <div id="report-content"></div>
+        <div class="pagination" id="pagination-bottom"></div>
+      </section>
+    </main>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Página carregada. Verificando elementos de upload...');
-            
-            const uploadArea = document.getElementById('upload-area');
-            const fileInput = document.getElementById('file-input');
-            const uploadBtn = document.getElementById('upload-btn');
-            const reportSection = document.getElementById('report-section');
-            const reportContent = document.getElementById('report-content');
-            const pagination = document.getElementById('pagination');
-            const paginationBottom = document.getElementById('pagination-bottom');
-            const downloadBtn = document.getElementById('download-btn');
-            const dateDisplay = document.getElementById('date-display');
-            const loaderContainer = document.querySelector('.loader-container');
-            const errorMessage = document.getElementById('error-message');
-            const totalContractsEl = document.getElementById('total-contracts');
-            const totalLoanAmountEl = document.getElementById('total-loan-amount');
-            const totalReleasedAmountEl = document.getElementById('total-released-amount');
-            const reportDatetimeEl = document.getElementById('report-datetime');
-            
-            const contractsPerPage = 3; // Contratos por página na visualização web
-            let jsonData = [];
-            let currentPage = 1;
+      // MANTÉM TODA A LÓGICA JAVASCRIPT ORIGINAL DO USUÁRIO
+      document.addEventListener("DOMContentLoaded", function () {
+        const uploadArea = document.getElementById("upload-area");
+        const fileInput = document.getElementById("file-input");
+        const uploadBtn = document.getElementById("upload-btn");
+        const reportSection = document.getElementById("report-section");
+        const reportContent = document.getElementById("report-content");
+        const pagination = document.getElementById("pagination");
+        const paginationBottom = document.getElementById("pagination-bottom");
+        const downloadBtn = document.getElementById("download-btn");
+        const dateDisplay = document.getElementById("date-display");
+        const loaderContainer = document.querySelector(".loader-container");
+        const errorMessage = document.getElementById("error-message");
+        const totalContractsEl = document.getElementById("total-contracts");
+        const totalLoanAmountEl = document.getElementById("total-loan-amount");
+        const totalReleasedAmountEl = document.getElementById(
+          "total-released-amount"
+        );
+        const reportDatetimeEl = document.getElementById("report-datetime");
 
-            const currentDate = new Date();
-            dateDisplay.textContent = currentDate.toLocaleDateString('pt-BR', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
+        const contractsPerPage = 3;
+        let jsonData = [];
+        let currentPage = 1;
 
-            uploadArea.addEventListener('click', () => fileInput.click());
-            uploadBtn.addEventListener('click', () => fileInput.click());
+        const currentDate = new Date();
+        dateDisplay.textContent = currentDate.toLocaleDateString("pt-BR");
 
-            uploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadArea.style.borderColor = 'var(--accent-color)';
-                uploadArea.style.backgroundColor = 'rgba(251, 10, 94, 0.05)';
-            });
+        uploadArea.addEventListener("click", () => fileInput.click());
+        uploadBtn.addEventListener("click", () => fileInput.click());
 
-            uploadArea.addEventListener('dragleave', () => {
-                uploadArea.style.borderColor = 'var(--border-color)';
-                uploadArea.style.backgroundColor = 'transparent';
-            });
+        fileInput.addEventListener("change", () => {
+          if (fileInput.files.length) handleFile(fileInput.files[0]);
+        });
 
-            uploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadArea.style.borderColor = 'var(--border-color)';
-                uploadArea.style.backgroundColor = 'transparent';
-                if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
-            });
-
-            fileInput.addEventListener('change', () => {
-                if (fileInput.files.length) handleFile(fileInput.files[0]);
-            });
-
-            function handleFile(file) {
-                if (file.type !== 'application/json' && !file.name.endsWith('.json')) {
-                    showError('Por favor, selecione um arquivo JSON válido.');
-                    return;
-                }
-                showLoader();
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    try {
-                        jsonData = JSON.parse(e.target.result);
-                        generateReport(jsonData);
-                        hideLoader();
-                    } catch (error) {
-                        hideLoader();
-                        showError('Erro ao processar o arquivo JSON. Verifique o formato.');
-                        console.error('Erro JSON:', error);
-                    }
-                };
-                reader.onerror = (e) => {
-                    hideLoader();
-                    showError('Erro ao ler o arquivo.');
-                    console.error('Erro leitura arquivo:', e);
-                };
-                reader.readAsText(file);
+        function handleFile(file) {
+          if (
+            file.type !== "application/json" &&
+            !file.name.endsWith(".json")
+          ) {
+            showError("Por favor, selecione um arquivo JSON válido.");
+            return;
+          }
+          showLoader();
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            try {
+              jsonData = JSON.parse(e.target.result);
+              generateReport(jsonData);
+              hideLoader();
+            } catch (error) {
+              hideLoader();
+              showError("Erro ao processar o arquivo JSON.");
             }
+          };
+          reader.readAsText(file);
+        }
 
-            function generateReport(data) {
-                if (!Array.isArray(data) || data.length === 0) {
-                    showError('O arquivo JSON não contém dados válidos.');
-                    return;
-                }
-                reportContent.innerHTML = '';
-                pagination.innerHTML = '';
-                paginationBottom.innerHTML = '';
-                updateSummary(data);
+        function generateReport(data) {
+          if (!Array.isArray(data) || data.length === 0) {
+            showError("JSON sem dados válidos.");
+            return;
+          }
+          reportContent.innerHTML = "";
+          pagination.innerHTML = "";
+          paginationBottom.innerHTML = "";
+          updateSummary(data);
 
-                const now = new Date();
-                reportDatetimeEl.textContent = `${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR')}`;
+          const now = new Date();
+          reportDatetimeEl.textContent = `${now.toLocaleDateString(
+            "pt-BR"
+          )} às ${now.toLocaleTimeString("pt-BR")}`;
 
-                // Para a visualização web, continuamos com a paginação de `contractsPerPage`
-                const totalPagesWeb = Math.ceil(data.length / contractsPerPage);
-                for (let i = 0; i < totalPagesWeb; i++) {
-                    const pageIndex = i + 1;
-                    const startIndex = i * contractsPerPage;
-                    const endIndex = Math.min(startIndex + contractsPerPage, data.length);
-                    const pageData = data.slice(startIndex, endIndex);
+          const totalPagesWeb = Math.ceil(data.length / contractsPerPage);
+          for (let i = 0; i < totalPagesWeb; i++) {
+            const pageIndex = i + 1;
+            const startIndex = i * contractsPerPage;
+            const endIndex = Math.min(
+              startIndex + contractsPerPage,
+              data.length
+            );
+            const pageData = data.slice(startIndex, endIndex);
 
-                    const pageDiv = document.createElement('div');
-                    pageDiv.className = `report-page ${pageIndex === 1 ? 'active' : ''}`;
-                    pageDiv.id = `page-${pageIndex}`;
-                    pageData.forEach(contract => pageDiv.appendChild(createContractCard(contract)));
-                    reportContent.appendChild(pageDiv);
-                }
-                createPaginationControls(totalPagesWeb);
-                reportSection.style.display = 'block';
-                reportSection.scrollIntoView({ behavior: 'smooth' });
-            }
+            const pageDiv = document.createElement("div");
+            pageDiv.className = `report-page ${
+              pageIndex === 1 ? "active" : ""
+            }`;
+            pageDiv.id = `page-${pageIndex}`;
+            pageData.forEach((contract) =>
+              pageDiv.appendChild(createContractCard(contract))
+            );
+            reportContent.appendChild(pageDiv);
+          }
+          createPaginationControls(totalPagesWeb);
+          reportSection.style.display = "block";
+          reportSection.scrollIntoView({ behavior: "smooth" });
+        }
 
-            function createContractCard(contract) {
-                const card = document.createElement('div');
-                card.className = 'contract-card';
-                const formatCurrency = (valStr) => {
-                    if (valStr == null) return 'N/A';
-                    const num = Number(valStr);
-                    return isNaN(num) ? 'N/A' : `R$ ${num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-                };
-                const formatDate = (dateStr) => dateStr || 'N/A';
-                const createInfoGroupHTML = (label, rawValue, formatter) => {
-                    const valStr = (rawValue == null) ? null : String(rawValue);
-                    const displayValue = (valStr != null && valStr.trim() !== '') ? (formatter ? formatter(valStr) : valStr) : 'N/A';
-                    return `<div class="info-group"><div class="info-label">${label}</div><div class="info-value">${displayValue}</div></div>`;
-                };
+        function createContractCard(contract) {
+          const card = document.createElement("div");
+          card.className = "contract-card";
+          const formatCurrency = (valStr) => {
+            const num = Number(valStr);
+            return isNaN(num)
+              ? "N/A"
+              : `R$ ${num.toLocaleString("pt-BR", {
+                  minimumFractionDigits: 2,
+                })}`;
+          };
+          const createInfoGroupHTML = (label, rawValue, formatter) => {
+            const valStr = rawValue == null ? null : String(rawValue);
+            const displayValue =
+              valStr != null && valStr.trim() !== ""
+                ? formatter
+                  ? formatter(valStr)
+                  : valStr
+                : "N/A";
+            return `<div class="info-group"><div class="info-label">${label}</div><div class="info-value">${displayValue}</div></div>`;
+          };
 
-                card.innerHTML = `
+          card.innerHTML = `
                     <div class="contract-header">
-                        <div class="contract-title">${contract['ifConcessora.descricao'] || 'Instituição Financeira'}</div>
-                        <div class="contract-number">Contrato: ${contract.contrato || 'N/A'}</div>
+                        <div class="contract-title">${
+                          contract["ifConcessora.descricao"] || "IF"
+                        }</div>
+                        <div class="contract-number">CONTRATO: ${
+                          contract.contrato || "N/A"
+                        }</div>
                     </div>
                     <div class="contract-info">
-                        ${createInfoGroupHTML('Código IF Concessora', contract['ifConcessora.codigo'])}
-                        ${createInfoGroupHTML('Nome do Trabalhador', contract.nomeTrabalhador)}
-                        ${createInfoGroupHTML('CPF Trabalhador', contract.cpf, formatCpf)}
-                        ${createInfoGroupHTML('Matrícula', contract.matricula)}
-                        ${createInfoGroupHTML('Data de Admissão', contract.dataAdmissao, formatDate)}
-                        ${createInfoGroupHTML('Empregador', contract.nomeEmpregador)}
-                        ${createInfoGroupHTML('Cód. Inscrição Empregador', contract['inscricaoEmpregador.codigo'])}
-                        ${createInfoGroupHTML('Tipo Inscrição Empregador', contract['inscricaoEmpregador.descricao'])}
-                        ${createInfoGroupHTML('Nº Inscrição Empregador', contract.numeroInscricaoEmpregador, (val) => val.length === 11 && /^\d+$/.test(val) ? formatCpf(val) : (val.length === 14 && /^\d+$/.test(val) ? formatCnpj(val) : val))}
-                        ${createInfoGroupHTML('Cód. Inscrição Estabelecimento', contract['inscricaoEstabelecimento.codigo'])}
-                        ${createInfoGroupHTML('Tipo Inscrição Estabelecimento', contract['inscricaoEstabelecimento.descricao'])}
-                        ${createInfoGroupHTML('CNPJ Estabelecimento', contract.numeroInscricaoEstabelecimento, formatCnpj)}
-                    </div>
-                    <div class="financial-info">
-                        <div class="financial-title">Informações do Contrato</div>
-                        <div class="financial-grid">
-                            ${createInfoGroupHTML('Início do Contrato', contract.dataInicioContrato, formatDate)}
-                            ${createInfoGroupHTML('Fim do Contrato', contract.dataFimContrato, formatDate)}
-                            ${createInfoGroupHTML('Competência Início Desconto', contract.competenciaInicioDesconto)}
-                            ${createInfoGroupHTML('Competência Fim Desconto', contract.competenciaFimDesconto)}
-                            ${createInfoGroupHTML('Total de Parcelas', contract.totalParcelas)}
-                            ${createInfoGroupHTML('Valor da Parcela', contract.valorParcela, formatCurrency)}
-                            ${createInfoGroupHTML('Valor do Empréstimo', contract.valorEmprestimo, formatCurrency)}
-                            ${createInfoGroupHTML('Valor Liberado', contract.valorLiberado, formatCurrency)}
-                            ${createInfoGroupHTML('Cód. Categoria Trabalhador', contract['categoriaTrabalhador.codigo'])}
-                            ${createInfoGroupHTML('Categoria Trabalhador', contract['categoriaTrabalhador.descricao'])}
-                            ${createInfoGroupHTML('Qtd. Pagamentos', contract.qtdPagamentos)}
-                            ${createInfoGroupHTML('Qtd. Escriturações', contract.qtdEscrituracoes)}
-                            ${createInfoGroupHTML('Competência do Contrato', contract.competencia)}
-                        </div>
+                        ${createInfoGroupHTML(
+                          "Trabalhador",
+                          contract.nomeTrabalhador
+                        )}
+                        ${createInfoGroupHTML("CPF", contract.cpf, formatCpf)}
+                        ${createInfoGroupHTML("Matrícula", contract.matricula)}
+                        ${createInfoGroupHTML(
+                          "Empregador",
+                          contract.nomeEmpregador
+                        )}
+                        ${createInfoGroupHTML(
+                          "CNPJ Empregador",
+                          contract.numeroInscricaoEmpregador,
+                          formatCnpj
+                        )}
+                        ${createInfoGroupHTML(
+                          "Valor Liberado",
+                          contract.valorLiberado,
+                          formatCurrency
+                        )}
                     </div>
                 `;
-                return card;
-            }
+          return card;
+        }
 
-            function createPaginationControls(totalPages) {
-                const createButtons = (container) => {
-                    const prevBtn = document.createElement('button');
-                    prevBtn.className = 'page-btn'; prevBtn.textContent = '←'; prevBtn.disabled = true;
-                    prevBtn.addEventListener('click', () => { if (currentPage > 1) changePage(currentPage - 1); });
-                    container.appendChild(prevBtn);
-
-                    for (let i = 1; i <= totalPages; i++) {
-                        const pageBtn = document.createElement('button');
-                        pageBtn.className = `page-btn ${i === 1 ? 'active' : ''}`; pageBtn.textContent = i;
-                        pageBtn.addEventListener('click', () => changePage(i));
-                        container.appendChild(pageBtn);
-                    }
-                    const nextBtn = document.createElement('button');
-                    nextBtn.className = 'page-btn'; nextBtn.textContent = '→'; nextBtn.disabled = totalPages <= 1;
-                    nextBtn.addEventListener('click', () => { if (currentPage < totalPages) changePage(currentPage + 1); });
-                    container.appendChild(nextBtn);
-                    return { prevBtn, nextBtn };
-                };
-                const topP = createButtons(pagination);
-                const bottomP = createButtons(paginationBottom);
-
-                window.changePage = (pageNum) => {
-                    currentPage = pageNum;
-                    document.querySelectorAll('.report-page').forEach(p => p.classList.remove('active'));
-                    document.getElementById(`page-${pageNum}`).classList.add('active');
-                    document.querySelectorAll('.page-btn').forEach(btn => {
-                        if (!btn.textContent.match(/[←→]/)) btn.classList.toggle('active', parseInt(btn.textContent) === pageNum);
-                    });
-                    topP.prevBtn.disabled = bottomP.prevBtn.disabled = pageNum === 1;
-                    topP.nextBtn.disabled = bottomP.nextBtn.disabled = pageNum === totalPages;
-                    reportContent.scrollIntoView({ behavior: 'smooth' });
-                };
-            }
-
-            function updateSummary(data) {
-                let totalLoan = 0, totalReleased = 0;
-                const employeeNames = new Set();
-                let companyName = '';
-                data.forEach(c => {
-                    totalLoan += Number(c.valorEmprestimo) || 0;
-                    totalReleased += Number(c.valorLiberado) || 0;
-                    if (c.nomeTrabalhador) employeeNames.add(c.nomeTrabalhador);
-                    if (!companyName && c.nomeEmpregador) companyName = c.nomeEmpregador;
-                });
-                totalContractsEl.textContent = data.length;
-                totalLoanAmountEl.textContent = `R$ ${totalLoan.toLocaleString('pt-BR', { minFrac: 2, maxFrac: 2 })}`;
-                totalReleasedAmountEl.textContent = `R$ ${totalReleased.toLocaleString('pt-BR', { minFrac: 2, maxFrac: 2 })}`;
-                document.getElementById('company-name').textContent = companyName || '-';
-                const employeesNamesEl = document.getElementById('employees-names');
-                employeesNamesEl.innerHTML = '';
-                Array.from(employeeNames).sort().forEach(name => {
-                    const li = document.createElement('li'); li.textContent = name; employeesNamesEl.appendChild(li);
-                });
-            }
-
-            downloadBtn.addEventListener('click', () => {
-                const printClone = document.documentElement.cloneNode(true);
-                const styleTag = printClone.querySelector('head style'); // Pega a tag style original
-
-                // Estilos CSS para o arquivo HTML baixado (otimizado para impressão)
-                // A ideia é que estes substituam ou complementem os @media print para o arquivo salvo
-                const downloadSpecificStyles = `
-                    /* ESTILOS PARA O ARQUIVO HTML BAIXADO (PRINT-OPTIMIZED) */
-                    @page {
-                        size: A4; /* Define o tamanho da página como A4 */
-                        margin: 15mm; /* Margens para impressão */
-                    }
-
-                    body.print-download-mode {
-                        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                        font-size: 8.5pt; /* Fonte base reduzida para caber mais */
-                        line-height: 1.2;
-                        background-color: #ffffff !important;
-                        color: #000000 !important;
-                        margin: 0 !important;
-                        padding: 0 !important;
-                    }
-                    .print-download-mode .container {
-                        padding: 0 !important;
-                        margin: 0 auto !important;
-                        width: 100% !important;
-                        max-width: 100% !important;
-                    }
-                    .print-download-mode h1.report-main-title { /* Título principal do relatório no arquivo baixado */
-                        font-size: 14pt !important;
-                        font-weight: bold;
-                        text-align: center;
-                        margin-bottom: 7mm !important;
-                        color: #222222 !important;
-                    }
-                    .print-download-mode .summary-section,
-                    .print-download-mode .company-info,
-                    .print-download-mode .employees-list {
-                        page-break-inside: avoid !important; /* Evitar quebra dentro dessas seções */
-                    }
-                    .print-download-mode .summary-section {
-                        padding: 4mm !important; margin-top: 0 !important; margin-bottom: 6mm !important;
-                        border: 0.4pt solid #cccccc !important; box-shadow: none !important;
-                    }
-                    .print-download-mode .summary-title {
-                        font-size: 11pt !important; font-weight: bold; margin-bottom: 2.5mm !important; color: #333333 !important;
-                    }
-                    .print-download-mode .summary-grid { gap: 2.5mm !important; }
-                    .print-download-mode .summary-card { padding: 2.5mm !important; box-shadow: none !important; border: 0.2pt solid #dddddd !important; }
-                    .print-download-mode .summary-label { font-size: 7pt !important; margin-bottom: 1mm !important; color: #555555 !important; }
-                    .print-download-mode .summary-value { font-size: 11pt !important; font-weight: bold; color: #333333 !important; }
-                    .print-download-mode .summary-value.accent { color: var(--accent-color, #fb0a5e) !important; }
-
-                    .print-download-mode .report-datetime, .print-download-mode .company-info {
-                        padding: 2mm 3.5mm !important; margin-top: 3.5mm !important; font-size: 7pt !important; border-left-width: 1.5px !important;
-                    }
-                    .print-download-mode .datetime-value, .print-download-mode .company-name { font-size: 7.5pt !important; font-weight: bold; }
-
-                    .print-download-mode .employees-list { margin-top: 3.5mm !important; }
-                    .print-download-mode .employees-title { font-size: 9pt !important; font-weight: bold; margin-bottom: 1.5mm !important; }
-                    .print-download-mode .employees-names li {
-                        padding: 1mm 1mm 1mm 5mm !important; font-size: 7pt !important; margin-bottom: 0.8mm !important;
-                        background-color: #f9f9f9 !important;
-                    }
-                    .print-download-mode .employees-names li::before { width: 2mm !important; height: 2mm !important; left: 1.5mm !important; }
-
-                    /* IMPORTANTE: Remove a paginação visual do report-content para o arquivo baixado */
-                    .print-download-mode .report-content {
-                        overflow: visible !important; /* Permite que todo o conteúdo flua */
-                        box-shadow: none !important;
-                    }
-                    /* IMPORTANTE: Faz todos os report-page serem display: block no arquivo baixado */
-                    /* E remove page-break-after para tentar agrupar múltiplos contracts */
-                    .print-download-mode .report-page {
-                        display: block !important; /* Exibe todos os "blocos" de contrato */
-                        padding: 0 !important; /* Remove padding extra do contêiner da "página" web */
-                        margin: 0 !important;
-                        page-break-after: auto !important; /* Deixa o navegador decidir a quebra */
-                    }
-                    .print-download-mode .contract-card {
-                        padding: 5mm !important; margin-bottom: 6mm !important; /* Margem entre os cards na mesma página */
-                        border: 0.4pt solid #bbbbbb !important; box-shadow: none !important;
-                        page-break-inside: avoid !important; /* Fundamental */
-                        background-color: #ffffff !important;
-                    }
-                    .print-download-mode .contract-header {
-                        margin-bottom: 3.5mm !important; padding-bottom: 2mm !important; border-bottom: 0.4pt solid #cccccc !important;
-                    }
-                    .print-download-mode .contract-title { font-size: 9pt !important; font-weight: bold; color: #333333 !important; }
-                    .print-download-mode .contract-number { font-size: 7.5pt !important; font-weight: bold; color: var(--accent-color, #fb0a5e) !important; }
-                    
-                    .print-download-mode .contract-info, .print-download-mode .financial-grid { gap: 1.5mm 2.5mm !important; }
-                    .print-download-mode .contract-info { grid-template-columns: repeat(2, 1fr) !important; }
-                    .print-download-mode .financial-grid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important; }
-                    
-                    .print-download-mode .info-group { margin-bottom: 1.5mm !important; }
-                    .print-download-mode .info-label { font-size: 6.5pt !important; margin-bottom: 0.8mm !important; color: #444444 !important; }
-                    .print-download-mode .info-value { font-size: 7.5pt !important; color: #111111 !important; word-break: break-word; }
-                    
-                    .print-download-mode .financial-info {
-                        padding: 2.5mm !important; margin-top: 3.5mm !important; background-color: #fdfdfd !important; border-radius: 1.5px !important;
-                    }
-                    .print-download-mode .financial-title { font-size: 8.5pt !important; font-weight: bold; margin-bottom: 2mm !important; color: #333333 !important; }
-
-                    /* Ocultar elementos da interface web no arquivo baixado */
-                    .print-download-mode header, 
-                    .print-download-mode .upload-section, 
-                    .print-download-mode .report-header, /* O header da seção de relatório original */
-                    .print-download-mode .pagination, /* Paginação web */
-                    .print-download-mode .btn-group,
-                    .print-download-mode .loader-container,
-                    .print-download-mode .error-message,
-                    .print-download-mode #date-display {
-                        display: none !important;
-                    }
-                `;
-
-                if (styleTag) {
-                    // Adiciona os estilos específicos de download.
-                    // Os estilos @media print originais ainda podem ser úteis se o usuário imprimir este HTML baixado.
-                    styleTag.textContent += downloadSpecificStyles;
-                }
-
-                // Remove elementos da UI que não devem estar no arquivo baixado
-                const selectorsToRemove = [
-                    'header', '.upload-section', '.report-header', '.pagination', '.btn-group', 
-                    '#file-input', '.loader-container', '.error-message', 'script'
-                ];
-                selectorsToRemove.forEach(selector => {
-                    printClone.querySelectorAll(selector).forEach(el => el.remove());
-                });
-
-                // Garante que a seção de relatório e o conteúdo principal estejam visíveis
-                const reportSectionClone = printClone.querySelector('.report-section');
-                if (reportSectionClone) reportSectionClone.style.display = 'block';
-                
-                // No clone, o #report-content conterá todos os .report-page que por sua vez contêm os cards.
-                // Os estilos CSS .print-download-mode .report-page farão com que todos sejam block.
-                const reportContentClone = printClone.querySelector('#report-content');
-                if(reportContentClone) {
-                    // Certifique-se de que todos os contract-cards (dentro dos .report-page) sejam gerados e visíveis
-                    // Esta parte é mais sobre garantir que o HTML gerado pelo JS já exista no clone.
-                    // Os estilos CSS cuidarão de como eles são dispostos na página para impressão.
-                }
-
-
-                const htmlToDownload = `<!DOCTYPE html>
-                    <html lang="pt-BR">
-                    <head>
-                        <meta charset="UTF-8">
-                        <title>Relatório de Contratos - ${currentDate.toLocaleDateString('pt-BR')}</title>
-                        <style>${styleTag ? styleTag.innerHTML : ''}</style>
-                    </head>
-                    <body class="print-download-mode">
-                        <div class="container">
-                            <h1 class="report-main-title">Relatório de Contratos</h1>
-                            ${printClone.querySelector('#summary-section') ? printClone.querySelector('#summary-section').outerHTML : ''}
-                            ${printClone.querySelector('#report-content') ? printClone.querySelector('#report-content').outerHTML : ''}
-                        </div>
-                    </body>
-                    </html>`;
-
-                const blob = new Blob([htmlToDownload], { type: 'text/html' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = `Relatorio_Contratos_${currentDate.toLocaleDateString('pt-BR').replace(/\//g, '-')}.html`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(link.href);
+        function createPaginationControls(totalPages) {
+          const createButtons = (container) => {
+            const prevBtn = document.createElement("button");
+            prevBtn.className = "page-btn";
+            prevBtn.textContent = "←";
+            prevBtn.disabled = true;
+            prevBtn.addEventListener("click", () => {
+              if (currentPage > 1) changePage(currentPage - 1);
             });
+            container.appendChild(prevBtn);
 
-            function formatCpf(cpfStr) {
-                if (!cpfStr || cpfStr.length !== 11 || !/^\d+$/.test(cpfStr)) return cpfStr;
-                return cpfStr.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+            for (let i = 1; i <= totalPages; i++) {
+              const pageBtn = document.createElement("button");
+              pageBtn.className = `page-btn ${i === 1 ? "active" : ""}`;
+              pageBtn.textContent = i;
+              pageBtn.addEventListener("click", () => changePage(i));
+              container.appendChild(pageBtn);
             }
-            function formatCnpj(cnpjStr) {
-                if (!cnpjStr || cnpjStr.length !== 14 || !/^\d+$/.test(cnpjStr)) return cnpjStr;
-                return cnpjStr.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
-            }
-            function showLoader() { loaderContainer.style.display = 'flex'; }
-            function hideLoader() { loaderContainer.style.display = 'none'; }
-            function showError(msg) {
-                errorMessage.textContent = msg; errorMessage.style.display = 'block';
-                setTimeout(() => { errorMessage.style.display = 'none'; }, 5000);
-            }
-            
-            document.querySelector('.upload-section').style.display = 'block';
+            const nextBtn = document.createElement("button");
+            nextBtn.className = "page-btn";
+            nextBtn.textContent = "→";
+            nextBtn.disabled = totalPages <= 1;
+            nextBtn.addEventListener("click", () => {
+              if (currentPage < totalPages) changePage(currentPage + 1);
+            });
+            container.appendChild(nextBtn);
+            return { prevBtn, nextBtn };
+          };
+          const topP = createButtons(pagination);
+          const bottomP = createButtons(paginationBottom);
+
+          window.changePage = (pageNum) => {
+            currentPage = pageNum;
+            document
+              .querySelectorAll(".report-page")
+              .forEach((p) => p.classList.remove("active"));
+            document.getElementById(`page-${pageNum}`).classList.add("active");
+            document.querySelectorAll(".page-btn").forEach((btn) => {
+              if (!btn.textContent.match(/[←→]/))
+                btn.classList.toggle(
+                  "active",
+                  parseInt(btn.textContent) === pageNum
+                );
+            });
+            topP.prevBtn.disabled = bottomP.prevBtn.disabled = pageNum === 1;
+            topP.nextBtn.disabled = bottomP.nextBtn.disabled =
+              pageNum === totalPages;
+            reportContent.scrollIntoView({ behavior: "smooth" });
+          };
+        }
+
+        function updateSummary(data) {
+          let totalLoan = 0,
+            totalReleased = 0;
+          const employeeNames = new Set();
+          let companyName = "";
+          data.forEach((c) => {
+            totalLoan += Number(c.valorEmprestimo) || 0;
+            totalReleased += Number(c.valorLiberado) || 0;
+            if (c.nomeTrabalhador) employeeNames.add(c.nomeTrabalhador);
+            if (!companyName && c.nomeEmpregador)
+              companyName = c.nomeEmpregador;
+          });
+          totalContractsEl.textContent = data.length;
+          totalLoanAmountEl.textContent = `R$ ${totalLoan.toLocaleString(
+            "pt-BR",
+            { minimumFractionDigits: 2 }
+          )}`;
+          totalReleasedAmountEl.textContent = `R$ ${totalReleased.toLocaleString(
+            "pt-BR",
+            { minimumFractionDigits: 2 }
+          )}`;
+          document.getElementById("company-name").textContent =
+            companyName || "-";
+          const employeesNamesEl = document.getElementById("employees-names");
+          employeesNamesEl.innerHTML = "";
+          Array.from(employeeNames)
+            .sort()
+            .forEach((name) => {
+              const li = document.createElement("li");
+              li.textContent = name;
+              employeesNamesEl.appendChild(li);
+            });
+        }
+
+        downloadBtn.addEventListener("click", () => {
+          const printClone = document.documentElement.cloneNode(true);
+          const blob = new Blob([printClone.outerHTML], { type: "text/html" });
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = `Relatorio_Contratos.html`;
+          link.click();
         });
+
+        function formatCpf(cpfStr) {
+          return cpfStr.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+        }
+        function formatCnpj(cnpjStr) {
+          return cnpjStr.replace(
+            /^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,
+            "$1.$2.$3/$4-$5"
+          );
+        }
+        function showLoader() {
+          loaderContainer.style.display = "flex";
+        }
+        function hideLoader() {
+          loaderContainer.style.display = "none";
+        }
+        function showError(msg) {
+          errorMessage.textContent = msg;
+          errorMessage.style.display = "block";
+          setTimeout(() => {
+            errorMessage.style.display = "none";
+          }, 5000);
+        }
+      });
     </script>
-</body>
+  </body>
 </html>
