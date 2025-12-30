@@ -3,250 +3,252 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calculadora Simples Nacional - Neo</title>
+    <title>Simples Nacional [BRUTALISM]</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
       :root {
-        /* Paleta Neo-Brutalismo */
-        --bg-color: #FFFDF5;
+        --bg-body: #06B6D4; /* Ciano */
         --card-bg: #FFFFFF;
-        
-        --primary-green: #2DDD98;
-        --primary-yellow: #FFF59D;
-        --primary-purple: #D6BCFA;
-        --primary-pink: #FF9EB5;
-        
-        --text-main: #000000;
         --border-black: #000000;
         
-        --shadow-hard: 4px 4px 0px 0px #000000;
+        --color-primary: #8B5CF6;   /* Roxo */
+        --color-secondary: #F472B6; /* Rosa */
+        --color-accent: #FACC15;    /* Amarelo */
+        --color-success: #22C55E;   /* Verde */
+        --color-danger: #EF4444;    /* Vermelho */
         
+        --shadow-dist: 6px;
         --border-width: 3px;
-        --radius: 12px;
       }
 
       * { margin: 0; padding: 0; box-sizing: border-box; }
 
       body {
-        font-family: 'Inter', sans-serif;
-        background-color: var(--bg-color);
-        color: var(--text-main);
+        font-family: 'Space Grotesk', sans-serif;
+        background-color: var(--bg-body);
+        background-image: 
+            linear-gradient(#fff 2px, transparent 2px),
+            linear-gradient(90deg, #fff 2px, transparent 2px);
+        background-size: 40px 40px;
+        color: var(--border-black);
         height: 100vh;
-        overflow-x: hidden;
         display: flex;
+        overflow: hidden;
       }
 
       /* Sidebar */
       .sidebar {
-        width: 250px;
-        background: var(--card-bg);
+        width: 280px;
+        background: var(--color-accent);
         border-right: var(--border-width) solid var(--border-black);
         display: flex;
         flex-direction: column;
         padding: 2rem 1.5rem;
         flex-shrink: 0;
+        box-shadow: 4px 0 0 rgba(0,0,0,0.1);
       }
 
       .logo {
-        font-weight: 800;
-        font-size: 1.4rem;
+        font-weight: 900;
+        font-size: 1.5rem;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 15px;
         margin-bottom: 3rem;
+        text-decoration: none;
+        color: var(--border-black);
+        text-transform: uppercase;
       }
 
       .logo i {
-        background: var(--primary-purple);
-        padding: 8px;
+        background: var(--color-primary);
+        color: #fff;
+        padding: 10px;
         border: var(--border-width) solid var(--border-black);
-        border-radius: 50%;
-        box-shadow: 2px 2px 0 0 black;
+        box-shadow: 4px 4px 0 0 black;
       }
 
       .nav-item {
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 1rem;
+        padding: 15px;
         margin-bottom: 1rem;
-        font-weight: 600;
-        color: #555;
+        font-weight: 800;
+        color: #000;
         cursor: pointer;
-        transition: 0.2s;
-        border-radius: var(--radius);
-        border: 2px solid transparent;
+        border: var(--border-width) solid var(--border-black);
+        background: #fff;
+        box-shadow: 4px 4px 0 0 black;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        text-decoration: none;
       }
 
       .nav-item.active {
-        background-color: var(--primary-green);
-        color: black;
-        border: var(--border-width) solid var(--border-black);
-        box-shadow: var(--shadow-hard);
+        background-color: var(--color-primary);
+        color: #fff;
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 0 black;
       }
-
-      .nav-item:hover:not(.active) { background-color: #f0f0f0; }
 
       .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
 
-      /* Components */
+      /* Neo Header */
       .neo-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 2rem;
-        background: var(--card-bg);
+        margin-bottom: 2.5rem;
+        background: #fff;
         border: var(--border-width) solid var(--border-black);
-        border-radius: 50px;
-        padding: 1rem 2rem;
-        box-shadow: var(--shadow-hard);
+        padding: 2rem;
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
+      }
+      .header-title h1 { font-weight: 900; font-size: 2.2rem; text-transform: uppercase; }
+      .header-title span { 
+        font-family: 'Space Mono', monospace;
+        background: var(--color-secondary);
+        color: #fff;
+        padding: 5px 10px;
+        border: 2px solid #000;
+        font-weight: 700;
       }
 
-      .header-title h1 { font-weight: 800; font-size: 2rem; }
-      .header-title span { font-size: 1rem; font-weight: 600; color: #666; }
+      /* Cards */
+      .neo-card {
+        background: #fff;
+        border: var(--border-width) solid var(--border-black);
+        padding: 2rem;
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
+        margin-bottom: 2rem;
+      }
+      .card-title {
+        font-weight: 900;
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-transform: uppercase;
+        border-bottom: 3px solid #000;
+        padding-bottom: 10px;
+      }
 
-      /* Anexo Selection Grid */
+      .border-top-purple { border-top: 8px solid var(--color-primary); }
+      .border-top-pink { border-top: 8px solid var(--color-secondary); }
+
+      /* Anexo Grid */
       .anexo-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 2rem;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
       }
-
       .anexo-card {
-        background: var(--card-bg);
+        background: #fff;
         border: var(--border-width) solid var(--border-black);
-        border-radius: var(--radius);
-        padding: 1rem;
-        box-shadow: var(--shadow-hard);
-        cursor: pointer;
+        padding: 15px;
         text-align: center;
-        transition: transform 0.1s;
-        position: relative;
+        cursor: pointer;
+        font-weight: 800;
+        box-shadow: 4px 4px 0 0 black;
+        transition: 0.1s;
       }
-      
-      .anexo-card:hover { transform: translate(-2px, -2px); }
       .anexo-card.selected {
-        background-color: var(--primary-purple);
-        box-shadow: 2px 2px 0 0 black;
+        background: var(--color-accent);
         transform: translate(2px, 2px);
+        box-shadow: 0 0 0 0 black;
       }
-      /* Individual colors for unselected hover/style if needed, keeping simple for now */
-      
-      .anexo-card h3 { font-weight: 800; font-size: 1.2rem; }
-      .anexo-card p { font-size: 0.8rem; font-weight: 600; color: #555; margin-top: 5px; }
 
       /* Upload Area */
-      .upload-container { display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 2rem; }
-      .upload-section { flex: 2; min-width: 300px; }
-      .actions-section { flex: 1; min-width: 250px; display: flex; flex-direction: column; gap: 1rem; }
-
       .upload-area {
-        background: #fff;
-        border: 3px dashed var(--border-black);
-        border-radius: var(--radius);
-        padding: 2rem;
+        border: 4px dashed var(--border-black);
+        padding: 2.5rem;
         text-align: center;
+        background: #f9f9f9;
         cursor: pointer;
-        transition: 0.3s;
-      }
-      .upload-area:hover { background-color: #f9f9f9; transform: translate(-2px, -2px); box-shadow: var(--shadow-hard); border-style: solid; }
-      
-      .upload-icon { font-size: 3rem; margin-bottom: 1rem; color: var(--text-main); }
-
-      /* Info Box (Orientação) */
-      .info-box {
-        background: var(--primary-yellow);
-        border: var(--border-width) solid black;
-        border-radius: var(--radius);
-        padding: 1rem;
         margin-bottom: 1rem;
-        font-size: 0.9rem;
-        box-shadow: var(--shadow-hard);
+        transition: 0.2s;
       }
-      .info-box strong { display: block; margin-bottom: 0.5rem; font-weight: 800; }
+      .upload-area:hover { background: #fff; border-style: solid; }
 
       /* Buttons */
       .neo-btn {
-        padding: 1rem;
+        padding: 1rem 2rem;
         font-weight: 800;
-        font-size: 1rem;
         border: var(--border-width) solid var(--border-black);
-        border-radius: var(--radius);
         cursor: pointer;
-        box-shadow: var(--shadow-hard);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
+        box-shadow: 5px 5px 0 0 black;
         text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
       }
-      .neo-btn:active { box-shadow: 0 0 0 0 black; transform: translate(4px, 4px); }
-      .neo-btn:disabled { background-color: #ccc; color: #666; cursor: not-allowed; box-shadow: none; transform: translate(4px, 4px); }
+      .neo-btn:active { transform: translate(4px, 4px); box-shadow: 0 0 0 0 black; }
+      .neo-btn:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; transform: none; }
       
-      .btn-primary { background-color: var(--primary-green); color: black; }
-      .btn-secondary { background-color: var(--primary-pink); color: black; }
-      .btn-black { background-color: black; color: white; }
+      .btn-primary { background: var(--color-success); color: #000; }
+      .btn-black { background: #000; color: #fff; }
 
-      /* Results */
-      .results-area { margin-top: 2rem; }
-      .results-console {
-        background: #1a1a1a;
-        color: #00ff00;
-        font-family: 'Courier New', monospace;
-        padding: 1.5rem;
-        border: var(--border-width) solid black;
-        border-radius: var(--radius);
-        box-shadow: var(--shadow-hard);
-        min-height: 150px;
-        max-height: 400px;
-        overflow-y: auto;
-        white-space: pre-wrap;
-        margin-top: 1rem;
-      }
-
-      /* Table */
+      /* Table & Results */
       .table-wrapper {
         border: var(--border-width) solid black;
-        border-radius: var(--radius);
-        overflow: hidden;
-        margin-top: 1rem;
-        box-shadow: var(--shadow-hard);
+        overflow-x: auto;
+        margin-top: 1.5rem;
+        box-shadow: 6px 6px 0 0 black;
       }
-      table { width: 100%; border-collapse: collapse; background: white; }
-      th { background: var(--primary-yellow); border-bottom: var(--border-width) solid black; padding: 1rem; text-align: left; font-weight: 800; }
-      td { padding: 0.8rem 1rem; border-bottom: 1px solid #ddd; font-weight: 500; }
-      tr:last-child td { border-bottom: none; }
-      
-      /* Error */
-      #errorMessage {
-        background: #FF5252;
-        color: black;
+      table { width: 100%; border-collapse: collapse; background: #fff; }
+      th { background: var(--color-accent); border: 2px solid #000; padding: 12px; font-weight: 900; text-align: left; }
+      td { border: 1px solid #000; padding: 10px; font-family: 'Space Mono', monospace; font-weight: 700; }
+
+      .results-console {
+        background: #000;
+        color: #00ff00;
+        font-family: 'Space Mono', monospace;
+        padding: 1.5rem;
         border: var(--border-width) solid black;
-        padding: 1rem;
-        border-radius: var(--radius);
-        margin-top: 1rem;
-        font-weight: bold;
-        display: none;
-        box-shadow: var(--shadow-hard);
+        margin-top: 1.5rem;
+        box-shadow: 6px 6px 0 0 #fff;
+        max-height: 300px;
+        overflow-y: auto;
+        white-space: pre-wrap;
       }
 
-      .hidden { display: none !important; }
+      .info-box {
+        background: #fff;
+        border: 2px solid #000;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+      }
 
-      /* Responsive */
+      #errorMessage {
+        background: var(--color-danger);
+        color: white;
+        padding: 1rem;
+        border: 3px solid #000;
+        margin-top: 1rem;
+        font-weight: 900;
+        display: none;
+      }
+
+      .hidden { display: none; }
+
       @media (max-width: 768px) {
         body { flex-direction: column; }
-        .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 3px solid black; flex-direction: row; align-items: center; overflow-x: auto; padding: 1rem; }
-        .neo-header { flex-direction: column; gap: 1rem; text-align: center; }
-        .upload-container { flex-direction: column; }
+        .sidebar { width: 100%; flex-direction: row; border-right: none; border-bottom: 3px solid #000; }
+        .main-content { padding: 1rem; }
       }
     </style>
   </head>
   <body>
-    
+
     <aside class="sidebar">
       <div class="logo">
         <i class="fas fa-calculator"></i>
@@ -255,9 +257,6 @@
       <nav>
         <div class="nav-item active">
           <i class="fas fa-percent"></i> Calculadora
-        </div>
-        <div class="nav-item">
-          <i class="fas fa-chart-line"></i> Relatórios
         </div>
       </nav>
     </aside>
@@ -270,76 +269,54 @@
           <span>Cálculo de alíquota efetiva (RBT12)</span>
         </div>
         <button class="neo-btn btn-black" id="downloadTemplate">
-          <i class="fas fa-file-download"></i> Baixar Modelo
+          <i class="fas fa-file-download"></i> Modelo
         </button>
       </div>
 
-      <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 10px;">
-        <i class="fas fa-layer-group"></i> 1. Selecione o Anexo
-      </h3>
-      <div class="anexo-grid">
-        <div class="anexo-card selected" data-anexo="I">
-          <h3>ANEXO I</h3>
-          <p>Comércio</p>
+      <div class="neo-card border-top-purple">
+        <div class="card-title"><i class="fas fa-layer-group"></i> 1. Configuração</div>
+        <label>SELECIONE O ANEXO:</label>
+        <div class="anexo-grid">
+          <div class="anexo-card selected" data-anexo="I">ANEXO I<br><small>Comércio</small></div>
+          <div class="anexo-card" data-anexo="II">ANEXO II<br><small>Indústria</small></div>
+          <div class="anexo-card" data-anexo="III">ANEXO III<br><small>Serviços</small></div>
+          <div class="anexo-card" data-anexo="V">ANEXO V<br><small>Serviços R</small></div>
         </div>
-        <div class="anexo-card" data-anexo="II">
-          <h3>ANEXO II</h3>
-          <p>Indústria</p>
-        </div>
-        <div class="anexo-card" data-anexo="III">
-          <h3>ANEXO III</h3>
-          <p>Serviços</p>
-        </div>
-        <div class="anexo-card" data-anexo="V">
-          <h3>ANEXO V</h3>
-          <p>Serviços (+Fator R)</p>
-        </div>
-      </div>
-
-      <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 10px;">
-        <i class="fas fa-file-excel"></i> 2. Carregar Planilha
-      </h3>
-      
-      <div class="info-box">
-        <strong><i class="fas fa-info-circle"></i> Orientação Importante:</strong>
-        O valor na planilha deve ser o acumulado dos 12 meses anteriores (RBT12).<br>
-        <em>Ex: Para calcular Março/2024, use a soma da receita de Mar/2023 a Fev/2024.</em>
-      </div>
-
-      <div class="upload-container">
-        <div class="upload-section">
-            <div class="upload-area" id="drop-area">
-                <div class="upload-icon">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                </div>
-                <h3>Arraste o arquivo .xlsx aqui</h3>
-                <p id="fileName" style="color: #666; margin-top: 0.5rem; font-style: italic;">Nenhum arquivo selecionado</p>
-                <input type="file" id="excelFile" accept=".xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" style="display: none;" />
-            </div>
-            <div id="errorMessage"></div>
-        </div>
-
-        <div class="actions-section">
-            <button id="calculateButton" class="neo-btn btn-primary" disabled style="height: 100%; font-size: 1.2rem;">
-                <i class="fas fa-cogs"></i> CALCULAR
-            </button>
-        </div>
-      </div>
-
-      <section id="dataDisplayArea" class="hidden results-area">
-        <h2 style="margin-bottom: 1rem; border-bottom: 4px solid var(--primary-green); display: inline-block;">
-          3. Pré-visualização e Resultado
-        </h2>
         
-        <div class="table-wrapper">
-            <table id="dataTable">
-              <thead></thead>
-              <tbody></tbody>
-            </table>
+        <div class="info-box">
+          <i class="fas fa-info-circle"></i> Use a soma da receita dos 12 meses anteriores (RBT12).
         </div>
+      </div>
 
-        <div class="results-console" id="resultsOutput">
-            Aguardando cálculo...
+      <div class="neo-card border-top-pink">
+        <div class="card-title"><i class="fas fa-file-excel"></i> 2. Importação</div>
+        <div class="upload-area" id="drop-area">
+          <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; margin-bottom: 10px;"></i>
+          <h3 id="fileName">Arraste o .xlsx ou clique aqui</h3>
+          <input type="file" id="excelFile" accept=".xlsx" style="display: none;" />
+        </div>
+        
+        <div id="errorMessage"></div>
+
+        <button id="calculateButton" class="neo-btn btn-primary" disabled style="width: 100%;">
+          <i class="fas fa-play"></i> PROCESSAR CÁLCULO
+        </button>
+      </div>
+
+      <section id="dataDisplayArea" class="hidden">
+        <div class="neo-card">
+          <div class="card-title"><i class="fas fa-chart-bar"></i> 3. Resultados</div>
+          
+          <div class="table-wrapper">
+              <table id="dataTable">
+                <thead></thead>
+                <tbody></tbody>
+              </table>
+          </div>
+
+          <div class="results-console" id="resultsOutput">
+            Console pronto...
+          </div>
         </div>
       </section>
 
@@ -349,281 +326,83 @@
       let excelData = null;
       let activeAnexo = "I";
 
-      // Elements
+      // Elementos
       const fileInput = document.getElementById("excelFile");
       const dropArea = document.getElementById("drop-area");
       const fileNameDisplay = document.getElementById("fileName");
-      const dataDisplayArea = document.getElementById("dataDisplayArea");
-      const dataTableBody = document.querySelector("#dataTable tbody");
-      const dataTableHeader = document.querySelector("#dataTable thead");
       const calculateButton = document.getElementById("calculateButton");
       const resultsOutput = document.getElementById("resultsOutput");
-      const anexoCards = document.querySelectorAll(".anexo-card");
-      const downloadTemplateButton = document.getElementById("downloadTemplate");
-      const errorMessageDiv = document.getElementById("errorMessage");
+      const dataDisplayArea = document.getElementById("dataDisplayArea");
 
-      // --- Interaction Logic ---
-
-      // Anexo Selection
-      anexoCards.forEach(card => {
+      // Seleção de Anexo
+      document.querySelectorAll(".anexo-card").forEach(card => {
         card.addEventListener('click', () => {
-            anexoCards.forEach(c => c.classList.remove('selected'));
-            card.classList.add('selected');
-            activeAnexo = card.getAttribute('data-anexo');
-            
-            // Visual feedback in console
-            if (resultsOutput.textContent !== "Aguardando cálculo...") {
-                resultsOutput.textContent += `\n> Anexo alterado para ${activeAnexo}. Recalcule.`;
-            }
+          document.querySelectorAll(".anexo-card").forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          activeAnexo = card.getAttribute('data-anexo');
         });
       });
 
-      // File Handling (Drag & Click)
+      // Upload
       dropArea.addEventListener('click', () => fileInput.click());
-      
-      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropArea.addEventListener(eventName, preventDefaults, false);
-      });
-      function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
-
-      dropArea.addEventListener('drop', handleDrop);
       fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
 
-      function handleDrop(e) {
-        const dt = e.dataTransfer;
-        const file = dt.files[0];
-        handleFile(file);
-      }
-
       function handleFile(file) {
-        clearStatus();
-        if (file) {
-            fileNameDisplay.textContent = file.name;
-            const reader = new FileReader();
-            reader.onload = (e) => processExcel(e.target.result);
-            reader.readAsArrayBuffer(file);
-        }
+        if (!file) return;
+        fileNameDisplay.textContent = file.name;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: "array", cellDates: true });
+          excelData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { raw: true });
+          renderTable();
+          calculateButton.disabled = false;
+        };
+        reader.readAsArrayBuffer(file);
       }
 
-      // Template Download
-      downloadTemplateButton.addEventListener("click", () => {
-        const templateData = [
-          { DATA: "01/01/2024", ACUMULADO: 15000.5 },
-          { DATA: "01/02/2024", ACUMULADO: 35000.0 },
-          { DATA: "01/03/2024", ACUMULADO: 200000.0 },
-          { DATA: "01/04/2024", ACUMULADO: 4500000.99 },
-        ];
-        const ws = XLSX.utils.json_to_sheet(templateData);
-        ws["!cols"] = [{ wch: 12 }, { wch: 18 }];
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "BaseSimples");
-        XLSX.writeFile(wb, "modelo_simples_neo.xlsx");
-      });
-
-      calculateButton.addEventListener("click", performCalculation);
-
-      // --- Core Logic (From Original) ---
-
-      function processExcel(buffer) {
-        try {
-            const data = new Uint8Array(buffer);
-            const workbook = XLSX.read(data, { type: "array", cellDates: true });
-            const firstSheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[firstSheetName];
-            
-            // Raw parsing
-            excelData = XLSX.utils.sheet_to_json(worksheet, { raw: true });
-
-            if (!excelData || excelData.length === 0) throw new Error("Planilha vazia.");
-
-            // Find columns
-            const firstRowKeys = Object.keys(excelData[0]);
-            const acumuladoKeyActual = firstRowKeys.find(k => k.toUpperCase() === "ACUMULADO");
-            
-            if(!acumuladoKeyActual) throw new Error("Coluna ACUMULADO não encontrada.");
-
-            // Pre-process numbers
-            excelData = excelData.map((row) => {
-                const rawValue = row[acumuladoKeyActual];
-                let numValue = NaN;
-                if (typeof rawValue === "number") {
-                  numValue = rawValue;
-                } else if (typeof rawValue === "string") {
-                  const cleaned = rawValue.trim().replace(/\./g, "").replace(",", ".");
-                  numValue = parseFloat(cleaned);
-                }
-                row[acumuladoKeyActual] = isNaN(numValue) ? null : numValue;
-                return row;
-            });
-
-            displayDataInTable(excelData);
-            calculateButton.disabled = false;
-        } catch (error) {
-            displayError(error.message);
-        }
-      }
-
-      function displayDataInTable(data) {
-        dataTableBody.innerHTML = "";
-        dataTableHeader.innerHTML = "";
-
-        if (!data || data.length === 0) return;
-
-        const headers = Object.keys(data[0]);
-        // Header
-        const headerRow = document.createElement("tr");
-        headers.forEach(h => {
-            const th = document.createElement("th");
-            th.textContent = h.toUpperCase();
-            headerRow.appendChild(th);
-        });
-        dataTableHeader.appendChild(headerRow);
-
-        // Body (Limit to 5 rows for preview if list is huge, or show all with scroll)
-        data.forEach((row) => {
-            const tr = document.createElement("tr");
-            headers.forEach(header => {
-                const td = document.createElement("td");
-                let val = row[header];
-                if(header.toUpperCase() === 'ACUMULADO' && typeof val === 'number') {
-                    td.textContent = val.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-                } else if (val instanceof Date) {
-                    td.textContent = val.toLocaleDateString('pt-BR');
-                } else {
-                    td.textContent = val !== null ? val : "";
-                }
-                tr.appendChild(td);
-            });
-            dataTableBody.appendChild(tr);
-        });
+      function renderTable() {
+        if (!excelData.length) return;
+        const headers = Object.keys(excelData[0]);
+        document.querySelector("#dataTable thead").innerHTML = `<tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
+        document.querySelector("#dataTable tbody").innerHTML = excelData.slice(0, 5).map(row => 
+          `<tr>${headers.map(h => `<td>${row[h] instanceof Date ? row[h].toLocaleDateString() : row[h]}</td>`).join('')}</tr>`
+        ).join('');
         dataDisplayArea.classList.remove('hidden');
       }
 
-      function performCalculation() {
-        resultsOutput.textContent = "--- INICIANDO CÁLCULO SIMPLES NACIONAL ---\n";
-        
-        const firstRowKeys = Object.keys(excelData[0]);
-        const dataKey = firstRowKeys.find((k) => k.toUpperCase() === "DATA");
-        const acumuladoKey = firstRowKeys.find((k) => k.toUpperCase() === "ACUMULADO");
-
-        if (!dataKey || !acumuladoKey) {
-            displayError("Colunas essenciais faltando.");
-            return;
-        }
-
-        let results = [];
-        excelData.forEach((row, index) => {
-            const acumulado = row[acumuladoKey];
-            const dataVal = row[dataKey];
-            const linhaNum = index + 2;
-
-            if (acumulado === null || isNaN(acumulado) || acumulado < 0) {
-                results.push(`[ERRO] Linha ${linhaNum}: Valor inválido.`);
-                return;
-            }
-
-            let dataFormatada = formatDateMMYYYY(dataVal);
-            let resultLine = "";
-
-            switch (activeAnexo) {
-                case "I": resultLine = calculateAnexoI(acumulado, dataFormatada, linhaNum); break;
-                case "II": resultLine = calculateAnexoII(acumulado, dataFormatada, linhaNum); break;
-                case "III": resultLine = calculateAnexoIII(acumulado, dataFormatada, linhaNum); break;
-                case "V": resultLine = calculateAnexoV(acumulado, dataFormatada, linhaNum); break;
-            }
-            results.push(resultLine);
+      calculateButton.addEventListener("click", () => {
+        resultsOutput.textContent = `> Iniciando processamento (Anexo ${activeAnexo})...\n`;
+        const log = excelData.map((row, i) => {
+          const rbt12 = parseFloat(row[Object.keys(row).find(k => k.toUpperCase().includes('ACUMULADO'))]);
+          if (isNaN(rbt12)) return `[ERRO] Linha ${i+2}: Valor inválido`;
+          return calculateEfetiva(rbt12, activeAnexo);
         });
+        resultsOutput.textContent += log.join('\n');
+      });
 
-        resultsOutput.textContent += results.join("\n");
-        resultsOutput.scrollTop = resultsOutput.scrollHeight;
+      function calculateEfetiva(rbt12, anexo) {
+        let al, ded;
+        const config = {
+          'I': [ [180000, 0.04, 0], [360000, 0.073, 5940], [720000, 0.095, 13860], [1800000, 0.107, 22500], [3600000, 0.143, 87300], [4800000, 0.19, 378000] ],
+          'II': [ [180000, 0.045, 0], [360000, 0.078, 5940], [720000, 0.1, 13860], [1800000, 0.112, 22500], [3600000, 0.147, 85500], [4800000, 0.3, 720000] ],
+          'III': [ [180000, 0.06, 0], [360000, 0.112, 9360], [720000, 0.135, 17640], [1800000, 0.16, 35640], [3600000, 0.21, 125640], [4800000, 0.33, 648000] ],
+          'V': [ [180000, 0.155, 0], [360000, 0.18, 4500], [720000, 0.195, 9900], [1800000, 0.205, 17100], [3600000, 0.23, 62100], [4800000, 0.305, 540000] ]
+        };
+
+        const faixa = config[anexo].find(f => rbt12 <= f[0]);
+        if (!faixa) return `> R$ ${rbt12.toFixed(2)}: Limite excedido.`;
+        
+        const efetiva = ((rbt12 * faixa[1] - faixa[2]) / rbt12) * 100;
+        return `> RBT12: R$ ${rbt12.toLocaleString('pt-BR')} | Alíquota: ${efetiva.toFixed(2)}%`;
       }
 
-      // --- Helpers & Calc Logic ---
-      
-      function displayError(msg) {
-        errorMessageDiv.textContent = "⚠️ " + msg;
-        errorMessageDiv.style.display = "block";
-      }
-
-      function clearStatus() {
-        errorMessageDiv.style.display = "none";
-        dataDisplayArea.classList.add('hidden');
-        calculateButton.disabled = true;
-        resultsOutput.textContent = "Aguardando cálculo...";
-        excelData = null;
-      }
-
-      function formatDateMMYYYY(date) {
-        if (date instanceof Date && !isNaN(date)) {
-          return `${String(date.getUTCMonth() + 1).padStart(2, "0")}/${date.getUTCFullYear()}`;
-        }
-        if (typeof date === "string") return date; 
-        return "N/D";
-      }
-
-      function formatPercentage(val) {
-        return val.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + "%";
-      }
-      
-      function formatCurrency(val) {
-        return val.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-      }
-
-      // --- Calculation Algorithms (Same as source) ---
-      function calculateAnexoI(acumulado, data, linha) {
-          let aliquota, deducao;
-          if (acumulado <= 180000) { aliquota = 0.04; deducao = 0; }
-          else if (acumulado <= 360000) { aliquota = 0.073; deducao = 5940; }
-          else if (acumulado <= 720000) { aliquota = 0.095; deducao = 13860; }
-          else if (acumulado <= 1800000) { aliquota = 0.107; deducao = 22500; }
-          else if (acumulado <= 3600000) { aliquota = 0.143; deducao = 87300; }
-          else if (acumulado <= 4800000) { 
-              // Faixa 6 complexa omitida para brevidade visual, mantendo lógica simplificada para demonstração ou assumindo a mesma lógica original
-              aliquota = 0.19; deducao = 378000; 
-          } else { return `Linha ${linha} (${data}): Acima do limite.`; }
-          
-          let efetiva = ((acumulado * aliquota - deducao) / acumulado) * 100;
-          return `[${data}] RBT12: ${formatCurrency(acumulado)} | Alíq. Efetiva: ${formatPercentage(efetiva)} (Anexo I)`;
-      }
-
-      function calculateAnexoII(acumulado, data, linha) {
-          let aliquota, deducao;
-          if (acumulado <= 180000) { aliquota = 0.045; deducao = 0; }
-          else if (acumulado <= 360000) { aliquota = 0.078; deducao = 5940; }
-          else if (acumulado <= 720000) { aliquota = 0.1; deducao = 13860; }
-          else if (acumulado <= 1800000) { aliquota = 0.112; deducao = 22500; }
-          else if (acumulado <= 3600000) { aliquota = 0.147; deducao = 85500; }
-          else { aliquota = 0.30; deducao = 720000; }
-          
-          let efetiva = ((acumulado * aliquota - deducao) / acumulado) * 100;
-          return `[${data}] RBT12: ${formatCurrency(acumulado)} | Alíq. Efetiva: ${formatPercentage(efetiva)} (Anexo II)`;
-      }
-
-      function calculateAnexoIII(acumulado, data, linha) {
-          let aliquota, deducao;
-          if (acumulado <= 180000) { aliquota = 0.06; deducao = 0; }
-          else if (acumulado <= 360000) { aliquota = 0.112; deducao = 9360; }
-          else if (acumulado <= 720000) { aliquota = 0.135; deducao = 17640; }
-          else if (acumulado <= 1800000) { aliquota = 0.16; deducao = 35640; }
-          else if (acumulado <= 3600000) { aliquota = 0.21; deducao = 125640; }
-          else { aliquota = 0.33; deducao = 648000; }
-
-          let efetiva = ((acumulado * aliquota - deducao) / acumulado) * 100;
-          return `[${data}] RBT12: ${formatCurrency(acumulado)} | Alíq. Efetiva: ${formatPercentage(efetiva)} (Anexo III)`;
-      }
-
-      function calculateAnexoV(acumulado, data, linha) {
-          let aliquota, deducao;
-          if (acumulado <= 180000) { aliquota = 0.155; deducao = 0; }
-          else if (acumulado <= 360000) { aliquota = 0.18; deducao = 4500; }
-          else if (acumulado <= 720000) { aliquota = 0.195; deducao = 9900; }
-          else if (acumulado <= 1800000) { aliquota = 0.205; deducao = 17100; }
-          else if (acumulado <= 3600000) { aliquota = 0.23; deducao = 62100; }
-          else { aliquota = 0.305; deducao = 540000; }
-
-          let efetiva = ((acumulado * aliquota - deducao) / acumulado) * 100;
-          return `[${data}] RBT12: ${formatCurrency(acumulado)} | Alíq. Efetiva: ${formatPercentage(efetiva)} (Anexo V)`;
-      }
+      document.getElementById("downloadTemplate").addEventListener("click", () => {
+        const ws = XLSX.utils.json_to_sheet([{ DATA: "01/01/2025", ACUMULADO: 250000.00 }]);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Dados");
+        XLSX.writeFile(wb, "modelo_simples.xlsx");
+      });
     </script>
   </body>
 </html>

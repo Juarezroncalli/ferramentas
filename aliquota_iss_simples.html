@@ -3,90 +3,97 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calculadora ISS Simples - Neo</title>
+    <title>Calculadora ISS (Simples) [BRUTALISM]</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
       :root {
-        /* Paleta Neo-Brutalismo */
-        --bg-color: #FFFDF5;
+        --bg-body: #06B6D4; /* Ciano */
         --card-bg: #FFFFFF;
-        
-        --primary-green: #2DDD98;
-        --primary-yellow: #FFF59D;
-        --primary-purple: #D6BCFA;
-        --primary-pink: #FF9EB5;
-        --primary-blue: #A5DEFF;
-        
-        --text-main: #000000;
         --border-black: #000000;
         
-        --shadow-hard: 4px 4px 0px 0px #000000;
+        --color-primary: #8B5CF6;   /* Roxo */
+        --color-secondary: #F472B6; /* Rosa */
+        --color-accent: #FACC15;    /* Amarelo */
+        --color-success: #22C55E;   /* Verde */
+        --color-info: #3B82F6;      /* Azul Royal */
+        --color-danger: #EF4444;    /* Vermelho */
+        
+        --shadow-dist: 6px;
         --border-width: 3px;
-        --radius: 12px;
       }
 
       * { margin: 0; padding: 0; box-sizing: border-box; }
 
       body {
-        font-family: 'Inter', sans-serif;
-        background-color: var(--bg-color);
-        color: var(--text-main);
+        font-family: 'Space Grotesk', sans-serif;
+        background-color: var(--bg-body);
+        background-image: 
+            linear-gradient(#fff 2px, transparent 2px),
+            linear-gradient(90deg, #fff 2px, transparent 2px);
+        background-size: 40px 40px;
+        color: var(--border-black);
         height: 100vh;
-        overflow-x: hidden;
         display: flex;
+        overflow: hidden;
       }
 
       /* Sidebar */
       .sidebar {
-        width: 250px;
-        background: var(--card-bg);
+        width: 280px;
+        background: var(--color-accent);
         border-right: var(--border-width) solid var(--border-black);
         display: flex;
         flex-direction: column;
         padding: 2rem 1.5rem;
         flex-shrink: 0;
+        box-shadow: 4px 0 0 rgba(0,0,0,0.1);
       }
 
       .logo {
-        font-weight: 800;
-        font-size: 1.4rem;
+        font-weight: 900;
+        font-size: 1.5rem;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 15px;
         margin-bottom: 3rem;
+        text-decoration: none;
+        color: var(--border-black);
+        text-transform: uppercase;
       }
 
       .logo i {
-        background: var(--primary-pink);
-        padding: 8px;
+        background: var(--color-secondary);
+        color: #000;
+        padding: 10px;
         border: var(--border-width) solid var(--border-black);
-        border-radius: 50%;
-        box-shadow: 2px 2px 0 0 black;
+        box-shadow: 4px 4px 0 0 black;
       }
 
       .nav-item {
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 1rem;
+        padding: 15px;
         margin-bottom: 1rem;
-        font-weight: 600;
-        color: #555;
-        cursor: pointer;
-        transition: 0.2s;
-        border-radius: var(--radius);
-        border: 2px solid transparent;
+        font-weight: 800;
+        color: #000;
+        border: var(--border-width) solid var(--border-black);
+        background: #fff;
+        box-shadow: 4px 4px 0 0 black;
+        text-transform: uppercase;
+        font-size: 0.9rem;
       }
 
       .nav-item.active {
-        background-color: var(--primary-green);
-        color: black;
-        border: var(--border-width) solid var(--border-black);
-        box-shadow: var(--shadow-hard);
+        background-color: var(--color-primary);
+        color: #fff;
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 0 black;
       }
-      .nav-item:hover:not(.active) { background-color: #f0f0f0; }
 
       .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
 
@@ -95,195 +102,146 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 2rem;
-        background: var(--card-bg);
+        margin-bottom: 2.5rem;
+        background: #fff;
         border: var(--border-width) solid var(--border-black);
-        border-radius: 50px;
-        padding: 1rem 2rem;
-        box-shadow: var(--shadow-hard);
-      }
-      .header-title h1 { font-weight: 800; font-size: 2rem; }
-      .header-title span { font-size: 1rem; font-weight: 600; color: #666; }
-
-      /* Input Section */
-      .input-card {
-        background: var(--card-bg);
-        border: var(--border-width) solid var(--border-black);
-        border-radius: var(--radius);
         padding: 2rem;
-        box-shadow: var(--shadow-hard);
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
+      }
+      .header-title h1 { font-weight: 900; font-size: 2.5rem; text-transform: uppercase; }
+      .header-title span { 
+        font-family: 'Space Mono', monospace;
+        background: var(--color-info);
+        color: #fff;
+        padding: 5px 10px;
+        border: 2px solid #000;
+        font-weight: 700;
+      }
+
+      /* Cards */
+      .neo-card {
+        background: #fff;
+        border: var(--border-width) solid var(--border-black);
+        padding: 2rem;
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
         margin-bottom: 2rem;
-        max-width: 650px;
       }
-
-      label {
-        font-weight: 800;
-        display: block;
-        margin-bottom: 0.5rem;
-        font-size: 1.1rem;
-      }
-
-      .input-wrapper {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-      }
-
-      .neo-input {
-        flex: 1;
-        padding: 1rem;
+      .card-title {
+        font-weight: 900;
         font-size: 1.2rem;
-        font-weight: bold;
-        border: var(--border-width) solid var(--border-black);
-        border-radius: var(--radius);
-        outline: none;
-        min-width: 200px;
-      }
-      .neo-input:focus {
-        background-color: #fff;
-        box-shadow: 4px 4px 0 0 rgba(0,0,0,0.1);
-      }
-
-      .neo-btn {
-        padding: 1rem 2rem;
-        font-weight: 800;
-        font-size: 1.1rem;
-        border: var(--border-width) solid var(--border-black);
-        border-radius: var(--radius);
-        cursor: pointer;
-        box-shadow: var(--shadow-hard);
-        background-color: var(--primary-green);
-        color: black;
+        margin-bottom: 1.5rem;
         display: flex;
         align-items: center;
         gap: 10px;
-        transition: transform 0.1s;
-      }
-      .neo-btn:active {
-        box-shadow: 0 0 0 0 black;
-        transform: translate(4px, 4px);
+        text-transform: uppercase;
+        border-bottom: 3px solid #000;
+        padding-bottom: 10px;
       }
 
-      /* Results Grid */
-      .results-area {
-        margin-top: 3rem;
+      .border-top-purple { border-top: 8px solid var(--color-primary); }
+      .border-top-green { border-top: 8px solid var(--color-success); }
+
+      /* Input e Botões */
+      label {
+        font-weight: 800;
+        display: block;
+        margin-bottom: 0.8rem;
+        text-transform: uppercase;
+        font-family: 'Space Mono', monospace;
       }
-      
-      .results-intro {
+
+      .input-group { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+      .neo-input {
+        flex: 1;
+        padding: 15px;
+        font-size: 1.5rem;
+        font-family: 'Space Mono', monospace;
+        font-weight: bold;
+        border: var(--border-width) solid var(--border-black);
+        background: #F3F4F6;
+        min-width: 250px;
+      }
+      .neo-input:focus { background: #fff; transform: translate(-2px, -2px); box-shadow: 5px 5px 0 0 var(--color-primary); outline: none; }
+
+      .neo-btn {
+        padding: 1rem 2rem;
+        font-weight: 900;
         font-size: 1.1rem;
-        font-weight: 600;
-        margin-bottom: 1.5rem;
-        padding: 1rem;
-        background: #eee;
-        border: 2px solid black;
-        border-radius: var(--radius);
-        display: inline-block;
+        border: var(--border-width) solid var(--border-black);
+        cursor: pointer;
+        box-shadow: 5px 5px 0 0 black;
+        text-transform: uppercase;
+        background: var(--color-success);
+        display: flex;
+        align-items: center;
+        gap: 10px;
       }
+      .neo-btn:active { transform: translate(4px, 4px); box-shadow: 0 0 0 0 black; }
 
+      /* Results */
       .grid-container {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1.5rem;
         margin-bottom: 2rem;
       }
 
       .anexo-card {
-        background: white;
+        background: #fff;
         border: var(--border-width) solid black;
-        border-radius: var(--radius);
-        box-shadow: var(--shadow-hard);
-        overflow: hidden;
-        transition: transform 0.2s;
-        position: relative;
-      }
-      .anexo-card:hover { transform: translate(-4px, -4px); box-shadow: 8px 8px 0 0 black; }
-
-      .card-header {
-        padding: 1rem;
-        border-bottom: var(--border-width) solid black;
-        font-weight: 800;
-        text-transform: uppercase;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      
-      .card-body {
+        box-shadow: 4px 4px 0 0 black;
         padding: 1.5rem;
         text-align: center;
       }
-
-      .percent-value {
-        font-size: 2.2rem;
-        font-weight: 900;
-        display: block;
-        margin-bottom: 0.5rem;
-      }
-      
-      .percent-label {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: #666;
+      .anexo-card .tag { 
+        font-size: 0.8rem; 
+        font-weight: 900; 
+        background: var(--color-accent); 
+        padding: 2px 8px; 
+        border: 1px solid #000;
         text-transform: uppercase;
+        margin-bottom: 10px;
+        display: inline-block;
       }
+      .percent-value { font-size: 2rem; font-weight: 900; display: block; color: var(--border-black); }
+      .percent-label { font-size: 0.9rem; font-weight: 700; opacity: 0.7; text-transform: uppercase; }
 
-      /* Cores dos Cards */
-      .c-green .card-header { background-color: var(--primary-green); }
-      .c-yellow .card-header { background-color: var(--primary-yellow); }
-      .c-purple .card-header { background-color: var(--primary-purple); }
-      .c-pink .card-header { background-color: var(--primary-pink); }
-      .c-blue .card-header { background-color: var(--primary-blue); }
-
-      /* ISS Highlight Card */
+      /* ISS Special Card */
       .iss-card {
-        background: var(--primary-blue);
+        background: var(--color-primary);
+        color: #fff;
         border: var(--border-width) solid black;
-        border-radius: var(--radius);
-        padding: 2rem;
-        box-shadow: var(--shadow-hard);
+        padding: 2.5rem;
+        box-shadow: 10px 10px 0 0 black;
         text-align: center;
-        max-width: 600px;
-        margin: 0 auto;
+        max-width: 500px;
+        margin: 2rem auto;
         position: relative;
       }
-      .iss-card h4 { font-size: 1.2rem; margin-bottom: 1rem; text-transform: uppercase; font-weight: 800; }
-      .iss-value { font-size: 3.5rem; font-weight: 900; color: black; line-height: 1; }
-      .iss-badge { 
-        position: absolute; top: -15px; right: -15px; 
-        background: var(--primary-pink); border: 3px solid black; 
-        padding: 5px 15px; font-weight: 800; transform: rotate(10deg);
-        box-shadow: 4px 4px 0 0 black;
+      .iss-card .iss-value { font-size: 4rem; font-weight: 900; line-height: 1; }
+      .iss-card .badge {
+        position: absolute; top: -15px; right: -15px;
+        background: var(--color-accent); color: #000;
+        padding: 5px 15px; font-weight: 900; border: 3px solid #000;
+        transform: rotate(5deg); box-shadow: 4px 4px 0 0 black;
       }
 
-      /* Error Message */
       #errorMessage {
-        margin-top: 1rem;
-        padding: 1rem;
-        border: var(--border-width) solid black;
-        background-color: #FF5252;
-        color: black;
-        font-weight: bold;
-        border-radius: var(--radius);
-        display: none;
-        box-shadow: var(--shadow-hard);
+        background: var(--color-danger); color: white;
+        padding: 1rem; border: 3px solid black; margin-top: 1rem;
+        font-weight: 900; display: none;
       }
 
-      /* Empty State */
       .empty-state {
-        text-align: center;
-        padding: 3rem;
-        border: 3px dashed #ccc;
-        border-radius: var(--radius);
-        color: #888;
-        font-weight: 600;
+        text-align: center; padding: 4rem; border: 4px dashed #000;
+        font-weight: 800; color: #000; opacity: 0.5;
       }
 
       @media (max-width: 768px) {
         body { flex-direction: column; }
-        .sidebar { width: 100%; border-right: none; border-bottom: 3px solid black; flex-direction: row; align-items: center; overflow-x: auto; padding: 1rem; }
-        .neo-header { flex-direction: column; gap: 1rem; text-align: center; }
-        .input-wrapper { flex-direction: column; }
-        .neo-btn { width: 100%; justify-content: center; }
+        .sidebar { width: 100%; flex-direction: row; border-right: none; border-bottom: 3px solid black; }
+        .input-group { flex-direction: column; }
       }
     </style>
   </head>
@@ -298,9 +256,6 @@
         <div class="nav-item active">
           <i class="fas fa-calculator"></i> Calculadora ISS
         </div>
-        <div class="nav-item">
-          <i class="fas fa-info-circle"></i> Sobre RBT12
-        </div>
       </nav>
     </aside>
 
@@ -309,30 +264,26 @@
       <div class="neo-header">
         <div class="header-title">
           <h1>ISS Simples Nacional 🏛️</h1>
-          <span>Cálculo de alíquota efetiva baseada no RBT12</span>
+          <span>Cálculo de alíquota efetiva (RBT12)</span>
         </div>
       </div>
 
-      <div class="input-card">
-        <label for="rbt12Input">
-          <i class="fas fa-money-bill-wave"></i> Informe o RBT12 (Últimos 12 Meses)
-        </label>
-        <div class="input-wrapper">
-          <input type="text" id="rbt12Input" class="neo-input" placeholder="R$ 0,00" inputmode="decimal" />
+      <div class="neo-card border-top-purple">
+        <div class="card-title"><i class="fas fa-money-bill-wave"></i> Informe a Receita Bruta</div>
+        <label>RBT12 (Acumulado 12 meses anteriores)</label>
+        <div class="input-group">
+          <input type="text" id="rbt12Input" class="neo-input" placeholder="0,00" />
           <button id="calculateButton" class="neo-btn">
             CALCULAR <i class="fas fa-bolt"></i>
           </button>
         </div>
-        <div style="margin-top: 10px; font-size: 0.9rem; color: #666;">
-          *Use vírgula para centavos.
-        </div>
         <div id="errorMessage"></div>
       </div>
 
-      <div class="results-area" id="resultsOutput">
+      <div id="resultsOutput">
         <div class="empty-state">
-          <i class="fas fa-file-invoice-dollar" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
-          Digite o RBT12 acima para ver as alíquotas e o ISS estimado.
+          <i class="fas fa-file-invoice-dollar" style="font-size: 3rem; margin-bottom: 1rem;"></i><br>
+          AGUARDANDO VALORES PARA CÁLCULO
         </div>
       </div>
 
@@ -344,186 +295,116 @@
       const resultsOutput = document.getElementById("resultsOutput");
       const errorMessageDiv = document.getElementById("errorMessage");
 
-      // --- Funções Auxiliares ---
-      function parseCurrencyInput(inputString) {
-        if (typeof inputString !== "string" || inputString.trim() === "") return null;
-        let cleanedString = inputString.replace(/R\$\s?/g, "").replace(/\./g, "").trim().replace(",", ".");
-        if (!/^-?\d+(\.\d+)?$/.test(cleanedString) || cleanedString === "-") return null;
-        return parseFloat(cleanedString);
+      // --- Helpers de Formatação ---
+      function parseCurrency(str) {
+        if (!str) return null;
+        let cleaned = str.replace(/\./g, "").replace(",", ".").trim();
+        return isNaN(parseFloat(cleaned)) ? null : parseFloat(cleaned);
       }
 
-      function formatCurrency(value) {
-        let numValue = typeof value === "number" ? value : parseCurrencyInput(String(value));
-        if (numValue === null || isNaN(numValue)) return "";
-        return numValue.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+      function formatPercent(val) {
+        return typeof val === 'number' ? val.toLocaleString("pt-BR", { minimumFractionDigits: 2 }) + "%" : val;
       }
 
-      function formatPercentage(value) {
-        if (typeof value !== "number" || isNaN(value)) return "--";
-        return `${value.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
+      // --- Lógica de Cálculo (Conforme solicitado) ---
+      function getRate(acum, nom, ded) {
+        if (acum > 4800000) return "Limite Excedido";
+        return (((acum * nom - ded) / acum) * 100);
       }
 
-      // --- Interface Logic ---
-      rbt12Input.addEventListener("blur", () => {
-        const numericValue = parseCurrencyInput(rbt12Input.value);
-        if (numericValue !== null) {
-          rbt12Input.value = formatCurrency(numericValue).replace("R$", "").trim();
-        }
-      });
+      function performCalc(rbt12) {
+        resultsOutput.innerHTML = "";
 
-      rbt12Input.addEventListener("input", () => {
-        errorMessageDiv.style.display = "none";
-      });
+        const anexos = [
+          { name: "Anexo I", label: "Comércio", val: calcI(rbt12), color: "var(--color-success)" },
+          { name: "Anexo II", label: "Indústria", val: calcII(rbt12), color: "var(--color-accent)" },
+          { name: "Anexo III", label: "Serviços", val: calcIII(rbt12), color: "var(--color-primary)" },
+          { name: "Anexo IV", label: "Serviços", val: calcIV(rbt12), color: "var(--color-secondary)" },
+          { name: "Anexo V", label: "Serviços", val: calcV(rbt12), color: "var(--color-info)" }
+        ];
 
-      calculateButton.addEventListener("click", () => {
-        const rbt12Value = parseCurrencyInput(rbt12Input.value);
-        if (rbt12Value === null) {
-          showError("Valor inválido. Digite apenas números.");
-          return;
-        }
-        if (rbt12Value < 0) {
-          showError("O RBT12 não pode ser negativo.");
-          return;
-        }
-        performCalculation(rbt12Value);
-      });
-
-      function showError(msg) {
-        errorMessageDiv.textContent = "⚠️ " + msg;
-        errorMessageDiv.style.display = "block";
-      }
-
-      // --- Renderização Neo-Brutalista ---
-      function performCalculation(rbt12Value) {
-        resultsOutput.innerHTML = ""; // Limpar
-
-        // Intro
-        const intro = document.createElement("div");
-        intro.className = "results-intro";
-        intro.innerHTML = `Base de Cálculo RBT12: <strong>${formatCurrency(rbt12Value)}</strong>`;
-        resultsOutput.appendChild(intro);
-
-        // Grid Container (Anexos Gerais)
         const grid = document.createElement("div");
         grid.className = "grid-container";
-
-        const anexos = {
-            "Anexo I": { val: calculateAnexoI(rbt12Value), color: "c-green", label: "Comércio" },
-            "Anexo II": { val: calculateAnexoII(rbt12Value), color: "c-yellow", label: "Indústria" },
-            "Anexo III": { val: calculateAnexoIII(rbt12Value), color: "c-purple", label: "Serviços" },
-            "Anexo IV": { val: calculateAnexoIV(rbt12Value), color: "c-pink", label: "Serviços" },
-            "Anexo V": { val: calculateAnexoV(rbt12Value), color: "c-blue", label: "Serviços" },
-        };
-
-        let anexoIIIRate = null; // Para cálculo do ISS
-
-        for (const [key, data] of Object.entries(anexos)) {
-            const isNumber = typeof data.val === 'number';
-            const displayVal = isNumber ? formatPercentage(data.val) : data.val;
-            
-            // Salva Anexo III para uso posterior
-            if (key === "Anexo III" && isNumber) anexoIIIRate = data.val;
-
-            const cardHTML = `
-                <div class="anexo-card ${data.color}">
-                    <div class="card-header">
-                        <span>${key}</span>
-                        <i class="fas fa-tag"></i>
-                    </div>
-                    <div class="card-body">
-                        <span class="percent-value" style="${!isNumber ? 'font-size: 1.2rem; color: red;' : ''}">
-                            ${displayVal}
-                        </span>
-                        <span class="percent-label">${data.label}</span>
-                    </div>
-                </div>
-            `;
-            grid.innerHTML += cardHTML;
-        }
+        
+        anexos.forEach(a => {
+          grid.innerHTML += `
+            <div class="anexo-card" style="border-top: 8px solid ${a.color}">
+              <div class="tag">${a.name}</div>
+              <span class="percent-value">${formatPercent(a.val)}</span>
+              <span class="percent-label">${a.label}</span>
+            </div>`;
+        });
         resultsOutput.appendChild(grid);
 
-        // Card de Destaque ISS (Se possível calcular)
-        if (anexoIIIRate !== null) {
-            const issResult = calculateISS(rbt12Value, anexoIIIRate);
-            const issDisplay = typeof issResult === 'number' ? formatPercentage(issResult) : issResult;
+        // ISS Estimado (Baseado no Anexo III)
+        const a3Val = calcIII(rbt12);
+        if (typeof a3Val === 'number' && rbt12 <= 3600000) {
+          let part = rbt12 <= 180000 ? 0.335 : rbt12 <= 360000 ? 0.32 : rbt12 <= 1800000 ? 0.325 : 0.335;
+          let iss = a3Val * part;
+          if (iss > 5) iss = 5;
 
-            const issHTML = `
-                <div class="iss-card">
-                    <div class="iss-badge">ESTIMADO</div>
-                    <h4>Alíquota Final de ISS (Retenção)</h4>
-                    <div class="iss-value">${issDisplay}</div>
-                    <div style="margin-top: 10px; font-weight: 600; opacity: 0.7;">Baseado no Anexo III</div>
-                </div>
-            `;
-            resultsOutput.innerHTML += issHTML;
+          resultsOutput.innerHTML += `
+            <div class="iss-card">
+              <div class="badge">RETENÇÃO</div>
+              <p style="font-weight: 900; text-transform: uppercase; margin-bottom: 10px;">Alíquota ISS Estimada</p>
+              <div class="iss-value">${iss.toFixed(2)}%</div>
+              <p style="margin-top: 10px; font-weight: 700; opacity: 0.8;">(Base Anexo III)</p>
+            </div>`;
         }
       }
 
-      // --- Lógica de Cálculo (Mantida Original) ---
-      function getEffectiveRate(acumulado, aliquotaNominal, parcelaDeducao) {
-        if (acumulado > 4800000) return "Acima do Limite";
-        if (acumulado === 0) return aliquotaNominal * 100;
-        return (((acumulado * aliquotaNominal - parcelaDeducao) / acumulado) * 100);
+      // Funções de Faixas (Lógica Original)
+      function calcI(a) {
+        if(a <= 180000) return getRate(a, 0.04, 0);
+        if(a <= 360000) return getRate(a, 0.073, 5940);
+        if(a <= 720000) return getRate(a, 0.095, 13860);
+        if(a <= 1800000) return getRate(a, 0.107, 22500);
+        if(a <= 3600000) return getRate(a, 0.143, 87300);
+        return getRate(a, 0.19, 378000);
+      }
+      function calcII(a) {
+        if(a <= 180000) return getRate(a, 0.045, 0);
+        if(a <= 360000) return getRate(a, 0.078, 5940);
+        if(a <= 720000) return getRate(a, 0.1, 13860);
+        if(a <= 1800000) return getRate(a, 0.112, 22500);
+        if(a <= 3600000) return getRate(a, 0.147, 85500);
+        return getRate(a, 0.3, 720000);
+      }
+      function calcIII(a) {
+        if(a <= 180000) return getRate(a, 0.06, 0);
+        if(a <= 360000) return getRate(a, 0.112, 9360);
+        if(a <= 720000) return getRate(a, 0.135, 17640);
+        if(a <= 1800000) return getRate(a, 0.16, 35640);
+        if(a <= 3600000) return getRate(a, 0.21, 125640);
+        return getRate(a, 0.33, 648000);
+      }
+      function calcIV(a) {
+        if(a <= 180000) return getRate(a, 0.045, 0);
+        if(a <= 360000) return getRate(a, 0.09, 8100);
+        if(a <= 720000) return getRate(a, 0.102, 12420);
+        if(a <= 1800000) return getRate(a, 0.14, 39780);
+        if(a <= 3600000) return getRate(a, 0.22, 183780);
+        return getRate(a, 0.33, 828000);
+      }
+      function calcV(a) {
+        if(a <= 180000) return getRate(a, 0.155, 0);
+        if(a <= 360000) return getRate(a, 0.18, 4500);
+        if(a <= 720000) return getRate(a, 0.195, 9900);
+        if(a <= 1800000) return getRate(a, 0.205, 17100);
+        if(a <= 3600000) return getRate(a, 0.23, 62100);
+        return getRate(a, 0.305, 540000);
       }
 
-      function calculateISS(rbt12, anexoIIIRate) {
-        if (rbt12 > 3600000) return "Acima do Teto (ISS)";
-        
-        let calculatedIss;
-        if (rbt12 <= 180000) calculatedIss = anexoIIIRate * 0.335;
-        else if (rbt12 <= 360000) calculatedIss = anexoIIIRate * 0.32;
-        else if (rbt12 <= 1800000) calculatedIss = anexoIIIRate * 0.325;
-        else if (rbt12 <= 3600000) calculatedIss = anexoIIIRate * 0.335;
-        else return "?";
-
-        return calculatedIss > 5 ? 5 : calculatedIss;
-      }
-
-      function calculateAnexoI(acumulado) {
-        if (acumulado > 4800000) return "Acima do Limite";
-        if (acumulado <= 180000) return getEffectiveRate(acumulado, 0.04, 0);
-        if (acumulado <= 360000) return getEffectiveRate(acumulado, 0.073, 5940);
-        if (acumulado <= 720000) return getEffectiveRate(acumulado, 0.095, 13860);
-        if (acumulado <= 1800000) return getEffectiveRate(acumulado, 0.107, 22500);
-        if (acumulado <= 3600000) return getEffectiveRate(acumulado, 0.143, 87300);
-        return getEffectiveRate(acumulado, 0.19, 378000);
-      }
-      function calculateAnexoII(acumulado) {
-        if (acumulado > 4800000) return "Acima do Limite";
-        if (acumulado <= 180000) return getEffectiveRate(acumulado, 0.045, 0);
-        if (acumulado <= 360000) return getEffectiveRate(acumulado, 0.078, 5940);
-        if (acumulado <= 720000) return getEffectiveRate(acumulado, 0.1, 13860);
-        if (acumulado <= 1800000) return getEffectiveRate(acumulado, 0.112, 22500);
-        if (acumulado <= 3600000) return getEffectiveRate(acumulado, 0.147, 85500);
-        return getEffectiveRate(acumulado, 0.3, 720000);
-      }
-      function calculateAnexoIII(acumulado) {
-        if (acumulado > 4800000) return "Acima do Limite";
-        if (acumulado <= 180000) return getEffectiveRate(acumulado, 0.06, 0);
-        if (acumulado <= 360000) return getEffectiveRate(acumulado, 0.112, 9360);
-        if (acumulado <= 720000) return getEffectiveRate(acumulado, 0.135, 17640);
-        if (acumulado <= 1800000) return getEffectiveRate(acumulado, 0.16, 35640);
-        if (acumulado <= 3600000) return getEffectiveRate(acumulado, 0.21, 125640);
-        return getEffectiveRate(acumulado, 0.33, 648000);
-      }
-      function calculateAnexoIV(acumulado) {
-        if (acumulado > 4800000) return "Acima do Limite";
-        if (acumulado <= 180000) return getEffectiveRate(acumulado, 0.045, 0);
-        if (acumulado <= 360000) return getEffectiveRate(acumulado, 0.09, 8100);
-        if (acumulado <= 720000) return getEffectiveRate(acumulado, 0.102, 12420);
-        if (acumulado <= 1800000) return getEffectiveRate(acumulado, 0.14, 39780);
-        if (acumulado <= 3600000) return getEffectiveRate(acumulado, 0.22, 183780);
-        return getEffectiveRate(acumulado, 0.33, 828000);
-      }
-      function calculateAnexoV(acumulado) {
-        if (acumulado > 4800000) return "Acima do Limite";
-        if (acumulado <= 180000) return getEffectiveRate(acumulado, 0.155, 0);
-        if (acumulado <= 360000) return getEffectiveRate(acumulado, 0.18, 4500);
-        if (acumulado <= 720000) return getEffectiveRate(acumulado, 0.195, 9900);
-        if (acumulado <= 1800000) return getEffectiveRate(acumulado, 0.205, 17100);
-        if (acumulado <= 3600000) return getEffectiveRate(acumulado, 0.23, 62100);
-        return getEffectiveRate(acumulado, 0.305, 540000);
-      }
+      calculateButton.addEventListener("click", () => {
+        const val = parseCurrency(rbt12Input.value);
+        if (val === null || val < 0) {
+          errorMessageDiv.textContent = "⚠️ Informe um valor numérico válido.";
+          errorMessageDiv.style.display = "block";
+          return;
+        }
+        errorMessageDiv.style.display = "none";
+        performCalc(val);
+      });
     </script>
   </body>
 </html>
