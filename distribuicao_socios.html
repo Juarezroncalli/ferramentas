@@ -5,58 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Distribuição de Lucros [BRUTALISM]</title>
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
 
     <style>
       :root {
-        /* --- PALETA VIBRANTE --- */
-        --bg-body: #06B6D4; /* Ciano (Fundo Azul) */
-        --card-bg: #FFFFFF;
+        --bg-body: #06b6d4;
+        --card-bg: #ffffff;
         --border-black: #000000;
-        
-        --color-primary: #8B5CF6;   /* Roxo */
-        --color-secondary: #F472B6; /* Rosa */
-        --color-accent: #FACC15;    /* Amarelo */
-        --color-success: #22C55E;   /* Verde */
-        --color-danger: #EF4444;    /* Vermelho */
-        --color-info: #3B82F6;      /* Azul Royal */
-        
+        --color-primary: #8b5cf6;
+        --color-secondary: #f472b6;
+        --color-accent: #facc15;
+        --color-success: #22c55e;
+        --color-danger: #ef4444;
+        --color-info: #3b82f6;
         --shadow-dist: 6px;
         --border-width: 3px;
       }
 
-      * { margin: 0; padding: 0; box-sizing: border-box; }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
       body {
-        font-family: 'Space Grotesk', sans-serif;
-        /* FUNDO AZUL QUADRICULADO */
+        font-family: "Space Grotesk", sans-serif;
         background-color: var(--bg-body);
-        background-image: 
-            linear-gradient(#fff 2px, transparent 2px),
-            linear-gradient(90deg, #fff 2px, transparent 2px);
+        background-image: linear-gradient(#fff 2px, transparent 2px),
+          linear-gradient(90deg, #fff 2px, transparent 2px);
         background-size: 40px 40px;
         background-position: -2px -2px;
-        
         color: var(--border-black);
         height: 100vh;
         overflow: hidden;
         display: flex;
       }
 
-      /* Sidebar */
       .sidebar {
         width: 280px;
-        background: var(--color-accent); /* Amarelo */
+        background: var(--color-accent);
         border-right: var(--border-width) solid var(--border-black);
         display: flex;
         flex-direction: column;
         padding: 2rem 1.5rem;
         flex-shrink: 0;
         overflow-y: auto;
-        box-shadow: 4px 0 0 rgba(0,0,0,0.1);
       }
 
       .logo {
@@ -67,16 +69,14 @@
         gap: 15px;
         margin-bottom: 3rem;
         text-transform: uppercase;
-        letter-spacing: -1px;
       }
 
       .logo i {
-        background: var(--color-primary); /* Roxo */
+        background: var(--color-primary);
         color: #fff;
         padding: 10px;
         border: var(--border-width) solid var(--border-black);
         box-shadow: 4px 4px 0 0 black;
-        font-size: 1.2rem;
       }
 
       .nav-item {
@@ -86,305 +86,233 @@
         padding: 15px;
         margin-bottom: 1rem;
         font-weight: 800;
-        color: #000;
-        cursor: pointer;
-        transition: 0.1s;
-        border: var(--border-width) solid var(--border-black);
         background: #fff;
+        border: var(--border-width) solid var(--border-black);
         box-shadow: 4px 4px 0 0 black;
         text-transform: uppercase;
-        font-size: 0.9rem;
+        cursor: pointer;
       }
 
       .nav-item.active {
         background-color: var(--color-primary);
         color: #fff;
-        transform: translate(-2px, -2px);
-        box-shadow: 6px 6px 0 0 black;
       }
 
-      .nav-item:hover:not(.active) {
-        transform: translate(-2px, -2px);
-        box-shadow: 6px 6px 0 0 black;
+      .main-content {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
       }
 
-      .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
-
-      /* Neo Header */
       .neo-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2.5rem;
         background: #fff;
         border: var(--border-width) solid var(--border-black);
         padding: 2rem;
         box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
-      }
-      .header-title h1 { 
-        font-weight: 900; 
-        font-size: 2.5rem; 
-        text-transform: uppercase;
-        text-shadow: 2px 2px 0 #ddd;
-      }
-      .header-title span { 
-        font-family: 'Space Mono', monospace;
-        font-size: 0.9rem; 
-        font-weight: 700; 
-        background: var(--color-secondary);
-        color: #fff;
-        padding: 5px 10px;
-        border: 2px solid #000;
+        margin-bottom: 2.5rem;
       }
 
-      /* Cards */
       .neo-card {
         background: #fff;
         border: var(--border-width) solid var(--border-black);
         padding: 2rem;
         box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
         margin-bottom: 2rem;
-        position: relative;
       }
 
       .card-title {
         font-weight: 900;
         font-size: 1.2rem;
         margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 10px;
         text-transform: uppercase;
         border-bottom: 3px solid #000;
         padding-bottom: 10px;
       }
 
-      /* Formulários */
-      .form-group { margin-bottom: 1.5rem; }
-      
-      label {
-        font-weight: 800;
-        display: block;
-        margin-bottom: 0.5rem;
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        font-family: 'Space Mono', monospace;
-      }
-
       .neo-input {
         width: 100%;
         padding: 15px;
-        font-size: 1rem;
-        font-family: 'Space Mono', monospace;
+        font-family: "Space Mono", monospace;
         font-weight: bold;
         border: var(--border-width) solid var(--border-black);
-        background: #F3F4F6;
-        outline: none;
-        transition: all 0.2s;
-      }
-      .neo-input:focus {
-        background-color: #fff;
-        box-shadow: 5px 5px 0 0 var(--color-primary);
-        transform: translate(-2px, -2px);
+        background: #f3f4f6;
+        margin-bottom: 10px;
       }
 
-      /* Botões */
       .neo-btn {
         padding: 15px 25px;
         font-weight: 800;
-        font-size: 1rem;
-        font-family: 'Space Grotesk', sans-serif;
         border: var(--border-width) solid var(--border-black);
         cursor: pointer;
         box-shadow: 5px 5px 0 0 black;
+        text-transform: uppercase;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 10px;
-        transition: all 0.1s;
-        text-transform: uppercase;
       }
-      .neo-btn:hover {
-        transform: translate(-2px, -2px);
-        box-shadow: 7px 7px 0 0 black;
-      }
+
       .neo-btn:active {
-        box-shadow: 0 0 0 0 black;
         transform: translate(4px, 4px);
+        box-shadow: 0 0 0 0 black;
       }
 
-      .btn-success { background-color: var(--color-success); color: black; }
-      .btn-primary { background-color: var(--color-primary); color: white; }
-      .btn-danger { background-color: var(--color-danger); color: white; padding: 10px 15px; font-size: 0.9rem; }
-      .btn-warning { background-color: var(--color-accent); color: black; }
+      .btn-success {
+        background-color: var(--color-success);
+      }
+      .btn-primary {
+        background-color: var(--color-primary);
+        color: white;
+      }
+      .btn-danger {
+        background-color: var(--color-danger);
+        color: white;
+      }
+      .btn-warning {
+        background-color: var(--color-accent);
+      }
 
-      /* Upload Area */
       .upload-area {
         border: 3px dashed var(--border-black);
-        padding: 3rem;
+        padding: 2rem;
         text-align: center;
         cursor: pointer;
-        background: #FEF9C3; /* Amarelo Pálido */
-        transition: 0.2s;
+        background: #fef9c3;
       }
-      .upload-area:hover {
-        background: var(--color-accent);
-        transform: translate(-2px, -2px);
-        box-shadow: 5px 5px 0 0 black;
-        border-style: solid;
-      }
-      .upload-icon { font-size: 3rem; margin-bottom: 1rem; color: #000; }
 
-      /* Sócios */
       .socio-item {
         display: flex;
         gap: 10px;
         margin-bottom: 15px;
-        align-items: stretch;
       }
-      .socio-nome { flex: 2; }
-      .socio-percentual { flex: 1; }
-
-      .total-percentual {
-        font-family: 'Space Mono', monospace;
-        font-weight: 700;
-        font-size: 1.2rem;
-        text-align: right;
-        margin-top: 20px;
-        padding: 10px;
-        background: #000;
-        color: #fff;
-        border: var(--border-width) solid var(--border-black);
-        box-shadow: 4px 4px 0 0 var(--color-success);
+      .socio-nome {
+        flex: 2;
+      }
+      .socio-percentual {
+        flex: 1;
       }
 
-      /* Resultados e Alertas */
       #preview {
         background-color: #000;
         color: #33ff00;
         padding: 20px;
-        border: var(--border-width) solid var(--border-black);
-        font-family: 'Courier New', Courier, monospace;
+        font-family: "Space Mono", monospace;
         white-space: pre-wrap;
-        max-height: 400px;
         overflow-y: auto;
-        margin-bottom: 20px;
-        font-size: 0.9rem;
-        box-shadow: inset 0 0 20px rgba(51, 255, 0, 0.2);
+        max-height: 400px;
       }
 
       .alert {
         padding: 15px;
         border: var(--border-width) solid var(--border-black);
-        margin-top: 15px;
-        margin-bottom: 15px;
         font-weight: 700;
-        display: flex;
-        align-items: center;
-        box-shadow: 4px 4px 0 0 black;
+        margin: 15px 0;
       }
-      .alert-warning { background-color: var(--color-accent); color: black; }
-      .alert-error { background-color: var(--color-danger); color: white; }
-      
-      .hidden { display: none !important; }
-
-      .actions { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px; }
+      .alert-error {
+        background: var(--color-danger);
+        color: white;
+      }
+      .hidden {
+        display: none !important;
+      }
 
       @media (max-width: 900px) {
-        body { flex-direction: column; overflow: auto; }
-        .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 3px solid black; flex-direction: row; align-items: center; overflow-x: auto; padding: 1rem; }
-        .socio-item { flex-direction: column; }
-        .neo-btn { width: 100%; }
+        body {
+          flex-direction: column;
+          overflow: auto;
+        }
+        .sidebar {
+          width: 100%;
+          flex-direction: row;
+        }
       }
     </style>
   </head>
   <body>
-
     <aside class="sidebar">
       <div class="logo">
-        <i class="fas fa-users"></i>
-        <span>Distr. Lucros</span>
+        <i class="fas fa-users"></i><span>Distr. Lucros</span>
       </div>
       <nav>
         <div class="nav-item active">
           <i class="fas fa-file-invoice-dollar"></i> Gerador
         </div>
-        <div class="nav-item">
-          <i class="fas fa-history"></i> Histórico
-        </div>
       </nav>
     </aside>
 
     <main class="main-content">
-      
       <div class="neo-header">
-        <div class="header-title">
-          <h1>Distribuição de Lucros 💸</h1>
-          <span>Gere o arquivo de importação contábil</span>
-        </div>
+        <h1>Distribuição de Lucros 💸</h1>
+        <p>Gere o arquivo de importação contábil</p>
       </div>
 
       <div class="neo-card">
         <div class="card-title">1. Arquivo e Configuração</div>
-        
-        <div class="upload-area" onclick="document.getElementById('excel-file').click()">
-            <div class="upload-icon"><i class="fas fa-file-excel"></i></div>
-            <div class="upload-text">CLIQUE PARA CARREGAR A PLANILHA</div>
-            <div class="upload-subtext">.xlsx ou .xls</div>
-            <input type="file" id="excel-file" accept=".xlsx, .xls" style="display: none" />
+        <div
+          class="upload-area"
+          onclick="document.getElementById('excel-file').click()"
+        >
+          <div class="upload-text">CLIQUE PARA CARREGAR A PLANILHA (.xlsx)</div>
+          <input
+            type="file"
+            id="excel-file"
+            accept=".xlsx, .xls"
+            style="display: none"
+          />
         </div>
-        <div id="file-alert" class="alert alert-warning hidden">
-          ⚠ Por favor, selecione um arquivo Excel válido.
-        </div>
-
-        <div class="form-group" style="margin-top: 20px;">
-            <label for="conta-debito">CONTA DÉBITO (CONTÁBIL)</label>
-            <input type="text" id="conta-debito" class="neo-input" placeholder="Ex: 961" value="961">
+        <div class="form-group" style="margin-top: 20px">
+          <label>CONTA DÉBITO (CONTÁBIL)</label>
+          <input type="text" id="conta-debito" class="neo-input" value="961" />
         </div>
       </div>
 
       <div class="neo-card">
         <div class="card-title">2. Sócios e Percentuais</div>
-        
         <div id="socios-container">
           <div class="socio-item">
-            <input type="text" placeholder="NOME DO SÓCIO" class="neo-input socio-nome" />
-            <input type="number" placeholder="%" min="0" max="100" step="0.01" class="neo-input socio-percentual" />
-            <button type="button" class="neo-btn btn-danger remover-socio"><i class="fas fa-times"></i></button>
+            <input
+              type="text"
+              placeholder="NOME DO SÓCIO"
+              class="neo-input socio-nome"
+            />
+            <input
+              type="number"
+              placeholder="%"
+              class="neo-input socio-percentual"
+            />
+            <button type="button" class="neo-btn btn-danger remover-socio">
+              <i class="fas fa-times"></i>
+            </button>
           </div>
         </div>
-
-        <div class="actions">
-          <button type="button" id="adicionar-socio" class="neo-btn btn-success">
-            <i class="fas fa-plus"></i> Adicionar Sócio
-          </button>
-        </div>
-
-        <div class="total-percentual">
-          TOTAL: <span id="total-percentual">0</span>%
-        </div>
-
+        <button type="button" id="adicionar-socio" class="neo-btn btn-success">
+          <i class="fas fa-plus"></i> Sócio
+        </button>
         <div id="percentual-alert" class="alert alert-error hidden">
-          ⚠ A SOMA DEVE SER EXATAMENTE 100%.
+          ⚠ A SOMA DEVE SER 100%.
         </div>
-
-        <div class="actions" style="margin-top: 30px;">
-          <button type="button" id="processar" class="neo-btn btn-primary" style="width: 100%;">
-            PROCESSAR DADOS ⚡
-          </button>
-        </div>
+        <button
+          type="button"
+          id="processar"
+          class="neo-btn btn-primary"
+          style="width: 100%; margin-top: 20px"
+        >
+          PROCESSAR ⚡
+        </button>
       </div>
 
       <div id="resultado-container" class="neo-card hidden">
-        <div class="card-title" style="color: var(--color-success);">3. Output Gerado</div>
+        <div class="card-title">3. Output Gerado</div>
         <div id="preview"></div>
-        <div class="actions">
-          <button type="button" id="download" class="neo-btn btn-warning" style="width: 100%;">
-            BAIXAR ARQUIVO .TXT 💾
-          </button>
-        </div>
+        <button
+          type="button"
+          id="download"
+          class="neo-btn btn-warning"
+          style="width: 100%; margin-top: 20px"
+        >
+          BAIXAR .TXT 💾
+        </button>
       </div>
-
     </main>
 
     <script>
@@ -396,252 +324,102 @@
       const downloadBtn = document.getElementById("download");
       const previewElement = document.getElementById("preview");
       const resultadoContainer = document.getElementById("resultado-container");
-      const totalPercentualSpan = document.getElementById("total-percentual");
       const percentualAlert = document.getElementById("percentual-alert");
-      const fileAlert = document.getElementById("file-alert");
 
       let dadosPlanilha = null;
 
-      document.addEventListener("click", function (e) {
-        if (e.target.closest(".remover-socio")) {
-          if (document.querySelectorAll(".socio-item").length > 1) {
-            e.target.closest(".socio-item").remove();
-            atualizarTotalPercentual();
-          } else {
-            alert("É necessário ter pelo menos um sócio.");
-          }
-        }
+      adicionarSocioBtn.addEventListener("click", () => {
+        const div = document.createElement("div");
+        div.className = "socio-item";
+        div.innerHTML = `<input type="text" placeholder="NOME DO SÓCIO" class="neo-input socio-nome"><input type="number" placeholder="%" class="neo-input socio-percentual"><button type="button" class="neo-btn btn-danger remover-socio"><i class="fas fa-times"></i></button>`;
+        sociosContainer.appendChild(div);
       });
 
-      document.addEventListener("input", function (e) {
-        if (e.target.classList.contains("socio-percentual")) {
-          atualizarTotalPercentual();
-        }
-      });
-
-      adicionarSocioBtn.addEventListener("click", function () {
-        const socioItem = document.createElement("div");
-        socioItem.className = "socio-item";
-        socioItem.innerHTML = `
-                <input type="text" placeholder="NOME DO SÓCIO" class="neo-input socio-nome">
-                <input
-                  type="number"
-                  placeholder="%"
-                  min="0"
-                  max="100"
-                  step="0.01"
-                  class="neo-input socio-percentual"
-                />
-                <button type="button" class="neo-btn btn-danger remover-socio"><i class="fas fa-times"></i></button>
-            `;
-        sociosContainer.appendChild(socioItem);
-        atualizarTotalPercentual();
-      });
-
-      function atualizarTotalPercentual() {
-        const percentuais = Array.from(
-          document.querySelectorAll(".socio-percentual")
-        ).map((input) => parseFloat(input.value) || 0);
-
-        const total = percentuais.reduce((sum, val) => sum + val, 0);
-        totalPercentualSpan.textContent = total.toFixed(2);
-
-        if (Math.abs(total - 100) > 0.01) {
-          percentualAlert.classList.remove("hidden");
-        } else {
-          percentualAlert.classList.add("hidden");
-        }
-      }
-
-      excelFileInput.addEventListener("change", function (e) {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          try {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: "array" });
-            const firstSheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[firstSheetName];
-            const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-
-            if (json.length < 2) {
-                 throw new Error("A planilha deve conter cabeçalho e dados.");
-            }
-
-            const headers = json[0];
-            const dataColIndex = headers.indexOf("Data");
-            const creditoColIndex = headers.indexOf("Cta. Crédito");
-            const valorColIndex = headers.indexOf("Valor");
-
-            if (dataColIndex === -1 || creditoColIndex === -1 || valorColIndex === -1) {
-                throw new Error("A planilha deve conter as colunas: Data, Cta. Crédito e Valor.");
-            }
-
-            dadosPlanilha = json.slice(1).map(row => {
-                return {
-                    Data: row[dataColIndex],
-                    "Cta. Crédito": row[creditoColIndex],
-                    Valor: row[valorColIndex]
-                };
-            });
-
-            fileAlert.classList.add("hidden");
-            // Feedback visual de sucesso no upload
-            document.querySelector('.upload-text').textContent = "ARQUIVO CARREGADO: " + file.name;
-            document.querySelector('.upload-area').style.background = "var(--color-success)";
-            
-          } catch (error) {
-            console.error("Erro ao processar o arquivo:", error);
-            fileAlert.textContent = `Erro: ${error.message}`;
-            fileAlert.classList.remove("hidden");
-            dadosPlanilha = null;
-          }
-        };
-        reader.readAsArrayBuffer(file);
-      });
-
-      processarBtn.addEventListener("click", function () {
-        if (!dadosPlanilha) {
-          fileAlert.textContent =
-            "Por favor, selecione um arquivo Excel válido.";
-          fileAlert.classList.remove("hidden");
-          return;
-        }
-
-        const contaDebito = contaDebitoInput.value.trim();
-        if (!contaDebito) {
-            alert("Por favor, informe a Conta Débito.");
-            contaDebitoInput.focus();
-            return;
-        }
-
-        atualizarTotalPercentual();
+      document.addEventListener("click", (e) => {
         if (
-          Math.abs(parseFloat(totalPercentualSpan.textContent) - 100) > 0.01
+          e.target.closest(".remover-socio") &&
+          document.querySelectorAll(".socio-item").length > 1
         ) {
+          e.target.closest(".socio-item").remove();
+        }
+      });
+
+      excelFileInput.addEventListener("change", (e) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const workbook = XLSX.read(new Uint8Array(ev.target.result), {
+            type: "array",
+          });
+          const sheet = workbook.Sheets[workbook.SheetNames[0]];
+          const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+          const headers = json[0];
+          dadosPlanilha = json.slice(1).map((row) => ({
+            Data: row[headers.indexOf("Data")],
+            Credito: row[headers.indexOf("Cta. Crédito")],
+            Valor: row[headers.indexOf("Valor")],
+          }));
+          document.querySelector(".upload-text").textContent =
+            "ARQUIVO CARREGADO!";
+        };
+        reader.readAsArrayBuffer(e.target.files[0]);
+      });
+
+      processarBtn.addEventListener("click", () => {
+        const socios = Array.from(document.querySelectorAll(".socio-item")).map(
+          (i) => ({
+            nome: i.querySelector(".socio-nome").value,
+            pct: parseFloat(i.querySelector(".socio-percentual").value) || 0,
+          })
+        );
+
+        const totalPct = socios.reduce((s, v) => s + v.pct, 0);
+        if (Math.abs(totalPct - 100) > 0.01) {
           percentualAlert.classList.remove("hidden");
           return;
         }
+        percentualAlert.classList.add("hidden");
 
-        const socios = Array.from(document.querySelectorAll(".socio-item")).map(
-          (item) => {
-            return {
-              nome: item.querySelector(".socio-nome").value.trim(),
-              percentual:
-                parseFloat(item.querySelector(".socio-percentual").value) || 0,
-            };
-          }
-        );
+        const linhas = [];
+        dadosPlanilha.forEach((d) => {
+          let dataFormatada = "";
 
-        const sociosInvalidos = socios.filter(
-          (socio) => !socio.nome || socio.percentual <= 0
-        );
-        if (sociosInvalidos.length > 0) {
-          alert("Todos os sócios devem ter nome e percentual maior que zero.");
-          return;
-        }
-
-        const linhasArquivo = [];
-
-        dadosPlanilha.forEach((linha) => {
-          const data = linha["Data"];
-          const contaCredito = linha["Cta. Crédito"];
-          const valorTotal = parseFloat(String(linha["Valor"]).replace(",", "."));
-
-          if (isNaN(valorTotal)) {
-               console.warn("Linha ignorada devido a valor inválido:", linha);
-               return;
+          // --- CORREÇÃO DA DATA (MÉTODO UTC) ---
+          if (typeof d.Data === "number") {
+            const dataUnix = Math.round((d.Data - 25569) * 86400 * 1000);
+            const dateObj = new Date(dataUnix);
+            const dia = String(dateObj.getUTCDate()).padStart(2, "0");
+            const mes = String(dateObj.getUTCMonth() + 1).padStart(2, "0");
+            const ano = dateObj.getUTCFullYear();
+            dataFormatada = `${dia}/${mes}/${ano}`;
+          } else {
+            dataFormatada = String(d.Data);
           }
 
-          let valoresSocios = socios.map((socio) => {
-            const valorCalculado = (valorTotal * socio.percentual) / 100;
-            return {
-              ...socio,
-              valorCalculado: parseFloat(valorCalculado.toFixed(2)),
-            };
-          });
+          const valorTotal = parseFloat(String(d.Valor).replace(",", "."));
 
-          const somaValoresArredondados = parseFloat(valoresSocios.reduce(
-            (sum, socio) => sum + socio.valorCalculado,
-            0
-          ).toFixed(2));
-
-          const diferenca = parseFloat((valorTotal - somaValoresArredondados).toFixed(2));
-
-          if (Math.abs(diferenca) > 0.01) {
-             let maiorValorSocioIndex = 0;
-             if (valoresSocios.length > 1) {
-                 maiorValorSocioIndex = valoresSocios.reduce((maxIndex, socio, index, arr) =>
-                     socio.valorCalculado > arr[maxIndex].valorCalculado ? index : maxIndex, 0);
-             }
-             valoresSocios[maiorValorSocioIndex].valorCalculado = parseFloat((valoresSocios[maiorValorSocioIndex].valorCalculado + diferenca).toFixed(2));
-          }
-
-          valoresSocios.forEach((socio) => {
-            const valorFormatado = socio.valorCalculado
+          socios.forEach((s) => {
+            const valorSocio = ((valorTotal * s.pct) / 100)
               .toFixed(2)
               .replace(".", ",");
-
-            let dataFormatada = data;
-            if (typeof data === "number") {
-              const dataExcel = new Date(
-                Math.round(((data > 25569 ? data : data - 1) - 25569) * 86400 * 1000)
-              );
-              const dia = String(dataExcel.getDate()).padStart(2, "0");
-              const mes = String(dataExcel.getMonth() + 1).padStart(2, "0");
-              const ano = dataExcel.getFullYear();
-              dataFormatada = `${dia}/${mes}/${ano}`;
-            } else if (typeof data === "string" && data.includes("-")) {
-              const partes = data.split("-");
-              if (partes.length === 3) {
-                dataFormatada = `${partes[2].padStart(2, "0")}/${partes[1].padStart(2, "0")}/${partes[0]}`;
-              }
-            } else if (typeof data === "string" && data.includes("/")) {
-               const partes = data.split("/");
-               if (partes.length === 3) {
-                   const [p1, p2, p3] = partes;
-                   if (p3.length === 4) {
-                        dataFormatada = `${p1.padStart(2,"0")}/${p2.padStart(2,"0")}/${p3}`;
-                   } else {
-                       dataFormatada = data;
-                   }
-               }
-            } else {
-                dataFormatada = String(data);
-            }
-
-            const linha = `${dataFormatada};${contaDebito};${contaCredito};${valorFormatado};;VALOR PAGO AO SOCIO ${socio.nome}, REF. LUCROS DISTRIBUIDOS;;;;`;
-            linhasArquivo.push(linha);
+            linhas.push(
+              `${dataFormatada};${contaDebitoInput.value};${d.Credito};${valorSocio};;VALOR PAGO AO SOCIO ${s.nome}, REF. LUCROS DISTRIBUIDOS;;;;`
+            );
           });
         });
 
-        previewElement.textContent = linhasArquivo.join("\n");
-        previewElement.style.display = "block";
+        previewElement.textContent = linhas.join("\n");
         resultadoContainer.classList.remove("hidden");
-        previewElement.dataset.content = linhasArquivo.join("\n");
-        
-        // Scroll para o resultado
-        resultadoContainer.scrollIntoView({ behavior: 'smooth' });
       });
 
-      downloadBtn.addEventListener("click", function () {
-        const conteudo = previewElement.dataset.content;
-        if (!conteudo) return;
-
-        const blob = new Blob([conteudo], { type: "text/plain;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
+      downloadBtn.addEventListener("click", () => {
+        const blob = new Blob([previewElement.textContent], {
+          type: "text/plain",
+        });
         const a = document.createElement("a");
-        a.href = url;
+        a.href = URL.createObjectURL(blob);
         a.download = "distribuicao_lucros.txt";
-        document.body.appendChild(a);
         a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
       });
-
-      atualizarTotalPercentual();
     </script>
   </body>
 </html>
