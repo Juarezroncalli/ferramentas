@@ -3,198 +3,389 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calculadora de Empréstimo</title>
+    <title>Loan Calc [BRUTALISM]</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
       :root {
-        --primary-color: #4f0072;
-        --accent-color: #fb0a5e;
-        --background-color: #ffffff;
-        --form-bg-color: #f9f9f9;
-        --text-color: #333333;
-        --border-color: #e0e0e0;
+        --bg-body: #06b6d4; /* Ciano */
+        --card-bg: #ffffff;
+        --border-black: #000000;
+
+        --color-primary: #8b5cf6; /* Roxo */
+        --color-secondary: #f472b6; /* Rosa */
+        --color-accent: #facc15; /* Amarelo */
+        --color-success: #22c55e; /* Verde */
+
+        --shadow-dist: 6px;
+        --border-width: 3px;
       }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
       body {
-        background: linear-gradient(
-          135deg,
-          var(--primary-color) 0%,
-          var(--accent-color) 100%
-        );
-        color: var(--text-color);
-        line-height: 1.6;
-        padding: 20px;
-        max-width: 1200px;
-        margin: 0 auto;
-        min-height: 100vh; /* <<--- ADICIONE ESTA LINHA */
-        background-repeat: no-repeat; /* <<--- Adicione esta também (opcional, mas recomendado) */
-        /* Garante que o corpo ocupe toda a altura da viewport */
-        /* e que o gradiente não tente repetir */
+        font-family: "Space Grotesk", sans-serif;
+        background-color: var(--bg-body);
+        background-image: linear-gradient(#fff 2px, transparent 2px),
+          linear-gradient(90deg, #fff 2px, transparent 2px);
+        background-size: 40px 40px;
+        color: var(--border-black);
+        min-height: 100vh;
+        display: flex;
+        overflow-x: hidden;
       }
-      .container {
-        background-color: var(--background-color);
-        border-radius: 12px;
-        padding: 25px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+
+      /* Sidebar */
+      .sidebar {
+        width: 280px;
+        background: var(--color-accent);
+        border-right: var(--border-width) solid var(--border-black);
+        display: flex;
+        flex-direction: column;
+        padding: 2rem 1.5rem;
+        flex-shrink: 0;
+        box-shadow: 4px 0 0 rgba(0, 0, 0, 0.1);
       }
-      h1 {
-        color: var(--primary-color);
-        text-align: center;
-        font-weight: 600;
-        margin-bottom: 25px;
-        font-size: 28px;
+
+      .logo {
+        font-weight: 900;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 3rem;
+        text-decoration: none;
+        color: var(--border-black);
+        text-transform: uppercase;
+      }
+
+      .logo i {
+        background: var(--color-secondary);
+        color: #000;
+        padding: 10px;
+        border: var(--border-width) solid var(--border-black);
+        box-shadow: 4px 4px 0 0 black;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 15px;
+        margin-bottom: 1rem;
+        font-weight: 800;
+        color: #000;
+        text-decoration: none;
+        border: var(--border-width) solid var(--border-black);
+        background: #fff;
+        box-shadow: 4px 4px 0 0 black;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+      }
+
+      .nav-item.active {
+        background-color: var(--color-primary);
+        color: #fff;
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 0 black;
+      }
+
+      .main-content {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+      }
+
+      /* Neo Header */
+      .neo-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2.5rem;
+        background: #fff;
+        border: var(--border-width) solid var(--border-black);
+        padding: 2rem;
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
+      }
+      .header-title h1 {
+        font-weight: 900;
+        font-size: 2.2rem;
+        text-transform: uppercase;
+      }
+      .header-title span {
+        font-family: "Space Mono", monospace;
+        background: var(--color-primary);
+        color: #fff;
+        padding: 5px 10px;
+        border: 2px solid #000;
+        font-weight: 700;
+      }
+
+      /* Cards */
+      .neo-card {
+        background: #fff;
+        border: var(--border-width) solid var(--border-black);
+        padding: 2rem;
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
+        margin-bottom: 2rem;
+      }
+      .card-title {
+        font-weight: 900;
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-transform: uppercase;
+        border-bottom: 3px solid #000;
+        padding-bottom: 10px;
+      }
+
+      .border-top-purple {
+        border-top: 8px solid var(--color-primary);
+      }
+      .border-top-pink {
+        border-top: 8px solid var(--color-secondary);
+      }
+
+      /* Formulários */
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
       }
       .form-group {
-        margin-bottom: 20px;
+        margin-bottom: 1rem;
       }
+
       label {
+        font-weight: 800;
         display: block;
-        font-weight: 500;
-        margin-bottom: 6px;
-        color: var(--text-color);
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        font-family: "Space Mono", monospace;
       }
-      input[type="text"],
-      input[type="number"],
-      input[type="date"] {
+
+      .neo-input {
         width: 100%;
-        padding: 10px 12px;
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-        box-sizing: border-box;
-        font-size: 16px;
-        transition: border-color 0.3s;
-        font-family: "Segoe UI", Arial, sans-serif;
-      }
-      input:focus {
+        padding: 12px;
+        font-size: 1rem;
+        font-family: "Space Mono", monospace;
+        font-weight: bold;
+        border: var(--border-width) solid var(--border-black);
+        background: #f3f4f6;
         outline: none;
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 2px rgba(79, 0, 114, 0.1);
       }
-      button {
-        background-color: var(--accent-color);
-        color: white;
-        padding: 12px 20px;
-        border: none;
-        border-radius: 6px;
+      .neo-input:focus {
+        background: #fff;
+        transform: translate(-2px, -2px);
+        box-shadow: 5px 5px 0 0 var(--color-primary);
+      }
+
+      /* Botões */
+      .neo-btn {
+        padding: 1rem 2rem;
+        font-weight: 900;
+        border: var(--border-width) solid var(--border-black);
         cursor: pointer;
-        font-size: 16px;
-        font-weight: 500;
-        display: block;
-        margin: 25px auto;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 5px rgba(251, 10, 94, 0.3);
+        box-shadow: 5px 5px 0 0 black;
+        text-transform: uppercase;
+        background: var(--color-success);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        font-size: 1.1rem;
       }
-      button:hover {
-        background-color: #e00050;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(251, 10, 94, 0.4);
+      .neo-btn:active {
+        transform: translate(4px, 4px);
+        box-shadow: 0 0 0 0 black;
       }
+
+      /* Results */
       .results {
-        margin-top: 25px;
-        padding: 20px;
-        background-color: #f9f3ff;
-        border-radius: 8px;
-        border-left: 3px solid var(--primary-color);
+        display: none;
+        margin-top: 2rem;
       }
-      .results p {
-        margin-bottom: 12px;
-        font-size: 16px;
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
       }
-      h2 {
-        color: var(--primary-color);
-        margin-top: 20px;
-        font-size: 20px;
-        border-bottom: 1px solid var(--border-color);
-        padding-bottom: 5px;
+      .summary-item {
+        background: #f9f9f9;
+        border: 2px solid #000;
+        padding: 1rem;
+      }
+      .summary-item strong {
+        display: block;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        color: #666;
+      }
+      .summary-item span {
+        font-size: 1.4rem;
+        font-weight: 900;
+        font-family: "Space Mono", monospace;
+      }
+
+      /* Tabela */
+      .table-wrapper {
+        border: var(--border-width) solid black;
+        overflow-x: auto;
+        box-shadow: 6px 6px 0 0 black;
       }
       table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 20px;
-      }
-      th,
-      td {
-        padding: 8px 10px;
-        border: 1px solid var(--border-color);
-        text-align: center;
+        background: #fff;
       }
       th {
-        background-color: var(--form-bg-color);
-        color: var(--primary-color);
-      }
-      .voltar-inicio {
+        background: var(--color-accent);
+        border: 1px solid #000;
+        padding: 12px;
+        font-weight: 900;
         text-align: center;
-        margin: 40px 0 20px;
-        padding: 20px 0;
+        text-transform: uppercase;
       }
-
-      .botao-inicio {
-        display: inline-block;
-        padding: 12px 24px;
-        background-color: var(--primary-color);
-        color: white;
-        text-decoration: none;
-        border-radius: 30px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        border: 2px solid var(--primary-color);
-      }
-
-      .botao-inicio:hover {
-        background-color: var(--accent-color);
-        border-color: var(--accent-color);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
-      .voltar-inicio {
+      td {
+        border: 1px solid #000;
+        padding: 10px;
         text-align: center;
-        margin: 40px 0 20px;
-        padding: 20px 0;
+        font-family: "Space Mono", monospace;
+        font-weight: 700;
       }
 
-      .botao-inicio {
-        display: inline-block;
-        padding: 12px 24px;
-        background-color: var(--primary-color);
-        color: white;
-        text-decoration: none;
-        border-radius: 30px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        border: 2px solid var(--primary-color);
-      }
-
-      .botao-inicio:hover {
-        background-color: var(--accent-color);
-        border-color: var(--accent-color);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      @media (max-width: 768px) {
+        body {
+          flex-direction: column;
+        }
+        .sidebar {
+          width: 100%;
+          flex-direction: row;
+          border-right: none;
+          border-bottom: 3px solid #000;
+        }
+        .main-content {
+          padding: 1rem;
+        }
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <h1>Calculadora de Empréstimo</h1>
-      <form id="loanForm">
-        <div class="form-group">
-          <label>Valor do Empréstimo (Liberado + IOF + Taxas):</label>
-          <input type="text" id="loanAmount" required />
+    <aside class="sidebar">
+      <a href="index.html" class="logo">
+        <i class="fas fa-hand-holding-usd"></i>
+        <span>Loan Calc</span>
+      </a>
+      <nav>
+        <a href="index.html" class="nav-item">
+          <i class="fas fa-home"></i> Início
+        </a>
+        <div class="nav-item active">
+          <i class="fas fa-calculator"></i> Empréstimos
         </div>
-        <div class="form-group">
-          <label>Quantidade de Parcelas:</label>
-          <input type="number" id="numInstallments" required />
-        </div>
-        <div class="form-group">
-          <label>Valor de Cada Parcela:</label>
-          <input type="text" id="installmentValue" required />
-        </div>
-        <div class="form-group">
-          <label>Vencimento da Primeira Parcela:</label>
-          <input type="date" id="firstDueDate" required />
-        </div>
-        <button type="submit">Calcular</button>
-      </form>
+      </nav>
+    </aside>
 
-      <div id="results" class="results" style="display: none"></div>
-    </div>
+    <main class="main-content">
+      <div class="neo-header">
+        <div class="header-title">
+          <h1>Calculadora de Empréstimo 🏦</h1>
+          <span>Detalhamento de Juros e Parcelas</span>
+        </div>
+      </div>
+
+      <div class="neo-card border-top-purple">
+        <div class="card-title">
+          <i class="fas fa-edit"></i> Dados do Contrato
+        </div>
+        <form id="loanForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Valor Total (Liberado + IOF):</label>
+              <input
+                type="text"
+                id="loanAmount"
+                class="neo-input"
+                required
+                placeholder="R$ 0,00"
+              />
+            </div>
+            <div class="form-group">
+              <label>Nº de Parcelas:</label>
+              <input
+                type="number"
+                id="numInstallments"
+                class="neo-input"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label>Valor da Parcela:</label>
+              <input
+                type="text"
+                id="installmentValue"
+                class="neo-input"
+                required
+                placeholder="R$ 0,00"
+              />
+            </div>
+            <div class="form-group">
+              <label>1º Vencimento:</label>
+              <input type="date" id="firstDueDate" class="neo-input" required />
+            </div>
+          </div>
+          <button type="submit" class="neo-btn" style="margin-top: 2rem">
+            <i class="fas fa-calculator"></i> CALCULAR PROJEÇÃO
+          </button>
+        </form>
+      </div>
+
+      <div id="results" class="results">
+        <div class="neo-card border-top-pink">
+          <div class="card-title">
+            <i class="fas fa-chart-pie"></i> Resumo da Análise
+          </div>
+          <div id="summaryContent"></div>
+        </div>
+
+        <div class="neo-card">
+          <div class="card-title">
+            <i class="fas fa-list-ol"></i> Cronograma Parcela a Parcela
+          </div>
+          <div class="table-wrapper">
+            <table id="installmentsTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Vencimento</th>
+                  <th>Valor</th>
+                  <th>Juros</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
 
     <script>
       const formatter = new Intl.NumberFormat("pt-BR", {
@@ -206,7 +397,7 @@
       function formatInputCurrency(input) {
         let value = input.value.replace(/\D/g, "");
         value = (parseFloat(value) / 100).toFixed(2);
-        input.value = formatter.format(value);
+        input.value = isNaN(value) ? "" : formatter.format(value);
       }
 
       document
@@ -258,11 +449,9 @@
           let totalAfterLimit = 0;
 
           installments.forEach((inst) => {
-            if (inst.dueDate.getFullYear() <= yearLimit) {
+            if (inst.dueDate.getFullYear() <= yearLimit)
               totalBeforeLimit += inst.value;
-            } else {
-              totalAfterLimit += inst.value;
-            }
+            else totalAfterLimit += inst.value;
           });
 
           const totalInstallments = installmentValueRaw * numInstallments;
@@ -272,64 +461,46 @@
           const interestAfterLimit = totalInterest - interestBeforeLimit;
           const interestPerInstallment = totalInterest / numInstallments;
 
-          // Monta resultado
-          let html = `
-        <h2>Totais Gerais</h2>
-        <p><strong>Valor total a pagar:</strong> ${formatter.format(
-          totalInstallments
-        )}</p>
-        <p><strong>Total de juros:</strong> ${formatter.format(
-          totalInterest
-        )}</p>
-        
-        <h2>Parcelas e Juros de Curto Prazo</h2>
-        <p><strong>Valor total das parcelas até ${yearLimit}:</strong> ${formatter.format(
+          // Render Resumo
+          document.getElementById("summaryContent").innerHTML = `
+          <div class="summary-grid">
+            <div class="summary-item"><strong>Total a Pagar</strong><span>${formatter.format(
+              totalInstallments
+            )}</span></div>
+            <div class="summary-item"><strong>Total de Juros</strong><span>${formatter.format(
+              totalInterest
+            )}</span></div>
+            <div class="summary-item"><strong>Curto Prazo (até ${yearLimit})</strong><span>${formatter.format(
             totalBeforeLimit
-          )}</p>
-        <p><strong>Juros pagos até ${yearLimit}:</strong> ${formatter.format(
-            interestBeforeLimit
-          )}</p>
-
-        <h2>Parcelas e Juros de Longo Prazo</h2>
-        <p><strong>Valor total das parcelas após ${yearLimit}:</strong> ${formatter.format(
+          )}</span></div>
+            <div class="summary-item"><strong>Juros Curto Prazo</strong><span>${formatter.format(
+              interestBeforeLimit
+            )}</span></div>
+            <div class="summary-item"><strong>Longo Prazo (pós ${yearLimit})</strong><span>${formatter.format(
             totalAfterLimit
-          )}</p>
-        <p><strong>Juros pagos após ${yearLimit}:</strong> ${formatter.format(
-            interestAfterLimit
-          )}</p>
+          )}</span></div>
+            <div class="summary-item"><strong>Juros Longo Prazo</strong><span>${formatter.format(
+              interestAfterLimit
+            )}</span></div>
+          </div>
+        `;
 
-        <h2>Detalhamento Parcela a Parcela</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Parcela</th>
-              <th>Vencimento</th>
-              <th>Valor</th>
-              <th>Juros</th>
-            </tr>
-          </thead>
-          <tbody>
-      `;
-
+          // Render Tabela
+          const tbody = document.querySelector("#installmentsTable tbody");
+          tbody.innerHTML = "";
           installments.forEach((inst, index) => {
-            const dateStr = inst.dueDate.toLocaleDateString("pt-BR");
-            html += `
-          <tr>
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
             <td>${index + 1}</td>
-            <td>${dateStr}</td>
+            <td>${inst.dueDate.toLocaleDateString("pt-BR")}</td>
             <td>${formatter.format(inst.value)}</td>
             <td>${formatter.format(interestPerInstallment)}</td>
-          </tr>
-        `;
+          `;
+            tbody.appendChild(tr);
           });
 
-          html += `</tbody></table>`;
           document.getElementById("results").style.display = "block";
-          document.getElementById("results").innerHTML = html;
         });
     </script>
-    <div class="voltar-inicio">
-      <a href="index.html" class="botao-inicio">← Voltar à Página Inicial</a>
-    </div>
   </body>
 </html>
