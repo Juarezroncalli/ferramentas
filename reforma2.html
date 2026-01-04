@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Auditor Reforma Tributária [V 7.3 TURBO + TAGS]</title>
+    <title>Auditor Reforma Tributária [V 7.4 FIXED]</title>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
@@ -566,7 +566,7 @@
     <aside class="sidebar">
       <div class="logo">
         <i class="fas fa-search-dollar"></i>
-        <span>Auditor 7.3</span>
+        <span>Auditor 7.4</span>
       </div>
       <nav>
         <div class="nav-item active">
@@ -587,7 +587,7 @@
           font-family: 'Space Mono';
         "
       >
-        V 7.3 - Tags Filter
+        V 7.4 - Base Fix
       </div>
     </aside>
 
@@ -738,7 +738,7 @@
                 <th>Produto</th>
                 <th>NCM/CFOP</th>
                 <th>Class/CST</th>
-                <th>V.Prod</th>
+                <th>V.BC (IBS/CBS)</th>
                 <th class="money">% CBS</th>
                 <th class="center">Red%</th>
                 <th class="money">R$ CBS</th>
@@ -777,7 +777,7 @@
 
       // Estado dos filtros
       let filterRegime = "all";
-      let filterTags = "all"; // NOVO
+      let filterTags = "all";
 
       // --- TOOLTIP LOGIC ---
       const tooltip = document.getElementById("floatingTooltip");
@@ -887,7 +887,6 @@
         aplicarFiltros();
       }
 
-      // NOVO: Função para o filtro de Tags
       function setTagsFilter(type) {
         filterTags = type;
         document.getElementById("btnTagsAll").classList.remove("active");
@@ -904,7 +903,6 @@
         aplicarFiltros();
       }
 
-      // --- OTIMIZAÇÃO: HELPERS DOM ---
       function getTagValue(parent, tagName) {
         const els = parent.getElementsByTagName(tagName);
         return els.length > 0 ? els[0].textContent : "";
@@ -914,29 +912,23 @@
         return val ? parseFloat(val) : 0;
       }
 
-      // --- OTIMIZAÇÃO: PROCESSAMENTO EM BATCH (LOTES) ---
       async function handleFiles(files) {
         const status = document.getElementById("statusMsg");
         status.innerText = `Iniciando leitura de ${files.length} arquivos...`;
 
-        // Pequeno delay para a UI atualizar
         await new Promise((r) => setTimeout(r, 50));
 
         const parser = new DOMParser();
-        const BATCH_SIZE = 100; // Processa 100 arquivos por vez em paralelo
+        const BATCH_SIZE = 100;
 
         const fileList = Array.from(files);
         let processedCount = 0;
 
-        // Loop em blocos para não travar a UI e acelerar I/O
         for (let i = 0; i < fileList.length; i += BATCH_SIZE) {
           const batch = fileList.slice(i, i + BATCH_SIZE);
-
-          // Lê o texto de todo o lote em paralelo
           const textPromises = batch.map((f) => f.text());
           const texts = await Promise.all(textPromises);
 
-          // Processa o lote
           texts.forEach((xmlText) => {
             try {
               const xmlDoc = parser.parseFromString(xmlText, "text/xml");
@@ -986,7 +978,9 @@
                 const ncm = getTagValue(prod, "NCM");
                 const cfop = getTagValue(prod, "CFOP");
                 const xProd = getTagValue(prod, "xProd");
-                const vProd = getTagValueFloat(prod, "vProd");
+
+                // Variável vProd inicial
+                let vProd = getTagValueFloat(prod, "vProd");
 
                 let vCBS = 0,
                   pCBS = 0,
@@ -1005,6 +999,17 @@
                   cst = getTagValue(nodeIbsCbs, "CST");
                   cClassTrib = getTagValue(nodeIbsCbs, "cClassTrib");
 
+                  // CORREÇÃO: "Força Bruta" para achar vBC dentro do grupo IBSCBS
+                  // Procura por QUALQUER tag <vBC> descendente do nó <IBSCBS>
+                  const vBcTags = nodeIbsCbs.getElementsByTagName("vBC");
+                  if (vBcTags.length > 0) {
+                    const foundVal = parseFloat(vBcTags[0].textContent);
+                    if (!isNaN(foundVal) && foundVal > 0) {
+                      vProd = foundVal; // Atualiza com a base de cálculo encontrada
+                    }
+                  }
+
+                  // Processamento da CBS (para pegar valores de imposto)
                   const gCBSList = nodeIbsCbs.getElementsByTagName("gCBS");
                   if (gCBSList.length > 0) {
                     const gCBS = gCBSList[0];
@@ -1016,6 +1021,7 @@
                     }
                   }
 
+                  // Processamento do IBS
                   const gIBSUFList = nodeIbsCbs.getElementsByTagName("gIBSUF");
                   if (gIBSUFList.length > 0) {
                     const gIBSUF = gIBSUFList[0];
@@ -1046,7 +1052,7 @@
                   ncm,
                   cfop,
                   xProd,
-                  vProd,
+                  vProd, // Agora reflete a Base de Cálculo (vBC) encontrada
                   cst,
                   cClassTrib,
                   vCBS,
@@ -1086,13 +1092,11 @@
             item.cfop.toLowerCase().includes(fCfop) &&
             item.xProd.toLowerCase().includes(fProd);
 
-          // 1. Filtro Regime
           let matchRegime = true;
           if (filterRegime !== "all") {
             matchRegime = item.regimeDesc === filterRegime;
           }
 
-          // 2. Filtro Tags (Novo)
           let matchTags = true;
           if (filterTags === "yes") matchTags = item.hasTags === true;
           if (filterTags === "no") matchTags = item.hasTags === false;
@@ -1229,7 +1233,7 @@
         document.getElementById("filtroCfop").value = "";
         document.getElementById("filtroProd").value = "";
         setRegimeFilter("all");
-        setTagsFilter("all"); // Reseta filtro de tags
+        setTagsFilter("all");
         aplicarFiltros();
         document.getElementById("statusMsg").innerText = "Limpo.";
       }
