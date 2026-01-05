@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-6XKND47T4H"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-6XKND47T4H");
+    </script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auditor Reforma Tributária [V 4.0 FIXED]</title>
+    <link rel="icon" href="icone.ico" type="image/x-icon" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        /* Paleta Neo Brutalism */
+        --bg-body: #ffde00;
+        --card-bg: #ffffff;
+        --border-black: #000000;
+
+        --c-purple: #8b5cf6;
+        --c-pink: #ff90e8;
+        --c-blue: #06b6d4;
+        --c-green: #22c55e;
+        --c-red: #ff4d4d;
+        --c-orange: #f97316;
+        --c-gray: #9ca3af;
+
+        --border-width: 3px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Space Grotesk", sans-serif;
+        background-color: var(--bg-body);
+        background-image: radial-gradient(#000 1px, transparent 1px);
+        background-size: 20px 20px;
+        color: var(--border-black);
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+      }
+
+      /* --- SIDEBAR --- */
+      .sidebar {
+        width: 240px;
+        background: var(--c-purple);
+        border-right: var(--border-width) solid var(--border-black);
+        padding: 1.5rem 1rem;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        color: #fff;
+        overflow-y: auto;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        margin-bottom: 2rem;
+        text-shadow: 3px 3px 0 #000;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .nav-item {
+        background: #fff;
+        color: #000;
+        padding: 0.8rem;
+        margin-bottom: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        border: var(--border-width) solid #000;
+        box-shadow: 3px 3px 0 0 #000;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: 0.2s;
+        font-size: 0.9rem;
+      }
+
+      .nav-item:hover,
+      .nav-item.active {
+        transform: translate(-2px, -2px);
+        box-shadow: 5px 5px 0 0 #000;
+        background: var(--c-blue);
+      }
+
+      /* --- MAIN CONTENT --- */
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .scroll-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem;
+        padding-bottom: 80px;
+      }
+
+      /* Header */
+      .neo-header {
+        background: #fff;
+        border: var(--border-width) solid #000;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 5px 5px 0 0 #000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .neo-header h1 {
+        font-weight: 900;
+        font-size: 1.8rem;
+        text-transform: uppercase;
+      }
+      .badge {
+        background: var(--c-pink);
+        font-family: "Space Mono", monospace;
+        padding: 3px 8px;
+        border: 2px solid #000;
+        font-size: 0.8rem;
+        font-weight: bold;
+      }
+
+      /* Cards */
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .metric-card {
+        background: #fff;
+        border: var(--border-width) solid #000;
+        padding: 1rem;
+        box-shadow: 4px 4px 0 0 #000;
+        position: relative;
+      }
+      .metric-card.purple {
+        border-top: 6px solid var(--c-purple);
+      }
+      .metric-card.green {
+        border-top: 6px solid var(--c-green);
+      }
+      .metric-card.blue {
+        border-top: 6px solid var(--c-blue);
+      }
+      .metric-card.orange {
+        border-top: 6px solid var(--c-orange);
+      }
+
+      .metric-title {
+        font-weight: 900;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        margin-bottom: 0.3rem;
+        color: #555;
+      }
+      .metric-value {
+        font-family: "Space Mono", monospace;
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+
+      /* Upload */
+      .upload-area {
+        background: var(--c-pink);
+        border: 3px dashed #000;
+        padding: 1.5rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        cursor: pointer;
+        transition: 0.2s;
+        position: relative;
+      }
+      .upload-area:hover {
+        background: #ffbdf2;
+        transform: scale(1.005);
+      }
+      .upload-label {
+        font-weight: 800;
+        font-size: 1rem;
+        text-transform: uppercase;
+        pointer-events: none;
+      }
+      #xmlInput {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      /* Filtros */
+      .filters-container {
+        background: #fff;
+        border: var(--border-width) solid #000;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 4px 4px 0 0 #000;
+      }
+      .filters-grid {
+        display: grid;
+        /* Grid reajustado para caber o novo filtro */
+        grid-template-columns: 1.5fr 0.8fr 0.8fr 1.1fr 1.1fr auto;
+        gap: 1rem;
+        align-items: end;
+      }
+
+      .form-group label {
+        display: block;
+        font-weight: 800;
+        margin-bottom: 0.3rem;
+        font-family: "Space Mono";
+        text-transform: uppercase;
+        font-size: 0.75rem;
+      }
+      .neo-input {
+        width: 100%;
+        padding: 8px;
+        border: 2px solid #000;
+        background: #f0f0f0;
+        font-family: "Space Mono";
+        font-size: 0.9rem;
+        font-weight: bold;
+        outline: none;
+      }
+      .neo-input:focus {
+        background: #fff;
+        box-shadow: 3px 3px 0 0 var(--c-purple);
+      }
+
+      /* ESTILOS PARA OS BOTÕES TOGGLE */
+      .crt-toggles {
+        display: flex;
+        gap: 5px;
+      }
+      .btn-toggle {
+        flex: 1;
+        background: #fff;
+        border: 2px solid #000;
+        padding: 8px 4px; /* Padding reduzido para caber */
+        font-family: "Space Mono";
+        font-size: 0.7rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        cursor: pointer;
+        text-align: center;
+        white-space: nowrap;
+      }
+      .btn-toggle:hover {
+        background: #eee;
+      }
+      .btn-toggle.active {
+        background: #000;
+        color: #fff;
+        box-shadow: 2px 2px 0 0 var(--c-blue);
+      }
+
+      .btn-filter {
+        background: #000;
+        color: #fff;
+        border: none;
+        padding: 10px 18px;
+        font-family: "Space Grotesk";
+        font-weight: 800;
+        text-transform: uppercase;
+        cursor: pointer;
+        border: 2px solid #000;
+        font-size: 0.9rem;
+      }
+      .btn-filter:hover {
+        background: var(--c-green);
+        color: #000;
+        box-shadow: 3px 3px 0 0 #000;
+      }
+
+      /* Tabela */
+      .table-container {
+        overflow-x: auto;
+        border: var(--border-width) solid #000;
+        box-shadow: 4px 4px 0 0 #000;
+        background: #fff;
+        margin-bottom: 1rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: "Space Mono";
+        font-size: 0.7rem;
+        white-space: nowrap;
+      }
+      th {
+        background: #000;
+        color: #fff;
+        padding: 8px 6px;
+        text-align: left;
+        text-transform: uppercase;
+        font-weight: bold;
+        border-right: 1px solid #333;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        font-size: 0.75rem;
+      }
+      td {
+        padding: 6px 6px;
+        border-bottom: 1px solid #000;
+        border-right: 1px solid #000;
+        vertical-align: middle;
+      }
+      tr:hover {
+        background: #fdfce5;
+      }
+
+      /* Coluna Produto - Tooltip Trigger */
+      .col-prod {
+        max-width: 130px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block;
+        cursor: pointer;
+        border-bottom: 2px dotted var(--c-purple);
+      }
+      .col-prod:hover {
+        color: var(--c-purple);
+      }
+
+      /* TOOLTIP / BALÃO INTERATIVO */
+      #floatingTooltip {
+        position: fixed;
+        display: none;
+        background: #fff;
+        border: 3px solid #000;
+        box-shadow: 8px 8px 0 0 rgba(0, 0, 0, 1);
+        padding: 12px;
+        z-index: 9999;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 0.8rem;
+        max-width: 320px;
+        pointer-events: auto;
+        cursor: pointer;
+      }
+      #floatingTooltip:active {
+        transform: translate(2px, 2px);
+        box-shadow: 4px 4px 0 0 #000;
+      }
+
+      /* Quebra de linha para chave */
+      #floatingTooltip .break-text {
+        word-break: break-all;
+        font-family: "Space Mono", monospace;
+        background: #eee;
+        padding: 3px;
+        border: 1px solid #000;
+        display: block;
+        margin-top: 3px;
+        font-size: 0.7rem;
+        line-height: 1.2;
+      }
+
+      .tooltip-header {
+        font-weight: 900;
+        text-transform: uppercase;
+        border-bottom: 2px solid #eee;
+        margin-bottom: 5px;
+        padding-bottom: 2px;
+      }
+      .tooltip-row {
+        margin-bottom: 4px;
+        line-height: 1.2;
+      }
+      .tooltip-hint {
+        font-size: 0.65rem;
+        color: var(--c-purple);
+        font-weight: bold;
+        margin-top: 5px;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      /* Status Styles e CRT Styles */
+      .status-badge {
+        display: inline-block;
+        padding: 2px 5px;
+        border: 1px solid #000;
+        font-weight: bold;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+      }
+      .st-ok {
+        background: var(--c-green);
+        color: #000;
+      }
+      .st-red {
+        background: var(--c-orange);
+        color: #000;
+      }
+      .st-zero {
+        background: #fef08a;
+        color: #000;
+      }
+      .st-none {
+        background: #e5e7eb;
+        color: #666;
+      }
+
+      .badge-crt {
+        display: inline-block;
+        padding: 2px 6px;
+        border: 1px solid #000;
+        font-weight: bold;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 0.1);
+      }
+      .crt-simples {
+        background: var(--c-green);
+        color: #000;
+      }
+      .crt-normal {
+        background: var(--c-pink);
+        color: #000;
+      }
+      .crt-outros {
+        background: #ccc;
+        color: #000;
+      }
+
+      .tag-cst {
+        background: var(--c-blue);
+        color: #000;
+        padding: 2px 4px;
+        border: 1px solid #000;
+        font-weight: bold;
+      }
+      .tag-class {
+        background: #fef08a;
+        color: #000;
+        padding: 2px 4px;
+        border: 1px solid #000;
+        font-weight: bold;
+      }
+
+      .money {
+        text-align: right;
+      }
+      .center {
+        text-align: center;
+      }
+      .filled-val {
+        color: var(--c-green);
+        font-weight: bold;
+      }
+
+      /* Footer Fixo */
+      .footer-controls {
+        background: #fff;
+        border-top: var(--border-width) solid #000;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        bottom: 0;
+        z-index: 100;
+        box-shadow: 0px -4px 0px 0px rgba(0, 0, 0, 0.1);
+      }
+      .status-bar {
+        font-weight: 700;
+        font-size: 0.8rem;
+        font-family: "Space Mono";
+      }
+      .pagination {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .btn-page {
+        background: var(--c-purple);
+        border: 2px solid #000;
+        color: #fff;
+        padding: 5px 15px;
+        cursor: pointer;
+        font-family: "Space Grotesk";
+        font-weight: 800;
+        text-transform: uppercase;
+        box-shadow: 2px 2px 0 0 #000;
+      }
+      .btn-page:active {
+        transform: translate(2px, 2px);
+        box-shadow: none;
+      }
+      .btn-page:disabled {
+        background: #555;
+        cursor: not-allowed;
+        opacity: 0.7;
+        box-shadow: none;
+      }
+      .page-info {
+        font-family: "Space Mono";
+        font-weight: bold;
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 768px) {
+        body {
+          flex-direction: column;
+          overflow: auto;
+        }
+        .sidebar {
+          width: 100%;
+          flex-direction: row;
+          border-right: none;
+          border-bottom: 3px solid #000;
+          padding: 1rem;
+          overflow-x: auto;
+          height: auto;
+        }
+        .main-content {
+          height: auto;
+          overflow: visible;
+        }
+        .scroll-content {
+          padding-bottom: 0;
+        }
+        .footer-controls {
+          position: fixed;
+          bottom: 0;
+          width: 100%;
+          flex-direction: column;
+          gap: 10px;
+          text-align: center;
+        }
+        .filters-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="floatingTooltip" onclick="copiarChaveAtual()"></div>
+
+    <aside class="sidebar">
+      <div class="logo">
+        <i class="fas fa-search-dollar"></i>
+        <span>Auditor 4.0</span>
+      </div>
+      <nav>
+        <div class="nav-item active">
+          <i class="fas fa-bolt"></i> Analisar (Turbo)
+        </div>
+        <div class="nav-item" onclick="exportToCSV()">
+          <i class="fas fa-file-excel"></i> Exportar CSV
+        </div>
+        <div class="nav-item" onclick="limparTudo()">
+          <i class="fas fa-trash"></i> Limpar
+        </div>
+      </nav>
+      <div
+        style="
+          margin-top: auto;
+          font-size: 0.6rem;
+          opacity: 0.8;
+          font-family: 'Space Mono';
+        "
+      >
+        V 4.0 - By J.Roncalli
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="scroll-content">
+        <header class="neo-header">
+          <div>
+            <h1>Validador Fiscal</h1>
+            <span class="badge">Alta Performance</span>
+          </div>
+          <div style="text-align: right">
+            <i class="fas fa-tachometer-alt fa-2x"></i>
+          </div>
+        </header>
+
+        <div class="dashboard-grid">
+          <div class="metric-card purple">
+            <div class="metric-title">Itens Totais</div>
+            <div class="metric-value" id="totalItens">0</div>
+          </div>
+          <div class="metric-card orange">
+            <div class="metric-title">Com Redução</div>
+            <div class="metric-value" id="totalReducao">0</div>
+          </div>
+          <div class="metric-card blue">
+            <div class="metric-title">Tot. CBS (R$)</div>
+            <div class="metric-value" id="totalCbs">0,00</div>
+          </div>
+          <div class="metric-card green">
+            <div class="metric-title">Tot. IBS (R$)</div>
+            <div class="metric-value" id="totalIbs">0,00</div>
+          </div>
+        </div>
+
+        <div class="upload-area">
+          <input
+            type="file"
+            id="xmlInput"
+            multiple
+            accept=".xml"
+            onchange="handleFiles(this.files)"
+          />
+          <div class="upload-label">
+            <i class="fas fa-cloud-upload-alt fa-2x"></i><br />
+            Arraste XMLs (Lotes Grandes)
+          </div>
+        </div>
+
+        <div class="filters-container">
+          <div class="filters-grid">
+            <div class="form-group">
+              <label>Filtrar Produto</label>
+              <input
+                type="text"
+                id="filtroProd"
+                class="neo-input"
+                placeholder="Ex: Cimento..."
+                onkeyup="debounceFiltro()"
+              />
+            </div>
+            <div class="form-group">
+              <label>NCM</label>
+              <input
+                type="text"
+                id="filtroNcm"
+                class="neo-input"
+                placeholder="Ex: 2106"
+                onkeyup="debounceFiltro()"
+              />
+            </div>
+            <div class="form-group">
+              <label>CFOP</label>
+              <input
+                type="text"
+                id="filtroCfop"
+                class="neo-input"
+                placeholder="Ex: 5102"
+                onkeyup="debounceFiltro()"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>REGIME (CRT)</label>
+              <div class="crt-toggles">
+                <button
+                  class="btn-toggle active"
+                  id="btnCrtAll"
+                  onclick="setRegimeFilter('all')"
+                >
+                  Todos
+                </button>
+                <button
+                  class="btn-toggle"
+                  id="btnCrtSimples"
+                  onclick="setRegimeFilter('SIMPLES')"
+                >
+                  Simples
+                </button>
+                <button
+                  class="btn-toggle"
+                  id="btnCrtNormal"
+                  onclick="setRegimeFilter('NORMAL')"
+                >
+                  Normal
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>STATUS TRIBUTÁRIO</label>
+              <div class="crt-toggles">
+                <button
+                  class="btn-toggle active"
+                  id="btnTagsAll"
+                  onclick="setTagsFilter('all')"
+                >
+                  Todos
+                </button>
+                <button
+                  class="btn-toggle"
+                  id="btnTagsYes"
+                  onclick="setTagsFilter('yes')"
+                >
+                  Com Tags
+                </button>
+                <button
+                  class="btn-toggle"
+                  id="btnTagsNo"
+                  onclick="setTagsFilter('no')"
+                >
+                  Sem Tags
+                </button>
+              </div>
+            </div>
+
+            <button class="btn-filter" onclick="aplicarFiltros()">
+              BUSCAR
+            </button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table id="tabelaDados">
+            <thead>
+              <tr>
+                <th>Nota</th>
+                <th>Regime</th>
+                <th>Produto</th>
+                <th>NCM/CFOP</th>
+                <th>Class/CST</th>
+                <th>V.BC (IBS/CBS)</th>
+                <th class="money">% CBS</th>
+                <th class="center">Red%</th>
+                <th class="money">R$ CBS</th>
+                <th class="money">% IBS</th>
+                <th class="center">Red%</th>
+                <th class="money">R$ IBS</th>
+                <th class="center">Status</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="footer-controls">
+        <div class="status-bar" id="statusMsg">Pronto.</div>
+        <div class="pagination">
+          <button id="btnPrev" class="btn-page" onclick="mudarPagina(-1)">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <span id="pageInfo" class="page-info">1 / 1</span>
+          <button id="btnNext" class="btn-page" onclick="mudarPagina(1)">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      let allItems = [];
+      let filteredItems = [];
+      let currentPage = 1;
+      const itemsPerPage = 100;
+      let debounceTimer;
+      let currentKeyToCopy = "";
+
+      // Estado dos filtros
+      let filterRegime = "all";
+      let filterTags = "all";
+
+      // --- TOOLTIP LOGIC ---
+      const tooltip = document.getElementById("floatingTooltip");
+
+      function showTooltip(e, idx) {
+        const start = (currentPage - 1) * itemsPerPage;
+        const item = filteredItems[start + idx];
+
+        if (!item) return;
+
+        currentKeyToCopy = item.chNFe;
+
+        tooltip.innerHTML = `
+          <div class="tooltip-header">Dados da Nota</div>
+          <div class="tooltip-row"><strong>Emit:</strong> ${item.emitNome}</div>
+          <div class="tooltip-row"><strong>CNPJ:</strong> ${item.emitCNPJ}</div>
+          <div class="tooltip-row"><strong>Regime:</strong> ${item.regimeDesc}</div>
+          <div class="tooltip-row"><strong>Chave:</strong></div>
+          <span class="break-text">${item.chNFe}</span>
+          <div class="tooltip-hint"><i class="fas fa-copy"></i> Clique para Copiar Chave</div>
+        `;
+
+        moveTooltip(e);
+        tooltip.style.display = "block";
+      }
+
+      function moveTooltip(e) {
+        let x = e.clientX + 20;
+        let y = e.clientY + 20;
+        if (x + 320 > window.innerWidth) x = e.clientX - 330;
+        if (y + 180 > window.innerHeight) y = e.clientY - 190;
+        tooltip.style.left = x + "px";
+        tooltip.style.top = y + "px";
+      }
+
+      function hideTooltip() {
+        tooltip.style.display = "none";
+      }
+
+      function copyingVisualFeedback() {
+        tooltip.style.backgroundColor = "#22c55e";
+        tooltip.style.color = "#fff";
+        setTimeout(() => {
+          tooltip.style.backgroundColor = "#fff";
+          tooltip.style.color = "#000";
+          hideTooltip();
+        }, 300);
+      }
+
+      function copiarChaveAtual() {
+        if (!currentKeyToCopy || currentKeyToCopy === "---") return;
+        navigator.clipboard.writeText(currentKeyToCopy).then(() => {
+          copyingVisualFeedback();
+          const status = document.getElementById("statusMsg");
+          status.innerText = "CHAVE COPIADA!";
+          status.style.color = "green";
+          setTimeout(() => {
+            status.style.color = "black";
+            status.innerText = "Pronto.";
+          }, 2000);
+        });
+      }
+
+      function copyFromProduct(idx) {
+        const start = (currentPage - 1) * itemsPerPage;
+        const item = filteredItems[start + idx];
+        if (item) {
+          currentKeyToCopy = item.chNFe;
+          copiarChaveAtual();
+        }
+      }
+
+      function formatMoney(value) {
+        return parseFloat(value).toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
+      }
+      function formatPercent(value) {
+        return (
+          parseFloat(value).toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+          }) + "%"
+        );
+      }
+
+      function debounceFiltro() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          aplicarFiltros();
+        }, 300);
+      }
+
+      function setRegimeFilter(type) {
+        filterRegime = type;
+        document.getElementById("btnCrtAll").classList.remove("active");
+        document.getElementById("btnCrtSimples").classList.remove("active");
+        document.getElementById("btnCrtNormal").classList.remove("active");
+
+        if (type === "all")
+          document.getElementById("btnCrtAll").classList.add("active");
+        if (type === "SIMPLES")
+          document.getElementById("btnCrtSimples").classList.add("active");
+        if (type === "NORMAL")
+          document.getElementById("btnCrtNormal").classList.add("active");
+
+        aplicarFiltros();
+      }
+
+      function setTagsFilter(type) {
+        filterTags = type;
+        document.getElementById("btnTagsAll").classList.remove("active");
+        document.getElementById("btnTagsYes").classList.remove("active");
+        document.getElementById("btnTagsNo").classList.remove("active");
+
+        if (type === "all")
+          document.getElementById("btnTagsAll").classList.add("active");
+        if (type === "yes")
+          document.getElementById("btnTagsYes").classList.add("active");
+        if (type === "no")
+          document.getElementById("btnTagsNo").classList.add("active");
+
+        aplicarFiltros();
+      }
+
+      function getTagValue(parent, tagName) {
+        const els = parent.getElementsByTagName(tagName);
+        return els.length > 0 ? els[0].textContent : "";
+      }
+      function getTagValueFloat(parent, tagName) {
+        const val = getTagValue(parent, tagName);
+        return val ? parseFloat(val) : 0;
+      }
+
+      async function handleFiles(files) {
+        const status = document.getElementById("statusMsg");
+        status.innerText = `Iniciando leitura de ${files.length} arquivos...`;
+
+        await new Promise((r) => setTimeout(r, 50));
+
+        const parser = new DOMParser();
+        const BATCH_SIZE = 100;
+
+        const fileList = Array.from(files);
+        let processedCount = 0;
+
+        for (let i = 0; i < fileList.length; i += BATCH_SIZE) {
+          const batch = fileList.slice(i, i + BATCH_SIZE);
+          const textPromises = batch.map((f) => f.text());
+          const texts = await Promise.all(textPromises);
+
+          texts.forEach((xmlText) => {
+            try {
+              const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+
+              const emitList = xmlDoc.getElementsByTagName("emit");
+              const emit = emitList.length > 0 ? emitList[0] : null;
+
+              let emitNome = "Desc. no XML";
+              let emitCNPJ = "---";
+              let crtCode = "";
+
+              if (emit) {
+                emitNome = getTagValue(emit, "xNome") || emitNome;
+                emitCNPJ = getTagValue(emit, "CNPJ") || emitCNPJ;
+                crtCode = getTagValue(emit, "CRT");
+              }
+
+              let regimeDesc = "OUTROS";
+              if (crtCode === "1" || crtCode === "2") {
+                regimeDesc = "SIMPLES";
+              } else if (crtCode === "3") {
+                regimeDesc = "NORMAL";
+              }
+
+              let chNFe = "---";
+              const infList = xmlDoc.getElementsByTagName("infNFe");
+              if (infList.length > 0 && infList[0].getAttribute("Id")) {
+                chNFe = infList[0].getAttribute("Id").replace("NFe", "");
+              }
+
+              const ideList = xmlDoc.getElementsByTagName("ide");
+              let nNF = "???";
+              let dhEmi = "???";
+              if (ideList.length > 0) {
+                nNF = getTagValue(ideList[0], "nNF") || "???";
+                const rawDh = getTagValue(ideList[0], "dhEmi");
+                if (rawDh) dhEmi = rawDh.split("T")[0];
+              }
+
+              const dets = xmlDoc.getElementsByTagName("det");
+              for (let k = 0; k < dets.length; k++) {
+                const det = dets[k];
+                const prodList = det.getElementsByTagName("prod");
+                if (prodList.length === 0) continue;
+                const prod = prodList[0];
+
+                const ncm = getTagValue(prod, "NCM");
+                const cfop = getTagValue(prod, "CFOP");
+                const xProd = getTagValue(prod, "xProd");
+
+                // Variável vProd inicial
+                let vProd = getTagValueFloat(prod, "vProd");
+
+                let vCBS = 0,
+                  pCBS = 0,
+                  pRedCBS = 0;
+                let vIBS = 0,
+                  pIBS = 0,
+                  pRedIBS = 0;
+                let cst = "",
+                  cClassTrib = "";
+                let hasNewTags = false;
+
+                const ibsCbsList = det.getElementsByTagName("IBSCBS");
+                if (ibsCbsList.length > 0) {
+                  const nodeIbsCbs = ibsCbsList[0];
+                  hasNewTags = true;
+                  cst = getTagValue(nodeIbsCbs, "CST");
+                  cClassTrib = getTagValue(nodeIbsCbs, "cClassTrib");
+
+                  // CORREÇÃO: "Força Bruta" para achar vBC dentro do grupo IBSCBS
+                  // Procura por QUALQUER tag <vBC> descendente do nó <IBSCBS>
+                  const vBcTags = nodeIbsCbs.getElementsByTagName("vBC");
+                  if (vBcTags.length > 0) {
+                    const foundVal = parseFloat(vBcTags[0].textContent);
+                    if (!isNaN(foundVal) && foundVal > 0) {
+                      vProd = foundVal; // Atualiza com a base de cálculo encontrada
+                    }
+                  }
+
+                  // Processamento da CBS (para pegar valores de imposto)
+                  const gCBSList = nodeIbsCbs.getElementsByTagName("gCBS");
+                  if (gCBSList.length > 0) {
+                    const gCBS = gCBSList[0];
+                    vCBS = getTagValueFloat(gCBS, "vCBS");
+                    pCBS = getTagValueFloat(gCBS, "pCBS");
+                    const gRedList = gCBS.getElementsByTagName("gRed");
+                    if (gRedList.length > 0) {
+                      pRedCBS = getTagValueFloat(gRedList[0], "pRedAliq");
+                    }
+                  }
+
+                  // Processamento do IBS
+                  const gIBSUFList = nodeIbsCbs.getElementsByTagName("gIBSUF");
+                  if (gIBSUFList.length > 0) {
+                    const gIBSUF = gIBSUFList[0];
+                    pIBS = getTagValueFloat(gIBSUF, "pIBSUF");
+                    let vIbsUf = getTagValueFloat(gIBSUF, "vIBSUF");
+
+                    const gRedUFList = gIBSUF.getElementsByTagName("gRed");
+                    if (gRedUFList.length > 0) {
+                      pRedIBS = getTagValueFloat(gRedUFList[0], "pRedAliq");
+                    }
+                    const vIBSTotal = getTagValueFloat(nodeIbsCbs, "vIBS");
+                    vIBS = vIBSTotal > 0 ? vIBSTotal : vIbsUf;
+                  } else {
+                    vIBS = getTagValueFloat(nodeIbsCbs, "vIBS");
+                  }
+                }
+
+                allItems.push({
+                  emitNome,
+                  emitCNPJ,
+                  regimeDesc,
+                  chNFe,
+                  nNF,
+                  data:
+                    dhEmi !== "???"
+                      ? dhEmi.split("-").reverse().join("/")
+                      : dhEmi,
+                  ncm,
+                  cfop,
+                  xProd,
+                  vProd, // Agora reflete a Base de Cálculo (vBC) encontrada
+                  cst,
+                  cClassTrib,
+                  vCBS,
+                  pCBS,
+                  pRedCBS,
+                  vIBS,
+                  pIBS,
+                  pRedIBS,
+                  hasTags: hasNewTags,
+                });
+              }
+            } catch (err) {
+              console.error("Erro leitura", err);
+            }
+          });
+
+          processedCount += batch.length;
+          status.innerText = `Lendo... ${processedCount} / ${files.length}`;
+
+          if (i + BATCH_SIZE < fileList.length) {
+            await new Promise((r) => setTimeout(r, 0));
+          }
+        }
+
+        status.innerText = `${allItems.length} itens carregados.`;
+        aplicarFiltros();
+      }
+
+      function aplicarFiltros() {
+        const fNcm = document.getElementById("filtroNcm").value.toLowerCase();
+        const fCfop = document.getElementById("filtroCfop").value.toLowerCase();
+        const fProd = document.getElementById("filtroProd").value.toLowerCase();
+
+        filteredItems = allItems.filter((item) => {
+          const matchText =
+            item.ncm.toLowerCase().includes(fNcm) &&
+            item.cfop.toLowerCase().includes(fCfop) &&
+            item.xProd.toLowerCase().includes(fProd);
+
+          let matchRegime = true;
+          if (filterRegime !== "all") {
+            matchRegime = item.regimeDesc === filterRegime;
+          }
+
+          let matchTags = true;
+          if (filterTags === "yes") matchTags = item.hasTags === true;
+          if (filterTags === "no") matchTags = item.hasTags === false;
+
+          return matchText && matchRegime && matchTags;
+        });
+
+        atualizarTotais();
+        currentPage = 1;
+        renderizarTabela();
+      }
+
+      function atualizarTotais() {
+        let totalIbs = 0,
+          totalCbs = 0,
+          totalRed = 0;
+
+        for (let i = 0; i < filteredItems.length; i++) {
+          const item = filteredItems[i];
+          totalIbs += item.vIBS;
+          totalCbs += item.vCBS;
+          if (item.hasTags && (item.pRedCBS > 0 || item.pRedIBS > 0))
+            totalRed++;
+        }
+        document.getElementById("totalItens").innerText = filteredItems.length;
+        document.getElementById("totalReducao").innerText = totalRed;
+        document.getElementById("totalIbs").innerText = formatMoney(totalIbs);
+        document.getElementById("totalCbs").innerText = formatMoney(totalCbs);
+      }
+
+      function renderizarTabela() {
+        const tbody = document.querySelector("#tabelaDados tbody");
+        tbody.innerHTML = "";
+
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const itemsToRender = filteredItems.slice(start, end);
+
+        const fragment = document.createDocumentFragment();
+
+        itemsToRender.forEach((item, index) => {
+          let statusHtml = "";
+          if (!item.hasTags) {
+            statusHtml = `<span class="status-badge st-none">SEM TAGS</span>`;
+          } else if (item.pRedCBS > 0 || item.pRedIBS > 0) {
+            const maiorRed = Math.max(item.pRedCBS, item.pRedIBS);
+            statusHtml = `<span class="status-badge st-red">REDUÇÃO (${maiorRed}%)</span>`;
+          } else if (item.vCBS > 0 || item.vIBS > 0) {
+            statusHtml = `<span class="status-badge st-ok">TRIBUTADO OK</span>`;
+          } else {
+            statusHtml = `<span class="status-badge st-zero">ZERADO</span>`;
+          }
+
+          let regimeBadge = "";
+          if (item.regimeDesc === "SIMPLES") {
+            regimeBadge = `<span class="badge-crt crt-simples">SIMPLES</span>`;
+          } else if (item.regimeDesc === "NORMAL") {
+            regimeBadge = `<span class="badge-crt crt-normal">NORMAL</span>`;
+          } else {
+            regimeBadge = `<span class="badge-crt crt-outros">${item.regimeDesc}</span>`;
+          }
+
+          const cbsClass = item.vCBS > 0 ? "filled-val" : "";
+          const ibsClass = item.vIBS > 0 ? "filled-val" : "";
+          const displayClass = item.cClassTrib
+            ? `<span class="tag-class">${item.cClassTrib}</span>`
+            : "-";
+          const displayCst = item.cst
+            ? `<span class="tag-cst">${item.cst}</span>`
+            : "-";
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+                    <td style="font-weight:bold">${item.nNF}</td>
+                    <td>${regimeBadge}</td>
+                    <td>
+                      <span class="col-prod" 
+                            onclick="copyFromProduct(${index})"
+                            onmouseover="showTooltip(event, ${index})" 
+                            onmousemove="moveTooltip(event)" 
+                            onmouseout="hideTooltip()">
+                        ${item.xProd}
+                      </span>
+                    </td>
+                    <td>${item.ncm}<br><small style="color:#666">${
+            item.cfop
+          }</small></td>
+                    <td>${displayClass}<br>${displayCst}</td>
+                    <td>${formatMoney(item.vProd)}</td>
+                    <td class="money">${formatPercent(item.pCBS)}</td>
+                    <td class="center">${
+                      item.pRedCBS > 0 ? item.pRedCBS + "%" : "-"
+                    }</td>
+                    <td class="money ${cbsClass}">${formatMoney(item.vCBS)}</td>
+                    <td class="money">${formatPercent(item.pIBS)}</td>
+                    <td class="center">${
+                      item.pRedIBS > 0 ? item.pRedIBS + "%" : "-"
+                    }</td>
+                    <td class="money ${ibsClass}">${formatMoney(item.vIBS)}</td>
+                    <td class="center">${statusHtml}</td>
+              `;
+          fragment.appendChild(tr);
+        });
+
+        tbody.appendChild(fragment);
+        atualizarControlesPaginacao();
+      }
+
+      function atualizarControlesPaginacao() {
+        const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
+        document.getElementById(
+          "pageInfo"
+        ).innerText = `${currentPage} / ${totalPages}`;
+        document.getElementById("btnPrev").disabled = currentPage === 1;
+        document.getElementById("btnNext").disabled =
+          currentPage === totalPages;
+      }
+
+      function mudarPagina(delta) {
+        const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
+        const newPage = currentPage + delta;
+        if (newPage >= 1 && newPage <= totalPages) {
+          currentPage = newPage;
+          renderizarTabela();
+          document.querySelector(".scroll-content").scrollTop = 0;
+        }
+      }
+
+      function limparTudo() {
+        allItems = [];
+        filteredItems = [];
+        document.getElementById("xmlInput").value = "";
+        document.getElementById("filtroNcm").value = "";
+        document.getElementById("filtroCfop").value = "";
+        document.getElementById("filtroProd").value = "";
+        setRegimeFilter("all");
+        setTagsFilter("all");
+        aplicarFiltros();
+        document.getElementById("statusMsg").innerText = "Limpo.";
+      }
+
+      function exportToCSV() {
+        if (filteredItems.length === 0) {
+          alert("Sem dados.");
+          return;
+        }
+        let csv =
+          "data:text/csv;charset=utf-8,Emitente,Regime,Chave,Nota,Data,Produto,NCM,CFOP,ClassTrib,CST,VProd,AliqCBS,RedCBS,ValCBS,AliqIBS,RedIBS,ValIBS,Status\n";
+        filteredItems.forEach((r) => {
+          let status = r.hasTags
+            ? r.pRedCBS > 0 || r.pRedIBS > 0
+              ? "REDUCAO"
+              : r.vCBS == 0
+              ? "ZERADO"
+              : "OK"
+            : "SEM_TAGS";
+          const prodClean = r.xProd.replace(/,/g, " ");
+          csv += `${r.emitNome},${r.regimeDesc},'${r.chNFe},${r.nNF},${
+            r.data
+          },${prodClean},${r.ncm},${r.cfop},${r.cClassTrib},${
+            r.cst
+          },${r.vProd.toFixed(2)},${r.pCBS.toFixed(2)},${r.pRedCBS.toFixed(
+            2
+          )},${r.vCBS.toFixed(2)},${r.pIBS.toFixed(2)},${r.pRedIBS.toFixed(
+            2
+          )},${r.vIBS.toFixed(2)},${status}\n`;
+        });
+        const link = document.createElement("a");
+        link.href = encodeURI(csv);
+        link.download = "auditoria_turbo_tags.csv";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    </script>
+  </body>
+</html>

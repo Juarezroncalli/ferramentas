@@ -3,279 +3,426 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Calculadora de Transição Tributária (IBS/CBS + ISS/ICMS)</title>
+    <title>Calculadora de Transição Tributária [BRUTALISM]</title>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
-      body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: #f4f4f9;
+      :root {
+        --bg-body: #8b5cf6; /* Roxo (Fundo) */
+        --card-bg: #ffffff;
+        --border-black: #000000;
+
+        --color-primary: #06b6d4; /* Ciano */
+        --color-secondary: #f472b6; /* Rosa */
+        --color-accent: #facc15; /* Amarelo */
+        --color-success: #22c55e; /* Verde */
+
+        --shadow-dist: 6px;
+        --border-width: 3px;
+      }
+
+      * {
         margin: 0;
-        padding: 2rem;
+        padding: 0;
+        box-sizing: border-box;
       }
-      .container {
-        max-width: 1200px;
-        margin: auto;
-        background: #fff;
-        padding: 2rem;
-        border-radius: 10px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      }
-      h1 {
-        text-align: center;
-        margin-bottom: 0.5rem;
-        color: #333;
-      }
-      p.subtitle {
-        text-align: center;
-        color: #666;
-        margin-bottom: 2rem;
-      }
-      .config-area {
-        background: #f8f0fc;
-        padding: 1.5rem;
-        border-radius: 8px;
-        margin-bottom: 2rem;
+
+      body {
+        font-family: "Space Grotesk", sans-serif;
+        background-color: var(--bg-body);
+        background-image: linear-gradient(#fff 2px, transparent 2px),
+          linear-gradient(90deg, #fff 2px, transparent 2px);
+        background-size: 40px 40px;
+        color: var(--border-black);
+        height: 100vh;
+        overflow: hidden;
         display: flex;
-        gap: 1.5rem;
-        justify-content: center;
-        flex-wrap: wrap;
-        border: 1px solid #4f0072;
       }
-      .input-group {
+
+      /* Sidebar */
+      .sidebar {
+        width: 280px;
+        background: var(--color-accent);
+        border-right: var(--border-width) solid var(--border-black);
         display: flex;
         flex-direction: column;
-        min-width: 140px;
+        padding: 2rem 1.5rem;
+        flex-shrink: 0;
+        overflow-y: auto;
       }
-      .input-group label {
-        font-weight: bold;
+
+      .logo {
+        font-weight: 900;
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 3rem;
+        text-decoration: none;
+        color: var(--border-black);
+        text-transform: uppercase;
+      }
+
+      .logo i {
+        background: var(--color-secondary);
+        color: #fff;
+        padding: 10px;
+        border: var(--border-width) solid var(--border-black);
+        box-shadow: 4px 4px 0 0 black;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 15px;
+        margin-bottom: 1rem;
+        font-weight: 800;
+        color: #000;
+        cursor: pointer;
+        border: var(--border-width) solid var(--border-black);
+        background: #fff;
+        box-shadow: 4px 4px 0 0 black;
+        text-transform: uppercase;
         font-size: 0.85rem;
-        color: #4f0072;
-        margin-bottom: 0.3rem;
+        text-decoration: none;
       }
-      .input-group input {
-        padding: 0.6rem;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 1rem;
-        text-align: right;
-        transition: border-color 0.3s;
+
+      .nav-item.active {
+        background-color: var(--color-primary);
+        color: #000;
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 0 black;
       }
-      .input-group input:focus {
-        border-color: #4f0072;
+
+      .main-content {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+      }
+
+      .neo-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2.5rem;
+        background: #fff;
+        border: var(--border-width) solid var(--border-black);
+        padding: 2rem;
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
+      }
+      .header-title h1 {
+        font-weight: 900;
+        font-size: 2rem;
+        text-transform: uppercase;
+      }
+      .header-title span {
+        font-family: "Space Mono", monospace;
+        font-size: 0.9rem;
+        font-weight: 700;
+        background: var(--color-secondary);
+        color: #fff;
+        padding: 5px 10px;
+        border: 2px solid #000;
+      }
+
+      .neo-card {
+        background: #fff;
+        border: var(--border-width) solid var(--border-black);
+        padding: 2rem;
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
+        margin-bottom: 2rem;
+      }
+
+      .card-title {
+        font-weight: 900;
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-transform: uppercase;
+        border-bottom: 3px solid #000;
+        padding-bottom: 10px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .form-group label {
+        font-weight: 800;
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        font-family: "Space Mono", monospace;
+      }
+
+      .neo-input {
+        width: 100%;
+        padding: 12px;
+        font-family: "Space Mono", monospace;
+        font-weight: bold;
+        border: var(--border-width) solid var(--border-black);
+        background: #f3f4f6;
         outline: none;
       }
-      .btn {
-        background: #4f0072;
-        color: white;
-        border: none;
-        padding: 0 2rem;
-        border-radius: 6px;
+      .neo-input:focus {
+        background-color: #fff;
+        box-shadow: 4px 4px 0 0 var(--color-primary);
+        transform: translate(-2px, -2px);
+      }
+
+      .neo-btn {
+        padding: 1rem 2rem;
+        font-weight: 800;
+        font-family: "Space Grotesk", sans-serif;
+        border: var(--border-width) solid var(--border-black);
         cursor: pointer;
-        font-size: 1rem;
-        font-weight: bold;
-        transition: background 0.3s;
-        height: 42px;
-        align-self: flex-end;
-        margin-bottom: 1px;
+        box-shadow: 5px 5px 0 0 black;
+        text-transform: uppercase;
+        background-color: var(--color-success);
+        width: 100%;
+        margin-top: 1rem;
       }
-      .btn:hover {
-        background: #370052;
+      .neo-btn:active {
+        transform: translate(4px, 4px);
+        box-shadow: 0 0 0 0 black;
       }
-      
+
+      /* Tabela Customizada */
       .results-container {
+        margin-top: 2rem;
         overflow-x: auto;
       }
       table {
         width: 100%;
-        border-collapse: collapse;
-        margin-top: 1rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      }
-      th, td {
-        border: 1px solid #e0e0e0;
-        padding: 1rem;
-        text-align: center;
+        border-collapse: separate;
+        border-spacing: 0;
+        border: var(--border-width) solid #000;
+        background: #fff;
+        box-shadow: 8px 8px 0 0 #000;
       }
       th {
-        background: #4f0072;
-        color: white;
-        font-size: 0.95rem;
+        background: var(--color-accent);
+        padding: 1.2rem;
+        border-bottom: var(--border-width) solid #000;
+        border-right: 2px solid #000;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        font-weight: 900;
+        font-size: 0.8rem;
       }
-      th.total-col, td.total-col {
-        background-color: #f0e6fa;
-        font-weight: bold;
-        color: #2d0042;
-        border-left: 2px solid #4f0072;
-      }
-      tr:nth-child(even) td:not(.total-col) {
-        background-color: #f9f9f9;
-      }
-      tr:hover td {
-        background-color: #f1f1f1;
-      }
-      .error {
-        color: #d32f2f;
-        background: #ffebee;
+      td {
         padding: 1rem;
-        border-radius: 4px;
+        border-bottom: 2px solid #000;
+        border-right: 2px solid #000;
+        font-family: "Space Mono", monospace;
+        font-weight: 700;
         text-align: center;
-        margin-bottom: 1rem;
-        border: 1px solid #ffcdd2;
+      }
+      .total-col {
+        background-color: #f0e6fa;
+        font-weight: 900;
+      }
+
+      @media (max-width: 768px) {
+        body {
+          flex-direction: column;
+        }
+        .sidebar {
+          width: 100%;
+          border-right: none;
+          border-bottom: 3px solid black;
+          flex-direction: row;
+          height: auto;
+        }
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <h1>
-        <i class="fa-solid fa-scale-balanced"></i> Calculadora de Transição Tributária
-      </h1>
-      <p class="subtitle">Simulação da evolução das alíquotas (2027 - 2033)</p>
+    <aside class="sidebar">
+      <a href="#" class="logo">
+        <i class="fa-solid fa-scale-balanced"></i>
+        <span>Tax Reform</span>
+      </a>
+      <nav>
+        <a href="#" class="nav-item active">
+          <i class="fas fa-calculator"></i> Transição
+        </a>
+      </nav>
+    </aside>
 
-      <div class="config-area">
-        <div class="input-group">
-          <label for="aliquotaIBS">Padrão IBS (%)</label>
-          <input type="number" id="aliquotaIBS" value="18.50" min="0" step="0.01" />
+    <main class="main-content">
+      <div class="neo-header">
+        <div class="header-title">
+          <h1>Calculadora Transição ⚖️</h1>
+          <span>Simulação Efetiva (2027-2033)</span>
         </div>
-        <div class="input-group">
-          <label for="aliquotaCBS">Padrão CBS (%)</label>
-          <input type="number" id="aliquotaCBS" value="8.5" min="0" step="0.01" />
-        </div>
-        
-        <div class="input-group">
-          <label for="aliquotaISS">Atual ISS (%)</label>
-          <input type="number" id="aliquotaISS" value="5.00" min="0" step="0.01" />
-        </div>
-        <div class="input-group">
-          <label for="aliquotaICMS">Atual ICMS (%)</label>
-          <input type="number" id="aliquotaICMS" value="18.00" min="0" step="0.01" />
-        </div>
+      </div>
 
-        <div class="input-group">
-          <label for="percentualReducao">Redução IBS/CBS (%)</label>
-          <input type="number" id="percentualReducao" value="60" min="0" max="100" step="0.01" />
+      <div class="neo-card">
+        <div class="card-title">
+          <i class="fas fa-sliders-h"></i> Parâmetros da Reforma
         </div>
-
-        <button id="calcularBtn" class="btn">
-            <i class="fa-solid fa-calculator"></i> Calcular
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Padrão IBS (%)</label>
+            <input
+              type="number"
+              id="aliquotaIBS"
+              class="neo-input"
+              value="18.50"
+              step="0.01"
+            />
+          </div>
+          <div class="form-group">
+            <label>Padrão CBS (%)</label>
+            <input
+              type="number"
+              id="aliquotaCBS"
+              class="neo-input"
+              value="8.5"
+              step="0.01"
+            />
+          </div>
+          <div class="form-group">
+            <label>Atual ISS (%)</label>
+            <input
+              type="number"
+              id="aliquotaISS"
+              class="neo-input"
+              value="5.00"
+              step="0.01"
+            />
+          </div>
+          <div class="form-group">
+            <label>Atual ICMS (%)</label>
+            <input
+              type="number"
+              id="aliquotaICMS"
+              class="neo-input"
+              value="18.00"
+              step="0.01"
+            />
+          </div>
+          <div class="form-group">
+            <label>Redução IBS/CBS (%)</label>
+            <input
+              type="number"
+              id="percentualReducao"
+              class="neo-input"
+              value="60"
+              step="0.01"
+            />
+          </div>
+        </div>
+        <button id="calcularBtn" class="neo-btn">
+          <i class="fa-solid fa-bolt"></i> CALCULAR TRANSIÇÃO
         </button>
       </div>
-      
-      <div id="errorMessage" class="error" style="display: none;"></div>
 
       <div class="results-container">
-        <h3>Cronograma Integrado de Alíquotas Efetivas</h3>
         <table>
-            <thead>
-                <tr>
-                    <th>Ano</th>
-                    <th>CBS (Novos)</th>
-                    <th>IBS (Novos)</th>
-                    <th>ISS (Antigos)</th>
-                    <th>ICMS (Antigos)</th>
-                    <th class="total-col">TOTAL (%)</th>
-                </tr>
-            </thead>
-            <tbody id="tabelaResultados">
-            </tbody>
+          <thead>
+            <tr>
+              <th>Ano</th>
+              <th>CBS (Novo)</th>
+              <th>IBS (Novo)</th>
+              <th>ISS (Antigo)</th>
+              <th>ICMS (Antigo)</th>
+              <th class="total-col">TOTAL (%)</th>
+            </tr>
+          </thead>
+          <tbody id="tabelaResultados"></tbody>
         </table>
       </div>
-    </div>
+    </main>
 
     <script>
-      document.getElementById("calcularBtn").addEventListener("click", calcular);
-      
       const ANOS_TRANSICAO = [2027, 2028, 2029, 2030, 2031, 2032, 2033];
-
       const ESCALA_IBS = {
-          2029: 0.10, 
-          2030: 0.20, 
-          2031: 0.30, 
-          2032: 0.40, 
-          2033: 1.00  
+        2029: 0.1,
+        2030: 0.2,
+        2031: 0.3,
+        2032: 0.4,
+        2033: 1.0,
       };
-
       const ESCALA_ANTIGOS = {
-          2027: 1.00, 
-          2028: 1.00, 
-          2029: 0.90, 
-          2030: 0.80, 
-          2031: 0.70, 
-          2032: 0.60, 
-          2033: 0.00  
+        2027: 1.0,
+        2028: 1.0,
+        2029: 0.9,
+        2030: 0.8,
+        2031: 0.7,
+        2032: 0.6,
+        2033: 0.0,
       };
 
       function formatPercent(value) {
-          return value.toFixed(2).replace('.', ',') + '%';
+        return value.toFixed(2).replace(".", ",") + "%";
       }
-      
+
       function calcular() {
-        const errorMsg = document.getElementById("errorMessage");
-        errorMsg.style.display = "none";
-
-        // 1. Coleta de dados
-        const aliqIBS_Base = parseFloat(document.getElementById("aliquotaIBS").value);
-        const aliqCBS_Base = parseFloat(document.getElementById("aliquotaCBS").value);
-        const aliqISS_Base = parseFloat(document.getElementById("aliquotaISS").value);
-        const aliqICMS_Base = parseFloat(document.getElementById("aliquotaICMS").value);
-        const percReducao = parseFloat(document.getElementById("percentualReducao").value) / 100;
-
-        if ([aliqIBS_Base, aliqCBS_Base, aliqISS_Base, aliqICMS_Base, percReducao].some(isNaN)) {
-            errorMsg.textContent = "Por favor, preencha todos os campos corretamente.";
-            errorMsg.style.display = "block";
-            return;
-        }
+        const aliqIBS_Base = parseFloat(
+          document.getElementById("aliquotaIBS").value
+        );
+        const aliqCBS_Base = parseFloat(
+          document.getElementById("aliquotaCBS").value
+        );
+        const aliqISS_Base = parseFloat(
+          document.getElementById("aliquotaISS").value
+        );
+        const aliqICMS_Base = parseFloat(
+          document.getElementById("aliquotaICMS").value
+        );
+        const percReducao =
+          parseFloat(document.getElementById("percentualReducao").value) / 100;
 
         const tbody = document.getElementById("tabelaResultados");
         tbody.innerHTML = "";
 
-        // Alíquotas com redução já aplicada
         const ibsAlvoReduzido = aliqIBS_Base * (1 - percReducao);
         const cbsAlvoReduzido = aliqCBS_Base * (1 - percReducao);
 
-        ANOS_TRANSICAO.forEach(ano => {
-            let valCBS = 0;
-            let valIBS = 0;
-            let valISS = 0;
-            let valICMS = 0;
+        ANOS_TRANSICAO.forEach((ano) => {
+          let valCBS = cbsAlvoReduzido;
+          let valIBS =
+            ano === 2027 || ano === 2028
+              ? 0.05 * (1 - percReducao)
+              : ibsAlvoReduzido * (ESCALA_IBS[ano] || 0);
 
-            // --- CBS ---
-            valCBS = cbsAlvoReduzido;
+          const fatorAntigos = ESCALA_ANTIGOS[ano];
+          let valISS = aliqISS_Base * fatorAntigos;
+          let valICMS = aliqICMS_Base * fatorAntigos;
+          let total = valCBS + valIBS + valISS + valICMS;
 
-            // --- IBS ---
-            if (ano === 2027 || ano === 2028) {
-                // MODIFICAÇÃO: Base fixa de 0.05% com redução aplicada
-                valIBS = 0.05 * (1 - percReducao); 
-            } else {
-                const fatorIBS = ESCALA_IBS[ano] || 0;
-                valIBS = ibsAlvoReduzido * fatorIBS;
-            }
-
-            // --- ISS e ICMS ---
-            const fatorAntigos = ESCALA_ANTIGOS[ano];
-            valISS = aliqISS_Base * fatorAntigos;
-            valICMS = aliqICMS_Base * fatorAntigos;
-
-            // --- TOTAL ---
-            const total = valCBS + valIBS + valISS + valICMS;
-
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
                 <td><strong>${ano}</strong></td>
                 <td>${formatPercent(valCBS)}</td>
                 <td>${formatPercent(valIBS)}</td>
-                <td>${formatPercent(valISS)} <small style="color:#666">(${Math.round(fatorAntigos*100)}%)</small></td>
-                <td>${formatPercent(valICMS)} <small style="color:#666">(${Math.round(fatorAntigos*100)}%)</small></td>
+                <td>${formatPercent(valISS)}</td>
+                <td>${formatPercent(valICMS)}</td>
                 <td class="total-col">${formatPercent(total)}</td>
             `;
-            tbody.appendChild(tr);
+          tbody.appendChild(tr);
         });
       }
-      
+
+      document
+        .getElementById("calcularBtn")
+        .addEventListener("click", calcular);
       document.addEventListener("DOMContentLoaded", calcular);
     </script>
   </body>
