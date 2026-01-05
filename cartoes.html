@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-6XKND47T4H");
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gerador Contábil [BRUTALISM]</title>
@@ -9,23 +18,26 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
 
     <style>
       :root {
         /* --- PALETA VIBRANTE (Mesma do Dashboard) --- */
-        --bg-body: #06B6D4; /* Ciano (Fundo Azul) */
-        --card-bg: #FFFFFF;
+        --bg-body: #06b6d4; /* Ciano (Fundo Azul) */
+        --card-bg: #ffffff;
         --border-black: #000000;
-        
-        --color-primary: #8B5CF6;   /* Roxo */
-        --color-secondary: #F472B6; /* Rosa */
-        --color-accent: #FACC15;    /* Amarelo */
-        --color-success: #22C55E;   /* Verde */
-        --color-danger: #EF4444;    /* Vermelho */
-        
+
+        --color-primary: #8b5cf6; /* Roxo */
+        --color-secondary: #f472b6; /* Rosa */
+        --color-accent: #facc15; /* Amarelo */
+        --color-success: #22c55e; /* Verde */
+        --color-danger: #ef4444; /* Vermelho */
+
         --shadow-dist: 6px;
         --border-width: 3px;
       }
@@ -37,15 +49,14 @@
       }
 
       body {
-        font-family: 'Space Grotesk', sans-serif;
+        font-family: "Space Grotesk", sans-serif;
         /* FUNDO AZUL QUADRICULADO */
         background-color: var(--bg-body);
-        background-image: 
-            linear-gradient(#fff 2px, transparent 2px),
-            linear-gradient(90deg, #fff 2px, transparent 2px);
+        background-image: linear-gradient(#fff 2px, transparent 2px),
+          linear-gradient(90deg, #fff 2px, transparent 2px);
         background-size: 40px 40px;
         background-position: -2px -2px;
-        
+
         color: var(--border-black);
         height: 100vh;
         overflow: hidden; /* Sidebar fixa */
@@ -62,7 +73,7 @@
         padding: 2rem 1.5rem;
         flex-shrink: 0;
         overflow-y: auto;
-        box-shadow: 4px 0 0 rgba(0,0,0,0.1);
+        box-shadow: 4px 0 0 rgba(0, 0, 0, 0.1);
       }
 
       .logo {
@@ -140,7 +151,7 @@
         text-shadow: 2px 2px 0 #ddd;
       }
       .header-title span {
-        font-family: 'Space Mono', monospace;
+        font-family: "Space Mono", monospace;
         font-size: 0.9rem;
         font-weight: 700;
         background: var(--color-secondary);
@@ -165,7 +176,7 @@
         position: relative;
         transition: transform 0.2s;
       }
-      
+
       .config-item:hover {
         transform: translate(-3px, -3px);
         box-shadow: 8px 8px 0 0 black;
@@ -173,10 +184,22 @@
       }
 
       /* Ícones coloridos nos inputs */
-      .config-item:nth-child(1) .icon-box { background: var(--color-secondary); color: #fff; } /* Rosa */
-      .config-item:nth-child(2) .icon-box { background: var(--color-success); color: #000; }   /* Verde */
-      .config-item:nth-child(3) .icon-box { background: var(--color-accent); color: #000; }    /* Amarelo */
-      .config-item:nth-child(4) .icon-box { background: var(--color-primary); color: #fff; }   /* Roxo */
+      .config-item:nth-child(1) .icon-box {
+        background: var(--color-secondary);
+        color: #fff;
+      } /* Rosa */
+      .config-item:nth-child(2) .icon-box {
+        background: var(--color-success);
+        color: #000;
+      } /* Verde */
+      .config-item:nth-child(3) .icon-box {
+        background: var(--color-accent);
+        color: #000;
+      } /* Amarelo */
+      .config-item:nth-child(4) .icon-box {
+        background: var(--color-primary);
+        color: #fff;
+      } /* Roxo */
 
       .config-item label {
         font-weight: 800;
@@ -185,7 +208,7 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        font-family: 'Space Mono', monospace;
+        font-family: "Space Mono", monospace;
         text-transform: uppercase;
       }
 
@@ -204,9 +227,9 @@
         width: 100%;
         padding: 12px;
         border: 2px solid var(--border-black);
-        font-family: 'Space Mono', monospace;
+        font-family: "Space Mono", monospace;
         font-size: 1rem;
-        background: #F3F4F6;
+        background: #f3f4f6;
         outline: none;
         transition: all 0.2s;
       }
@@ -238,7 +261,7 @@
       }
 
       .upload-area {
-        background: #FEF9C3; /* Amarelo pálido */
+        background: #fef9c3; /* Amarelo pálido */
         border: 3px dashed var(--border-black);
         padding: 3rem;
         text-align: center;
@@ -266,7 +289,7 @@
         padding: 15px;
         font-weight: 800;
         font-size: 1rem;
-        font-family: 'Space Grotesk', sans-serif;
+        font-family: "Space Grotesk", sans-serif;
         border: var(--border-width) solid var(--border-black);
         cursor: pointer;
         box-shadow: 4px 4px 0 0 black;
@@ -282,7 +305,7 @@
         box-shadow: 0 0 0 0 black;
         transform: translate(4px, 4px);
       }
-      
+
       .neo-btn:disabled {
         background-color: #e5e5e5;
         color: #888;
@@ -290,11 +313,23 @@
         box-shadow: none;
       }
 
-      .btn-primary { background-color: var(--color-success); color: black; }
-      .btn-secondary { background-color: #fff; color: black; }
-      .btn-black { background-color: black; color: white; }
-      
-      .btn-secondary:hover { background-color: var(--color-secondary); color: #fff; }
+      .btn-primary {
+        background-color: var(--color-success);
+        color: black;
+      }
+      .btn-secondary {
+        background-color: #fff;
+        color: black;
+      }
+      .btn-black {
+        background-color: black;
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background-color: var(--color-secondary);
+        color: #fff;
+      }
 
       /* File Info */
       .file-info {
@@ -305,8 +340,10 @@
         box-shadow: 4px 4px 0 0 var(--color-primary);
         display: none;
       }
-      .file-info.show { display: block; }
-      
+      .file-info.show {
+        display: block;
+      }
+
       /* Tabela e Resultados */
       .results-area {
         margin-top: 2rem;
@@ -322,7 +359,7 @@
         margin-bottom: 2rem;
         flex-wrap: wrap;
       }
-      
+
       .summary-card {
         flex: 1;
         min-width: 200px;
@@ -330,28 +367,31 @@
         color: white;
         padding: 1.5rem;
         border: var(--border-width) solid black;
-        box-shadow: 6px 6px 0 0 rgba(0,0,0,0.3);
+        box-shadow: 6px 6px 0 0 rgba(0, 0, 0, 0.3);
       }
-      
+
       .summary-card.negative {
         background: var(--color-danger);
         color: #fff;
       }
-      
+
       .summary-card.liquid {
         background: #fff;
         color: black;
         box-shadow: 6px 6px 0 0 var(--color-success);
       }
-      
-      .summary-label { 
-        font-family: 'Space Mono', monospace; 
-        font-size: 0.8rem; 
-        text-transform: uppercase; 
+
+      .summary-label {
+        font-family: "Space Mono", monospace;
+        font-size: 0.8rem;
+        text-transform: uppercase;
         display: block;
         margin-bottom: 5px;
       }
-      .summary-value { font-size: 1.8rem; font-weight: 800; }
+      .summary-value {
+        font-size: 1.8rem;
+        font-weight: 800;
+      }
 
       table {
         width: 100%;
@@ -367,33 +407,42 @@
         border: 1px solid black;
         padding: 1rem;
         text-align: left;
-        font-family: 'Space Mono', monospace;
+        font-family: "Space Mono", monospace;
         text-transform: uppercase;
       }
-      
+
       td {
         padding: 1rem;
         border: 1px solid black;
-        font-family: 'Space Mono', monospace;
+        font-family: "Space Mono", monospace;
       }
-      
-      tr:nth-child(even) td { background-color: #F3F4F6; }
+
+      tr:nth-child(even) td {
+        background-color: #f3f4f6;
+      }
 
       /* Modal */
       .modal-overlay {
         position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
         background: rgba(139, 92, 246, 0.8); /* Roxo translúcido */
         backdrop-filter: blur(5px);
         z-index: 999;
         display: flex;
         align-items: center;
         justify-content: center;
-        opacity: 0; pointer-events: none;
+        opacity: 0;
+        pointer-events: none;
         transition: 0.3s;
       }
-      .modal-overlay.show { opacity: 1; pointer-events: all; }
-      
+      .modal-overlay.show {
+        opacity: 1;
+        pointer-events: all;
+      }
+
       .modal-content {
         background: white;
         width: 600px;
@@ -406,44 +455,86 @@
 
       .modal-close {
         position: absolute;
-        top: 1rem; right: 1rem;
+        top: 1rem;
+        right: 1rem;
         background: var(--color-danger);
         color: #fff;
         border: 2px solid black;
-        width: 35px; height: 35px;
+        width: 35px;
+        height: 35px;
         cursor: pointer;
-        display: flex; align-items: center; justify-content: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-weight: bold;
         box-shadow: 2px 2px 0 0 black;
       }
-      .modal-close:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 0 black; }
+      .modal-close:hover {
+        transform: translate(-1px, -1px);
+        box-shadow: 3px 3px 0 0 black;
+      }
 
-      .hidden { display: none !important; }
-      
+      .hidden {
+        display: none !important;
+      }
+
       .loading-spinner {
-        border: 5px solid rgba(0,0,0,0.1);
+        border: 5px solid rgba(0, 0, 0, 0.1);
         border-left: 5px solid var(--color-primary);
         border-radius: 50%;
-        width: 50px; height: 50px;
+        width: 50px;
+        height: 50px;
         animation: spin 1s linear infinite;
         margin: 2rem auto;
       }
-      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
 
       /* Responsividade */
       @media (max-width: 768px) {
-        body { flex-direction: column; overflow: auto; }
-        .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 3px solid black; flex-direction: row; align-items: center; overflow-x: auto; padding: 1rem; }
-        .logo { margin-bottom: 0; margin-right: 2rem; }
-        .nav-item { margin-bottom: 0; white-space: nowrap; }
-        .neo-header { flex-direction: column; gap: 1rem; text-align: center; }
-        .config-grid { grid-template-columns: 1fr; }
-        .upload-container { flex-direction: column; }
+        body {
+          flex-direction: column;
+          overflow: auto;
+        }
+        .sidebar {
+          width: 100%;
+          height: auto;
+          border-right: none;
+          border-bottom: 3px solid black;
+          flex-direction: row;
+          align-items: center;
+          overflow-x: auto;
+          padding: 1rem;
+        }
+        .logo {
+          margin-bottom: 0;
+          margin-right: 2rem;
+        }
+        .nav-item {
+          margin-bottom: 0;
+          white-space: nowrap;
+        }
+        .neo-header {
+          flex-direction: column;
+          gap: 1rem;
+          text-align: center;
+        }
+        .config-grid {
+          grid-template-columns: 1fr;
+        }
+        .upload-container {
+          flex-direction: column;
+        }
       }
     </style>
   </head>
   <body>
-    
     <aside class="sidebar">
       <div class="logo">
         <i class="fas fa-wallet"></i>
@@ -453,14 +544,16 @@
         <div class="nav-item active">
           <i class="fas fa-file-invoice-dollar"></i> Gerador
         </div>
-        <div class="nav-item" onclick="document.getElementById('info-modal').classList.add('show')">
+        <div
+          class="nav-item"
+          onclick="document.getElementById('info-modal').classList.add('show')"
+        >
           <i class="fas fa-question-circle"></i> Ajuda
         </div>
       </nav>
     </aside>
 
     <main class="main-content">
-      
       <div class="neo-header">
         <div class="header-title">
           <h1>Conciliação de Cartões</h1>
@@ -477,46 +570,89 @@
             <div class="icon-box"><i class="fa-solid fa-users"></i></div>
             CONTA CLIENTES
           </label>
-          <input type="text" class="neo-input" id="conta-clientes" placeholder="Ex: 27" />
+          <input
+            type="text"
+            class="neo-input"
+            id="conta-clientes"
+            placeholder="Ex: 27"
+          />
         </div>
         <div class="config-item">
           <label>
             <div class="icon-box"><i class="fa-solid fa-credit-card"></i></div>
             CONTA CARTÃO
           </label>
-          <input type="text" class="neo-input" id="conta-cartao" placeholder="Ex: 31" />
+          <input
+            type="text"
+            class="neo-input"
+            id="conta-cartao"
+            placeholder="Ex: 31"
+          />
         </div>
         <div class="config-item">
           <label>
             <div class="icon-box"><i class="fa-solid fa-tags"></i></div>
             CONTA TARIFAS
           </label>
-          <input type="text" class="neo-input" id="conta-tarifas" placeholder="Ex: 957" />
+          <input
+            type="text"
+            class="neo-input"
+            id="conta-tarifas"
+            placeholder="Ex: 957"
+          />
         </div>
         <div class="config-item">
           <label>
             <div class="icon-box"><i class="fa-solid fa-flag"></i></div>
             BANDEIRA (Opcional)
           </label>
-          <input type="text" class="neo-input" id="bandeira-cartao" placeholder="Ex: VISA" />
+          <input
+            type="text"
+            class="neo-input"
+            id="bandeira-cartao"
+            placeholder="Ex: VISA"
+          />
         </div>
       </div>
 
       <section id="upload-section" class="upload-container">
-        
         <div class="upload-section">
-          <div class="upload-area" onclick="document.getElementById('file-input').click()">
+          <div
+            class="upload-area"
+            onclick="document.getElementById('file-input').click()"
+          >
             <div class="upload-icon">
               <i class="fas fa-cloud-upload-alt"></i>
             </div>
-            <h3 style="font-weight: 800; text-transform: uppercase;">Arraste sua planilha aqui</h3>
-            <p style="color: #000; font-family: 'Space Mono'; margin-top: 0.5rem;">ou clique para buscar arquivos .xlsx</p>
-            <input type="file" id="file-input" accept=".xlsx, .xls" multiple style="display: none;" />
+            <h3 style="font-weight: 800; text-transform: uppercase">
+              Arraste sua planilha aqui
+            </h3>
+            <p
+              style="color: #000; font-family: 'Space Mono'; margin-top: 0.5rem"
+            >
+              ou clique para buscar arquivos .xlsx
+            </p>
+            <input
+              type="file"
+              id="file-input"
+              accept=".xlsx, .xls"
+              multiple
+              style="display: none"
+            />
           </div>
-          
+
           <div class="file-info" id="file-info">
-            <strong><i class="fas fa-check-circle"></i> ARQUIVOS PRONTOS:</strong>
-            <ul id="file-list" style="margin-top: 0.5rem; padding-left: 1.2rem; font-family: 'Space Mono';"></ul>
+            <strong
+              ><i class="fas fa-check-circle"></i> ARQUIVOS PRONTOS:</strong
+            >
+            <ul
+              id="file-list"
+              style="
+                margin-top: 0.5rem;
+                padding-left: 1.2rem;
+                font-family: 'Space Mono';
+              "
+            ></ul>
           </div>
         </div>
 
@@ -524,74 +660,143 @@
           <button class="neo-btn btn-secondary" id="generate-model-btn">
             <i class="fas fa-file-excel"></i> BAIXAR MODELO
           </button>
-          
-          <button class="neo-btn btn-primary" id="process-btn" disabled style="height: 100%;">
+
+          <button
+            class="neo-btn btn-primary"
+            id="process-btn"
+            disabled
+            style="height: 100%"
+          >
             <i class="fas fa-cogs"></i> PROCESSAR DADOS
           </button>
         </div>
-
       </section>
 
-      <section id="loading-section" class="hidden" style="text-align: center; padding: 3rem; background: #fff; border: 3px solid #000; box-shadow: 6px 6px 0 #000;">
+      <section
+        id="loading-section"
+        class="hidden"
+        style="
+          text-align: center;
+          padding: 3rem;
+          background: #fff;
+          border: 3px solid #000;
+          box-shadow: 6px 6px 0 #000;
+        "
+      >
         <div class="loading-spinner"></div>
-        <h3 style="text-transform: uppercase;">Processando números...</h3>
+        <h3 style="text-transform: uppercase">Processando números...</h3>
       </section>
 
       <section id="preview-section" class="hidden results-area">
-        <h2 style="margin-bottom: 1.5rem; background: #000; color: var(--color-success); display: inline-block; padding: 10px 20px; text-transform: uppercase; font-size: 1.2rem;">
+        <h2
+          style="
+            margin-bottom: 1.5rem;
+            background: #000;
+            color: var(--color-success);
+            display: inline-block;
+            padding: 10px 20px;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+          "
+        >
           Resultados Consolidados
         </h2>
-        
+
         <div class="summary-cards">
-            <div class="summary-card">
-                <span class="summary-label">Total Bruto</span>
-                <div class="summary-value" id="total-vendas-valor" style="color: var(--color-success);">R$ 0,00</div>
+          <div class="summary-card">
+            <span class="summary-label">Total Bruto</span>
+            <div
+              class="summary-value"
+              id="total-vendas-valor"
+              style="color: var(--color-success)"
+            >
+              R$ 0,00
             </div>
-            <div class="summary-card negative">
-                <span class="summary-label" style="color: #fff;">Total Tarifas</span>
-                <div class="summary-value" id="total-tarifas-valor">R$ 0,00</div>
-            </div>
-            <div class="summary-card liquid">
-                <span class="summary-label" style="color: #000;">Líquido Estimado</span>
-                <div class="summary-value" id="total-liquido-calc">R$ 0,00</div>
-            </div>
+          </div>
+          <div class="summary-card negative">
+            <span class="summary-label" style="color: #fff">Total Tarifas</span>
+            <div class="summary-value" id="total-tarifas-valor">R$ 0,00</div>
+          </div>
+          <div class="summary-card liquid">
+            <span class="summary-label" style="color: #000"
+              >Líquido Estimado</span
+            >
+            <div class="summary-value" id="total-liquido-calc">R$ 0,00</div>
+          </div>
         </div>
 
-        <div style="overflow-x: auto;">
-            <table id="preview-table">
-              <thead>
-                <tr>
-                  <th>Data</th>
-                  <th>Valor Bruto</th>
-                  <th>Valor Líquido</th>
-                  <th>Valor Taxa</th>
-                  <th>% Taxa</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
+        <div style="overflow-x: auto">
+          <table id="preview-table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Valor Bruto</th>
+                <th>Valor Líquido</th>
+                <th>Valor Taxa</th>
+                <th>% Taxa</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
         </div>
 
-        <button id="generate-btn" class="neo-btn btn-primary" style="width: 100%; margin-top: 2rem;">
-            <i class="fas fa-download"></i> BAIXAR ARQUIVO .TXT FINAL
+        <button
+          id="generate-btn"
+          class="neo-btn btn-primary"
+          style="width: 100%; margin-top: 2rem"
+        >
+          <i class="fas fa-download"></i> BAIXAR ARQUIVO .TXT FINAL
         </button>
       </section>
-
     </main>
 
     <div class="modal-overlay" id="info-modal">
       <div class="modal-content">
         <button class="modal-close" id="close-modal-btn">&times;</button>
-        <h2 style="margin-bottom: 1.5rem; text-transform: uppercase; font-weight: 900;">Como usar o Gerador</h2>
-        
-        <div style="background: var(--color-accent); padding: 1rem; border: 2px solid black; margin-bottom: 1rem; box-shadow: 4px 4px 0 #000;">
-            <strong>PASSO 1:</strong> Preencha as contas contábeis no topo.
+        <h2
+          style="
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            font-weight: 900;
+          "
+        >
+          Como usar o Gerador
+        </h2>
+
+        <div
+          style="
+            background: var(--color-accent);
+            padding: 1rem;
+            border: 2px solid black;
+            margin-bottom: 1rem;
+            box-shadow: 4px 4px 0 #000;
+          "
+        >
+          <strong>PASSO 1:</strong> Preencha as contas contábeis no topo.
         </div>
-        <div style="background: var(--color-secondary); color: #fff; padding: 1rem; border: 2px solid black; margin-bottom: 1rem; box-shadow: 4px 4px 0 #000;">
-            <strong>PASSO 2:</strong> Use o botão "Baixar Modelo" se não souber o formato da planilha. As colunas DATA e VALOR BRUTO são obrigatórias.
+        <div
+          style="
+            background: var(--color-secondary);
+            color: #fff;
+            padding: 1rem;
+            border: 2px solid black;
+            margin-bottom: 1rem;
+            box-shadow: 4px 4px 0 #000;
+          "
+        >
+          <strong>PASSO 2:</strong> Use o botão "Baixar Modelo" se não souber o
+          formato da planilha. As colunas DATA e VALOR BRUTO são obrigatórias.
         </div>
-        <div style="background: var(--color-success); padding: 1rem; border: 2px solid black; box-shadow: 4px 4px 0 #000;">
-            <strong>PASSO 3:</strong> Arraste o arquivo, clique em Processar e depois baixe o TXT.
+        <div
+          style="
+            background: var(--color-success);
+            padding: 1rem;
+            border: 2px solid black;
+            box-shadow: 4px 4px 0 #000;
+          "
+        >
+          <strong>PASSO 3:</strong> Arraste o arquivo, clique em Processar e
+          depois baixe o TXT.
         </div>
       </div>
     </div>
@@ -818,9 +1023,7 @@
                 resolve(fileData);
               } catch (error) {
                 reject(
-                  new Error(
-                    `Erro ao ler "${file.name}": ${error.message}`
-                  )
+                  new Error(`Erro ao ler "${file.name}": ${error.message}`)
                 );
               }
             };
@@ -871,7 +1074,7 @@
             '<tr><td colspan="5" style="text-align:center; padding: 2rem;">Nenhum dado válido encontrado.</td></tr>';
           totalVendasEl.textContent = formatBRL(0);
           totalTarifasEl.textContent = formatBRL(0);
-          if(totalLiquidoEl) totalLiquidoEl.textContent = formatBRL(0);
+          if (totalLiquidoEl) totalLiquidoEl.textContent = formatBRL(0);
           generateBtn.disabled = true;
           return;
         }
@@ -914,8 +1117,9 @@
 
         totalVendasEl.textContent = formatBRL(totalVendas);
         totalTarifasEl.textContent = formatBRL(totalTarifas);
-        if(totalLiquidoEl) totalLiquidoEl.textContent = formatBRL(totalLiquido);
-        
+        if (totalLiquidoEl)
+          totalLiquidoEl.textContent = formatBRL(totalLiquido);
+
         generateBtn.disabled = false;
       }
 
@@ -986,8 +1190,8 @@
 
       function showSection(sectionName) {
         ["upload", "loading", "preview"].forEach((sec) => {
-            const el = document.getElementById(`${sec}-section`);
-            if(el) el.classList.add("hidden");
+          const el = document.getElementById(`${sec}-section`);
+          if (el) el.classList.add("hidden");
         });
         const target = document.getElementById(`${sectionName}-section`);
         if (target) target.classList.remove("hidden");
