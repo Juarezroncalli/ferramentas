@@ -17,15 +17,13 @@
 
     <style>
       :root {
-        --bg-body: #8b5cf6; /* Roxo (Fundo) */
+        --bg-body: #8b5cf6;
         --card-bg: #ffffff;
         --border-black: #000000;
-
-        --color-primary: #06b6d4; /* Ciano */
-        --color-secondary: #f472b6; /* Rosa */
-        --color-accent: #facc15; /* Amarelo */
-        --color-success: #22c55e; /* Verde */
-
+        --color-primary: #06b6d4;
+        --color-secondary: #f472b6;
+        --color-accent: #facc15;
+        --color-success: #22c55e;
         --shadow-dist: 6px;
         --border-width: 3px;
       }
@@ -48,7 +46,6 @@
         display: flex;
       }
 
-      /* Sidebar */
       .sidebar {
         width: 280px;
         background: var(--color-accent);
@@ -88,20 +85,12 @@
         margin-bottom: 1rem;
         font-weight: 800;
         color: #000;
-        cursor: pointer;
         border: var(--border-width) solid var(--border-black);
         background: #fff;
         box-shadow: 4px 4px 0 0 black;
         text-transform: uppercase;
         font-size: 0.85rem;
         text-decoration: none;
-      }
-
-      .nav-item.active {
-        background-color: var(--color-primary);
-        color: #000;
-        transform: translate(-2px, -2px);
-        box-shadow: 6px 6px 0 0 black;
       }
 
       .main-content {
@@ -202,7 +191,6 @@
         box-shadow: 0 0 0 0 black;
       }
 
-      /* Tabela Customizada */
       .results-container {
         margin-top: 2rem;
         overflow-x: auto;
@@ -258,7 +246,7 @@
         <span>Tax Reform</span>
       </a>
       <nav>
-        <a href="#" class="nav-item active">
+        <a href="#" class="nav-item">
           <i class="fas fa-calculator"></i> Transição
         </a>
       </nav>
@@ -283,7 +271,7 @@
               type="number"
               id="aliquotaIBS"
               class="neo-input"
-              value="18.50"
+              placeholder="Ex: 18.50"
               step="0.01"
             />
           </div>
@@ -293,7 +281,7 @@
               type="number"
               id="aliquotaCBS"
               class="neo-input"
-              value="8.5"
+              placeholder="Ex: 8.50"
               step="0.01"
             />
           </div>
@@ -303,7 +291,7 @@
               type="number"
               id="aliquotaISS"
               class="neo-input"
-              value="5.00"
+              placeholder="Ex: 5.00"
               step="0.01"
             />
           </div>
@@ -313,7 +301,7 @@
               type="number"
               id="aliquotaICMS"
               class="neo-input"
-              value="18.00"
+              placeholder="Ex: 18.00"
               step="0.01"
             />
           </div>
@@ -323,7 +311,7 @@
               type="number"
               id="percentualReducao"
               class="neo-input"
-              value="60"
+              placeholder="Ex: 60"
               step="0.01"
             />
           </div>
@@ -374,20 +362,22 @@
       }
 
       function calcular() {
-        const aliqIBS_Base = parseFloat(
-          document.getElementById("aliquotaIBS").value
-        );
-        const aliqCBS_Base = parseFloat(
-          document.getElementById("aliquotaCBS").value
-        );
-        const aliqISS_Base = parseFloat(
-          document.getElementById("aliquotaISS").value
-        );
-        const aliqICMS_Base = parseFloat(
-          document.getElementById("aliquotaICMS").value
-        );
-        const percReducao =
-          parseFloat(document.getElementById("percentualReducao").value) / 100;
+        const iIBS = document.getElementById("aliquotaIBS").value;
+        const iCBS = document.getElementById("aliquotaCBS").value;
+        const iISS = document.getElementById("aliquotaISS").value;
+        const iICMS = document.getElementById("aliquotaICMS").value;
+        const iRed = document.getElementById("percentualReducao").value;
+
+        if (!iIBS || !iCBS || !iISS || !iICMS || !iRed) {
+          alert("Por favor, preencha todas as alíquotas para calcular.");
+          return;
+        }
+
+        const aliqIBS_Base = parseFloat(iIBS);
+        const aliqCBS_Base = parseFloat(iCBS);
+        const aliqISS_Base = parseFloat(iISS);
+        const aliqICMS_Base = parseFloat(iICMS);
+        const percReducao = parseFloat(iRed) / 100;
 
         const tbody = document.getElementById("tabelaResultados");
         tbody.innerHTML = "";
@@ -423,7 +413,6 @@
       document
         .getElementById("calcularBtn")
         .addEventListener("click", calcular);
-      document.addEventListener("DOMContentLoaded", calcular);
     </script>
   </body>
 </html>
