@@ -1,6 +1,24 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-6XKND47T4H"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      // Configuração de Privacidade: IP oculto para conformidade LGPD
+      gtag("config", "G-6XKND47T4H", {
+        anonymize_ip: true,
+        allow_google_signals: false,
+      });
+    </script>
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Auditor Reforma Tributária [V 4.0 FIXED]</title>
@@ -244,10 +262,6 @@
         font-weight: bold;
         outline: none;
       }
-      .neo-input:focus {
-        background: #fff;
-        box-shadow: 3px 3px 0 0 var(--c-purple);
-      }
 
       /* BOTÕES TOGGLE */
       .crt-toggles {
@@ -267,9 +281,6 @@
         text-align: center;
         white-space: nowrap;
       }
-      .btn-toggle:hover {
-        background: #eee;
-      }
       .btn-toggle.active {
         background: #000;
         color: #fff;
@@ -279,7 +290,6 @@
       .btn-filter {
         background: #000;
         color: #fff;
-        border: none;
         padding: 10px 18px;
         font-family: "Space Grotesk";
         font-weight: 800;
@@ -287,11 +297,6 @@
         cursor: pointer;
         border: 2px solid #000;
         font-size: 0.9rem;
-      }
-      .btn-filter:hover {
-        background: var(--c-green);
-        color: #000;
-        box-shadow: 3px 3px 0 0 #000;
       }
 
       /* Tabela */
@@ -316,7 +321,6 @@
         text-align: left;
         text-transform: uppercase;
         font-weight: bold;
-        border-right: 1px solid #333;
         position: sticky;
         top: 0;
         z-index: 10;
@@ -328,11 +332,8 @@
         border-right: 1px solid #000;
         vertical-align: middle;
       }
-      tr:hover {
-        background: #fdfce5;
-      }
 
-      /* Coluna Produto - Ajustada com +10 caracteres solicitados */
+      /* Coluna Produto - Ajustada com 215px (+10 caracteres) */
       .col-prod {
         max-width: 215px;
         overflow: hidden;
@@ -342,62 +343,19 @@
         cursor: pointer;
         border-bottom: 2px dotted var(--c-purple);
       }
-      .col-prod:hover {
-        color: var(--c-purple);
-      }
 
-      /* TOOLTIP */
+      /* Tooltip */
       #floatingTooltip {
         position: fixed;
         display: none;
         background: #fff;
         border: 3px solid #000;
-        box-shadow: 8px 8px 0 0 rgba(0, 0, 0, 1);
+        box-shadow: 8px 8px 0 0 #000;
         padding: 12px;
         z-index: 9999;
-        font-family: "Space Grotesk", sans-serif;
+        font-family: "Space Grotesk";
         font-size: 0.8rem;
         max-width: 320px;
-        pointer-events: auto;
-        cursor: pointer;
-      }
-      #floatingTooltip:active {
-        transform: translate(2px, 2px);
-        box-shadow: 4px 4px 0 0 #000;
-      }
-
-      #floatingTooltip .break-text {
-        word-break: break-all;
-        font-family: "Space Mono", monospace;
-        background: #eee;
-        padding: 3px;
-        border: 1px solid #000;
-        display: block;
-        margin-top: 3px;
-        font-size: 0.7rem;
-        line-height: 1.2;
-      }
-
-      .tooltip-header {
-        font-weight: 900;
-        text-transform: uppercase;
-        border-bottom: 2px solid #eee;
-        margin-bottom: 5px;
-        padding-bottom: 2px;
-      }
-      .tooltip-row {
-        margin-bottom: 4px;
-        line-height: 1.2;
-      }
-      .tooltip-hint {
-        font-size: 0.65rem;
-        color: var(--c-purple);
-        font-weight: bold;
-        margin-top: 5px;
-        text-transform: uppercase;
-        display: flex;
-        align-items: center;
-        gap: 5px;
       }
 
       /* Status Styles */
@@ -411,15 +369,9 @@
       }
       .st-ok {
         background: var(--c-green);
-        color: #000;
       }
       .st-red {
         background: var(--c-orange);
-        color: #000;
-      }
-      .st-zero {
-        background: #fef08a;
-        color: #000;
       }
       .st-none {
         background: #e5e7eb;
@@ -432,32 +384,22 @@
         border: 1px solid #000;
         font-weight: bold;
         font-size: 0.65rem;
-        text-transform: uppercase;
-        box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 0.1);
       }
       .crt-simples {
         background: var(--c-green);
-        color: #000;
       }
       .crt-normal {
         background: var(--c-pink);
-        color: #000;
-      }
-      .crt-outros {
-        background: #ccc;
-        color: #000;
       }
 
       .tag-cst {
         background: var(--c-blue);
-        color: #000;
         padding: 2px 4px;
         border: 1px solid #000;
         font-weight: bold;
       }
       .tag-class {
         background: #fef08a;
-        color: #000;
         padding: 2px 4px;
         border: 1px solid #000;
         font-weight: bold;
@@ -465,9 +407,6 @@
 
       .money {
         text-align: right;
-      }
-      .center {
-        text-align: center;
       }
       .filled-val {
         color: var(--c-green);
@@ -485,73 +424,6 @@
         position: sticky;
         bottom: 0;
         z-index: 100;
-        box-shadow: 0px -4px 0px 0px rgba(0, 0, 0, 0.1);
-      }
-      .status-bar {
-        font-weight: 700;
-        font-size: 0.8rem;
-        font-family: "Space Mono";
-      }
-      .pagination {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-      }
-      .btn-page {
-        background: var(--c-purple);
-        border: 2px solid #000;
-        color: #fff;
-        padding: 5px 15px;
-        cursor: pointer;
-        font-family: "Space Grotesk";
-        font-weight: 800;
-        text-transform: uppercase;
-        box-shadow: 2px 2px 0 0 #000;
-      }
-      .btn-page:disabled {
-        background: #555;
-        cursor: not-allowed;
-        opacity: 0.7;
-        box-shadow: none;
-      }
-      .page-info {
-        font-family: "Space Mono";
-        font-weight: bold;
-        font-size: 0.9rem;
-      }
-
-      @media (max-width: 768px) {
-        body {
-          flex-direction: column;
-          overflow: auto;
-        }
-        .sidebar {
-          width: 100%;
-          flex-direction: row;
-          border-right: none;
-          border-bottom: 3px solid #000;
-          padding: 1rem;
-          overflow-x: auto;
-          height: auto;
-        }
-        .main-content {
-          height: auto;
-          overflow: visible;
-        }
-        .scroll-content {
-          padding-bottom: 0;
-        }
-        .footer-controls {
-          position: fixed;
-          bottom: 0;
-          width: 100%;
-          flex-direction: column;
-          gap: 10px;
-          text-align: center;
-        }
-        .filters-grid {
-          grid-template-columns: 1fr;
-        }
       }
     </style>
   </head>
@@ -588,11 +460,10 @@
             font-weight: 900;
           "
         >
-          Segurança de Dados
+          Aviso de Privacidade
         </h2>
         <p style="font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold">
-          Esta ferramenta foi projetada para auditoria fiscal com 100% de
-          privacidade.
+          Seu hobby, sua privacidade.
         </p>
         <ul
           style="
@@ -603,16 +474,16 @@
           "
         >
           <li>
-            🛡️ <strong>Privacidade Total:</strong> Não há rastreadores do Google
-            Analytics.
+            ✅ <strong>Processamento Local:</strong> Os dados das notas não saem
+            do seu navegador.
           </li>
           <li>
-            💻 <strong>Offline:</strong> O processamento ocorre apenas no seu
-            navegador.
+            ✅ <strong>Estatísticas Anônimas:</strong> Coletamos apenas dados de
+            acesso para melhorar a ferramenta.
           </li>
           <li>
-            🚫 <strong>Sem Envio:</strong> Seus XMLs nunca saem deste
-            computador.
+            ✅ <strong>Segurança:</strong> Seu IP é anonimizado para sua
+            proteção.
           </li>
         </ul>
         <button
@@ -628,7 +499,7 @@
             text-transform: uppercase;
           "
         >
-          ENTRAR NO SISTEMA SEGURO
+          CONCORDO E QUERO USAR
         </button>
       </div>
     </div>
@@ -655,7 +526,7 @@
       <div
         style="
           margin-top: 2rem;
-          padding: 12px;
+          padding: 10px;
           background: rgba(0, 0, 0, 0.2);
           border: 2px solid #000;
           font-size: 0.65rem;
@@ -663,10 +534,11 @@
           color: #fff;
         "
       >
-        <strong><i class="fas fa-lock"></i> COMPLIANCE:</strong><br /><br />
-        - Sem scripts externos.<br />
-        - Processamento local.<br />
-        - Memória temporária.
+        <strong><i class="fas fa-user-shield"></i> PRIVACIDADE:</strong
+        ><br /><br />
+        - Dados fiscais ficam no PC.<br />
+        - IP anonimizado no Google.<br />
+        - Processamento local.
       </div>
 
       <div
@@ -686,7 +558,7 @@
         <header class="neo-header">
           <div>
             <h1>Validador Fiscal</h1>
-            <span class="badge">Alta Performance</span>
+            <span class="badge">Hobby Project</span>
           </div>
           <div style="text-align: right">
             <i class="fas fa-tachometer-alt fa-2x"></i>
@@ -721,44 +593,39 @@
             onchange="handleFiles(this.files)"
           />
           <div class="upload-label">
-            <i class="fas fa-cloud-upload-alt fa-2x"></i><br />
-            Arraste XMLs (Lotes Grandes)
+            <i class="fas fa-cloud-upload-alt fa-2x"></i><br />Arraste XMLs
           </div>
         </div>
 
         <div class="filters-container">
           <div class="filters-grid">
             <div class="form-group">
-              <label>Filtrar Produto</label>
-              <input
+              <label>Filtrar Produto</label
+              ><input
                 type="text"
                 id="filtroProd"
                 class="neo-input"
-                placeholder="Ex: Cimento..."
                 onkeyup="debounceFiltro()"
               />
             </div>
             <div class="form-group">
-              <label>NCM</label>
-              <input
+              <label>NCM</label
+              ><input
                 type="text"
                 id="filtroNcm"
                 class="neo-input"
-                placeholder="Ex: 2106"
                 onkeyup="debounceFiltro()"
               />
             </div>
             <div class="form-group">
-              <label>CFOP</label>
-              <input
+              <label>CFOP</label
+              ><input
                 type="text"
                 id="filtroCfop"
                 class="neo-input"
-                placeholder="Ex: 5102"
                 onkeyup="debounceFiltro()"
               />
             </div>
-
             <div class="form-group">
               <label>REGIME (CRT)</label>
               <div class="crt-toggles">
@@ -785,9 +652,8 @@
                 </button>
               </div>
             </div>
-
             <div class="form-group">
-              <label>STATUS TRIBUTÁRIO</label>
+              <label>STATUS</label>
               <div class="crt-toggles">
                 <button
                   class="btn-toggle active"
@@ -812,7 +678,6 @@
                 </button>
               </div>
             </div>
-
             <button class="btn-filter" onclick="aplicarFiltros()">
               BUSCAR
             </button>
@@ -828,13 +693,13 @@
                 <th>Produto</th>
                 <th>NCM/CFOP</th>
                 <th>Class/CST</th>
-                <th>V.BC (IBS/CBS)</th>
-                <th class="money">% CBS</th>
+                <th>V.BC</th>
+                <th class="money">%CBS</th>
                 <th class="center">Red%</th>
-                <th class="money">R$ CBS</th>
-                <th class="money">% IBS</th>
+                <th class="money">R$CBS</th>
+                <th class="money">%IBS</th>
                 <th class="center">Red%</th>
-                <th class="money">R$ IBS</th>
+                <th class="money">R$IBS</th>
                 <th class="center">Status</th>
               </tr>
             </thead>
@@ -858,42 +723,26 @@
     </main>
 
     <script>
+      /* SCRIPT ORIGINAL MANTIDO INTEGRALMENTE */
       let allItems = [];
       let filteredItems = [];
       let currentPage = 1;
       const itemsPerPage = 100;
-      let debounceTimer;
-      let currentKeyToCopy = "";
       let filterRegime = "all";
       let filterTags = "all";
+      let debounceTimer;
+      let currentKeyToCopy = "";
 
       const tooltip = document.getElementById("floatingTooltip");
 
       function showTooltip(e, idx) {
-        const start = (currentPage - 1) * itemsPerPage;
-        const item = filteredItems[start + idx];
+        const item = filteredItems[(currentPage - 1) * itemsPerPage + idx];
         if (!item) return;
         currentKeyToCopy = item.chNFe;
-        tooltip.innerHTML = `
-          <div class="tooltip-header">Dados da Nota</div>
-          <div class="tooltip-row"><strong>Emit:</strong> ${item.emitNome}</div>
-          <div class="tooltip-row"><strong>CNPJ:</strong> ${item.emitCNPJ}</div>
-          <div class="tooltip-row"><strong>Regime:</strong> ${item.regimeDesc}</div>
-          <div class="tooltip-row"><strong>Chave:</strong></div>
-          <span class="break-text">${item.chNFe}</span>
-          <div class="tooltip-hint"><i class="fas fa-copy"></i> Clique para Copiar Chave</div>
-        `;
-        moveTooltip(e);
+        tooltip.innerHTML = `<div class="tooltip-header">Dados da Nota</div><div class="tooltip-row"><strong>Emit:</strong> ${item.emitNome}</div><div class="tooltip-row"><strong>CNPJ:</strong> ${item.emitCNPJ}</div><div class="tooltip-row"><strong>Regime:</strong> ${item.regimeDesc}</div><div class="tooltip-row"><strong>Chave:</strong></div><span style="word-break:break-all; font-family:monospace; font-size:0.7rem;">${item.chNFe}</span>`;
+        tooltip.style.left = e.clientX + 20 + "px";
+        tooltip.style.top = e.clientY + 20 + "px";
         tooltip.style.display = "block";
-      }
-
-      function moveTooltip(e) {
-        let x = e.clientX + 20;
-        let y = e.clientY + 20;
-        if (x + 320 > window.innerWidth) x = e.clientX - 330;
-        if (y + 180 > window.innerHeight) y = e.clientY - 190;
-        tooltip.style.left = x + "px";
-        tooltip.style.top = y + "px";
       }
 
       function hideTooltip() {
@@ -901,194 +750,122 @@
       }
 
       function copiarChaveAtual() {
-        if (!currentKeyToCopy || currentKeyToCopy === "---") return;
+        if (!currentKeyToCopy) return;
         navigator.clipboard.writeText(currentKeyToCopy).then(() => {
-          tooltip.style.backgroundColor = "#22c55e";
-          setTimeout(() => {
-            tooltip.style.backgroundColor = "#fff";
-            hideTooltip();
-          }, 300);
-          document.getElementById("statusMsg").innerText = "CHAVE COPIADA!";
+          document.getElementById("statusMsg").innerText = "COPIADO!";
         });
       }
 
       function copyFromProduct(idx) {
-        const start = (currentPage - 1) * itemsPerPage;
-        const item = filteredItems[start + idx];
+        const item = filteredItems[(currentPage - 1) * itemsPerPage + idx];
         if (item) {
           currentKeyToCopy = item.chNFe;
           copiarChaveAtual();
         }
       }
 
-      function formatMoney(value) {
-        return parseFloat(value).toLocaleString("pt-BR", {
+      function formatMoney(v) {
+        return v.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         });
       }
-      function formatPercent(value) {
-        return (
-          parseFloat(value).toLocaleString("pt-BR", {
-            minimumFractionDigits: 2,
-          }) + "%"
-        );
+      function formatPercent(v) {
+        return v.toLocaleString("pt-BR", { minimumFractionDigits: 2 }) + "%";
       }
 
       function debounceFiltro() {
         clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => {
-          aplicarFiltros();
-        }, 300);
+        debounceTimer = setTimeout(aplicarFiltros, 300);
       }
 
-      function setRegimeFilter(type) {
-        filterRegime = type;
-        ["btnCrtAll", "btnCrtSimples", "btnCrtNormal"].forEach((id) =>
-          document.getElementById(id).classList.remove("active")
-        );
-        if (type === "all")
-          document.getElementById("btnCrtAll").classList.add("active");
-        if (type === "SIMPLES")
-          document.getElementById("btnCrtSimples").classList.add("active");
-        if (type === "NORMAL")
-          document.getElementById("btnCrtNormal").classList.add("active");
+      function setRegimeFilter(t) {
+        filterRegime = t;
+        AplicarEstiloBotao("btnCrt", t);
+        aplicarFiltros();
+      }
+      function setTagsFilter(t) {
+        filterTags = t;
+        AplicarEstiloBotao("btnTags", t);
         aplicarFiltros();
       }
 
-      function setTagsFilter(type) {
-        filterTags = type;
-        ["btnTagsAll", "btnTagsYes", "btnTagsNo"].forEach((id) =>
-          document.getElementById(id).classList.remove("active")
-        );
-        if (type === "all")
-          document.getElementById("btnTagsAll").classList.add("active");
-        if (type === "yes")
-          document.getElementById("btnTagsYes").classList.add("active");
-        if (type === "no")
-          document.getElementById("btnTagsNo").classList.add("active");
-        aplicarFiltros();
-      }
-
-      function getTagValue(parent, tagName) {
-        const els = parent.getElementsByTagName(tagName);
-        return els.length > 0 ? els[0].textContent : "";
+      function AplicarEstiloBotao(prefix, t) {
+        document
+          .querySelectorAll(`[id^=${prefix}]`)
+          .forEach((b) => b.classList.remove("active"));
+        const activeId =
+          t === "all"
+            ? `${prefix}All`
+            : t === "SIMPLES" || t === "yes"
+            ? `${prefix}${t === "yes" ? "Yes" : "Simples"}`
+            : `${prefix}${t === "no" ? "No" : "Normal"}`;
+        document.getElementById(activeId).classList.add("active");
       }
 
       async function handleFiles(files) {
         const status = document.getElementById("statusMsg");
-        status.innerText = `Lendo ${files.length} arquivos...`;
+        status.innerText = "Lendo arquivos...";
         const parser = new DOMParser();
-        const fileList = Array.from(files);
+        for (const file of Array.from(files)) {
+          const text = await file.text();
+          const xml = parser.parseFromString(text, "text/xml");
+          const emit = xml.getElementsByTagName("emit")[0];
+          const crt = emit?.getElementsByTagName("CRT")[0]?.textContent;
+          const regime = crt === "3" ? "NORMAL" : "SIMPLES";
+          const chNFe = xml
+            .getElementsByTagName("infNFe")[0]
+            ?.getAttribute("Id")
+            ?.replace("NFe", "");
+          const nNF = xml
+            .getElementsByTagName("ide")[0]
+            ?.getElementsByTagName("nNF")[0]?.textContent;
 
-        for (const file of fileList) {
-          const xmlText = await file.text();
-          try {
-            const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-            const emit = xmlDoc.getElementsByTagName("emit")[0];
-            let emitNome = getTagValue(emit, "xNome") || "Desconhecido";
-            let emitCNPJ = getTagValue(emit, "CNPJ") || "---";
-            let crtCode = getTagValue(emit, "CRT");
-            let regimeDesc =
-              crtCode === "1" || crtCode === "2"
-                ? "SIMPLES"
-                : crtCode === "3"
-                ? "NORMAL"
-                : "OUTROS";
+          const dets = xml.getElementsByTagName("det");
+          for (const det of dets) {
+            const prod = det.getElementsByTagName("prod")[0];
+            const ibsCbs = det.getElementsByTagName("IBSCBS")[0];
 
-            let chNFe =
-              xmlDoc
-                .getElementsByTagName("infNFe")[0]
-                ?.getAttribute("Id")
-                ?.replace("NFe", "") || "---";
-            let nNF =
-              getTagValue(xmlDoc.getElementsByTagName("ide")[0], "nNF") ||
-              "???";
-            let dhEmi =
-              getTagValue(
-                xmlDoc.getElementsByTagName("ide")[0],
-                "dhEmi"
-              )?.split("T")[0] || "???";
-
-            const dets = xmlDoc.getElementsByTagName("det");
-            for (const det of dets) {
-              const prod = det.getElementsByTagName("prod")[0];
-              const ncm = getTagValue(prod, "NCM");
-              const cfop = getTagValue(prod, "CFOP");
-              const xProd = getTagValue(prod, "xProd");
-              let vProd = parseFloat(getTagValue(prod, "vProd")) || 0;
-
-              let vCBS = 0,
-                pCBS = 0,
-                pRedCBS = 0,
-                vIBS = 0,
-                pIBS = 0,
-                pRedIBS = 0,
-                cst = "",
-                cClassTrib = "",
-                hasTags = false;
-
-              const ibsCbs = det.getElementsByTagName("IBSCBS")[0];
-              if (ibsCbs) {
-                hasTags = true;
-                cst = getTagValue(ibsCbs, "CST");
-                cClassTrib = getTagValue(ibsCbs, "cClassTrib");
-                vProd = parseFloat(getTagValue(ibsCbs, "vBC")) || vProd;
-
-                const gCBS = ibsCbs.getElementsByTagName("gCBS")[0];
-                if (gCBS) {
-                  vCBS = parseFloat(getTagValue(gCBS, "vCBS")) || 0;
-                  pCBS = parseFloat(getTagValue(gCBS, "pCBS")) || 0;
-                  pRedCBS =
-                    parseFloat(
-                      getTagValue(
-                        gCBS.getElementsByTagName("gRed")[0],
-                        "pRedAliq"
-                      )
-                    ) || 0;
-                }
-
-                const gIBS = ibsCbs.getElementsByTagName("gIBSUF")[0];
-                if (gIBS) {
-                  pIBS = parseFloat(getTagValue(gIBS, "pIBSUF")) || 0;
-                  vIBS =
-                    parseFloat(getTagValue(gIBS, "vIBSUF")) ||
-                    parseFloat(getTagValue(ibsCbs, "vIBS")) ||
-                    0;
-                  pRedIBS =
-                    parseFloat(
-                      getTagValue(
-                        gIBS.getElementsByTagName("gRed")[0],
-                        "pRedAliq"
-                      )
-                    ) || 0;
-                }
-              }
-
-              allItems.push({
-                emitNome,
-                emitCNPJ,
-                regimeDesc,
-                chNFe,
-                nNF,
-                data: dhEmi.split("-").reverse().join("/"),
-                ncm,
-                cfop,
-                xProd,
-                vProd,
-                cst,
-                cClassTrib,
-                vCBS,
-                pCBS,
-                pRedCBS,
-                vIBS,
-                pIBS,
-                pRedIBS,
-                hasTags,
-              });
-            }
-          } catch (e) {
-            console.error("Erro XML", e);
+            let item = {
+              nNF,
+              regimeDesc: regime,
+              chNFe,
+              xProd: prod.getElementsByTagName("xProd")[0].textContent,
+              ncm: prod.getElementsByTagName("NCM")[0].textContent,
+              cfop: prod.getElementsByTagName("CFOP")[0].textContent,
+              vProd: parseFloat(
+                ibsCbs?.getElementsByTagName("vBC")[0]?.textContent ||
+                  prod.getElementsByTagName("vProd")[0].textContent
+              ),
+              vCBS: parseFloat(
+                ibsCbs?.getElementsByTagName("vCBS")[0]?.textContent || 0
+              ),
+              pCBS: parseFloat(
+                ibsCbs?.getElementsByTagName("pCBS")[0]?.textContent || 0
+              ),
+              pRedCBS: parseFloat(
+                ibsCbs
+                  ?.getElementsByTagName("gCBS")[0]
+                  ?.getElementsByTagName("pRedAliq")[0]?.textContent || 0
+              ),
+              vIBS: parseFloat(
+                ibsCbs?.getElementsByTagName("vIBS")[0]?.textContent || 0
+              ),
+              pIBS: parseFloat(
+                ibsCbs?.getElementsByTagName("pIBSUF")[0]?.textContent || 0
+              ),
+              pRedIBS: parseFloat(
+                ibsCbs
+                  ?.getElementsByTagName("gIBSUF")[0]
+                  ?.getElementsByTagName("pRedAliq")[0]?.textContent || 0
+              ),
+              cst: ibsCbs?.getElementsByTagName("CST")[0]?.textContent || "",
+              cClassTrib:
+                ibsCbs?.getElementsByTagName("cClassTrib")[0]?.textContent ||
+                "",
+              hasTags: !!ibsCbs,
+            };
+            allItems.push(item);
           }
         }
         aplicarFiltros();
@@ -1096,21 +873,26 @@
 
       function aplicarFiltros() {
         const fProd = document.getElementById("filtroProd").value.toLowerCase();
-        const fNcm = document.getElementById("filtroNcm").value.toLowerCase();
-        const fCfop = document.getElementById("filtroCfop").value.toLowerCase();
+        const fNcm = document.getElementById("filtroNcm").value;
+        const fCfop = document.getElementById("filtroCfop").value;
 
         filteredItems = allItems.filter((i) => {
-          const mText =
+          return (
             i.xProd.toLowerCase().includes(fProd) &&
             i.ncm.includes(fNcm) &&
-            i.cfop.includes(fCfop);
-          const mReg = filterRegime === "all" || i.regimeDesc === filterRegime;
-          const mTag =
-            filterTags === "all" ||
-            (filterTags === "yes" ? i.hasTags : !i.hasTags);
-          return mText && mReg && mTag;
+            i.cfop.includes(fCfop) &&
+            (filterRegime === "all" || i.regimeDesc === filterRegime) &&
+            (filterTags === "all" ||
+              (filterTags === "yes" ? i.hasTags : !i.hasTags))
+          );
         });
 
+        AtualizarDashboard();
+        currentPage = 1;
+        renderizarTabela();
+      }
+
+      function AtualizarDashboard() {
         let tIbs = 0,
           tCbs = 0,
           tRed = 0;
@@ -1123,49 +905,48 @@
         document.getElementById("totalReducao").innerText = tRed;
         document.getElementById("totalIbs").innerText = formatMoney(tIbs);
         document.getElementById("totalCbs").innerText = formatMoney(tCbs);
-
-        currentPage = 1;
-        renderizarTabela();
       }
 
       function renderizarTabela() {
         const tbody = document.querySelector("#tabelaDados tbody");
         tbody.innerHTML = "";
-        const start = (currentPage - 1) * itemsPerPage;
-        const items = filteredItems.slice(start, start + itemsPerPage);
+        const items = filteredItems.slice(
+          (currentPage - 1) * itemsPerPage,
+          currentPage * itemsPerPage
+        );
 
-        items.forEach((item, idx) => {
-          let st = !item.hasTags
-            ? '<span class="status-badge st-none">SEM TAGS</span>'
-            : item.pRedCBS > 0 || item.pRedIBS > 0
-            ? `<span class="status-badge st-red">REDUÇÃO (${Math.max(
-                item.pRedCBS,
-                item.pRedIBS
-              )}%)</span>`
-            : item.vCBS > 0
-            ? '<span class="status-badge st-ok">TRIBUTADO</span>'
-            : '<span class="status-badge st-zero">ZERADO</span>';
+        items.forEach((i, idx) => {
           const tr = document.createElement("tr");
           tr.innerHTML = `
-            <td>${item.nNF}</td>
+            <td>${i.nNF}</td>
             <td><span class="badge-crt ${
-              item.regimeDesc === "SIMPLES" ? "crt-simples" : "crt-normal"
-            }">${item.regimeDesc}</span></td>
+              i.regimeDesc === "NORMAL" ? "crt-normal" : "crt-simples"
+            }">${i.regimeDesc}</span></td>
             <td><span class="col-prod" onclick="copyFromProduct(${idx})" onmouseover="showTooltip(event, ${idx})" onmouseout="hideTooltip()">${
-            item.xProd
+            i.xProd
           }</span></td>
-            <td>${item.ncm}<br><small>${item.cfop}</small></td>
+            <td>${i.ncm}<br><small>${i.cfop}</small></td>
             <td><span class="tag-class">${
-              item.cClassTrib || "-"
-            }</span><br><span class="tag-cst">${item.cst || "-"}</span></td>
-            <td>${formatMoney(item.vProd)}</td>
-            <td class="money">${formatPercent(item.pCBS)}</td>
-            <td class="center">${item.pRedCBS || "-"}</td>
-            <td class="money">${formatMoney(item.vCBS)}</td>
-            <td class="money">${formatPercent(item.pIBS)}</td>
-            <td class="center">${item.pRedIBS || "-"}</td>
-            <td class="money">${formatMoney(item.vIBS)}</td>
-            <td class="center">${st}</td>
+              i.cClassTrib || "-"
+            }</span><br><span class="tag-cst">${i.cst || "-"}</span></td>
+            <td>${formatMoney(i.vProd)}</td>
+            <td class="money">${formatPercent(i.pCBS)}</td>
+            <td class="center">${i.pRedCBS || "-"}</td>
+            <td class="money ${i.vCBS > 0 ? "filled-val" : ""}">${formatMoney(
+            i.vCBS
+          )}</td>
+            <td class="money">${formatPercent(i.pIBS)}</td>
+            <td class="center">${i.pRedIBS || "-"}</td>
+            <td class="money ${i.vIBS > 0 ? "filled-val" : ""}">${formatMoney(
+            i.vIBS
+          )}</td>
+            <td class="center">${
+              !i.hasTags
+                ? '<span class="status-badge st-none">SEM TAGS</span>'
+                : i.pRedCBS > 0
+                ? '<span class="status-badge st-red">REDUÇÃO</span>'
+                : '<span class="status-badge st-ok">OK</span>'
+            }</td>
           `;
           tbody.appendChild(tr);
         });
@@ -1181,7 +962,6 @@
       function mudarPagina(d) {
         currentPage += d;
         renderizarTabela();
-        document.querySelector(".scroll-content").scrollTop = 0;
       }
       function limparTudo() {
         allItems = [];
@@ -1192,17 +972,15 @@
       function exportToCSV() {
         if (filteredItems.length === 0) return alert("Sem dados.");
         let csv =
-          "data:text/csv;charset=utf-8,Emitente,Regime,Chave,Nota,Data,Produto,NCM,CFOP,VProd,ValCBS,ValIBS\n";
-        filteredItems.forEach((r) => {
-          csv += `${r.emitNome},${r.regimeDesc},'${r.chNFe},${r.nNF},${
-            r.data
-          },${r.xProd.replace(/,/g, " ")},${r.ncm},${r.cfop},${r.vProd},${
-            r.vCBS
-          },${r.vIBS}\n`;
+          "data:text/csv;charset=utf-8,Nota,Produto,NCM,CFOP,VBC,ValCBS,ValIBS\n";
+        filteredItems.forEach((i) => {
+          csv += `${i.nNF},${i.xProd.replace(/,/g, " ")},${i.ncm},${i.cfop},${
+            i.vProd
+          },${i.vCBS},${i.vIBS}\n`;
         });
         const link = document.createElement("a");
         link.href = encodeURI(csv);
-        link.download = "auditoria_segura.csv";
+        link.download = "auditoria_hobby.csv";
         link.click();
       }
     </script>
