@@ -736,6 +736,10 @@
             <div class="metric-title">Tot. IBS (R$)</div>
             <div class="metric-value" id="totalIbs">0,00</div>
           </div>
+          <div class="metric-card purple">
+            <div class="metric-title">% Tags (Regime Normal)</div>
+            <div class="metric-value" id="percTagsNormal">0%</div>
+          </div>
         </div>
 
         <div class="upload-area">
@@ -1226,17 +1230,40 @@
           totalCbs = 0,
           totalRed = 0;
 
+        // Lógica para estatística do Regime Normal (Baseado em Chaves Únicas de Nota)
+        const notasNormal = new Set();
+        const notasNormalComTags = new Set();
+
         for (let i = 0; i < filteredItems.length; i++) {
           const item = filteredItems[i];
           totalIbs += item.vIBS;
           totalCbs += item.vCBS;
           if (item.hasTags && (item.pRedCBS > 0 || item.pRedIBS > 0))
             totalRed++;
+
+          // Soma estatística Regime Normal
+          if (item.regimeDesc === "NORMAL") {
+            notasNormal.add(item.chNFe);
+            if (item.hasTags) {
+              notasNormalComTags.add(item.chNFe);
+            }
+          }
         }
+
+        // Cálculo do percentual
+        let percentual = 0;
+        if (notasNormal.size > 0) {
+          percentual = (notasNormalComTags.size / notasNormal.size) * 100;
+        }
+
         document.getElementById("totalItens").innerText = filteredItems.length;
         document.getElementById("totalReducao").innerText = totalRed;
         document.getElementById("totalIbs").innerText = formatMoney(totalIbs);
         document.getElementById("totalCbs").innerText = formatMoney(totalCbs);
+
+        // Atualiza card novo
+        document.getElementById("percTagsNormal").innerText =
+          percentual.toFixed(1) + "%";
       }
 
       function renderizarTabela() {
