@@ -4,8 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Auditor NFS-e [Impostos Retidos]</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
 
     <style>
       :root {
@@ -20,7 +26,11 @@
         --c-orange: #f97316;
         --border-width: 3px;
       }
-      * { margin: 0; padding: 0; box-sizing: border-box; }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
       body {
         font-family: "Space Grotesk", sans-serif;
         background-color: var(--bg-body);
@@ -41,44 +51,259 @@
         flex-shrink: 0;
         color: #fff;
       }
-      .logo { font-size: 1.5rem; font-weight: 900; text-transform: uppercase; margin-bottom: 2rem; text-shadow: 3px 3px 0 #000; display: flex; align-items: center; gap: 10px; }
-      .nav-item { background: #fff; color: #000; padding: 0.8rem; margin-bottom: 0.8rem; font-weight: 800; text-transform: uppercase; border: var(--border-width) solid #000; box-shadow: 3px 3px 0 0 #000; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.2s; font-size: 0.9rem; }
-      .nav-item:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 0 #000; background: var(--c-blue); }
-      .main-content { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-      .scroll-content { flex: 1; overflow-y: auto; padding: 1.5rem; padding-bottom: 80px; }
-      .neo-header { background: #fff; border: var(--border-width) solid #000; padding: 1rem 1.5rem; margin-bottom: 1.5rem; box-shadow: 5px 5px 0 0 #000; display: flex; justify-content: space-between; align-items: center; }
-      .neo-header h1 { font-weight: 900; font-size: 1.8rem; text-transform: uppercase; }
-      .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-      .metric-card { background: #fff; border: var(--border-width) solid #000; padding: 1rem; box-shadow: 4px 4px 0 0 #000; }
-      .metric-card.purple { border-top: 6px solid var(--c-purple); }
-      .metric-card.green { border-top: 6px solid var(--c-green); }
-      .metric-card.orange { border-top: 6px solid var(--c-orange); }
-      .metric-title { font-weight: 900; text-transform: uppercase; font-size: 0.8rem; color: #555; }
-      .metric-value { font-family: "Space Mono", monospace; font-size: 1.2rem; font-weight: 700; }
-      .upload-area { background: var(--c-pink); border: 3px dashed #000; padding: 1.5rem; text-align: center; margin-bottom: 1.5rem; cursor: pointer; transition: 0.2s; position: relative; }
-      .upload-area:hover { background: #ffbdf2; transform: scale(1.005); }
-      #xmlInput { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-      .table-container { overflow-x: auto; border: var(--border-width) solid #000; box-shadow: 4px 4px 0 0 #000; background: #fff; margin-bottom: 1rem; }
-      table { width: 100%; border-collapse: collapse; font-family: "Space Mono"; font-size: 0.75rem; white-space: nowrap; }
-      th { background: #000; color: #fff; padding: 12px 10px; text-align: left; text-transform: uppercase; border-right: 1px solid #333; position: sticky; top: 0; }
-      th.sortable { cursor: pointer; }
-      th.sortable:hover { background: #333; }
-      td { padding: 8px 10px; border-bottom: 1px solid #000; border-right: 1px solid #000; vertical-align: middle; }
-      tr:hover { background: #fdfce5; }
-      .btn-details { background: var(--c-blue); border: 2px solid #000; cursor: pointer; padding: 4px 8px; font-weight: bold; box-shadow: 2px 2px 0 #000; transition: 0.1s; }
-      .val-retido { color: #d32f2f; font-weight: bold; }
-      .val-zerado { color: #ccc; }
-      .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; backdrop-filter: blur(4px); }
-      .modal-content { background: #fff; border: 4px solid #000; width: 90%; max-width: 800px; height: 90%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 10px 10px 0 var(--c-purple); display: flex; flex-direction: column; }
-      .modal-header { background: #000; color: #fff; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-      .modal-body { flex: 1; overflow-y: auto; padding: 20px; font-family: "Space Mono", monospace; font-size: 0.85rem; }
-      .modal-close { background: var(--c-red); border: 2px solid #fff; color: #fff; padding: 5px 15px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-      .detail-group { margin-left: 20px; border-left: 2px dashed #ccc; padding-left: 10px; margin-bottom: 5px; }
-      .detail-row { margin-bottom: 4px; border-bottom: 1px solid #eee; padding: 2px 0; }
-      .detail-key { font-weight: bold; color: var(--c-purple); text-transform: uppercase; font-size: 0.8rem; }
-      .group-title { background: #eee; border: 1px solid #000; padding: 5px; margin-top: 10px; margin-bottom: 5px; font-weight: 900; text-transform: uppercase; display: inline-block; font-size: 0.75rem; box-shadow: 2px 2px 0 #ccc; }
-      .footer-controls { background: #fff; border-top: var(--border-width) solid #000; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; bottom: 0; }
-      .btn-page { background: var(--c-purple); border: 2px solid #000; color: #fff; padding: 5px 15px; cursor: pointer; font-family: "Space Grotesk"; font-weight: 800; box-shadow: 2px 2px 0 0 #000; }
+      .logo {
+        font-size: 1.5rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        margin-bottom: 2rem;
+        text-shadow: 3px 3px 0 #000;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .nav-item {
+        background: #fff;
+        color: #000;
+        padding: 0.8rem;
+        margin-bottom: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        border: var(--border-width) solid #000;
+        box-shadow: 3px 3px 0 0 #000;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: 0.2s;
+        font-size: 0.9rem;
+      }
+      .nav-item:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 5px 5px 0 0 #000;
+        background: var(--c-blue);
+      }
+      .nav-item.export {
+        background: var(--c-green);
+      }
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
+      .scroll-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem;
+        padding-bottom: 80px;
+      }
+      .neo-header {
+        background: #fff;
+        border: var(--border-width) solid #000;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 5px 5px 0 0 #000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .neo-header h1 {
+        font-weight: 900;
+        font-size: 1.8rem;
+        text-transform: uppercase;
+      }
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .metric-card {
+        background: #fff;
+        border: var(--border-width) solid #000;
+        padding: 1rem;
+        box-shadow: 4px 4px 0 0 #000;
+      }
+      .metric-card.purple {
+        border-top: 6px solid var(--c-purple);
+      }
+      .metric-card.green {
+        border-top: 6px solid var(--c-green);
+      }
+      .metric-card.orange {
+        border-top: 6px solid var(--c-orange);
+      }
+      .metric-card.red {
+        border-top: 6px solid var(--c-red);
+      }
+      .metric-title {
+        font-weight: 900;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        color: #555;
+      }
+      .metric-value {
+        font-family: "Space Mono", monospace;
+        font-size: 1.2rem;
+        font-weight: 700;
+      }
+      .upload-area {
+        background: var(--c-pink);
+        border: 3px dashed #000;
+        padding: 1.5rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        cursor: pointer;
+        transition: 0.2s;
+        position: relative;
+      }
+      .upload-area:hover {
+        background: #ffbdf2;
+        transform: scale(1.005);
+      }
+      #xmlInput {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+      }
+      .table-container {
+        overflow-x: auto;
+        border: var(--border-width) solid #000;
+        box-shadow: 4px 4px 0 0 #000;
+        background: #fff;
+        margin-bottom: 1rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: "Space Mono";
+        font-size: 0.75rem;
+        white-space: nowrap;
+      }
+      th {
+        background: #000;
+        color: #fff;
+        padding: 12px 10px;
+        text-align: left;
+        text-transform: uppercase;
+        border-right: 1px solid #333;
+        position: sticky;
+        top: 0;
+      }
+      th.sortable {
+        cursor: pointer;
+      }
+      th.sortable:hover {
+        background: #333;
+      }
+      td {
+        padding: 8px 10px;
+        border-bottom: 1px solid #000;
+        border-right: 1px solid #000;
+        vertical-align: middle;
+      }
+      tr:hover {
+        background: #fdfce5;
+      }
+      .btn-details {
+        background: var(--c-blue);
+        border: 2px solid #000;
+        cursor: pointer;
+        padding: 4px 8px;
+        font-weight: bold;
+        box-shadow: 2px 2px 0 #000;
+        transition: 0.1s;
+      }
+      .val-retido {
+        color: #d32f2f;
+        font-weight: bold;
+      }
+      .val-zerado {
+        color: #ccc;
+      }
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 9999;
+        backdrop-filter: blur(4px);
+      }
+      .modal-content {
+        background: #fff;
+        border: 4px solid #000;
+        width: 90%;
+        max-width: 800px;
+        height: 90%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 10px 10px 0 var(--c-purple);
+        display: flex;
+        flex-direction: column;
+      }
+      .modal-header {
+        background: #000;
+        color: #fff;
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .modal-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        font-family: "Space Mono", monospace;
+        font-size: 0.85rem;
+      }
+      .modal-close {
+        background: var(--c-red);
+        border: 2px solid #fff;
+        color: #fff;
+        padding: 5px 15px;
+        font-weight: bold;
+        cursor: pointer;
+        text-transform: uppercase;
+      }
+      .footer-controls {
+        background: #fff;
+        border-top: var(--border-width) solid #000;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        bottom: 0;
+      }
+      .btn-page {
+        background: var(--c-purple);
+        border: 2px solid #000;
+        color: #fff;
+        padding: 5px 15px;
+        cursor: pointer;
+        font-family: "Space Grotesk";
+        font-weight: 800;
+        box-shadow: 2px 2px 0 0 #000;
+      }
+      .gap-alert {
+        background: #fff4f4;
+        color: #d32f2f;
+        padding: 10px;
+        border: 2px solid #d32f2f;
+        margin-bottom: 1.5rem;
+        font-weight: bold;
+        font-family: "Space Mono";
+      }
     </style>
   </head>
   <body>
@@ -93,32 +318,82 @@
     </div>
 
     <aside class="sidebar">
-      <div class="logo"><i class="fas fa-file-invoice-dollar"></i> <span>NFSe</span></div>
+      <div class="logo">
+        <i class="fas fa-file-invoice-dollar"></i> <span>Retenções</span>
+      </div>
       <nav>
-        <div class="nav-item active"><i class="fas fa-search"></i> Analisar</div>
-        <div class="nav-item" onclick="limparTudo()"><i class="fas fa-trash"></i> Limpar</div>
+        <div class="nav-item active">
+          <i class="fas fa-search"></i> Analisar
+        </div>
+        <div class="nav-item export" onclick="exportarCSV()">
+          <i class="fas fa-file-csv"></i> Exportar CSV
+        </div>
+        <div class="nav-item" onclick="limparTudo()">
+          <i class="fas fa-trash"></i> Limpar
+        </div>
       </nav>
-      <div style="margin-top:auto; font-size:0.7rem; font-family:'Space Mono'; opacity:0.8;">Análise Fiscal<br>Padrão Nacional</div>
+      <div
+        style="
+          margin-top: auto;
+          font-size: 0.7rem;
+          font-family: 'Space Mono';
+          opacity: 0.8;
+        "
+      >
+        Análise Fiscal<br />Padrão Nacional
+      </div>
     </aside>
 
     <main class="main-content">
       <div class="scroll-content">
         <header class="neo-header">
           <div>
-            <h1>Gerador de relatórios</h1>
-            <span class="badge" style="background:var(--c-orange); padding: 2px 8px; font-weight: bold; border: 1px solid #000;">Versão Beta</span>
+            <h1>Auditor de Impostos</h1>
+            <span
+              class="badge"
+              style="
+                background: var(--c-orange);
+                padding: 2px 8px;
+                font-weight: bold;
+                border: 1px solid #000;
+              "
+              >Foco em Retenção</span
+            >
           </div>
         </header>
 
+        <div id="gapAlertContainer"></div>
+
         <div class="dashboard-grid">
-          <div class="metric-card purple"><div class="metric-title">Total Notas</div><div class="metric-value" id="totalNotas">0</div></div>
-          <div class="metric-card green"><div class="metric-title">Total Serviços</div><div class="metric-value" id="valorTotal">0,00</div></div>
-          <div class="metric-card orange"><div class="metric-title">Ret. Federal (Total)</div><div class="metric-value" id="totalRetido">0,00</div></div>
+          <div class="metric-card purple">
+            <div class="metric-title">Total Notas</div>
+            <div class="metric-value" id="totalNotas">0</div>
+          </div>
+          <div class="metric-card green">
+            <div class="metric-title">Total Serviços</div>
+            <div class="metric-value" id="valorTotal">0,00</div>
+          </div>
+          <div class="metric-card orange">
+            <div class="metric-title">Ret. Federal (Total)</div>
+            <div class="metric-value" id="totalRetido">0,00</div>
+          </div>
+          <div class="metric-card red">
+            <div class="metric-title">Pulos na Seq.</div>
+            <div class="metric-value" id="totalGaps">0</div>
+          </div>
         </div>
 
         <div class="upload-area">
-          <input type="file" id="xmlInput" accept=".xml" onchange="handleFiles(this.files)" />
-          <div class="upload-label"><i class="fas fa-upload fa-2x"></i><br>Clique ou arraste o XML da NFS-e</div>
+          <input
+            type="file"
+            id="xmlInput"
+            accept=".xml"
+            onchange="handleFiles(this.files)"
+          />
+          <div class="upload-label">
+            <i class="fas fa-upload fa-2x"></i><br />Clique ou arraste o XML da
+            NFS-e
+          </div>
         </div>
 
         <div class="table-container">
@@ -126,14 +401,26 @@
             <thead>
               <tr>
                 <th class="center">Ver</th>
-                <th class="sortable" onclick="ordenarPor('numero')">Número <i class="fas fa-sort"></i></th>
-                <th class="sortable" onclick="ordenarPor('data')">Data <i class="fas fa-sort"></i></th>
+                <th class="sortable" onclick="ordenarPor('numero')">
+                  Número <i class="fas fa-sort"></i>
+                </th>
+                <th class="sortable" onclick="ordenarPor('data')">
+                  Data <i class="fas fa-sort"></i>
+                </th>
                 <th>Tomador</th>
-                <th class="sortable" style="text-align:right" onclick="ordenarPor('total')">Valor Serv. <i class="fas fa-sort"></i></th>
-                <th style="text-align:right; border-left: 3px solid #000">PIS (Ret)</th>
-                <th style="text-align:right">COFINS (Ret)</th>
-                <th style="text-align:right">IRRF</th>
-                <th style="text-align:right">CSLL</th>
+                <th
+                  class="sortable"
+                  style="text-align: right"
+                  onclick="ordenarPor('total')"
+                >
+                  Valor Serv. <i class="fas fa-sort"></i>
+                </th>
+                <th style="text-align: right; border-left: 3px solid #000">
+                  PIS (Ret)
+                </th>
+                <th style="text-align: right">COFINS (Ret)</th>
+                <th style="text-align: right">IRRF</th>
+                <th style="text-align: right">CSLL</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -142,11 +429,18 @@
       </div>
 
       <div class="footer-controls">
-        <div id="statusMsg" style="font-weight:bold; font-family:'Space Mono'">Aguardando XML...</div>
+        <div
+          id="statusMsg"
+          style="font-weight: bold; font-family: 'Space Mono'"
+        >
+          Aguardando XML...
+        </div>
         <div>
-          <button class="btn-page" onclick="mudarPagina(-1)"> < </button>
-          <span id="pageInfo" style="margin:0 10px; font-weight:bold">1/1</span>
-          <button class="btn-page" onclick="mudarPagina(1)"> > </button>
+          <button class="btn-page" onclick="mudarPagina(-1)"><</button>
+          <span id="pageInfo" style="margin: 0 10px; font-weight: bold"
+            >1/1</span
+          >
+          <button class="btn-page" onclick="mudarPagina(1)">></button>
         </div>
       </div>
     </main>
@@ -158,28 +452,35 @@
       let ordemAsc = false;
       const itemsPerPage = 50;
 
-      const formatMoney = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
-      const getTagValue = (el, tag) => el.getElementsByTagName(tag)[0]?.textContent || "";
+      const formatMoney = (v) =>
+        new Intl.NumberFormat("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        }).format(v);
+      const getTagValue = (el, tag) =>
+        el.getElementsByTagName(tag)[0]?.textContent || "";
 
       function formatDate(dateString) {
         if (!dateString) return "-";
         try {
-          const d = dateString.split('T')[0].split('-');
+          const d = dateString.split("T")[0].split("-");
           return `${d[2]}/${d[1]}/${d[0]}`;
-        } catch { return dateString; }
+        } catch {
+          return dateString;
+        }
       }
 
       function handleFiles(files) {
         if (files.length === 0) return;
         const reader = new FileReader();
         document.getElementById("statusMsg").innerText = "Lendo arquivo...";
-        
-        reader.onload = function(e) {
+
+        reader.onload = function (e) {
           const parser = new DOMParser();
           const xmlDoc = parser.parseFromString(e.target.result, "text/xml");
           const notas = xmlDoc.getElementsByTagName("infNFSe");
 
-          if(notas.length === 0) {
+          if (notas.length === 0) {
             alert("Nenhuma NFS-e encontrada.");
             return;
           }
@@ -189,7 +490,13 @@
             const nota = notas[i];
             const num = getTagValue(nota, "nNFSe");
             const dps = nota.getElementsByTagName("infDPS")[0];
-            let dhEmi = "", tomador = "Consumidor", vServ = 0, vPis = 0, vCofins = 0, vIr = 0, vCsll = 0;
+            let dhEmi = "",
+              tomador = "Consumidor",
+              vServ = 0,
+              vPis = 0,
+              vCofins = 0,
+              vIr = 0,
+              vCsll = 0;
 
             if (dps) {
               dhEmi = getTagValue(dps, "dhEmi");
@@ -197,52 +504,143 @@
               if (toma) tomador = getTagValue(toma, "xNome") || "Não Informado";
               const valores = dps.getElementsByTagName("valores")[0];
               if (valores) {
-                const vServPrest = valores.getElementsByTagName("vServPrest")[0];
-                if(vServPrest) vServ = parseFloat(getTagValue(vServPrest, "vServ")) || 0;
+                const vServPrest =
+                  valores.getElementsByTagName("vServPrest")[0];
+                if (vServPrest)
+                  vServ = parseFloat(getTagValue(vServPrest, "vServ")) || 0;
                 const trib = valores.getElementsByTagName("trib")[0];
-                if(trib) {
-                    const tribFed = trib.getElementsByTagName("tribFed")[0];
-                    if(tribFed) {
-                        const piscofins = tribFed.getElementsByTagName("piscofins")[0];
-                        if(piscofins && getTagValue(piscofins, "tpRetPisCofins") === '1') {
-                            vPis = parseFloat(getTagValue(piscofins, "vPis")) || 0;
-                            vCofins = parseFloat(getTagValue(piscofins, "vCofins")) || 0;
-                        }
-                        vIr = parseFloat(getTagValue(tribFed, "vRetIRRF")) || 0;
-                        vCsll = parseFloat(getTagValue(tribFed, "vRetCSLL")) || 0;
+                if (trib) {
+                  const tribFed = trib.getElementsByTagName("tribFed")[0];
+                  if (tribFed) {
+                    const piscofins =
+                      tribFed.getElementsByTagName("piscofins")[0];
+                    if (
+                      piscofins &&
+                      getTagValue(piscofins, "tpRetPisCofins") === "1"
+                    ) {
+                      vPis = parseFloat(getTagValue(piscofins, "vPis")) || 0;
+                      vCofins =
+                        parseFloat(getTagValue(piscofins, "vCofins")) || 0;
                     }
+                    vIr = parseFloat(getTagValue(tribFed, "vRetIRRF")) || 0;
+                    vCsll = parseFloat(getTagValue(tribFed, "vRetCSLL")) || 0;
+                  }
                 }
               }
             }
 
-            allItems.push({ id: i, data: formatDate(dhEmi), rawData: dhEmi, numero: num, tomador: tomador, total: vServ, pis: vPis, cofins: vCofins, ir: vIr, csll: vCsll, rawNode: nota });
+            allItems.push({
+              id: i,
+              data: formatDate(dhEmi),
+              rawData: dhEmi,
+              numero: parseInt(num),
+              tomador: tomador,
+              total: vServ,
+              pis: vPis,
+              cofins: vCofins,
+              ir: vIr,
+              csll: vCsll,
+              rawNode: nota,
+            });
           }
 
-          // Ordenação inicial decrescente por número
-          allItems.sort((a, b) => parseInt(b.numero) - parseInt(a.numero));
+          allItems.sort((a, b) => b.numero - a.numero);
           filteredItems = [...allItems];
+
+          validarSequencia();
           atualizarDashboard();
           renderizarTabela();
-          document.getElementById("statusMsg").innerText = `${allItems.length} notas processadas.`;
+          document.getElementById(
+            "statusMsg"
+          ).innerText = `${allItems.length} notas processadas.`;
         };
         reader.readAsText(files[0]);
+      }
+
+      function validarSequencia() {
+        const numeros = allItems.map((i) => i.numero).sort((a, b) => a - b);
+        const gaps = [];
+        const container = document.getElementById("gapAlertContainer");
+        container.innerHTML = "";
+        if (numeros.length > 0) {
+          const min = numeros[0];
+          const max = numeros[numeros.length - 1];
+          const setExistente = new Set(numeros);
+          for (let i = min; i <= max; i++)
+            if (!setExistente.has(i)) gaps.push(i);
+        }
+        document.getElementById("totalGaps").innerText = gaps.length;
+        if (gaps.length > 0) {
+          const alertDiv = document.createElement("div");
+          alertDiv.className = "gap-alert";
+          alertDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Atenção: Foram encontrados ${
+            gaps.length
+          } pulos na sequência numérica: ${gaps.join(", ")}`;
+          container.appendChild(alertDiv);
+        }
+      }
+
+      function exportarCSV() {
+        if (allItems.length === 0) {
+          alert("Não há dados para exportar.");
+          return;
+        }
+
+        // Cabeçalho compatível com Excel (;)
+        let csv =
+          "Numero;Data;Tomador;Valor Servico;PIS Retido;COFINS Retido;IRRF;CSLL\n";
+
+        allItems.forEach((item) => {
+          csv += `${item.numero};${item.data};${item.tomador.replace(
+            /;/g,
+            ","
+          )};${item.total.toFixed(2).replace(".", ",")};${item.pis
+            .toFixed(2)
+            .replace(".", ",")};${item.cofins
+            .toFixed(2)
+            .replace(".", ",")};${item.ir
+            .toFixed(2)
+            .replace(".", ",")};${item.csll.toFixed(2).replace(".", ",")}\n`;
+        });
+
+        const blob = new Blob(["\ufeff" + csv], {
+          type: "text/csv;charset=utf-8;",
+        });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute(
+          "download",
+          `auditoria_nfse_${new Date().toISOString().split("T")[0]}.csv`
+        );
+        link.style.visibility = "hidden";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
       }
 
       function ordenarPor(campo) {
         ordemAsc = !ordemAsc;
         filteredItems.sort((a, b) => {
-          let vA = a[campo], vB = b[campo];
-          if (campo === 'numero') { vA = parseInt(vA); vB = parseInt(vB); }
-          if (campo === 'data') { vA = a.rawData; vB = b.rawData; }
-          return ordemAsc ? (vA > vB ? 1 : -1) : (vA < vB ? 1 : -1);
+          let vA = a[campo],
+            vB = b[campo];
+          if (campo === "data") {
+            vA = a.rawData;
+            vB = b.rawData;
+          }
+          return ordemAsc ? (vA > vB ? 1 : -1) : vA < vB ? 1 : -1;
         });
         currentPage = 1;
         renderizarTabela();
       }
 
       function atualizarDashboard() {
-        let somaServ = 0, somaRet = 0;
-        filteredItems.forEach(i => { somaServ += i.total; somaRet += (i.pis + i.cofins + i.ir + i.csll); });
+        let somaServ = 0,
+          somaRet = 0;
+        filteredItems.forEach((i) => {
+          somaServ += i.total;
+          somaRet += i.pis + i.cofins + i.ir + i.csll;
+        });
         document.getElementById("totalNotas").innerText = filteredItems.length;
         document.getElementById("valorTotal").innerText = formatMoney(somaServ);
         document.getElementById("totalRetido").innerText = formatMoney(somaRet);
@@ -253,64 +651,98 @@
         tbody.innerHTML = "";
         const start = (currentPage - 1) * itemsPerPage;
         const items = filteredItems.slice(start, start + itemsPerPage);
-        const fmtCell = (val) => val > 0 ? `<td style="text-align:right" class="val-retido">${formatMoney(val)}</td>` : `<td style="text-align:right" class="val-zerado">0,00</td>`;
-        
+        const fmtCell = (val) =>
+          val > 0
+            ? `<td style="text-align:right" class="val-retido">${formatMoney(
+                val
+              )}</td>`
+            : `<td style="text-align:right" class="val-zerado">0,00</td>`;
+
         items.forEach((item) => {
           const tr = document.createElement("tr");
           tr.innerHTML = `
-            <td class="center"><button class="btn-details" onclick="verDetalhes(${item.id})"><i class="fas fa-eye"></i></button></td>
+            <td class="center"><button class="btn-details" onclick="verDetalhes(${
+              item.id
+            })"><i class="fas fa-eye"></i></button></td>
             <td><strong>${item.numero}</strong></td>
             <td>${item.data}</td>
-            <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis">${item.tomador}</td>
-            <td style="text-align:right; font-weight:bold">${formatMoney(item.total)}</td>
-            <td style="text-align:right; border-left: 3px solid #000" class="${item.pis > 0 ? 'val-retido' : 'val-zerado'}">${formatMoney(item.pis)}</td>
+            <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis">${
+              item.tomador
+            }</td>
+            <td style="text-align:right; font-weight:bold">${formatMoney(
+              item.total
+            )}</td>
+            <td style="text-align:right; border-left: 3px solid #000" class="${
+              item.pis > 0 ? "val-retido" : "val-zerado"
+            }">${formatMoney(item.pis)}</td>
             ${fmtCell(item.cofins)}${fmtCell(item.ir)}${fmtCell(item.csll)}
           `;
           tbody.appendChild(tr);
         });
         const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
-        document.getElementById("pageInfo").innerText = `${currentPage} / ${totalPages}`;
+        document.getElementById(
+          "pageInfo"
+        ).innerText = `${currentPage} / ${totalPages}`;
       }
 
       function mudarPagina(d) {
         const total = Math.ceil(filteredItems.length / itemsPerPage);
-        if (currentPage + d > 0 && currentPage + d <= total) { currentPage += d; renderizarTabela(); }
+        if (currentPage + d > 0 && currentPage + d <= total) {
+          currentPage += d;
+          renderizarTabela();
+        }
       }
 
       function limparTudo() {
-        allItems = []; filteredItems = []; document.getElementById("xmlInput").value = "";
+        allItems = [];
+        filteredItems = [];
+        document.getElementById("xmlInput").value = "";
         document.getElementById("statusMsg").innerText = "Limpo.";
         document.querySelector("#tabelaDados tbody").innerHTML = "";
+        document.getElementById("gapAlertContainer").innerHTML = "";
+        document.getElementById("totalGaps").innerText = "0";
         atualizarDashboard();
       }
 
       function verDetalhes(id) {
-        const item = allItems.find(x => x.id === id);
-        if(!item) return;
-        document.getElementById("modalTitle").innerText = `XML Bruto - Nota ${item.numero}`;
-        document.getElementById("modalBody").innerHTML = nodeToHtml(item.rawNode);
+        const item = allItems.find((x) => x.id === id);
+        if (!item) return;
+        document.getElementById(
+          "modalTitle"
+        ).innerText = `XML Bruto - Nota ${item.numero}`;
+        document.getElementById("modalBody").innerHTML = nodeToHtml(
+          item.rawNode
+        );
         document.getElementById("modalDetails").style.display = "block";
       }
 
-      function closeModal() { document.getElementById("modalDetails").style.display = "none"; }
+      function closeModal() {
+        document.getElementById("modalDetails").style.display = "none";
+      }
 
       function nodeToHtml(xmlNode) {
         let html = "";
         if (xmlNode.nodeType === 3) return xmlNode.nodeValue.trim() || "";
         if (xmlNode.nodeType === 1) {
-            const hasTextChild = Array.from(xmlNode.childNodes).every(n => n.nodeType === 3);
-            if (hasTextChild) {
-                html += `<div class="detail-row"><span class="detail-key">${xmlNode.nodeName}:</span> <span style="font-weight:bold">${xmlNode.textContent}</span></div>`;
-            } else {
-                html += `<div class="group-title">${xmlNode.nodeName}</div><div class="detail-group">`;
-                for (let i = 0; i < xmlNode.childNodes.length; i++) html += nodeToHtml(xmlNode.childNodes[i]);
-                html += `</div>`;
-            }
+          const hasTextChild = Array.from(xmlNode.childNodes).every(
+            (n) => n.nodeType === 3
+          );
+          if (hasTextChild) {
+            html += `<div class="detail-row"><span class="detail-key">${xmlNode.nodeName}:</span> <span style="font-weight:bold">${xmlNode.textContent}</span></div>`;
+          } else {
+            html += `<div class="group-title">${xmlNode.nodeName}</div><div class="detail-group">`;
+            for (let i = 0; i < xmlNode.childNodes.length; i++)
+              html += nodeToHtml(xmlNode.childNodes[i]);
+            html += `</div>`;
+          }
         }
         return html;
       }
-      
-      window.onclick = function(event) { if (event.target == document.getElementById("modalDetails")) closeModal(); }
+
+      window.onclick = function (event) {
+        if (event.target == document.getElementById("modalDetails"))
+          closeModal();
+      };
     </script>
   </body>
 </html>
