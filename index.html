@@ -393,6 +393,9 @@
         <div class="nav-item" data-tab="tab-reforma">
           <i class="fas fa-credit-card"></i> Reforma Tributária
         </div>
+        <div class="nav-item" data-tab="tab-xml">
+          <i class="fas fa-credit-card"></i> Editor XML
+        </div>
       </nav>
     </aside>
 
@@ -1069,7 +1072,12 @@
               Acessar <i class="fas fa-arrow-right"></i>
             </button>
           </div>
+        </div>
+      </div>
 
+      <div id="tab-xml" class="tab-pane">
+        <h2>Editor XML</h2>
+        <div class="tools-grid">
           <div
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/correcao_xml.html"
@@ -1083,6 +1091,28 @@
             <p class="tool-description">
               Analise se o xml da NFS-e possui a tag de endereço. Caso não
               tenha, insira automaticamente.
+            </p>
+            <button class="access-btn">
+              Acessar <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+
+          <div
+            class="tool-card"
+            data-url="https://ferramentas-seven.vercel.app/separador_xml.html"
+          >
+            <div class="tool-icon" style="background: #2ddd98; color: #000">
+              <i class="fas fa-robot"></i>
+            </div>
+            <h3 class="tool-name">
+              Extrai NFS-e de arquivo XML único da Prefeitura de Sete Lagoas.
+            </h3>
+            <p class="tool-description">
+              Este site processa um arquivo XML de ambiente nacional único
+              (gerado pela Prefeitura de Sete Lagoas), identifica cada nota
+              fiscal individual e as separa em arquivos independentes nomeados
+              automaticamente pelo ID da nota, exportando tudo em um pacote
+              compactado .ZIP.
             </p>
             <button class="access-btn">
               Acessar <i class="fas fa-arrow-right"></i>
