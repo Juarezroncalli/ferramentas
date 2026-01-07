@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Corretor de XML NFSe</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <style>
+      :root {
+        --bg-body: #ffde00;
+        --card-bg: #ffffff;
+        --border-black: #000000;
+        --c-purple: #8b5cf6;
+        --c-pink: #ff90e8;
+        --c-blue: #06b6d4;
+        --c-green: #22c55e;
+        --border-width: 3px;
+      }
+
+      body {
+        font-family: "Space Grotesk", sans-serif;
+        background-color: var(--bg-body);
+        background-image: radial-gradient(#000 1px, transparent 1px);
+        background-size: 20px 20px;
+        color: var(--border-black);
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      .container {
+        width: 90%;
+        max-width: 800px;
+        background: #fff;
+        border: var(--border-width) solid #000;
+        box-shadow: 10px 10px 0 0 #000;
+        padding: 2rem;
+      }
+
+      h1 {
+        font-weight: 900;
+        text-transform: uppercase;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        text-shadow: 3px 3px 0 var(--c-pink);
+        border-bottom: var(--border-width) solid #000;
+        padding-bottom: 10px;
+      }
+
+      .upload-area {
+        background: var(--c-purple);
+        border: 4px dashed #000;
+        padding: 3rem;
+        text-align: center;
+        cursor: pointer;
+        position: relative;
+        margin: 2rem 0;
+        transition: 0.2s;
+      }
+
+      .upload-area:hover {
+        transform: translate(-4px, -4px);
+        box-shadow: 8px 8px 0 0 #000;
+      }
+
+      .upload-area i {
+        font-size: 3rem;
+        color: #fff;
+        margin-bottom: 1rem;
+      }
+
+      .upload-label {
+        display: block;
+        font-weight: 900;
+        color: #fff;
+        text-transform: uppercase;
+        font-size: 1.2rem;
+      }
+
+      #xmlInput {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      .btn-action {
+        background: var(--c-green);
+        color: #000;
+        border: var(--border-width) solid #000;
+        padding: 1rem 2rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        cursor: pointer;
+        font-size: 1.1rem;
+        box-shadow: 5px 5px 0 0 #000;
+        width: 100%;
+        display: none;
+      }
+
+      .btn-action:active {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 0 #000;
+      }
+
+      #log {
+        margin-top: 2rem;
+        font-family: "Space Mono", monospace;
+        font-size: 0.85rem;
+        max-height: 200px;
+        overflow-y: auto;
+        border: 2px solid #000;
+        background: #f0f0f0;
+        padding: 1rem;
+      }
+
+      .log-entry {
+        margin-bottom: 5px;
+        border-bottom: 1px solid #ddd;
+      }
+      .success {
+        color: #16a34a;
+        font-weight: bold;
+      }
+      .info {
+        color: #2563eb;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1><i class="fas fa-file-code"></i> Corretor NFSe</h1>
+      <p>
+        Importe arquivos XML para verificar e incluir a tag
+        <strong>&lt;end&gt;</strong> no tomador automaticamente.
+      </p>
+
+      <div class="upload-area" id="dropZone">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <span class="upload-label"
+          >Arraste ou Clique para importar os XMLs</span
+        >
+        <input type="file" id="xmlInput" multiple accept=".xml" />
+      </div>
+
+      <button id="btnProcessar" class="btn-action">
+        <i class="fas fa-magic"></i> Corrigir e Baixar Tudo (.zip)
+      </button>
+
+      <div id="log">Aguardando arquivos...</div>
+    </div>
+
+    <script>
+      const xmlInput = document.getElementById("xmlInput");
+      const btnProcessar = document.getElementById("btnProcessar");
+      const log = document.getElementById("log");
+      let arquivosCarregados = [];
+
+      xmlInput.addEventListener("change", function (e) {
+        arquivosCarregados = Array.from(e.target.files);
+        if (arquivosCarregados.length > 0) {
+          log.innerHTML = `<div class="info">${arquivosCarregados.length} arquivos prontos para processamento.</div>`;
+          btnProcessar.style.display = "block";
+        }
+      });
+
+      btnProcessar.addEventListener("click", async () => {
+        const zip = new JSZip();
+        const parser = new DOMParser();
+        const serializer = new XMLSerializer();
+
+        log.innerHTML = "Iniciando processamento...";
+
+        for (const file of arquivosCarregados) {
+          try {
+            const text = await file.text();
+            const xmlDoc = parser.parseFromString(text, "text/xml");
+
+            // 1. Pegar o cMun do Emitente
+            const emitEnderNac = xmlDoc
+              .getElementsByTagName("emit")[0]
+              ?.getElementsByTagName("enderNac")[0];
+            const cMunEmitente =
+              emitEnderNac?.getElementsByTagName("cMun")[0]?.textContent;
+
+            if (!cMunEmitente) {
+              log.innerHTML += `<div class="log-entry">⚠️ ${file.name}: cMun do emitente não encontrado.</div>`;
+              continue;
+            }
+
+            // 2. Localizar Tomador
+            const toma = xmlDoc.getElementsByTagName("toma")[0];
+            if (toma) {
+              let endTag = toma.getElementsByTagName("end")[0];
+
+              // 3. Se não existe a tag <end>, cria ela
+              if (!endTag) {
+                endTag = xmlDoc.createElementNS(
+                  xmlDoc.documentElement.namespaceURI ||
+                    "http://www.sped.fazenda.gov.br/nfse",
+                  "end"
+                );
+                const endNac = xmlDoc.createElementNS(
+                  xmlDoc.documentElement.namespaceURI ||
+                    "http://www.sped.fazenda.gov.br/nfse",
+                  "endNac"
+                );
+                const cMun = xmlDoc.createElementNS(
+                  xmlDoc.documentElement.namespaceURI ||
+                    "http://www.sped.fazenda.gov.br/nfse",
+                  "cMun"
+                );
+
+                cMun.textContent = cMunEmitente;
+                endNac.appendChild(cMun);
+                endTag.appendChild(endNac);
+
+                // Insere antes da tag <email> ou no final do <toma>
+                const emailTag = toma.getElementsByTagName("email")[0];
+                if (emailTag) {
+                  toma.insertBefore(endTag, emailTag);
+                } else {
+                  toma.appendChild(endTag);
+                }
+
+                log.innerHTML += `<div class="log-entry success">✅ ${file.name}: Tag &lt;end&gt; incluída.</div>`;
+              } else {
+                log.innerHTML += `<div class="log-entry">ℹ️ ${file.name}: Já possui a tag &lt;end&gt;.</div>`;
+              }
+            }
+
+            // Adicionar ao ZIP
+            const xmlString = serializer.serializeToString(xmlDoc);
+            zip.file(file.name, xmlString);
+          } catch (err) {
+            log.innerHTML += `<div class="log-entry" style="color:red">❌ Erro no arquivo ${file.name}</div>`;
+          }
+        }
+
+        // Gerar Download
+        zip.generateAsync({ type: "blob" }).then(function (content) {
+          const element = document.createElement("a");
+          element.href = URL.createObjectURL(content);
+          element.download = "xmls_corrigidos.zip";
+          document.body.appendChild(element);
+          element.click();
+          document.body.removeChild(element);
+          log.innerHTML += `<div class="info"><strong>Processo concluído! Arquivo ZIP gerado.</strong></div>`;
+        });
+      });
+    </script>
+  </body>
+</html>
