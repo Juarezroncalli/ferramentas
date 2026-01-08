@@ -3,244 +3,240 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Provisões Anuais - Neo</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <title>Provisões Anuais - Neo Brutalist</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
 
     <style>
       :root {
-        /* Paleta Neo-Brutalismo */
-        --bg-color: #FFFDF5;
-        --card-bg: #FFFFFF;
-        
-        --primary-green: #2DDD98;
-        --primary-yellow: #FFF59D;
-        --primary-purple: #D6BCFA;
-        --primary-pink: #FF9EB5;
-        --primary-blue: #A5DEFF;
-        
-        --text-main: #000000;
+        --bg-body: #ffde00;
+        --card-bg: #ffffff;
         --border-black: #000000;
-        
-        --shadow-hard: 4px 4px 0px 0px #000000;
+        --c-purple: #8b5cf6;
+        --c-pink: #ff90e8;
+        --c-blue: #06b6d4;
+        --c-green: #22c55e;
         --border-width: 3px;
-        --radius: 12px;
       }
 
-      * { margin: 0; padding: 0; box-sizing: border-box; }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
       body {
-        font-family: 'Inter', sans-serif;
-        background-color: var(--bg-color);
-        color: var(--text-main);
+        font-family: "Space Grotesk", sans-serif;
+        background-color: var(--bg-body);
+        background-image: radial-gradient(#000 1px, transparent 1px);
+        background-size: 20px 20px;
+        color: var(--border-black);
         height: 100vh;
-        overflow-x: hidden;
         display: flex;
+        overflow: hidden;
       }
 
-      /* Sidebar */
+      /* --- SIDEBAR --- */
       .sidebar {
-        width: 250px;
-        background: var(--card-bg);
+        width: 240px;
+        background: var(--c-purple);
         border-right: var(--border-width) solid var(--border-black);
+        padding: 1.5rem 1rem;
         display: flex;
         flex-direction: column;
-        padding: 2rem 1.5rem;
         flex-shrink: 0;
+        color: #fff;
       }
 
       .logo {
-        font-weight: 800;
-        font-size: 1.4rem;
+        font-size: 1.5rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        margin-bottom: 2rem;
+        text-shadow: 3px 3px 0 #000;
         display: flex;
         align-items: center;
         gap: 10px;
-        margin-bottom: 3rem;
-        text-decoration: none;
-        color: black;
-      }
-
-      .logo i {
-        background: var(--primary-pink);
-        padding: 8px;
-        border: var(--border-width) solid var(--border-black);
-        border-radius: 50%;
-        box-shadow: 2px 2px 0 0 black;
       }
 
       .nav-item {
+        background: #fff;
+        color: #000;
+        padding: 0.8rem;
+        margin-bottom: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        border: var(--border-width) solid #000;
+        box-shadow: 3px 3px 0 0 #000;
+        cursor: pointer;
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        font-weight: 600;
-        color: #555;
-        cursor: pointer;
+        gap: 10px;
         transition: 0.2s;
-        border-radius: var(--radius);
-        border: 2px solid transparent;
         text-decoration: none;
+        font-size: 0.85rem;
       }
 
+      .nav-item:hover,
       .nav-item.active {
-        background-color: var(--primary-purple);
-        color: black;
-        border: var(--border-width) solid var(--border-black);
-        box-shadow: var(--shadow-hard);
+        transform: translate(-2px, -2px);
+        box-shadow: 5px 5px 0 0 #000;
+        background: var(--c-blue);
       }
-      .nav-item:hover:not(.active) { background-color: #f0f0f0; }
 
-      .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
+      /* --- MAIN CONTENT --- */
+      .main-content {
+        flex: 1;
+        padding: 1.5rem;
+        overflow-y: auto;
+      }
 
-      /* Neo Header */
       .neo-header {
+        background: #fff;
+        border: var(--border-width) solid #000;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 5px 5px 0 0 #000;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 2rem;
-        background: var(--card-bg);
-        border: var(--border-width) solid var(--border-black);
-        border-radius: 50px;
-        padding: 1rem 2rem;
-        box-shadow: var(--shadow-hard);
       }
-      .header-title h1 { font-weight: 800; font-size: 2rem; }
-      .header-title span { font-size: 1rem; font-weight: 600; color: #666; }
+
+      .neo-header h1 {
+        font-weight: 900;
+        font-size: 1.8rem;
+        text-transform: uppercase;
+      }
 
       /* Cards */
       .neo-card {
-        background: var(--card-bg);
-        border: var(--border-width) solid var(--border-black);
-        border-radius: var(--radius);
-        padding: 2rem;
-        box-shadow: var(--shadow-hard);
-        margin-bottom: 2rem;
-        position: relative;
+        background: #fff;
+        border: var(--border-width) solid #000;
+        padding: 1.5rem;
+        box-shadow: 5px 5px 0 0 #000;
+        margin-bottom: 1.5rem;
       }
 
       .card-title {
         font-weight: 900;
-        font-size: 1.2rem;
-        margin-bottom: 1.5rem;
+        text-transform: uppercase;
+        font-size: 1rem;
+        margin-bottom: 1.2rem;
         display: flex;
         align-items: center;
         gap: 10px;
-        text-transform: uppercase;
-        border-bottom: 2px solid #eee;
-        padding-bottom: 10px;
       }
-      
-      .border-top-blue { border-top: 6px solid var(--primary-blue); }
-      .border-top-green { border-top: 6px solid var(--primary-green); }
-      .border-top-yellow { border-top: 6px solid var(--primary-yellow); }
 
-      /* Formulários */
+      .border-blue {
+        border-top: 8px solid var(--c-blue);
+      }
+      .border-green {
+        border-top: 8px solid var(--c-green);
+      }
+      .border-pink {
+        border-top: 8px solid var(--c-pink);
+      }
+
+      /* Forms */
       .form-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1.5rem;
+        gap: 1rem;
       }
 
-      .form-group { margin-bottom: 1rem; }
-      
-      label {
-        font-weight: 700;
+      .form-group label {
         display: block;
-        margin-bottom: 0.5rem;
-        font-size: 0.9rem;
+        font-weight: 800;
+        margin-bottom: 0.4rem;
+        font-family: "Space Mono";
+        text-transform: uppercase;
+        font-size: 0.75rem;
       }
 
       .neo-input {
         width: 100%;
-        padding: 0.8rem;
-        font-size: 1rem;
-        font-weight: 500;
-        border: var(--border-width) solid var(--border-black);
-        border-radius: var(--radius);
+        padding: 10px;
+        border: 2px solid #000;
+        background: #f0f0f0;
+        font-family: "Space Mono";
+        font-size: 0.9rem;
+        font-weight: bold;
         outline: none;
-        background: #f9f9f9;
+      }
+
+      .neo-input:focus {
+        background: #fff;
+        box-shadow: 3px 3px 0 0 var(--c-purple);
+      }
+
+      /* Button */
+      .btn-generate {
+        background: var(--c-green);
+        color: #000;
+        border: var(--border-width) solid #000;
+        padding: 1.2rem;
+        font-family: "Space Grotesk";
+        font-weight: 900;
+        text-transform: uppercase;
+        cursor: pointer;
+        width: 100%;
+        font-size: 1.1rem;
+        box-shadow: 5px 5px 0 0 #000;
         transition: 0.1s;
       }
-      .neo-input:focus {
-        background-color: #fff;
-        box-shadow: 4px 4px 0 0 rgba(0,0,0,0.1);
-        transform: translate(-2px, -2px);
-      }
-      
-      textarea.neo-input {
-        min-height: 100px;
-        resize: vertical;
+
+      .btn-generate:active {
+        transform: translate(3px, 3px);
+        box-shadow: 2px 2px 0 0 #000;
       }
 
-      /* Botões */
-      .neo-btn {
-        padding: 1rem 2rem;
-        font-weight: 800;
-        font-size: 1rem;
-        border: var(--border-width) solid var(--border-black);
-        border-radius: var(--radius);
-        cursor: pointer;
-        box-shadow: var(--shadow-hard);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        transition: transform 0.1s;
-        text-transform: uppercase;
-        width: 100%;
-      }
-      .neo-btn:active {
-        box-shadow: 0 0 0 0 black;
-        transform: translate(4px, 4px);
-      }
-
-      .btn-generate { background-color: var(--primary-green); color: black; font-size: 1.2rem; }
-
-      /* Mensagens */
-      .message-box {
-        margin-top: 1.5rem;
+      .error-box {
+        background: #ff4d4d;
+        color: white;
+        border: var(--border-width) solid #000;
         padding: 1rem;
-        border: var(--border-width) solid black;
-        background-color: #FF5252;
-        color: black;
-        font-weight: bold;
-        border-radius: var(--radius);
+        margin-top: 1rem;
         display: none;
-        box-shadow: var(--shadow-hard);
+        font-weight: bold;
         text-align: center;
-      }
-      .message-box.show { display: block; }
-
-      .info-footer {
-        text-align: center;
-        margin-top: 2rem;
-        padding: 1rem;
-        background: #eee;
-        border: 2px dashed #aaa;
-        border-radius: var(--radius);
-        font-size: 0.9rem;
-        color: #555;
+        box-shadow: 4px 4px 0 0 #000;
       }
 
       @media (max-width: 768px) {
-        body { flex-direction: column; }
-        .sidebar { width: 100%; border-right: none; border-bottom: 3px solid black; flex-direction: row; align-items: center; overflow-x: auto; padding: 1rem; }
-        .neo-header { flex-direction: column; gap: 1rem; text-align: center; }
-        .form-grid { grid-template-columns: 1fr; }
+        body {
+          flex-direction: column;
+          overflow: auto;
+        }
+        .sidebar {
+          width: 100%;
+          flex-direction: row;
+          height: auto;
+          border-right: none;
+          border-bottom: 3px solid #000;
+        }
+        .main-content {
+          height: auto;
+        }
       }
     </style>
   </head>
   <body>
-
     <aside class="sidebar">
-      <a href="#" class="logo">
+      <div class="logo">
         <i class="fas fa-calendar-check"></i>
         <span>ProvApp</span>
-      </a>
+      </div>
       <nav>
         <a href="#" class="nav-item active">
-          <i class="fas fa-file-invoice"></i> Gerador Provisão
+          <i class="fas fa-file-invoice"></i> Gerador
         </a>
         <a href="#" class="nav-item">
           <i class="fas fa-history"></i> Histórico
@@ -249,146 +245,156 @@
     </aside>
 
     <main class="main-content">
-      
-      <div class="neo-header">
-        <div class="header-title">
-          <h1>Provisões Anuais 📅</h1>
-          <span>Gere lançamentos mensais automáticos para importação</span>
+      <header class="neo-header">
+        <div>
+          <h1>Provisões Anuais</h1>
+          <p
+            style="
+              font-family: 'Space Mono';
+              font-weight: bold;
+              font-size: 0.8rem;
+            "
+          >
+            Layout de Importação Contábil
+          </p>
         </div>
-      </div>
+        <i class="fas fa-coins fa-2x"></i>
+      </header>
 
-      <div class="neo-card border-top-blue">
-          <div class="card-title"><i class="fas fa-clock"></i> 1. Configuração Temporal</div>
-          <div class="form-grid">
-            <div class="form-group">
-                <label for="ano">Ano de Referência</label>
-                <input type="number" id="ano" class="neo-input" min="1900" max="2100" value="2024" required />
-            </div>
-            <div class="form-group">
-                <label for="dia-opcao">Data do Lançamento</label>
-                <select id="dia-opcao" class="neo-input" required>
-                  <option value="ultimo">Último dia do mês</option>
-                  <option value="primeiro">Primeiro dia útil (01 ou 02/Jan)</option>
-                </select>
-            </div>
-          </div>
-      </div>
-
-      <div class="neo-card border-top-green">
-        <div class="card-title"><i class="fas fa-coins"></i> 2. Dados Contábeis</div>
+      <div class="neo-card border-blue">
+        <div class="card-title">1. Tempo</div>
         <div class="form-grid">
-            <div class="form-group">
-                <label for="conta-debito">Conta Débito</label>
-                <input type="text" id="conta-debito" class="neo-input" placeholder="Ex: 50" required />
-            </div>
-            <div class="form-group">
-                <label for="conta-credito">Conta Crédito</label>
-                <input type="text" id="conta-credito" class="neo-input" placeholder="Ex: 200" required />
-            </div>
-            <div class="form-group" style="grid-column: 1 / -1;">
-                <label for="valor">Valor Mensal (R$)</label>
-                <input type="text" id="valor" class="neo-input" inputmode="decimal" placeholder="0,00" required />
-            </div>
+          <div class="form-group">
+            <label>Ano de Referência</label>
+            <input type="number" id="ano" class="neo-input" value="2024" />
+          </div>
+          <div class="form-group">
+            <label>Data Lançamento</label>
+            <select id="dia-opcao" class="neo-input">
+              <option value="ultimo">Último dia do mês</option>
+              <option value="primeiro">Primeiro dia útil</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      <div class="neo-card border-top-yellow">
-        <div class="card-title"><i class="fas fa-pen-fancy"></i> 3. Detalhes</div>
+      <div class="neo-card border-green">
+        <div class="card-title">2. Contas e Valor</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Conta Débito</label>
+            <input
+              type="text"
+              id="conta-debito"
+              class="neo-input"
+              placeholder="Ex: 50"
+            />
+          </div>
+          <div class="form-group">
+            <label>Conta Crédito</label>
+            <input
+              type="text"
+              id="conta-credito"
+              class="neo-input"
+              placeholder="Ex: 200"
+            />
+          </div>
+          <div class="form-group">
+            <label>Valor Mensal (R$)</label>
+            <input
+              type="text"
+              id="valor"
+              class="neo-input"
+              placeholder="0,00"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="neo-card border-pink">
+        <div class="card-title">3. Histórico</div>
         <div class="form-group">
-            <label for="historico">Histórico Padrão</label>
-            <textarea id="historico" class="neo-input" placeholder="Ex: Provisão de Honorários ref. mês" required></textarea>
-            <small style="margin-top: 5px; color: #666; font-weight: bold;">* O mês/ano será adicionado automaticamente ao final do texto.</small>
+          <label>Descrição Base</label>
+          <textarea
+            id="historico"
+            class="neo-input"
+            style="height: 80px"
+            placeholder="Ex: Provisão de Honorários ref. mês"
+          ></textarea>
         </div>
       </div>
 
-      <button class="neo-btn btn-generate" id="gerar-btn">
-          <i class="fas fa-download"></i> GERAR ARQUIVO TXT
+      <button class="btn-generate" id="gerar-btn">
+        <i class="fas fa-download"></i> Gerar Arquivo .TXT
       </button>
 
-      <div class="message-box" id="error-message"></div>
-
-      <div class="info-footer">
-        <i class="fas fa-info-circle"></i> O arquivo gerado segue o layout padrão: <strong>DATA;DEBITO;CREDITO;VALOR;;HISTORICO</strong>
-      </div>
-
+      <div id="error-message" class="error-box"></div>
     </main>
 
     <script>
-      document.getElementById("gerar-btn").addEventListener("click", function () {
+      document
+        .getElementById("gerar-btn")
+        .addEventListener("click", function () {
           const anoInput = document.getElementById("ano");
           const diaOpcao = document.getElementById("dia-opcao").value;
           const contaDebito = document.getElementById("conta-debito").value;
           const contaCredito = document.getElementById("conta-credito").value;
           const valorInput = document.getElementById("valor").value;
           const historicoBase = document.getElementById("historico").value;
-          const errorMessageDiv = document.getElementById("error-message");
+          const errDiv = document.getElementById("error-message");
 
-          // Função para mostrar/esconder o erro
-          const displayError = (message) => {
-            if (message) {
-              errorMessageDiv.textContent = "⚠️ " + message;
-              errorMessageDiv.classList.add("show");
-            } else {
-              errorMessageDiv.classList.remove("show");
-            }
-          };
+          errDiv.style.display = "none";
 
-          displayError(""); // Limpa erros anteriores
-
-          // --- Validação ---
           const ano = parseInt(anoInput.value, 10);
           if (isNaN(ano) || anoInput.value.length !== 4) {
-            displayError("Por favor, insira um ano válido com 4 dígitos.");
+            errDiv.innerText = "⚠️ INSIRA UM ANO VÁLIDO (4 DÍGITOS)";
+            errDiv.style.display = "block";
             return;
           }
+
           if (!contaDebito || !contaCredito || !valorInput || !historicoBase) {
-            displayError("Por favor, preencha todos os campos obrigatórios.");
+            errDiv.innerText = "⚠️ PREENCHA TODOS OS CAMPOS";
+            errDiv.style.display = "block";
             return;
           }
 
-          let valorString = valorInput.replace(",", ".");
-          const valorNumerico = parseFloat(valorString);
-
+          let valorNumerico = parseFloat(valorInput.replace(",", "."));
           if (isNaN(valorNumerico)) {
-            displayError("Por favor, insira um valor numérico válido.");
+            errDiv.innerText = "⚠️ VALOR NUMÉRICO INVÁLIDO";
+            errDiv.style.display = "block";
             return;
           }
-          let valorFinalParaTxt = valorNumerico.toFixed(2).replace(".", ",");
 
-          // --- Geração do Conteúdo TXT ---
+          let valorFinalTxt = valorNumerico.toFixed(2).replace(".", ",");
           let txtContent = "";
-          for (let i = 0; i < 12; i++) {
-            const mes = i + 1;
-            const mesFormatado = mes.toString().padStart(2, "0");
-            const anoFormatado = ano.toString();
-            let diaFormatado;
 
+          for (let i = 0; i < 12; i++) {
+            const mes = (i + 1).toString().padStart(2, "0");
+            let dia;
             if (diaOpcao === "ultimo") {
-              const ultimoDiaDoMes = new Date(ano, mes, 0).getDate();
-              diaFormatado = ultimoDiaDoMes.toString().padStart(2, "0");
+              dia = new Date(ano, i + 1, 0)
+                .getDate()
+                .toString()
+                .padStart(2, "0");
             } else {
-              diaFormatado = i === 0 ? "02" : "01"; // Janeiro é dia 02, outros são 01 (Lógica original mantida)
+              dia = i === 0 ? "02" : "01";
             }
 
-            const dataCompleta = `${diaFormatado}/${mesFormatado}/${anoFormatado}`;
-            const historicoFormatado = `${historicoBase} ${mesFormatado}/${anoFormatado}`;
-            // Formato: DATA;DEBITO;CREDITO;VALOR;;HISTORICO
-            const linha = `${dataCompleta};${contaDebito};${contaCredito};${valorFinalParaTxt};;${historicoFormatado};;;;`;
-            txtContent += linha + "\n";
+            const data = `${dia}/${mes}/${ano}`;
+            const hist = `${historicoBase} ${mes}/${ano}`;
+            txtContent += `${data};${contaDebito};${contaCredito};${valorFinalTxt};;${hist};;;;\n`;
           }
 
-          // --- Criação e Download do Arquivo TXT ---
           const blob = new Blob([txtContent], {
             type: "text/plain;charset=utf-8",
           });
           const url = URL.createObjectURL(blob);
           const a = document.createElement("a");
           a.href = url;
-          a.download = `provisoes_anual_${ano}.txt`;
+          a.download = `provisoes_${ano}.txt`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
-          URL.revokeObjectURL(url);
         });
     </script>
   </body>
