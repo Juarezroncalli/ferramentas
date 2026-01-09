@@ -1,243 +1,286 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-6XKND47T4H"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      // Configurações para proteção de dados e privacidade
+      gtag("config", "G-6XKND47T4H", {
+        anonymize_ip: true,
+        allow_google_signals: false,
+        allow_ad_personalization_signals: false,
+      });
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Processador Excel - Neo</title>
+    <title>Importador Contábil - Neo Brutalism</title>
+    <link rel="icon" href="icone.ico" type="image/x-icon" />
     <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
 
     <style>
       :root {
-        /* Paleta Neo-Brutalismo */
-        --bg-color: #FFFDF5;
-        --card-bg: #FFFFFF;
-        
-        --primary-green: #2DDD98;
-        --primary-yellow: #FFF59D;
-        --primary-purple: #D6BCFA;
-        --primary-pink: #FF9EB5;
-        --primary-blue: #A5DEFF;
-        
-        --text-main: #000000;
+        /* Paleta Neo Brutalism - Conforme solicitado */
+        --bg-body: #ffde00;
+        --card-bg: #ffffff;
         --border-black: #000000;
-        
-        --shadow-hard: 4px 4px 0px 0px #000000;
+        --c-purple: #8b5cf6;
+        --c-pink: #ff90e8;
+        --c-blue: #06b6d4;
+        --c-green: #22c55e;
+        --c-red: #ff4d4d;
         --border-width: 3px;
-        --radius: 12px;
       }
 
-      * { margin: 0; padding: 0; box-sizing: border-box; }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
       body {
-        font-family: 'Inter', sans-serif;
-        background-color: var(--bg-color);
-        color: var(--text-main);
+        font-family: "Space Grotesk", sans-serif;
+        background-color: var(--bg-body);
+        background-image: radial-gradient(#000 1px, transparent 1px);
+        background-size: 20px 20px;
+        color: var(--border-black);
         height: 100vh;
-        overflow-x: hidden;
+        overflow: hidden;
         display: flex;
       }
 
-      /* Sidebar */
+      /* --- SIDEBAR --- */
       .sidebar {
-        width: 250px;
-        background: var(--card-bg);
+        width: 240px;
+        background: var(--c-purple);
         border-right: var(--border-width) solid var(--border-black);
+        padding: 1.5rem 1rem;
         display: flex;
         flex-direction: column;
-        padding: 2rem 1.5rem;
+        color: #fff;
         flex-shrink: 0;
       }
 
       .logo {
-        font-weight: 800;
-        font-size: 1.4rem;
+        font-size: 1.5rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        margin-bottom: 2rem;
+        text-shadow: 3px 3px 0 #000;
         display: flex;
         align-items: center;
         gap: 10px;
-        margin-bottom: 3rem;
-        text-decoration: none;
-        color: black;
-      }
-
-      .logo i {
-        background: var(--primary-yellow);
-        padding: 8px;
-        border: var(--border-width) solid var(--border-black);
-        border-radius: 50%;
-        box-shadow: 2px 2px 0 0 black;
       }
 
       .nav-item {
+        background: #fff;
+        color: #000;
+        padding: 0.8rem;
+        margin-bottom: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        border: var(--border-width) solid #000;
+        box-shadow: 3px 3px 0 0 #000;
+        cursor: pointer;
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        font-weight: 600;
-        color: #555;
-        cursor: pointer;
+        gap: 10px;
         transition: 0.2s;
-        border-radius: var(--radius);
-        border: 2px solid transparent;
+        font-size: 0.85rem;
       }
 
       .nav-item.active {
-        background-color: var(--primary-blue);
-        color: black;
-        border: var(--border-width) solid var(--border-black);
-        box-shadow: var(--shadow-hard);
+        background: var(--c-blue);
+        transform: translate(-2px, -2px);
+        box-shadow: 5px 5px 0 0 #000;
       }
-      .nav-item:hover:not(.active) { background-color: #f0f0f0; }
 
-      .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
-
-      /* Header */
-      .neo-header {
+      /* --- MAIN CONTENT --- */
+      .main-content {
+        flex: 1;
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        background: var(--card-bg);
-        border: var(--border-width) solid var(--border-black);
-        border-radius: 50px;
-        padding: 1rem 2rem;
-        box-shadow: var(--shadow-hard);
+        flex-direction: column;
+        height: 100vh;
+        overflow-y: auto;
+        padding: 1.5rem;
       }
-      .header-title h1 { font-weight: 800; font-size: 2rem; }
-      .header-title span { font-size: 1rem; font-weight: 600; color: #666; }
 
-      /* Components */
+      .neo-header {
+        background: #fff;
+        border: var(--border-width) solid #000;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 5px 5px 0 0 #000;
+      }
+
+      .neo-header h1 {
+        font-weight: 900;
+        text-transform: uppercase;
+        font-size: 1.8rem;
+      }
+
+      /* --- CARDS & UI --- */
       .neo-card {
-        background: var(--card-bg);
-        border: var(--border-width) solid var(--border-black);
-        border-radius: var(--radius);
-        padding: 2rem;
-        box-shadow: var(--shadow-hard);
-        margin-bottom: 2rem;
+        background: #fff;
+        border: var(--border-width) solid #000;
+        padding: 1.5rem;
+        box-shadow: 5px 5px 0 0 #000;
+        margin-bottom: 1.5rem;
       }
 
       .card-title {
         font-weight: 900;
-        font-size: 1.2rem;
+        text-transform: uppercase;
         margin-bottom: 1rem;
         display: flex;
         align-items: center;
         gap: 10px;
-        text-transform: uppercase;
       }
 
       /* Upload Area */
       .upload-area {
-        background: #fff;
-        border: 3px dashed var(--border-black);
-        border-radius: var(--radius);
-        padding: 3rem;
+        background: var(--c-pink);
+        border: 3px dashed #000;
+        padding: 2.5rem;
         text-align: center;
         cursor: pointer;
-        transition: 0.3s;
+        transition: 0.2s;
         position: relative;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
       }
+
       .upload-area:hover {
-        background-color: #f9f9f9;
-        transform: translate(-2px, -2px);
-        box-shadow: var(--shadow-hard);
-        border-style: solid;
+        background: #ffbdf2;
+        transform: scale(1.01);
       }
-      .upload-icon { font-size: 3rem; margin-bottom: 1rem; color: black; }
-      
+
       /* Buttons */
       .neo-btn {
-        padding: 1rem 2rem;
-        font-weight: 800;
-        font-size: 1rem;
-        border: var(--border-width) solid var(--border-black);
-        border-radius: var(--radius);
+        background: var(--c-green);
+        color: #000;
+        border: var(--border-width) solid #000;
+        padding: 1rem;
+        font-weight: 900;
+        text-transform: uppercase;
         cursor: pointer;
-        box-shadow: var(--shadow-hard);
+        font-family: "Space Grotesk";
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 10px;
-        transition: transform 0.1s;
-        text-transform: uppercase;
+        box-shadow: 4px 4px 0 0 #000;
         width: 100%;
+        transition: 0.1s;
       }
-      .neo-btn:active { box-shadow: 0 0 0 0 black; transform: translate(4px, 4px); }
-      .neo-btn:disabled { background-color: #ccc; cursor: not-allowed; box-shadow: none; transform: translate(4px, 4px); }
 
-      .btn-process { background-color: var(--primary-green); color: black; }
-      .btn-download { background-color: var(--primary-pink); color: black; margin-top: 1rem; }
+      .neo-btn:active:not(:disabled) {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 0 #000;
+      }
 
-      /* Feedback Messages */
+      .neo-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+
+      .btn-download {
+        background: var(--c-blue);
+        margin-top: 1rem;
+      }
+
+      /* Preview e Alertas */
+      .preview-box {
+        background: #000;
+        color: #22c55e;
+        font-family: "Space Mono", monospace;
+        padding: 1rem;
+        border: var(--border-width) solid #000;
+        overflow-x: auto;
+        margin-top: 1rem;
+        font-size: 0.8rem;
+      }
+
       .alert {
         padding: 1rem;
-        border: var(--border-width) solid black;
-        border-radius: var(--radius);
-        margin-bottom: 1.5rem;
-        font-weight: bold;
-        box-shadow: var(--shadow-hard);
+        border: var(--border-width) solid #000;
+        font-weight: 800;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        margin-bottom: 1rem;
         display: flex;
         align-items: center;
         gap: 10px;
       }
-      .alert-error { background-color: #FF5252; color: black; }
-      .alert-success { background-color: var(--primary-green); color: black; }
-
-      /* Preview Box */
-      .preview-box {
-        background: #1a1a1a;
-        color: #00ff00;
-        font-family: 'Space Mono', monospace;
-        padding: 1.5rem;
-        border: var(--border-width) solid black;
-        border-radius: var(--radius);
-        overflow-x: auto;
-        white-space: pre-wrap;
-        max-height: 250px;
-        box-shadow: var(--shadow-hard);
-        font-size: 0.9rem;
+      .alert-error {
+        background: var(--c-red);
+        color: #fff;
+      }
+      .alert-success {
+        background: var(--c-green);
       }
 
-      /* Instructions */
-      .instructions-list {
-        list-style: none;
-        padding: 0;
-      }
-      .instructions-list li {
-        margin-bottom: 0.8rem;
+      /* Instruções */
+      .step-item {
         display: flex;
         align-items: flex-start;
         gap: 10px;
-        font-weight: 500;
+        margin-bottom: 0.5rem;
+        font-family: "Space Mono";
+        font-weight: bold;
+        font-size: 0.85rem;
       }
       .step-num {
-        background: black;
-        color: white;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
+        background: #000;
+        color: #fff;
+        width: 22px;
+        height: 22px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.8rem;
-        font-weight: bold;
+        font-size: 0.7rem;
         flex-shrink: 0;
       }
 
-      .hidden { display: none !important; }
+      .hidden {
+        display: none !important;
+      }
 
       @media (max-width: 768px) {
-        body { flex-direction: column; }
-        .sidebar { width: 100%; border-right: none; border-bottom: 3px solid black; flex-direction: row; align-items: center; overflow-x: auto; padding: 1rem; }
-        .neo-header { flex-direction: column; gap: 1rem; text-align: center; }
+        body {
+          flex-direction: column;
+          overflow: auto;
+        }
+        .sidebar {
+          width: 100%;
+          height: auto;
+          border-right: none;
+          border-bottom: 3px solid #000;
+        }
+        .main-content {
+          height: auto;
+        }
       }
     </style>
   </head>
   <body>
-
     <aside class="sidebar">
       <div class="logo">
         <i class="fas fa-file-export"></i>
@@ -247,64 +290,102 @@
         <div class="nav-item active">
           <i class="fas fa-magic"></i> Conversor
         </div>
-        <div class="nav-item">
-          <i class="fas fa-history"></i> Histórico
-        </div>
+        <div class="nav-item"><i class="fas fa-history"></i> Histórico</div>
       </nav>
+      <div
+        style="
+          margin-top: auto;
+          font-family: 'Space Mono';
+          font-size: 0.6rem;
+          opacity: 0.8;
+        "
+      >
+        SISTEMA DE IMPORTAÇÃO V4.0
+      </div>
     </aside>
 
     <main class="main-content">
-      
-      <div class="neo-header">
-        <div class="header-title">
-          <h1>Processador Excel 📂</h1>
-          <span>Converta planilhas personalizadas para TXT</span>
-        </div>
-      </div>
+      <header class="neo-header">
+        <h1>Processador Contábil 📂</h1>
+        <p
+          style="font-family: 'Space Mono'; font-weight: 800; font-size: 0.8rem"
+        >
+          Layout Neo Brutalista / 2026
+        </p>
+      </header>
 
-      <div class="neo-card" style="background: var(--primary-yellow);">
-        <div class="card-title"><i class="fas fa-info-circle"></i> Como Funciona</div>
-        <ul class="instructions-list">
-            <li><span class="step-num">1</span> O sistema pulará as primeiras 5 linhas (cabeçalho).</li>
-            <li><span class="step-num">2</span> Buscará colunas específicas: <code>dDatLanc</code>, <code>nVlrCred</code>, <code>cDesHist</code>, <code>nCodClTbIP</code>, <code>nCodClTbI</code>.</li>
-            <li><span class="step-num">3</span> Gera um TXT formatado para importação contábil.</li>
-        </ul>
+      <div class="neo-card" style="background: var(--c-blue)">
+        <div class="card-title">
+          <i class="fas fa-info-circle"></i> Regras de Negócio
+        </div>
+        <div class="step-item">
+          <div class="step-num">1</div>
+          Ignora as primeiras 5 linhas de cabeçalho.
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          Colunas: dDatLanc, nVlrCred, cDesHist, nCodClTbIP, nCodClTbI.
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          Gera TXT para importação automática.
+        </div>
       </div>
 
       <div class="neo-card">
         <div class="upload-area" id="uploadArea">
-            <div class="upload-icon">
-                <i class="fas fa-cloud-upload-alt"></i>
-            </div>
-            <h3 id="fileName">Clique ou arraste o arquivo Excel aqui</h3>
-            <p id="fileHint" style="color: #666; margin-top: 0.5rem; font-size: 0.9rem;">Formatos aceitos: .xlsx, .xls</p>
-            <input type="file" id="fileInput" accept=".xlsx,.xls" class="hidden" />
+          <i class="fas fa-cloud-upload-alt fa-3x"></i><br /><br />
+          <span
+            id="fileName"
+            style="font-weight: 900; text-transform: uppercase"
+            >Arraste o arquivo Excel (.xlsx)</span
+          >
+          <p
+            id="fileHint"
+            style="font-size: 0.7rem; margin-top: 5px; font-weight: bold"
+          >
+            (O sistema processa localmente no seu navegador)
+          </p>
+          <input
+            type="file"
+            id="fileInput"
+            accept=".xlsx,.xls"
+            class="hidden"
+          />
         </div>
 
         <div id="errorAlert" class="alert alert-error hidden">
-            <i class="fas fa-exclamation-triangle"></i>
-            <span id="errorMessage">Erro</span>
+          <i class="fas fa-exclamation-triangle"></i>
+          <span id="errorMessage">Erro</span>
         </div>
 
-        <button id="processButton" class="neo-btn btn-process hidden">
-            <i class="fas fa-cogs"></i> PROCESSAR ARQUIVO
+        <button id="processButton" class="neo-btn hidden">
+          <i class="fas fa-bolt"></i> PROCESSAR AGORA
         </button>
 
-        <div id="successContainer" class="hidden" style="margin-top: 2rem;">
-            <div class="alert alert-success">
-                <i class="fas fa-check-circle"></i>
-                <span>Arquivo processado com sucesso!</span>
-            </div>
+        <div id="successContainer" class="hidden" style="margin-top: 1.5rem">
+          <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            <span>Processamento Concluído!</span>
+          </div>
 
-            <div style="margin-bottom: 0.5rem; font-weight: bold;">Prévia do conteúdo:</div>
-            <div class="preview-box" id="previewContent"></div>
+          <div
+            style="
+              font-family: 'Space Mono';
+              font-weight: 900;
+              font-size: 0.7rem;
+              text-transform: uppercase;
+            "
+          >
+            Prévia dos Dados:
+          </div>
+          <div class="preview-box" id="previewContent"></div>
 
-            <button id="downloadButton" class="neo-btn btn-download">
-                <i class="fas fa-download"></i> BAIXAR ARQUIVO TXT
-            </button>
+          <button id="downloadButton" class="neo-btn btn-download">
+            <i class="fas fa-download"></i> BAIXAR ARQUIVO .TXT
+          </button>
         </div>
       </div>
-
     </main>
 
     <script>
@@ -312,7 +393,6 @@
       const uploadArea = document.getElementById("uploadArea");
       const fileInput = document.getElementById("fileInput");
       const fileName = document.getElementById("fileName");
-      const fileHint = document.getElementById("fileHint");
       const processButton = document.getElementById("processButton");
       const errorAlert = document.getElementById("errorAlert");
       const errorMessage = document.getElementById("errorMessage");
@@ -323,189 +403,105 @@
       let selectedFile = null;
       let processedData = null;
 
-      // Event Listeners
       uploadArea.addEventListener("click", () => fileInput.click());
-
-      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        uploadArea.addEventListener(eventName, preventDefaults, false);
-      });
-
-      function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-
-      uploadArea.addEventListener("drop", (e) => {
-        if (e.dataTransfer.files.length > 0) {
-          const file = e.dataTransfer.files[0];
-          if (file.name.endsWith(".xlsx") || file.name.endsWith(".xls")) {
-            handleFileSelection(file);
-          } else {
-            showError("Por favor, selecione um arquivo Excel (.xlsx ou .xls)");
-          }
-        }
-      });
 
       fileInput.addEventListener("change", (e) => {
         if (e.target.files.length > 0) handleFileSelection(e.target.files[0]);
       });
 
-      processButton.addEventListener("click", processExcelFile);
-      downloadButton.addEventListener("click", downloadTxtFile);
-
-      // Functions
       function handleFileSelection(file) {
         selectedFile = file;
         fileName.textContent = file.name;
-        fileName.style.fontWeight = "800";
-        fileHint.textContent = "Arquivo selecionado. Clique em Processar.";
         processButton.classList.remove("hidden");
         errorAlert.classList.add("hidden");
         successContainer.classList.add("hidden");
       }
 
-      function showError(msg) {
-        errorMessage.textContent = msg;
-        errorAlert.classList.remove("hidden");
-        successContainer.classList.add("hidden");
-      }
-
-      function readFileAsArrayBuffer(file) {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = (e) => resolve(e.target.result);
-          reader.onerror = (e) => reject(new Error("Erro ao ler o arquivo"));
-          reader.readAsArrayBuffer(file);
-        });
-      }
-
-      async function processExcelFile() {
-        if (!selectedFile) {
-          showError("Selecione um arquivo primeiro.");
-          return;
-        }
+      processButton.addEventListener("click", async () => {
+        if (!selectedFile) return;
 
         processButton.disabled = true;
-        processButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESSANDO...';
-        errorAlert.classList.add("hidden");
-        successContainer.classList.add("hidden");
+        processButton.innerHTML =
+          '<i class="fas fa-spinner fa-spin"></i> LENDO...';
 
         try {
-          const arrayBuffer = await readFileAsArrayBuffer(selectedFile);
+          const arrayBuffer = await selectedFile.arrayBuffer();
           const workbook = XLSX.read(arrayBuffer, { type: "array" });
-          const firstSheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[firstSheetName];
+          const worksheet = workbook.Sheets[workbook.SheetNames[0]];
 
-          // Lógica original mantida: range: 5 (pula 5 linhas, cabeçalho na linha 6)
+          // Lógica original: pula 5 linhas (cabeçalho na linha 6)
           const jsonData = XLSX.utils.sheet_to_json(worksheet, {
             range: 5,
             raw: true,
             defval: "",
           });
 
-          // Filtragem e Mapeamento original
-          const processedRows = jsonData
-            .filter((row) => {
-              return (
-                row.dDatLanc !== undefined &&
-                row.nVlrCred !== undefined &&
-                row.nVlrCred !== 0
-              );
-            })
+          const rows = jsonData
+            .filter((r) => r.dDatLanc && r.nVlrCred && r.nVlrCred !== 0)
             .map((row) => {
-              try {
-                // Formatar Data
-                const dateValue = row.dDatLanc;
-                let formattedDate = "";
+              let formattedDate = "";
+              const dateValue = row.dDatLanc;
 
-                if (dateValue instanceof Date) {
-                  formattedDate = `${String(dateValue.getDate()).padStart(2, "0")}/${String(dateValue.getMonth() + 1).padStart(2, "0")}/${dateValue.getFullYear()}`;
-                } else if (typeof dateValue === "string") {
-                  const dateParts = dateValue.split("/");
-                  if (dateParts.length === 3) {
-                    formattedDate = dateValue;
-                  } else {
-                    const date = new Date(dateValue);
-                    if(!isNaN(date)) {
-                       formattedDate = `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${date.getFullYear()}`;
-                    } else {
-                        formattedDate = dateValue; // Tenta manter original se falhar parse
-                    }
-                  }
-                } else if (typeof dateValue === "number") {
-                  const date = XLSX.SSF.parse_date_code(dateValue);
-                  formattedDate = `${String(date.d).padStart(2, "0")}/${String(date.m).padStart(2, "0")}/${date.y}`;
-                }
-
-                // Formatar Valor
-                let value = Math.abs(Number(row.nVlrCred));
-                if (isNaN(value)) value = 0;
-                
-                // Formato Brasileiro sem separador de milhar no TXT final, apenas virgula decimal substituída?
-                // Lógica original: .toFixed(2).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, ".") -> depois replace(".", "")
-                // Basicamente remove pontos de milhar e deixa vírgula como separador?
-                // O código original fazia: replace(".", ",") depois replace(/\./g, "") no finalValue.
-                // Isso sugere que o formato final desejado é algo como "1000,00" (sem ponto de milhar) ou "100000" (sem pontuação)?
-                // Analisando código original: 
-                // formattedValue = value.toFixed(2).replace(".", ",").replace(milhar ponto)
-                // finalValue = formattedValue.replace(/\./g, "") -> Remove os pontos de milhar inseridos.
-                // Resultado final: 1234,56 -> vira 1234,56. (Ponto de milhar entra e sai).
-                
-                const formattedValue = value.toFixed(2).replace(".", ",");
-                
-                // Descrição
-                const description = row.cDesHist ? String(row.cDesHist).replace(/\n/g, "") : "";
-                const finalDescription = `;${description}`;
-
-                const codClTbIP = row.nCodClTbIP !== undefined ? String(row.nCodClTbIP) : "";
-                const codClTbI = row.nCodClTbI !== undefined ? String(row.nCodClTbI) : "";
-
-                return `${formattedDate};${codClTbIP};${codClTbI};${formattedValue};${finalDescription};;;;`;
-              } catch (err) {
-                console.error("Erro linha:", row, err);
-                return null;
+              if (dateValue instanceof Date) {
+                formattedDate = `${String(dateValue.getDate()).padStart(
+                  2,
+                  "0"
+                )}/${String(dateValue.getMonth() + 1).padStart(
+                  2,
+                  "0"
+                )}/${dateValue.getFullYear()}`;
+              } else if (typeof dateValue === "number") {
+                const d = XLSX.SSF.parse_date_code(dateValue);
+                formattedDate = `${String(d.d).padStart(2, "0")}/${String(
+                  d.m
+                ).padStart(2, "0")}/${d.y}`;
+              } else {
+                formattedDate = String(dateValue);
               }
-            })
-            .filter(Boolean);
 
-          if (processedRows.length === 0) {
-            throw new Error("Nenhum dado válido encontrado (colunas dDatLanc/nVlrCred). Verifique o layout.");
-          }
+              const val = Math.abs(Number(row.nVlrCred))
+                .toFixed(2)
+                .replace(".", ",");
+              const desc = row.cDesHist
+                ? String(row.cDesHist).replace(/\n/g, "")
+                : "";
+              const p1 = row.nCodClTbIP || "";
+              const p2 = row.nCodClTbI || "";
 
-          const txtContent = processedRows.join("\n");
-          processedData = txtContent;
+              return `${formattedDate};${p1};${p2};${val};;${desc};;;;`;
+            });
 
-          // Preview
-          const previewLines = txtContent.split("\n").slice(0, 5);
-          previewContent.textContent = previewLines.join("\n") + (txtContent.split("\n").length > 5 ? "\n..." : "");
+          if (rows.length === 0)
+            throw new Error(
+              "Nenhum dado válido nas colunas dDatLanc/nVlrCred."
+            );
 
+          processedData = rows.join("\n");
+          previewContent.textContent =
+            rows.slice(0, 5).join("\n") + (rows.length > 5 ? "\n..." : "");
           successContainer.classList.remove("hidden");
-
+          errorAlert.classList.add("hidden");
         } catch (err) {
-          showError(err.message || "Erro ao processar arquivo.");
+          errorMessage.textContent = err.message;
+          errorAlert.classList.remove("hidden");
         } finally {
           processButton.disabled = false;
-          processButton.innerHTML = '<i class="fas fa-cogs"></i> PROCESSAR ARQUIVO';
+          processButton.innerHTML =
+            '<i class="fas fa-bolt"></i> PROCESSAR AGORA';
         }
-      }
+      });
 
-      function downloadTxtFile() {
+      downloadButton.addEventListener("click", () => {
         if (!processedData) return;
-        
-        const now = new Date();
-        const pad = (n) => String(n).padStart(2, "0");
-        const timestamp = `${pad(now.getDate())}${pad(now.getMonth()+1)}${now.getFullYear()}_${pad(now.getHours())}${pad(now.getMinutes())}`;
-        
-        const blob = new Blob([processedData], { type: "text/plain;charset=utf-8" });
+        const blob = new Blob([processedData], {
+          type: "text/plain;charset=utf-8",
+        });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `Arquivo_Gerado_${timestamp}.txt`;
-        document.body.appendChild(a);
+        a.download = `IMPORT_CONTABIL_${Date.now()}.txt`;
         a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }
+      });
     </script>
   </body>
 </html>
