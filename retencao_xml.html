@@ -3,790 +3,231 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Analisador de XML NFSe - Retenções</title>
+    <title>Analisador Neo Brutalista de NFSe</title>
     <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap"
       rel="stylesheet"
     />
-
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <style>
       :root {
-        --primary-color: #4f0072;
-        --accent-color: #fb0a5e;
-        --background-color: #ffffff;
-        --form-bg-color: #f9f9f9;
-        --text-color: #333333;
-        --border-color: #e0e0e0;
-        --text-color-light: #ffffff;
-        --sombra: 0 4px 12px rgba(79, 0, 114, 0.15);
-        --transicao: all 0.3s ease;
-        --primary-dark: #3d005a;
-        --success: #10b981;
-        --error: #ef4444;
-        --text-muted: #64748b;
-        --radius: 0.5rem;
-        --radius-lg: 0.75rem;
-        --group-highlight-bg: #f5f5f5;
+        --bg-yellow: #ffde00;
+        --c-purple: #8b5cf6;
+        --c-blue: #06b6d4;
+        --c-pink: #ff90e8;
+        --c-green: #22c55e;
+        --border-black: #000000;
+        --border-width: 3px;
       }
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+
       body {
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-          Roboto, sans-serif;
-        background: linear-gradient(135deg, #4f0072 0%, #fb0a5e 100%);
-        min-height: 100vh;
-        color: var(--text-color);
-        line-height: 1.6;
-        padding: 2rem 0;
+        font-family: "Space Grotesk", sans-serif;
+        background-color: var(--bg-yellow);
+        background-image: radial-gradient(#000 1px, transparent 1px);
+        background-size: 20px 20px;
+        color: var(--border-black);
+        padding: 2rem;
+        margin: 0;
       }
+
       .container {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 2rem 1rem;
-      }
-      .header {
-        text-align: center;
-        margin-bottom: 2rem;
-        position: relative;
-      }
-      .header h1 {
-        color: white;
-        font-size: 2.5rem;
-        font-weight: 700;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-      .header p {
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 1.1rem;
-      }
-      .main-content > section {
-        background: var(--background-color);
-        border-radius: var(--radius-lg);
-        padding: 2rem;
-        box-shadow: var(--sombra);
-        margin-bottom: 2rem;
-      }
-      .upload-area {
-        border: 2px dashed var(--border-color);
-        border-radius: var(--radius);
-        padding: 3rem 2rem;
-        text-align: center;
-        transition: var(--transicao);
-        cursor: pointer;
-        margin-top: 1.5rem;
-      }
-      .upload-area:hover {
-        border-color: var(--primary-color);
-        background: var(--form-bg-color);
-      }
-      .upload-icon {
-        font-size: 3rem;
-        color: var(--text-muted);
-        margin-bottom: 1rem;
-      }
-      #file-input {
-        display: none;
-      }
-      .file-info {
-        background: var(--form-bg-color);
-        border-radius: var(--radius);
-        padding: 1rem;
-        margin-top: 1.5rem;
-        display: none;
-        gap: 1rem;
-      }
-      .file-info.show {
-        display: block;
-      }
-      .file-list {
-        list-style: none;
-        padding-top: 0.5rem;
-      }
-      .file-list-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.25rem 0;
-        color: var(--text-muted);
-      }
-      .btn {
-        background: var(--primary-color);
-        color: var(--text-color-light);
-        border: none;
-        padding: 0.875rem 2rem;
-        border-radius: var(--radius);
-        font-weight: 600;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: var(--transicao);
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        text-decoration: none;
-      }
-      .btn:hover {
-        background: var(--primary-dark);
-        transform: translateY(-2px);
-      }
-      .btn:disabled {
-        background: var(--text-muted);
-        cursor: not-allowed;
-        transform: none;
-      }
-      .btn-process {
-        width: 100%;
-        justify-content: center;
-        margin-top: 1.5rem;
-      }
-      .section-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary-dark);
-        margin-bottom: 1.5rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid var(--accent-color);
-      }
-      .hidden {
-        display: none !important;
-      }
-      .loading {
-        text-align: center;
-        padding: 3rem 2rem;
-        color: var(--text-muted);
-      }
-      .spinner {
-        border: 3px solid var(--border-color);
-        border-top: 3px solid var(--primary-color);
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        animation: spin 1s linear infinite;
-        margin: 0 auto 1rem;
-      }
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-      .table-container {
-        overflow-x: auto;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 1rem;
-      }
-      th,
-      td {
-        padding: 0.75rem 1rem;
-        border: 1px solid var(--border-color);
-        text-align: left;
-        transition: var(--transicao);
-      }
-      thead {
-        background: var(--form-bg-color);
-        position: sticky;
-        top: 0;
-        z-index: 10;
-      }
-      th {
-        font-weight: 600;
-        color: var(--primary-dark);
-      }
-      td {
-        font-size: 0.9rem;
       }
 
-      tr.group-highlight td {
-        background-color: var(--group-highlight-bg);
-      }
-      /* DESTAQUE PARA A LINHA COMPLETA DE ISS RETIDO */
-      tr.special-iss-row td {
-        background-color: var(--error);
-        color: white;
-        font-weight: 700;
-      }
-      tr.special-iss-row .tag-highlight {
-        background-color: white;
-        color: var(--error);
-        font-weight: 700;
-      }
-
-      .tag-highlight {
-        background-color: var(--accent-color);
-        color: white;
-        padding: 0.2em 0.6em;
-        border-radius: 0.25rem;
-        font-family: monospace;
-        font-size: 0.85em;
-      }
-
-      #company-preview-section {
-        margin-top: 2rem;
+      header {
+        background: #fff;
+        border: var(--border-width) solid #000;
         padding: 1.5rem;
-        background-color: var(--form-bg-color);
-        border-left: 5px solid var(--accent-color);
-        border-radius: var(--radius);
-      }
-      #company-preview-section .preview-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--text-muted);
-        margin-bottom: 1rem;
-      }
-      #company-list .company-item {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: var(--primary-dark);
-        padding: 0.5rem 0;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-      }
-
-      .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.6);
-        z-index: 100;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
-      }
-      .modal-overlay.show {
-        opacity: 1;
-        visibility: visible;
-      }
-      .modal-content {
-        background: white;
-        padding: 2.5rem;
-        border-radius: var(--radius-lg);
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-        max-width: 700px;
-        width: 90%;
-        max-height: 90vh;
-        overflow-y: auto;
-        transform: scale(0.9);
-        transition: all 0.3s ease;
-      }
-      .modal-overlay.show .modal-content {
-        transform: scale(1);
-      }
-      .modal-header {
+        margin-bottom: 2rem;
+        box-shadow: 8px 8px 0 0 #000;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-bottom: 1px solid var(--border-color);
-        padding-bottom: 1rem;
-        margin-bottom: 1rem;
       }
-      .modal-title {
-        font-size: 1.5rem;
-        color: var(--primary-dark);
-      }
-      .modal-close {
-        background: none;
-        border: none;
-        font-size: 2rem;
+
+      .upload-section {
+        background: var(--c-pink);
+        border: var(--border-width) solid #000;
+        padding: 2rem;
+        text-align: center;
+        margin-bottom: 2rem;
+        box-shadow: 6px 6px 0 0 #000;
         cursor: pointer;
-        color: var(--text-muted);
+        position: relative;
       }
-      .modal-body p,
-      .modal-body li {
-        color: var(--text-color);
-        margin-bottom: 0.75rem;
-      }
-      .modal-body ul {
-        padding-left: 20px;
-      }
-      .modal-body code {
-        background: #eee;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-family: monospace;
-      }
-      .btn-info {
+
+      .upload-section input {
         position: absolute;
-        top: 0;
-        right: 0;
-        background: none;
-        border: 1px solid white;
-        color: white;
-        padding: 0.5rem 1rem;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
       }
-      .btn-info:hover {
-        background: rgba(255, 255, 255, 0.2);
+
+      .table-container {
+        background: #fff;
+        border: var(--border-width) solid #000;
+        box-shadow: 8px 8px 0 0 #000;
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: "Space Mono", monospace;
+        font-size: 0.8rem;
+      }
+
+      th {
+        background: #000;
+        color: #fff;
+        padding: 1rem;
+        text-align: left;
+        text-transform: uppercase;
+      }
+
+      td {
+        padding: 0.8rem;
+        border-bottom: 2px solid #000;
+        border-right: 1px solid #000;
+      }
+
+      /* REGRA: Linha Verde para Retenções */
+      .row-has-retention {
+        background-color: #dcfce7 !important; /* Verde claro Neo Brutalista */
+      }
+
+      .iss-highlight {
+        background: var(--c-blue);
+        font-weight: 900;
+        padding: 2px 6px;
+        border: 2px solid #000;
+      }
+
+      .btn-clear {
+        background: #000;
+        color: #fff;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        cursor: pointer;
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <header class="header">
-        <h1><i class="fas fa-search-dollar"></i> Analisador de XML NFSe</h1>
-        <p>
-          Importe arquivos XML de NFSe para encontrar valores de retenções e
-          deduções.
-        </p>
-        <button class="btn btn-info" id="info-btn">
-          <i class="fas fa-question-circle"></i> Orientações
+      <header>
+        <h1>Auditor de Retenções XML</h1>
+        <button class="btn-clear" onclick="window.location.reload()">
+          Limpar
         </button>
       </header>
 
-      <main class="main-content">
-        <section id="upload-section">
-          <div
-            class="upload-area"
-            onclick="document.getElementById('file-input').click()"
-          >
-            <div class="upload-icon">
-              <i class="fas fa-cloud-upload-alt"></i>
-            </div>
-            <p><strong>Clique para selecionar os arquivos XML</strong></p>
-            <p>ou arraste e solte os arquivos .xml aqui</p>
-            <input type="file" id="file-input" accept=".xml" multiple />
-          </div>
-          <div class="file-info" id="file-info">
-            <div id="file-name" style="font-weight: 600">
-              Arquivos Selecionados:
-            </div>
-            <ul id="file-list" class="file-list"></ul>
-          </div>
+      <div class="upload-section">
+        <i class="fas fa-file-import" style="font-size: 2rem"></i>
+        <h3>SELECIONAR XMLS DE NFSe</h3>
+        <input
+          type="file"
+          id="xmlInput"
+          multiple
+          accept=".xml"
+          onchange="processFiles(this.files)"
+        />
+      </div>
 
-          <div id="company-preview-section" class="hidden">
-            <h3 class="preview-title">Empresa (Tomador do Serviço):</h3>
-            <div id="company-list"></div>
-          </div>
-
-          <button class="btn btn-process" id="process-btn" disabled>
-            <i class="fas fa-cogs"></i> Analisar Arquivos
-          </button>
-        </section>
-
-        <section id="loading-section" class="hidden">
-          <div class="loading">
-            <div class="spinner"></div>
-            <p>Analisando e consolidando dados...</p>
-          </div>
-        </section>
-
-        <section id="results-section" class="hidden">
-          <h2 class="section-title">
-            <i class="fas fa-table"></i> Resultados da Análise
-          </h2>
-          <p class="text-muted" style="margin-bottom: 1.5rem">
-            A tabela abaixo exibe, sem duplicatas, todas as notas fiscais que
-            possuem valores de tributos ou deduções monitoradas.
-          </p>
-          <div class="table-container">
-            <table id="results-table">
-              <thead>
-                <tr>
-                  <th>Arquivo de Origem</th>
-                  <th>Nº da Nota</th>
-                  <th>Data de Emissão</th>
-                  <th>Prestador do Serviço</th>
-                  <th>Tributo/Dedução</th>
-                  <th>Valor (R$)</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-          <button
-            class="btn btn-process"
-            id="reset-btn"
-            style="margin-top: 2rem"
-          >
-            <i class="fas fa-undo"></i> Analisar Outros Arquivos
-          </button>
-        </section>
-      </main>
-    </div>
-
-    <div class="modal-overlay" id="info-modal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title">
-            <i class="fas fa-info-circle"></i> Como Usar o Analisador
-          </h2>
-          <button class="modal-close" id="close-modal-btn">&times;</button>
-        </div>
-        <div class="modal-body">
-          <p>
-            Esta ferramenta foi projetada para identificar rapidamente notas
-            fiscais de serviço (NFSe) que contêm valores de retenção de impostos
-            ou deduções.
-          </p>
-          <h3>Buscas Realizadas:</h3>
-          <ul>
-            <li>
-              O sistema busca por valores maiores que zero nas tags:
-              <code>&lt;ValorCofins&gt;</code>, <code>&lt;ValorPis&gt;</code>,
-              <code>&lt;ValorIr&gt;</code>, <code>&lt;ValorCsll&gt;</code>,
-              <code>&lt;ValorDeducoes&gt;</code> e
-              <code>&lt;ValorInss&gt;</code>.
-            </li>
-            <li>
-              Adicionalmente, ele verifica se a tag
-              <code>&lt;IssRetido&gt;</code> é igual a <code>1</code>. Em caso
-              positivo, o valor da retenção é exibido em uma **linha com fundo
-              vermelho** para máximo destaque.
-            </li>
-          </ul>
-          <h3>Recursos:</h3>
-          <ul>
-            <li>A tabela de resultados não exibe impostos duplicados.</li>
-            <li>
-              Notas com múltiplos impostos são agrupadas com uma cor de fundo
-              para facilitar a análise.
-            </li>
-          </ul>
-        </div>
+      <div class="table-container">
+        <table id="resultsTable">
+          <thead>
+            <tr>
+              <th>Nota</th>
+              <th>Emitente</th>
+              <th>vBC</th>
+              <th>vLiq</th>
+              <th>PIS/COF/IR/CS</th>
+              <th>ISS Retido</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
       </div>
     </div>
 
     <script>
-      const fileInput = document.getElementById("file-input");
-      const processBtn = document.getElementById("process-btn");
-      const resetBtn = document.getElementById("reset-btn");
-      const uploadArea = document.querySelector(".upload-area");
-      const fileInfo = document.getElementById("file-info");
-      const fileList = document.getElementById("file-list");
-      const uploadSection = document.getElementById("upload-section");
-      const loadingSection = document.getElementById("loading-section");
-      const resultsSection = document.getElementById("results-section");
-      const resultsTableBody = document.querySelector("#results-table tbody");
-      const infoBtn = document.getElementById("info-btn");
-      const infoModal = document.getElementById("info-modal");
-      const closeModalBtn = document.getElementById("close-modal-btn");
-      const companyPreviewSection = document.getElementById(
-        "company-preview-section"
-      );
-      const companyListDiv = document.getElementById("company-list");
-
-      let selectedFiles = [];
-      let processedResults = [];
-
-      ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
-        uploadArea.addEventListener(
-          eventName,
-          (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          },
-          false
-        );
-      });
-      uploadArea.addEventListener("drop", (e) =>
-        handleFileSelect(e.dataTransfer.files)
-      );
-      fileInput.addEventListener("change", (e) =>
-        handleFileSelect(e.target.files)
-      );
-      processBtn.addEventListener("click", processXmlFiles);
-      resetBtn.addEventListener("click", () => resetUI(true));
-
-      infoBtn.addEventListener("click", () => infoModal.classList.add("show"));
-      closeModalBtn.addEventListener("click", () =>
-        infoModal.classList.remove("show")
-      );
-      infoModal.addEventListener("click", (e) => {
-        if (e.target === infoModal) {
-          infoModal.classList.remove("show");
-        }
-      });
-
-      async function handleFileSelect(files) {
-        if (!files || files.length === 0) return;
-        selectedFiles = Array.from(files);
-        fileList.innerHTML = "";
-        selectedFiles.forEach((file) => {
-          const listItem = document.createElement("li");
-          listItem.className = "file-list-item";
-          listItem.innerHTML = `<i class="fas fa-file-code text-success"></i> ${file.name}`;
-          fileList.appendChild(listItem);
-        });
-        fileInfo.classList.add("show");
-        processBtn.disabled = false;
-        resetUI(false);
-
-        companyListDiv.innerHTML = "Analisando nome...";
-        companyPreviewSection.classList.remove("hidden");
-
-        let firstCompanyName = null;
-
-        for (const file of selectedFiles) {
-          try {
-            const fileContent = await readFileAsText(file);
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(
-              fileContent,
-              "application/xml"
-            );
-
-            // --- ALTERAÇÃO AQUI: Busca o Tomador do Serviço para a pré-visualização ---
-            const firstTomadorNode = xmlDoc.querySelector(
-              "TomadorServico RazaoSocial"
-            );
-
-            if (firstTomadorNode && firstTomadorNode.textContent) {
-              firstCompanyName = firstTomadorNode.textContent.trim();
-              break;
-            }
-          } catch (e) {
-            console.error(
-              "Erro ao ler nome da empresa do arquivo:",
-              file.name,
-              e
-            );
-          }
-        }
-
-        companyListDiv.innerHTML = "";
-        if (firstCompanyName) {
-          const companyItem = document.createElement("div");
-          companyItem.className = "company-item";
-          companyItem.innerHTML = firstCompanyName;
-          companyListDiv.appendChild(companyItem);
-        } else {
-          companyListDiv.innerHTML =
-            '<p class="text-muted">Nenhuma Razão Social de Tomador foi encontrada nos arquivos.</p>';
-        }
+      function getTagValue(parent, tagName) {
+        const el = parent.getElementsByTagName(tagName)[0];
+        return el ? el.textContent : "0";
       }
 
-      async function processXmlFiles() {
-        if (selectedFiles.length === 0) {
-          alert("Por favor, selecione pelo menos um arquivo XML.");
-          return;
-        }
-        showSection("loading");
-
-        const uniqueResults = new Map();
-        const tagsToFind = [
-          "ValorCofins",
-          "ValorPis",
-          "ValorIr",
-          "ValorCsll",
-          "ValorDeducoes",
-          "ValorInss",
-        ];
-
-        try {
-          for (const file of selectedFiles) {
-            const fileContent = await readFileAsText(file);
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(
-              fileContent,
-              "application/xml"
-            );
-
-            const errorNode = xmlDoc.querySelector("parsererror");
-            if (errorNode) {
-              console.error(
-                `Erro de parse no arquivo ${file.name}:`,
-                errorNode.textContent
-              );
-              continue;
-            }
-
-            const notasCompletas = xmlDoc.querySelectorAll("Nfse, CompNfse");
-
-            for (const notaCompleta of notasCompletas) {
-              const infNfse = notaCompleta.querySelector("InfNfse");
-              if (!infNfse) continue;
-
-              // --- MANTIDO: Busca o Prestador do Serviço para a tabela de resultados ---
-              const prestador =
-                notaCompleta
-                  .querySelector("PrestadorServico RazaoSocial")
-                  ?.textContent.trim() || "Não encontrado";
-              const numeroNota =
-                infNfse.querySelector("Numero")?.textContent || "N/A";
-              const dataEmissao =
-                infNfse.querySelector("DataEmissao")?.textContent || "N/A";
-
-              tagsToFind.forEach((tagName) => {
-                const element = infNfse.querySelector(tagName);
-                if (element) {
-                  const valor = parseFloat(element.textContent || "0");
-                  if (valor > 0) {
-                    const resultKey = `${prestador}|${numeroNota}|${tagName}`;
-                    if (!uniqueResults.has(resultKey)) {
-                      uniqueResults.set(resultKey, {
-                        isSpecial: false,
-                        fileName: file.name,
-                        numero: numeroNota,
-                        data: formatDate(dataEmissao),
-                        prestador: prestador,
-                        tributo: tagName,
-                        valor: valor,
-                      });
-                    }
-                  }
-                }
-              });
-
-              const issRetidoNode = infNfse.querySelector("IssRetido");
-              if (issRetidoNode && issRetidoNode.textContent.trim() === "1") {
-                let valorIssRetido = 0;
-                let valorNode = infNfse.querySelector("ValorIssRetido");
-                if (!valorNode) {
-                  valorNode = infNfse.querySelector(
-                    "ValoresNfse ValorIss, Servico Valores ValorIss"
-                  );
-                }
-
-                if (valorNode) {
-                  valorIssRetido = parseFloat(valorNode.textContent || "0");
-                }
-
-                if (valorIssRetido > 0) {
-                  const resultKey = `${prestador}|${numeroNota}|ISS RETIDO`;
-                  if (!uniqueResults.has(resultKey)) {
-                    uniqueResults.set(resultKey, {
-                      isSpecial: true,
-                      fileName: file.name,
-                      numero: numeroNota,
-                      data: formatDate(dataEmissao),
-                      prestador: prestador,
-                      tributo: "ISS RETIDO",
-                      valor: valorIssRetido,
-                    });
-                  }
-                }
-              }
-            }
-          }
-
-          processedResults = Array.from(uniqueResults.values());
-
-          processedResults.sort((a, b) => {
-            const keyA = a.prestador + a.numero;
-            const keyB = b.prestador + b.numero;
-            if (keyA < keyB) return -1;
-            if (keyA > keyB) return 1;
-            if (a.isSpecial) return 1;
-            if (b.isSpecial) return -1;
-            const tributoA = a.tributo;
-            const tributoB = b.tributo;
-            if (tributoA < tributoB) return -1;
-            if (tributoA > tributoB) return 1;
-            return 0;
-          });
-
-          displayResults();
-          showSection("results");
-        } catch (error) {
-          alert(
-            `Ocorreu um erro crítico durante o processamento: ${error.message}`
-          );
-          showSection("upload");
-        }
+      // Busca valor mesmo em tags aninhadas (ex: tribFed/vRetIRRF)
+      function findValue(xml, tagName) {
+        const el = xml.getElementsByTagName(tagName)[0];
+        return el ? parseFloat(el.textContent) : 0;
       }
 
-      function readFileAsText(file) {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = (event) => resolve(event.target.result);
-          reader.onerror = (error) => reject(error);
-          reader.readAsText(file, "UTF-8");
-        });
-      }
-
-      function displayResults() {
-        resultsTableBody.innerHTML = "";
-        if (processedResults.length === 0) {
-          resultsTableBody.innerHTML =
-            '<tr><td colspan="6" style="text-align:center;">Nenhuma retenção ou dedução com valor acima de zero foi encontrada nos arquivos analisados.</td></tr>';
-          return;
-        }
-
-        let lastGroupKey = "";
-        let groupColorToggle = false;
-
-        processedResults.forEach((res) => {
-          const currentGroupKey = res.prestador + "|" + res.numero;
-          if (currentGroupKey !== lastGroupKey) {
-            groupColorToggle = !groupColorToggle;
-            lastGroupKey = currentGroupKey;
-          }
-
-          const row = document.createElement("tr");
-
-          if (res.isSpecial) {
-            row.classList.add("special-iss-row");
-          } else if (groupColorToggle) {
-            row.classList.add("group-highlight");
-          }
-
-          row.innerHTML = `
-                <td>${res.fileName}</td>
-                <td>${res.numero}</td>
-                <td>${res.data}</td>
-                <td>${res.prestador}</td>
-                <td><span class="tag-highlight">${res.tributo}</span></td>
-                <td>${formatBRL(res.valor)}</td>
-            `;
-          resultsTableBody.appendChild(row);
-        });
-      }
-
-      function formatDate(dateString) {
-        if (!dateString || !dateString.includes("-")) return dateString;
-        try {
-          const date = new Date(dateString);
-          return date.toLocaleDateString("pt-BR", { timeZone: "UTC" });
-        } catch (e) {
-          return dateString;
-        }
-      }
-
-      function formatBRL(value) {
-        return value.toLocaleString("pt-BR", {
+      function formatBRL(val) {
+        return val.toLocaleString("pt-BR", {
           style: "currency",
           currency: "BRL",
         });
       }
 
-      function showSection(sectionName) {
-        ["upload", "loading", "results"].forEach((sec) => {
-          document.getElementById(`${sec}-section`).classList.add("hidden");
-        });
-        if (sectionName) {
-          document
-            .getElementById(`${sectionName}-section`)
-            .classList.remove("hidden");
-        }
-      }
+      async function processFiles(files) {
+        const tbody = document.querySelector("#resultsTable tbody");
+        const parser = new DOMParser();
 
-      function resetUI(fullReset = true) {
-        showSection("upload");
-        if (!fullReset) {
-          resultsSection.classList.add("hidden");
-        }
+        for (let file of files) {
+          const text = await file.text();
+          const xml = parser.parseFromString(text, "text/xml");
 
-        if (fullReset) {
-          fileInput.value = "";
-          selectedFiles = [];
-          processedResults = [];
-          fileInfo.classList.remove("show");
-          fileList.innerHTML = "";
-          processBtn.disabled = true;
-          resultsTableBody.innerHTML = "";
-          companyPreviewSection.classList.add("hidden");
-          companyListDiv.innerHTML = "";
+          const emit = xml.getElementsByTagName("emit")[0];
+          const xNome = getTagValue(emit, "xNome");
+          const nNFSe = getTagValue(xml, "nNFSe");
+
+          // Valores Base
+          const vBC = findValue(xml, "vBC");
+          const vLiq = findValue(xml, "vLiq");
+
+          // Busca Retenções (Lógica robusta para diferentes tags de prefeitura)
+          let vPis = findValue(xml, "vPis") || findValue(xml, "vRetPIS");
+          let vCofins =
+            findValue(xml, "vCofins") || findValue(xml, "vRetCOFINS");
+          let vIR = findValue(xml, "vRetIRRF") || findValue(xml, "vIR");
+          let vCSLL = findValue(xml, "vRetCSLL") || findValue(xml, "vCSLL");
+          let vISS =
+            findValue(xml, "vRetISS") || findValue(xml, "vISSRetido") || 0;
+
+          // Lógica tpRetISS (se presente no XML como tpRetISSQN ou similar)
+          const tpRetISS =
+            getTagValue(xml, "tpRetISS") || getTagValue(xml, "tpRetISSQN");
+          const isIssRetidoImportante = tpRetISS === "2" || tpRetISS === "3";
+
+          let somaOutrasRet = vPis + vCofins + vIR + vCSLL;
+          let totalRetencoes = somaOutrasRet + vISS;
+
+          const hasAnyRetention = totalRetencoes > 0 || vBC > vLiq;
+          const rowClass = hasAnyRetention ? "row-has-retention" : "";
+
+          const tr = document.createElement("tr");
+          tr.className = rowClass;
+          tr.innerHTML = `
+                <td><strong>${nNFSe}</strong></td>
+                <td>${xNome}</td>
+                <td>${formatBRL(vBC)}</td>
+                <td>${formatBRL(vLiq)}</td>
+                <td>${formatBRL(somaOutrasRet)}</td>
+                <td><span class="${
+                  isIssRetidoImportante ? "iss-highlight" : ""
+                }">${formatBRL(vISS)}</span></td>
+                <td>${
+                  hasAnyRetention ? "POSSUI RETENÇÕES" : "SEM RETENÇÃO"
+                }</td>
+            `;
+          tbody.appendChild(tr);
         }
       }
     </script>
