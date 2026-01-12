@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Extrator NFSe Turbo | V3</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <style>
+      :root {
+        --bg-body: #ffde00;
+        --accent: #8b5cf6;
+        --card-bg: #ffffff;
+        --border-black: #000000;
+        --border-width: 3px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Space Grotesk", sans-serif;
+        background-color: var(--bg-body);
+        background-image: radial-gradient(#000 1px, transparent 1px);
+        background-size: 20px 20px;
+        color: var(--border-black);
+        min-height: 100vh;
+        padding: 2rem;
+      }
+
+      .container {
+        max-width: 1250px;
+        margin: 0 auto;
+      }
+
+      header {
+        background: #fff;
+        border: var(--border-width) solid var(--border-black);
+        padding: 1.5rem;
+        box-shadow: 8px 8px 0 0 var(--border-black);
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      h1 {
+        font-weight: 900;
+        text-transform: uppercase;
+        font-size: 2rem;
+      }
+
+      .upload-section {
+        background: var(--accent);
+        border: var(--border-width) solid var(--border-black);
+        padding: 2.5rem;
+        box-shadow: 8px 8px 0 0 var(--border-black);
+        text-align: center;
+        margin-bottom: 2rem;
+        position: relative;
+      }
+
+      .upload-label {
+        color: white;
+        font-weight: 800;
+        font-size: 1.3rem;
+        text-transform: uppercase;
+      }
+
+      #xmlInput {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      .controls {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .btn {
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 800;
+        text-transform: uppercase;
+        padding: 14px 28px;
+        border: var(--border-width) solid var(--border-black);
+        cursor: pointer;
+        box-shadow: 4px 4px 0 0 var(--border-black);
+        transition: 0.1s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .btn:active {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 0 var(--border-black);
+      }
+
+      .btn-export {
+        background: #ff90e8;
+      }
+      .btn-clear {
+        background: #ff4d4d;
+      }
+
+      .table-container {
+        background: #fff;
+        border: var(--border-width) solid var(--border-black);
+        box-shadow: 10px 10px 0 0 var(--border-black);
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: "Space Mono", monospace;
+      }
+
+      th {
+        background: var(--border-black);
+        color: #fff;
+        padding: 1.2rem;
+        text-align: left;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+      }
+
+      td {
+        padding: 1.2rem;
+        border-bottom: 3px solid var(--border-black);
+        border-right: 1px solid #ddd;
+        vertical-align: top;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        background: #fff;
+      }
+
+      .col-nfse {
+        width: 100px;
+        font-weight: 900;
+      }
+      .col-nome {
+        width: 30%;
+      }
+      .col-cnpj {
+        width: 160px;
+      }
+
+      .full-text {
+        white-space: normal;
+        word-break: break-word;
+      }
+
+      tr:hover td {
+        background-color: #f8f8f8;
+      }
+
+      .status-bar {
+        margin-top: 1.5rem;
+        font-family: "Space Mono", monospace;
+        font-weight: bold;
+        background: #000;
+        color: #fff;
+        display: inline-block;
+        padding: 8px 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Extrator NFSe</h1>
+        <div
+          style="
+            background: #22c55e;
+            border: 2px solid #000;
+            padding: 5px 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+          "
+        >
+          Dados Extraídos
+        </div>
+      </header>
+
+      <div class="upload-section">
+        <input
+          type="file"
+          id="xmlInput"
+          multiple
+          accept=".xml"
+          onchange="processFiles(this.files)"
+        />
+        <div class="upload-label">
+          <i class="fas fa-file-invoice fa-3x"></i><br /><br />
+          ARRASTE OU CLIQUE PARA SUBIR XMLS
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn btn-export" onclick="downloadTXT()">
+          <i class="fas fa-file-download"></i> EXPORTAR TXT
+        </button>
+        <button class="btn btn-clear" onclick="clearData()">
+          <i class="fas fa-eraser"></i> LIMPAR TUDO
+        </button>
+      </div>
+
+      <div class="table-container">
+        <table id="resultTable">
+          <thead>
+            <tr>
+              <th class="col-nfse">Nº NFSe</th>
+              <th class="col-nome">Tomador (Nome Completo)</th>
+              <th class="col-cnpj">CNPJ</th>
+              <th>Descrição do Serviço</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="status-bar" id="statusMsg">Aguardando documentos...</div>
+    </div>
+
+    <script>
+      let extractedData = [];
+
+      async function processFiles(files) {
+        const status = document.getElementById("statusMsg");
+        const tbody = document.querySelector("#resultTable tbody");
+        const parser = new DOMParser();
+
+        status.innerText = `Processando ${files.length} arquivos...`;
+
+        for (let file of files) {
+          try {
+            const text = await file.text();
+            const xmlDoc = parser.parseFromString(text, "text/xml");
+
+            // Extração das Tags
+            const nNFSe =
+              xmlDoc.getElementsByTagName("nNFSe")[0]?.textContent || "S/N";
+            const toma = xmlDoc.getElementsByTagName("toma")[0];
+            const cnpj =
+              toma?.getElementsByTagName("CNPJ")[0]?.textContent ||
+              "Não consta";
+            const xNome =
+              toma?.getElementsByTagName("xNome")[0]?.textContent ||
+              "Não consta";
+            const xDescServ =
+              xmlDoc.getElementsByTagName("xDescServ")[0]?.textContent ||
+              "Sem descrição";
+
+            const entry = { nNFSe, xNome, cnpj, xDescServ };
+            extractedData.push(entry);
+
+            const row = tbody.insertRow();
+            row.innerHTML = `
+              <td class="col-nfse">${nNFSe}</td>
+              <td class="full-text"><strong>${xNome}</strong></td>
+              <td>${cnpj}</td>
+              <td class="full-text">${xDescServ}</td>
+            `;
+          } catch (err) {
+            console.error("Erro no processamento:", file.name, err);
+          }
+        }
+
+        status.innerText = `${extractedData.length} registros prontos para exportação.`;
+      }
+
+      function downloadTXT() {
+        if (extractedData.length === 0) {
+          alert("Adicione arquivos primeiro!");
+          return;
+        }
+
+        let content = "RELATÓRIO DE EXTRAÇÃO - NFSE\n";
+        content +=
+          "================================================================\n\n";
+
+        extractedData.forEach((item) => {
+          content += `Nº NOTA: ${item.nNFSe}\n`;
+          content += `TOMADOR: ${item.xNome}\n`;
+          content += `CNPJ:    ${item.cnpj}\n`;
+          content += `SERVIÇO: ${item.xDescServ}\n`;
+          content += `----------------------------------------------------------------\n`;
+        });
+
+        const blob = new Blob([content], { type: "text/plain" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "relatorio_notas_fiscais.txt";
+        link.click();
+      }
+
+      function clearData() {
+        extractedData = [];
+        document.querySelector("#resultTable tbody").innerHTML = "";
+        document.getElementById("xmlInput").value = "";
+        document.getElementById("statusMsg").innerText =
+          "Aguardando novos arquivos.";
+      }
+    </script>
+  </body>
+</html>
