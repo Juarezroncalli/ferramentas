@@ -3,173 +3,275 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gerador de Importação Financeira</title>
+    <title>Gerador de Importação Neo</title>
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        background: #f4f4f9;
-        margin: 0;
-        padding: 2rem;
+      :root {
+        --bg-body: #ffde00;
+        --card-bg: #ffffff;
+        --border-black: #000000;
+        --c-purple: #8b5cf6;
+        --c-pink: #ff90e8;
+        --c-blue: #06b6d4;
+        --c-green: #22c55e;
+        --border-width: 3px;
       }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Space Grotesk", sans-serif;
+        background-color: var(--bg-body);
+        background-image: radial-gradient(#000 1px, transparent 1px);
+        background-size: 20px 20px;
+        color: var(--border-black);
+        padding: 2rem;
+        min-height: 100vh;
+      }
+
       .container {
         max-width: 1000px;
         margin: auto;
-        background: #fff;
+        background: var(--card-bg);
         padding: 2rem;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border: var(--border-width) solid var(--border-black);
+        box-shadow: 10px 10px 0 0 var(--border-black);
       }
+
       h1 {
         text-align: center;
         margin-bottom: 1.5rem;
-        color: #333;
+        font-weight: 900;
+        text-transform: uppercase;
+        font-size: 2rem;
+        text-shadow: 3px 3px 0 var(--c-pink);
+        border-bottom: var(--border-width) solid var(--border-black);
+        padding-bottom: 1rem;
       }
+
+      /* Área de Configuração */
       .config-area {
-        background: #f0e6fa;
-        padding: 1rem;
-        border-radius: 8px;
+        background: var(--c-purple);
+        padding: 1.5rem;
+        border: var(--border-width) solid var(--border-black);
         margin-bottom: 1.5rem;
         display: flex;
-        gap: 1rem;
+        gap: 1.5rem;
         justify-content: center;
         flex-wrap: wrap;
-        border: 1px solid #4f0072;
+        box-shadow: 5px 5px 0 0 var(--border-black);
       }
+
       .input-group {
         display: flex;
         flex-direction: column;
+        flex: 1;
+        min-width: 200px;
       }
+
       .input-group label {
+        font-weight: 800;
+        font-family: "Space Mono", monospace;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        color: #fff;
+        margin-bottom: 0.5rem;
+      }
+
+      .neo-input {
+        padding: 0.8rem;
+        border: var(--border-width) solid var(--border-black);
+        font-family: "Space Mono", monospace;
+        font-size: 1rem;
         font-weight: bold;
-        font-size: 0.9rem;
-        color: #4f0072;
-        margin-bottom: 0.3rem;
+        outline: none;
+        background: #fff;
       }
-      .input-group input {
-        padding: 0.5rem;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 1rem;
+
+      .neo-input:focus {
+        box-shadow: 4px 4px 0 0 var(--c-blue);
       }
-      .btn {
-        background: #4f0072;
-        color: white;
-        border: none;
-        padding: 0.7rem 1.5rem;
-        margin: 0.3rem;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 1rem;
-        transition: background 0.3s;
-      }
-      .btn:hover {
-        background: #370052;
-      }
+
+      /* Botões */
       .actions {
         text-align: center;
-        margin-top: 1.5rem;
+        margin: 2rem 0;
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
       }
+
+      .btn {
+        background: #fff;
+        color: var(--border-black);
+        border: var(--border-width) solid var(--border-black);
+        padding: 0.8rem 1.5rem;
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 900;
+        text-transform: uppercase;
+        cursor: pointer;
+        font-size: 0.9rem;
+        box-shadow: 4px 4px 0 0 var(--border-black);
+        transition: 0.1s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 0 var(--border-black);
+      }
+
+      .btn-upload { background: var(--c-pink); }
+      .btn-generate { background: var(--c-green); }
+
+      .btn:active {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0 0 var(--border-black);
+      }
+
+      /* Upload Area */
       .upload-area {
-        border: 2px dashed #ccc;
+        background: #fff;
+        border: var(--border-width) dashed var(--border-black);
         padding: 2rem;
         text-align: center;
-        margin: 1rem 0;
+        margin: 1.5rem 0;
         cursor: pointer;
-        border-radius: 8px;
-        transition: all 0.3s;
+        font-weight: 800;
+        text-transform: uppercase;
+        transition: 0.2s;
       }
+
       .upload-area.dragover {
-        background: #f0e6fa;
-        border-color: #4f0072;
+        background: var(--c-blue);
+        transform: scale(1.02);
       }
+
+      /* Tabela */
+      .table-container {
+        overflow-x: auto;
+        border: var(--border-width) solid var(--border-black);
+        margin-top: 2rem;
+      }
+
       table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 1rem;
+        font-family: "Space Mono", monospace;
+        background: #fff;
       }
-      th,
-      td {
-        border: 1px solid #ddd;
-        padding: 0.6rem;
+
+      th, td {
+        border: 1px solid var(--border-black);
+        padding: 1rem;
         text-align: center;
       }
+
       th {
-        background: #4f0072;
-        color: white;
+        background: var(--border-black);
+        color: #fff;
+        text-transform: uppercase;
+        font-weight: 900;
       }
+
+      tr:nth-child(even) { background: #f0f0f0; }
+
       #statusMsg {
         text-align: center;
-        margin: 10px 0;
-        font-weight: bold;
-        color: #4f0072;
+        margin: 1rem 0;
+        font-family: "Space Mono", monospace;
+        font-weight: 900;
+        background: var(--c-blue);
+        padding: 0.5rem;
+        border: 2px solid #000;
+        display: none;
       }
+
+      /* Result Box */
       #resultBox {
         margin-top: 2rem;
         padding: 1rem;
-        border: 1px solid #ccc;
-        background: #f9f9f9;
+        border: var(--border-width) solid var(--border-black);
+        background: #222;
+        color: var(--c-green);
         white-space: pre-wrap;
-        font-family: monospace;
+        font-family: "Space Mono", monospace;
         max-height: 300px;
         overflow-y: auto;
+        box-shadow: 5px 5px 0 0 var(--border-black);
+      }
+
+      @media (max-width: 768px) {
+        body { padding: 1rem; }
+        .actions { flex-direction: column; }
       }
     </style>
   </head>
   <body>
     <div class="container">
       <h1>
-        <i class="fa-solid fa-file-invoice-dollar"></i> Gerador de Importação de Cobranças
+        <i class="fa-solid fa-file-invoice-dollar"></i> Importador Financeiro
       </h1>
 
       <div class="config-area">
         <div class="input-group">
           <label for="contaCartao">Alugueis a Receber (Débito)</label>
-          <input type="text" id="contaCartao" placeholder="Ex: 1001" />
+          <input type="text" id="contaCartao" class="neo-input" placeholder="Ex: 1001" />
         </div>
         <div class="input-group">
           <label for="contaClientes">Receita c/ alugueis (Crédito)</label>
-          <input type="text" id="contaClientes" placeholder="Ex: 2001" />
+          <input type="text" id="contaClientes" class="neo-input" placeholder="Ex: 2001" />
         </div>
       </div>
 
       <div class="actions">
-        <input
-          type="file"
-          id="uploadExcel"
-          accept=".xlsx, .xls, .csv"
-          style="display: none"
-        />
-        <button id="uploadBtn" class="btn">
+        <input type="file" id="uploadExcel" accept=".xlsx, .xls, .csv" style="display: none" />
+        <button id="uploadBtn" class="btn btn-upload">
           <i class="fa-solid fa-upload"></i> Importar CSV / Excel
         </button>
-        <button id="generateTxt" class="btn">
+        <button id="generateTxt" class="btn btn-generate">
           <i class="fa-solid fa-file-export"></i> Gerar TXT
         </button>
       </div>
 
       <div class="upload-area" id="uploadArea">
-        Arraste e solte o arquivo (CSV ou Excel) aqui ou clique no botão acima.
+        <i class="fa-solid fa-cloud-arrow-up"></i><br>
+        Arraste o arquivo aqui ou use o botão acima
       </div>
       
       <div id="statusMsg"></div>
 
-      <table id="dataTable">
-        <thead>
-          <tr>
-            <th>ID (Fatura)</th>
-            <th>Data Pagamento</th>
-            <th>Valor</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <div class="table-container">
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th>ID (Fatura)</th>
+              <th>Data Pagamento</th>
+              <th>Valor</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
 
-      <div id="resultBox"></div>
+      <div id="resultBox">O conteúdo do TXT aparecerá aqui após a geração...</div>
     </div>
 
     <script>
@@ -180,23 +282,24 @@
       const generateTxtBtn = document.getElementById("generateTxt");
       const resultBox = document.getElementById("resultBox");
       const statusMsg = document.getElementById("statusMsg");
-
       const inputContaCartao = document.getElementById("contaCartao");
       const inputContaClientes = document.getElementById("contaClientes");
 
       let importedData = [];
 
-      // ==== Funções Auxiliares ====
+      function showStatus(msg) {
+        statusMsg.style.display = "block";
+        statusMsg.textContent = msg;
+      }
+
       function formatDate(value) {
         if (!value) return "";
-        // Excel Serial
         if (!isNaN(value) && Number(value) > 20000) {
           const date = XLSX.SSF.parse_date_code(Number(value));
           return `${String(date.d).padStart(2, "0")}/${String(date.m).padStart(2, "0")}/${date.y}`;
         }
-        // String ISO (yyyy-mm-dd) comum em CSVs
         if (typeof value === 'string' && value.match(/^\d{4}-\d{2}-\d{2}/)) {
-            const parts = value.split(" ")[0].split("-"); // remove hora se houver
+            const parts = value.split(" ")[0].split("-");
             return `${parts[2]}/${parts[1]}/${parts[0]}`;
         }
         return value;
@@ -204,66 +307,49 @@
 
       function formatValue(value) {
         if (!value) return "0,00";
-        // Remove R$ ou espaços
         let strVal = String(value).replace("R$", "").trim();
-        
-        // Se for formato brasileiro (1.000,00), remove ponto e troca virgula por ponto para JS entender
         if (strVal.includes(",") && strVal.includes(".")) {
              strVal = strVal.replace(/\./g, "").replace(",", ".");
         } else if (strVal.includes(",")) {
              strVal = strVal.replace(",", ".");
         }
-
         let num = parseFloat(strVal);
         if (isNaN(num)) return "0,00";
         return num.toFixed(2).replace(".", ",");
       }
 
-      // ==== Upload ====
       uploadBtn.addEventListener("click", () => uploadExcelInput.click());
 
       ["dragenter", "dragover"].forEach((evt) =>
         uploadArea.addEventListener(evt, (e) => {
           e.preventDefault();
-          e.stopPropagation();
           uploadArea.classList.add("dragover");
         })
       );
       ["dragleave", "drop"].forEach((evt) =>
         uploadArea.addEventListener(evt, (e) => {
           e.preventDefault();
-          e.stopPropagation();
           uploadArea.classList.remove("dragover");
         })
       );
-      uploadArea.addEventListener("drop", (e) =>
-        handleFile(e.dataTransfer.files[0])
-      );
-      uploadExcelInput.addEventListener("change", (e) =>
-        handleFile(e.target.files[0])
-      );
+      uploadArea.addEventListener("drop", (e) => handleFile(e.dataTransfer.files[0]));
+      uploadExcelInput.addEventListener("change", (e) => handleFile(e.target.files[0]));
 
       function handleFile(file) {
         if (!file) return;
-        statusMsg.textContent = "Lendo arquivo...";
+        showStatus("Lendo arquivo...");
         
         const reader = new FileReader();
         reader.onload = (e) => {
           try {
             const data = new Uint8Array(e.target.result);
-            // Tenta ler com codificação padrão. Se falhar caracteres, o SheetJS geralmente lida bem com UTF8/CP1252
-            const wb = XLSX.read(data, { type: "array", codepage: 65001 }); 
+            const wb = XLSX.read(data, { type: "array" }); 
             const sheet = wb.Sheets[wb.SheetNames[0]];
-            
-            // 1. Converter tudo para array de arrays para encontrar o cabeçalho
             const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
             
-            // 2. Procurar a linha que contem "Cobrança.Id"
             let headerRowIndex = -1;
-            
             for (let i = 0; i < rawData.length; i++) {
                 const rowStr = JSON.stringify(rawData[i]);
-                // Verifica se a linha contem o termo chave (flexivel)
                 if (rowStr.includes("Cobrança.Id")) {
                     headerRowIndex = i;
                     break;
@@ -271,20 +357,16 @@
             }
 
             if (headerRowIndex === -1) {
-                statusMsg.textContent = "Erro: Coluna 'Cobrança.Id' não encontrada no arquivo.";
-                alert("Não encontrei a coluna 'Cobrança.Id'. Verifique se o arquivo está correto.");
+                showStatus("Erro: Coluna 'Cobrança.Id' não encontrada.");
                 return;
             }
 
-            // 3. Importar novamente usando a linha correta como cabeçalho
             importedData = XLSX.utils.sheet_to_json(sheet, { range: headerRowIndex, defval: "" });
-            
-            statusMsg.textContent = `Arquivo carregado! Cabeçalho encontrado na linha ${headerRowIndex + 1}. ${importedData.length} registros.`;
+            showStatus(`Sucesso! ${importedData.length} registros carregados.`);
             renderTable();
 
           } catch (err) {
-            console.error(err);
-            statusMsg.textContent = "Erro ao processar o arquivo. Verifique o console.";
+            showStatus("Erro no processamento.");
           }
         };
         reader.readAsArrayBuffer(file);
@@ -292,69 +374,34 @@
 
       function renderTable() {
         dataTableBody.innerHTML = "";
-        
-        // Limita a exibição às primeiras 50 linhas para não travar se for gigante
-        const previewData = importedData.slice(0, 100);
-
-        previewData.forEach((row) => {
-          // Busca pelas colunas exatas
+        importedData.slice(0, 50).forEach((row) => {
           const id = row["Cobrança.Id"];
           const data = row["Cobrança.DataDePagamento"];
           const valor = row["Cobrança.Valor"];
-
-          // Se a linha estiver vazia nas chaves principais, pula
           if (!id && !valor) return;
 
           const tr = document.createElement("tr");
-          
-          const tdId = document.createElement("td");
-          tdId.textContent = id || "";
-          
-          const tdData = document.createElement("td");
-          tdData.textContent = formatDate(data);
-          
-          const tdValor = document.createElement("td");
-          tdValor.textContent = formatValue(valor);
-
-          tr.appendChild(tdId);
-          tr.appendChild(tdData);
-          tr.appendChild(tdValor);
-          
+          tr.innerHTML = `<td>${id || ""}</td><td>${formatDate(data)}</td><td>${formatValue(valor)}</td>`;
           dataTableBody.appendChild(tr);
         });
       }
 
-      // ==== Gerar TXT ====
       generateTxtBtn.addEventListener("click", () => {
-        if (importedData.length === 0) {
-          alert("Importe o arquivo primeiro.");
-          return;
-        }
-
+        if (importedData.length === 0) return alert("Importe o arquivo primeiro.");
         const contaCartao = inputContaCartao.value.trim();
         const contaClientes = inputContaClientes.value.trim();
-
-        if (!contaCartao || !contaClientes) {
-            alert("Preencha os campos de Conta Débito e Crédito.");
-            return;
-        }
+        if (!contaCartao || !contaClientes) return alert("Preencha as contas contábeis.");
 
         let txtContent = "";
-        
         importedData.forEach((row) => {
           const id = row["Cobrança.Id"];
-          if (!id) return; // Pula linhas de totais ou vazias
-
+          if (!id) return;
           const dataPagamento = formatDate(row["Cobrança.DataDePagamento"]);
           const valor = formatValue(row["Cobrança.Valor"]);
-          
-          // Layout solicitado
-          const linha = `${dataPagamento};${contaCartao};${contaClientes};${valor};;RECEITA DE LOCACAO, CONF. FATURA ${id};;;;`;
-          txtContent += linha + "\n";
+          txtContent += `${dataPagamento};${contaCartao};${contaClientes};${valor};;RECEITA DE LOCACAO, CONF. FATURA ${id};;;;\n`;
         });
 
         resultBox.textContent = txtContent;
-
         const blob = new Blob([txtContent], { type: "text/plain;charset=utf-8" });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
