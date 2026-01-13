@@ -11,7 +11,6 @@
         dataLayer.push(arguments);
       }
       gtag("js", new Date());
-
       gtag("config", "G-6XKND47T4H");
     </script>
 
@@ -24,10 +23,6 @@
       rel="stylesheet"
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-      rel="stylesheet"
-    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -38,17 +33,17 @@
     <style>
       /* --- VARIÁVEIS VIBRANTES --- */
       :root {
-        --bg-body: #fff7ed; /* Bege claro fundo */
+        --bg-body: #fff7ed;
         --card-bg: #ffffff;
         --border-color: #000000;
 
-        /* Paleta Neo-Brutalista Colorida */
-        --color-primary: #8b5cf6; /* Roxo Elétrico */
-        --color-secondary: #f472b6; /* Rosa Chiclete */
-        --color-accent: #facc15; /* Amarelo Sol */
+        /* Paleta Neo-Brutalista */
+        --color-primary: #8b5cf6; /* Roxo */
+        --color-secondary: #f472b6; /* Rosa */
+        --color-accent: #facc15; /* Amarelo */
         --color-info: #06b6d4; /* Ciano */
-        --color-success: #22c55e; /* Verde Lima */
-        --color-danger: #ef4444; /* Vermelho Vivo */
+        --color-success: #22c55e; /* Verde */
+        --color-danger: #ef4444; /* Vermelho */
 
         --border-width: 3px;
         --shadow-dist: 6px;
@@ -62,7 +57,7 @@
 
       body {
         font-family: "Space Grotesk", sans-serif;
-        background-color: var(--color-info); /* Fundo Ciano vibrante */
+        background-color: var(--color-info);
         background-image: linear-gradient(#fff 2px, transparent 2px),
           linear-gradient(90deg, #fff 2px, transparent 2px);
         background-size: 40px 40px;
@@ -70,7 +65,7 @@
         color: var(--border-color);
         min-height: 100vh;
         padding: 20px;
-        padding-top: 100px; /* Espaço para o menu */
+        padding-top: 100px;
       }
 
       .container {
@@ -78,9 +73,9 @@
         margin: 0 auto;
       }
 
-      /* --- NAVEGAÇÃO SUPERIOR --- */
+      /* --- NAVEGAÇÃO --- */
       .main-nav {
-        background-color: var(--color-accent); /* Amarelo */
+        background-color: var(--color-accent);
         border-bottom: var(--border-width) solid var(--border-color);
         padding: 1rem 0;
         position: fixed;
@@ -115,13 +110,13 @@
 
       .main-nav a:hover,
       .main-nav a.active {
-        background-color: var(--color-secondary); /* Rosa no hover/active */
+        background-color: var(--color-secondary);
         color: #fff;
         transform: translate(-2px, -2px);
         box-shadow: 6px 6px 0 #000;
       }
 
-      /* --- LAYOUT BÁSICO --- */
+      /* --- LAYOUT --- */
       .page-content {
         display: none;
         animation: slideIn 0.4s cubic-bezier(0.25, 1, 0.5, 1);
@@ -232,6 +227,37 @@
         transform: translate(-3px, -3px);
       }
 
+      /* --- VALIDATION STYLES (NOVO) --- */
+      .input-error {
+        border-color: var(--color-danger) !important;
+        background-color: #fee2e2 !important; /* Fundo avermelhado */
+        color: #991b1b !important;
+        box-shadow: 4px 4px 0 var(--color-danger) !important;
+        animation: shake 0.4s ease-in-out;
+      }
+
+      .duplicate-error {
+        border-color: var(--color-accent) !important;
+        background-color: #fef3c7 !important;
+        box-shadow: 4px 4px 0 var(--color-accent) !important;
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-5px);
+        }
+        50% {
+          transform: translateX(5px);
+        }
+        75% {
+          transform: translateX(-5px);
+        }
+      }
+
       /* --- BOTÕES --- */
       .btn {
         border: var(--border-width) solid #000;
@@ -267,7 +293,6 @@
         cursor: not-allowed;
       }
 
-      /* Cores específicas de botões */
       #nfs-add-row-btn,
       #reinf-addMappingBtn {
         background-color: var(--color-info);
@@ -291,7 +316,7 @@
 
       /* --- UPLOAD --- */
       .upload-area {
-        background-color: #fef9c3; /* Amarelo pálido */
+        background-color: #fef9c3;
         border: 3px dashed #000;
         padding: 3rem;
         text-align: center;
@@ -311,11 +336,6 @@
         font-size: 3rem;
         margin-bottom: 10px;
         color: #000;
-      }
-
-      .upload-text {
-        font-weight: bold;
-        font-size: 1.2rem;
       }
 
       /* --- FILE INFO --- */
@@ -363,13 +383,13 @@
 
       tr:nth-child(even) td {
         background-color: #f0fdfa;
-      } /* Cyan muito claro */
+      }
 
       /* --- INPUT GRID (NFS) --- */
       .input-grid-container {
         border: var(--border-width) solid #000;
         padding: 15px;
-        background: var(--color-primary); /* Fundo roxo */
+        background: var(--color-primary);
         overflow-x: auto;
       }
 
@@ -427,10 +447,9 @@
         font-weight: bold;
       }
 
-      /* --- RESULTADOS / TERMINAL --- */
+      /* --- RESULTADOS --- */
       #ativo-resultBox,
       #reinf-report,
-      .preview-box,
       #ecf-results-content {
         background-color: #1e1e1e;
         color: #33ff00;
@@ -464,7 +483,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(139, 92, 246, 0.8); /* Roxo translúcido */
+        background-color: rgba(139, 92, 246, 0.8);
         display: none;
         justify-content: center;
         align-items: center;
@@ -502,18 +521,6 @@
         color: #888;
       }
 
-      /* Mensagens de erro e alertas */
-      #errorMessage {
-        background: var(--color-danger);
-        color: #fff;
-        border: 3px solid #000;
-        padding: 10px;
-        font-weight: bold;
-        display: none;
-        margin-top: 10px;
-        box-shadow: 4px 4px 0 #000;
-      }
-
       @media (max-width: 992px) {
         .input-row-header {
           display: none;
@@ -533,6 +540,33 @@
     </style>
   </head>
   <body>
+    <nav class="main-nav">
+      <ul>
+        <li>
+          <a href="#" class="nav-link active" data-page="page-nfs"
+            >Notas Fiscais</a
+          >
+        </li>
+        <li>
+          <a href="#" class="nav-link" data-page="page-ativo">Ativo Fixo</a>
+        </li>
+        <li><a href="#" class="nav-link" data-page="page-reinf">Reinf</a></li>
+        <li>
+          <a href="#" class="nav-link" data-page="page-ecf">Leitor ECF</a>
+        </li>
+        <li>
+          <a href="#" class="nav-link" data-page="page-simples-mensal"
+            >Simples Mensal</a
+          >
+        </li>
+        <li>
+          <a href="#" class="nav-link" data-page="page-simples-rbt12"
+            >Simples RBT12</a
+          >
+        </li>
+      </ul>
+    </nav>
+
     <main id="page-nfs" class="page-content active">
       <div class="container">
         <div class="header">
@@ -949,7 +983,7 @@
     </div>
 
     <script>
-      // --- LÓGICA DE NAVEGAÇÃO PRINCIPAL ---
+      // --- NAVEGAÇÃO ---
       document.addEventListener("DOMContentLoaded", function () {
         const navLinks = document.querySelectorAll(".nav-link");
         const pages = document.querySelectorAll(".page-content");
@@ -957,12 +991,10 @@
         function showPage(pageId) {
           pages.forEach((page) => page.classList.remove("active"));
           navLinks.forEach((link) => link.classList.remove("active"));
-
           const targetPage = document.getElementById(pageId);
           const targetLink = document.querySelector(
             `.nav-link[data-page="${pageId}"]`
           );
-
           if (targetPage) targetPage.classList.add("active");
           if (targetLink) targetLink.classList.add("active");
 
@@ -993,7 +1025,7 @@
         }
       });
 
-      // --- LÓGICA DO MODAL GENÉRICO ---
+      // --- MODAL GENÉRICO ---
       const genericModal = document.getElementById("generic-modal");
       const genericModalTitle = document.getElementById("generic-modal-title");
       const genericModalText = document.getElementById("generic-modal-text");
@@ -1014,7 +1046,7 @@
         if (e.target === genericModal) hideGenericModal();
       });
 
-      // --- SCRIPT DO GERADOR DE NOTAS FISCAIS (NFS) ---
+      // --- SCRIPT DO GERADOR DE NOTAS FISCAIS (NFS) ATUALIZADO ---
       (function () {
         const page = document.getElementById("page-nfs");
         if (!page) return;
@@ -1112,22 +1144,37 @@
           }
         });
 
+        // --- VALIDAÇÃO ATUALIZADA ---
         generateBtn.addEventListener("click", () => {
+          // 1. Limpa erros visuais anteriores
           form
-            .querySelectorAll(".manual-error, .duplicate-error")
+            .querySelectorAll(".input-error, .duplicate-error")
             .forEach((el) =>
-              el.classList.remove("manual-error", "duplicate-error")
+              el.classList.remove("input-error", "duplicate-error")
             );
-          if (!form.checkValidity()) {
-            const firstInvalid = form.querySelector(":invalid");
-            if (firstInvalid) firstInvalid.classList.add("manual-error");
+
+          // 2. Validação visual de campos vazios ou inválidos (HTML5)
+          const allInputs = form.querySelectorAll("input");
+          let hasValidationError = false;
+
+          allInputs.forEach((input) => {
+            // Verifica se o campo está invalido segundo as regras do HTML
+            if (!input.checkValidity()) {
+              input.classList.add("input-error");
+              hasValidationError = true;
+            }
+          });
+
+          // Se houver erro de validação básica, para aqui e avisa
+          if (hasValidationError) {
             showGenericModal(
-              "Preencha corretamente todos os campos obrigatórios.",
+              "Existem campos obrigatórios vazios ou preenchidos incorretamente (marcados em vermelho).",
               "Erro de Validação"
             );
             return;
           }
 
+          // 3. Validação de Duplicidade
           let txtContent = "";
           const rows = Array.from(
             inputRowsContainer.querySelectorAll(".input-row")
@@ -1140,13 +1187,9 @@
               .map((i) => i.value.trim())
               .join("|");
             if (uniqueSignatures.has(signature) && signature) {
-              row.classList.add("duplicate-error");
-              const firstOccurrence = Array.from(uniqueSignatures).findIndex(
-                (s) => s === signature
-              );
-              if (rows[firstOccurrence]) {
-                rows[firstOccurrence].classList.add("duplicate-error");
-              }
+              row
+                .querySelectorAll("input")
+                .forEach((i) => i.classList.add("duplicate-error"));
               hasDuplicates = true;
             } else {
               uniqueSignatures.add(signature);
@@ -1161,11 +1204,14 @@
             return;
           }
 
+          // 4. Geração do Arquivo
           rows.forEach((row) => {
             const getVal = (name) =>
               row.querySelector(`input[name="${name}"]`).value;
-            const [year, month, day] = getVal("data_entrada").split("-");
-            if (!day || !month || !year) return;
+            const rawDate = getVal("data_entrada");
+            if (!rawDate) return;
+
+            const [year, month, day] = rawDate.split("-");
             const dataFmt = `${day}/${month}/${year}`;
             const valFmt = (v) =>
               (parseFloat(v) || 0).toFixed(2).replace(".", ",");
@@ -1525,16 +1571,12 @@
         const processButton = page.querySelector("#reinf-processButton");
         const downloadButton = page.querySelector("#reinf-downloadButton");
         const statusDiv = page.querySelector("#reinf-status");
-        const companyNameDisplayDiv = page.querySelector(
-          "#reinf-companyNameDisplay"
-        );
         const cpfTotalsSectionDiv = page.querySelector(
           "#reinf-cpfTotalsSection"
         );
         const cpfTotalsTableBody = page.querySelector(
           "#reinf-cpfTotalsTableBody"
         );
-        const reportDiv = page.querySelector("#reinf-report");
         const uploadArea = page.querySelector(".upload-area");
         const fileInfo = page.querySelector("#reinf-file-info");
         const fileName = page.querySelector("#reinf-file-name");
@@ -1658,7 +1700,6 @@
             );
 
             processedDataByQuarter = {};
-            const notFoundRows = [];
             const cpfTotals = {};
             let totalProcessed = 0;
 
@@ -1825,7 +1866,6 @@
           const reader = new FileReader();
           reader.onload = (e) => {
             setTimeout(() => {
-              // Simula processamento
               const lines = e.target.result.split("\n");
               const n030 = {},
                 m500 = {};
