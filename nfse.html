@@ -13,6 +13,7 @@
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap"
       rel="stylesheet"
     />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <style>
       :root {
@@ -199,9 +200,6 @@
       th.sortable {
         cursor: pointer;
       }
-      th.sortable:hover {
-        background: #333;
-      }
       td {
         padding: 8px 10px;
         border-bottom: 1px solid #000;
@@ -218,7 +216,6 @@
         padding: 4px 8px;
         font-weight: bold;
         box-shadow: 2px 2px 0 #000;
-        transition: 0.1s;
       }
       .val-retido {
         color: #d32f2f;
@@ -274,7 +271,6 @@
         padding: 5px 15px;
         font-weight: bold;
         cursor: pointer;
-        text-transform: uppercase;
       }
       .footer-controls {
         background: #fff;
@@ -351,7 +347,6 @@
           <div>
             <h1>Auditor de Impostos</h1>
             <span
-              class="badge"
               style="
                 background: var(--c-orange);
                 padding: 2px 8px;
@@ -388,12 +383,13 @@
           <input
             type="file"
             id="xmlInput"
-            accept=".xml"
+            accept=".xml,.zip"
+            multiple
             onchange="handleFiles(this.files)"
           />
           <div class="upload-label">
-            <i class="fas fa-upload fa-2x"></i><br />Clique ou arraste o XML da
-            NFS-e
+            <i class="fas fa-upload fa-2x"></i><br />Clique ou arraste arquivos
+            XML ou ZIP
           </div>
         </div>
 
@@ -434,7 +430,7 @@
           id="statusMsg"
           style="font-weight: bold; font-family: 'Space Mono'"
         >
-          Aguardando XML...
+          Aguardando arquivos...
         </div>
         <div>
           <button class="btn-page" onclick="mudarPagina(-1)"><</button>
@@ -471,91 +467,112 @@
         }
       }
 
-      function handleFiles(files) {
+      async function handleFiles(files) {
         if (files.length === 0) return;
-        const reader = new FileReader();
-        document.getElementById("statusMsg").innerText = "Lendo arquivo...";
+        document.getElementById("statusMsg").innerText = "Processando...";
 
-        reader.onload = function (e) {
-          const parser = new DOMParser();
-          const xmlDoc = parser.parseFromString(e.target.result, "text/xml");
-          const notas = xmlDoc.getElementsByTagName("infNFSe");
+        // Reset inicial para nova carga de arquivos
+        allItems = [];
 
-          if (notas.length === 0) {
-            alert("Nenhuma NFS-e encontrada.");
-            return;
+        for (let file of files) {
+          if (file.name.toLowerCase().endsWith(".zip")) {
+            await processarZip(file);
+          } else if (file.name.toLowerCase().endsWith(".xml")) {
+            const text = await file.text();
+            parsearXML(text);
           }
+        }
 
-          allItems = [];
-          for (let i = 0; i < notas.length; i++) {
-            const nota = notas[i];
-            const num = getTagValue(nota, "nNFSe");
-            const dps = nota.getElementsByTagName("infDPS")[0];
-            let dhEmi = "",
-              tomador = "Consumidor",
-              vServ = 0,
-              vPis = 0,
-              vCofins = 0,
-              vIr = 0,
-              vCsll = 0;
+        finalizarProcessamento();
+      }
 
-            if (dps) {
-              dhEmi = getTagValue(dps, "dhEmi");
-              const toma = dps.getElementsByTagName("toma")[0];
-              if (toma) tomador = getTagValue(toma, "xNome") || "Não Informado";
-              const valores = dps.getElementsByTagName("valores")[0];
-              if (valores) {
-                const vServPrest =
-                  valores.getElementsByTagName("vServPrest")[0];
-                if (vServPrest)
-                  vServ = parseFloat(getTagValue(vServPrest, "vServ")) || 0;
-                const trib = valores.getElementsByTagName("trib")[0];
-                if (trib) {
-                  const tribFed = trib.getElementsByTagName("tribFed")[0];
-                  if (tribFed) {
-                    const piscofins =
-                      tribFed.getElementsByTagName("piscofins")[0];
-                    if (
-                      piscofins &&
-                      getTagValue(piscofins, "tpRetPisCofins") === "1"
-                    ) {
-                      vPis = parseFloat(getTagValue(piscofins, "vPis")) || 0;
-                      vCofins =
-                        parseFloat(getTagValue(piscofins, "vCofins")) || 0;
-                    }
-                    vIr = parseFloat(getTagValue(tribFed, "vRetIRRF")) || 0;
-                    vCsll = parseFloat(getTagValue(tribFed, "vRetCSLL")) || 0;
+      async function processarZip(file) {
+        try {
+          const zip = new JSZip();
+          const contents = await zip.loadAsync(file);
+          for (let filename in contents.files) {
+            if (filename.toLowerCase().endsWith(".xml")) {
+              const xmlText = await contents.files[filename].async("string");
+              parsearXML(xmlText);
+            }
+          }
+        } catch (e) {
+          console.error("Erro ao ler ZIP:", e);
+        }
+      }
+
+      function parsearXML(xmlText) {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+        const notas = xmlDoc.getElementsByTagName("infNFSe");
+
+        for (let i = 0; i < notas.length; i++) {
+          const nota = notas[i];
+          const num = getTagValue(nota, "nNFSe");
+          const dps = nota.getElementsByTagName("infDPS")[0];
+          let dhEmi = "",
+            tomador = "Consumidor",
+            vServ = 0,
+            vPis = 0,
+            vCofins = 0,
+            vIr = 0,
+            vCsll = 0;
+
+          if (dps) {
+            dhEmi = getTagValue(dps, "dhEmi");
+            const toma = dps.getElementsByTagName("toma")[0];
+            if (toma) tomador = getTagValue(toma, "xNome") || "Não Informado";
+            const valores = dps.getElementsByTagName("valores")[0];
+            if (valores) {
+              const vServPrest = valores.getElementsByTagName("vServPrest")[0];
+              if (vServPrest)
+                vServ = parseFloat(getTagValue(vServPrest, "vServ")) || 0;
+              const trib = valores.getElementsByTagName("trib")[0];
+              if (trib) {
+                const tribFed = trib.getElementsByTagName("tribFed")[0];
+                if (tribFed) {
+                  const piscofins =
+                    tribFed.getElementsByTagName("piscofins")[0];
+                  if (
+                    piscofins &&
+                    getTagValue(piscofins, "tpRetPisCofins") === "1"
+                  ) {
+                    vPis = parseFloat(getTagValue(piscofins, "vPis")) || 0;
+                    vCofins =
+                      parseFloat(getTagValue(piscofins, "vCofins")) || 0;
                   }
+                  vIr = parseFloat(getTagValue(tribFed, "vRetIRRF")) || 0;
+                  vCsll = parseFloat(getTagValue(tribFed, "vRetCSLL")) || 0;
                 }
               }
             }
-
-            allItems.push({
-              id: i,
-              data: formatDate(dhEmi),
-              rawData: dhEmi,
-              numero: parseInt(num),
-              tomador: tomador,
-              total: vServ,
-              pis: vPis,
-              cofins: vCofins,
-              ir: vIr,
-              csll: vCsll,
-              rawNode: nota,
-            });
           }
 
-          allItems.sort((a, b) => b.numero - a.numero);
-          filteredItems = [...allItems];
+          allItems.push({
+            id: allItems.length,
+            data: formatDate(dhEmi),
+            rawData: dhEmi,
+            numero: parseInt(num),
+            tomador: tomador,
+            total: vServ,
+            pis: vPis,
+            cofins: vCofins,
+            ir: vIr,
+            csll: vCsll,
+            rawNode: nota,
+          });
+        }
+      }
 
-          validarSequencia();
-          atualizarDashboard();
-          renderizarTabela();
-          document.getElementById(
-            "statusMsg"
-          ).innerText = `${allItems.length} notas processadas.`;
-        };
-        reader.readAsText(files[0]);
+      function finalizarProcessamento() {
+        allItems.sort((a, b) => b.numero - a.numero);
+        filteredItems = [...allItems];
+        validarSequencia();
+        atualizarDashboard();
+        renderizarTabela();
+        document.getElementById(
+          "statusMsg"
+        ).innerText = `${allItems.length} notas processadas.`;
       }
 
       function validarSequencia() {
@@ -574,23 +591,17 @@
         if (gaps.length > 0) {
           const alertDiv = document.createElement("div");
           alertDiv.className = "gap-alert";
-          alertDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Atenção: Foram encontrados ${
-            gaps.length
-          } pulos na sequência numérica: ${gaps.join(", ")}`;
+          alertDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Atenção: Pulos na sequência: ${gaps.join(
+            ", "
+          )}`;
           container.appendChild(alertDiv);
         }
       }
 
       function exportarCSV() {
-        if (allItems.length === 0) {
-          alert("Não há dados para exportar.");
-          return;
-        }
-
-        // Cabeçalho compatível com Excel (;)
+        if (allItems.length === 0) return alert("Sem dados.");
         let csv =
           "Numero;Data;Tomador;Valor Servico;PIS Retido;COFINS Retido;IRRF;CSLL\n";
-
         allItems.forEach((item) => {
           csv += `${item.numero};${item.data};${item.tomador.replace(
             /;/g,
@@ -603,21 +614,15 @@
             .toFixed(2)
             .replace(".", ",")};${item.csll.toFixed(2).replace(".", ",")}\n`;
         });
-
         const blob = new Blob(["\ufeff" + csv], {
           type: "text/csv;charset=utf-8;",
         });
         const link = document.createElement("a");
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute(
-          "download",
-          `auditoria_nfse_${new Date().toISOString().split("T")[0]}.csv`
-        );
-        link.style.visibility = "hidden";
-        document.body.appendChild(link);
+        link.href = URL.createObjectURL(blob);
+        link.download = `auditoria_nfse_${
+          new Date().toISOString().split("T")[0]
+        }.csv`;
         link.click();
-        document.body.removeChild(link);
       }
 
       function ordenarPor(campo) {
@@ -652,12 +657,6 @@
         tbody.innerHTML = "";
         const start = (currentPage - 1) * itemsPerPage;
         const items = filteredItems.slice(start, start + itemsPerPage);
-        const fmtCell = (val) =>
-          val > 0
-            ? `<td style="text-align:right" class="val-retido">${formatMoney(
-                val
-              )}</td>`
-            : `<td style="text-align:right" class="val-zerado">0,00</td>`;
 
         items.forEach((item) => {
           const tr = document.createElement("tr");
@@ -676,7 +675,15 @@
             <td style="text-align:right; border-left: 3px solid #000" class="${
               item.pis > 0 ? "val-retido" : "val-zerado"
             }">${formatMoney(item.pis)}</td>
-            ${fmtCell(item.cofins)}${fmtCell(item.ir)}${fmtCell(item.csll)}
+            <td style="text-align:right" class="${
+              item.cofins > 0 ? "val-retido" : "val-zerado"
+            }">${formatMoney(item.cofins)}</td>
+            <td style="text-align:right" class="${
+              item.ir > 0 ? "val-retido" : "val-zerado"
+            }">${formatMoney(item.ir)}</td>
+            <td style="text-align:right" class="${
+              item.csll > 0 ? "val-retido" : "val-zerado"
+            }">${formatMoney(item.csll)}</td>
           `;
           tbody.appendChild(tr);
         });
@@ -729,9 +736,9 @@
             (n) => n.nodeType === 3
           );
           if (hasTextChild) {
-            html += `<div class="detail-row"><span class="detail-key">${xmlNode.nodeName}:</span> <span style="font-weight:bold">${xmlNode.textContent}</span></div>`;
+            html += `<div style="margin-bottom:4px"><span style="color:var(--c-purple);font-weight:bold">${xmlNode.nodeName}:</span> <span>${xmlNode.textContent}</span></div>`;
           } else {
-            html += `<div class="group-title">${xmlNode.nodeName}</div><div class="detail-group">`;
+            html += `<div style="margin-top:10px; border-left: 2px solid #000; padding-left: 10px;"><strong style="text-transform:uppercase">${xmlNode.nodeName}</strong>`;
             for (let i = 0; i < xmlNode.childNodes.length; i++)
               html += nodeToHtml(xmlNode.childNodes[i]);
             html += `</div>`;
