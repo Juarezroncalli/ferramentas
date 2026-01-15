@@ -167,7 +167,6 @@
         background: #f3f4f6;
       }
 
-      /* ESTILO DE ERRO */
       .input-error {
         border-color: var(--color-danger) !important;
         background-color: #fee2e2 !important;
@@ -189,12 +188,6 @@
         75% {
           transform: translateX(-5px);
         }
-      }
-
-      .input-row input:focus {
-        background: #fff;
-        outline: none;
-        box-shadow: 2px 2px 0 var(--color-primary);
       }
 
       .btn {
@@ -241,29 +234,43 @@
         justify-content: center;
       }
 
+      /* MODAL REESTRUTURADO */
       .custom-modal-overlay {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(139, 92, 246, 0.8);
+        background-color: rgba(0, 0, 0, 0.7);
         display: none;
         justify-content: center;
         align-items: center;
         z-index: 2000;
-        backdrop-filter: blur(5px);
+        backdrop-filter: blur(8px);
       }
       .custom-modal-overlay.visible {
         display: flex;
       }
       .custom-modal-content {
         background: #fff;
-        border: 5px solid #000;
-        padding: 2rem;
-        max-width: 500px;
+        border: 4px solid #000;
+        padding: 0;
+        max-width: 600px;
+        width: 90%;
         box-shadow: 15px 15px 0 #000;
-        text-align: center;
+        text-align: left;
+        overflow: hidden;
+      }
+      .modal-header-bar {
+        background: #000;
+        color: var(--color-accent);
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .modal-body {
+        padding: 25px;
       }
 
       @media (max-width: 992px) {
@@ -322,23 +329,33 @@
 
     <div id="generic-modal" class="custom-modal-overlay">
       <div class="custom-modal-content">
-        <h3
-          id="generic-modal-title"
-          style="
-            background: var(--color-accent);
-            border: 3px solid #000;
-            padding: 5px 10px;
-            margin-bottom: 15px;
-            display: inline-block;
-          "
-        >
-          AVISO
-        </h3>
-        <div
-          id="generic-modal-text"
-          style="font-family: 'Space Mono'; margin-bottom: 20px"
-        ></div>
-        <button id="generic-modal-close-btn" class="btn">ENTENDIDO</button>
+        <div class="modal-header-bar">
+          <span
+            id="generic-modal-title"
+            style="
+              font-weight: 900;
+              text-transform: uppercase;
+              letter-spacing: 1px;
+            "
+          ></span>
+          <i
+            class="fa-solid fa-xmark"
+            id="generic-modal-x"
+            style="cursor: pointer"
+          ></i>
+        </div>
+        <div class="modal-body">
+          <div id="generic-modal-text"></div>
+          <div style="margin-top: 25px; text-align: right">
+            <button
+              id="generic-modal-close-btn"
+              class="btn"
+              style="background: #000; color: #fff"
+            >
+              FECHAR
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -349,14 +366,16 @@
       const genericModalCloseBtn = document.getElementById(
         "generic-modal-close-btn"
       );
+      const genericModalX = document.getElementById("generic-modal-x");
 
       function showGenericModal(message, title = "Aviso") {
         genericModalTitle.innerHTML = title;
         genericModalText.innerHTML = message;
         genericModal.classList.add("visible");
       }
-      genericModalCloseBtn.onclick = () =>
-        genericModal.classList.remove("visible");
+      const close = () => genericModal.classList.remove("visible");
+      genericModalCloseBtn.onclick = close;
+      genericModalX.onclick = close;
 
       (function () {
         const page = document.getElementById("page-nfs");
@@ -394,10 +413,31 @@
         helpBtn.addEventListener("click", () => {
           showGenericModal(
             `
-            <div style="background:#000; color:#facc15; padding:10px; margin-bottom:15px; font-weight:bold;">SISTEMA FISCAL DOMÍNIO</div>
-            <p style="text-align:left; font-size:0.9rem;"><b>Caminho:</b> Utilitários > Importação > Importador > Importar<br><br><b>Opções:</b> TXT e Conjunto "Completo (Leiaute Domínio Sistemas)"</p>
+            <div style="border: 3px solid #000; background: var(--color-accent); padding: 15px; margin-bottom: 20px; box-shadow: 5px 5px 0 #000;">
+                <h4 style="display: flex; align-items: center; gap: 10px; text-transform: uppercase;">
+                    <i class="fa-solid fa-gears"></i> Módulo Fiscal Domínio
+                </h4>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 15px; font-family: 'Space Mono', monospace; font-size: 0.95rem;">
+                <div style="background: #f3f4f6; border-left: 8px solid var(--color-primary); padding: 12px;">
+                    <span style="color: #666; font-size: 0.7rem; display: block; margin-bottom: 5px;">PASSO 01: CAMINHO</span>
+                    <strong>Utilitários > Importação > Importador > Importar</strong>
+                </div>
+
+                <div style="background: #f3f4f6; border-left: 8px solid var(--color-secondary); padding: 12px;">
+                    <span style="color: #666; font-size: 0.7rem; display: block; margin-bottom: 5px;">PASSO 02: CONFIGURAÇÃO</span>
+                    <span>Tipo de Arquivo: <strong style="background: #000; color: #fff; padding: 0 5px;">TXT</strong></span><br>
+                    <span>Conjunto de Dados: <strong>Completo (Leiaute Domínio Sistemas)</strong></span>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; background: #fff3cd; border: 2px dashed #856404; padding: 10px; font-size: 0.85rem; display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-circle-info" style="color: #856404; font-size: 1.2rem;"></i>
+                <span>Certifique-se de que a empresa ativa no sistema corresponde aos dados informados.</span>
+            </div>
           `,
-            "Como Importar?"
+            "Guia de Importação"
           );
         });
 
@@ -443,16 +483,13 @@
 
           if (hasError) {
             showGenericModal(
-              "Existem campos obrigatórios não preenchidos. Por favor, corrija os campos destacados em vermelho.",
+              "Corrija os campos obrigatórios destacados em vermelho.",
               "Erro de Validação"
             );
             return;
           }
 
-          if (!txt)
-            return showGenericModal(
-              "Nenhum dado válido encontrado para gerar o arquivo."
-            );
+          if (!txt) return showGenericModal("Nenhum dado válido encontrado.");
 
           const blob = new Blob([txt], { type: "text/plain" });
           const a = document.createElement("a");
