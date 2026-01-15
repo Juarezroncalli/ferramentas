@@ -117,14 +117,14 @@
       }
       .dashboard-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
         gap: 1rem;
         margin-bottom: 1.5rem;
       }
       .metric-card {
         background: #fff;
         border: var(--border-width) solid #000;
-        padding: 1rem;
+        padding: 0.8rem;
         box-shadow: 4px 4px 0 0 #000;
       }
       .metric-card.purple {
@@ -139,15 +139,18 @@
       .metric-card.red {
         border-top: 6px solid var(--c-red);
       }
+      .metric-card.blue {
+        border-top: 6px solid var(--c-blue);
+      }
       .metric-title {
         font-weight: 900;
         text-transform: uppercase;
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         color: #555;
       }
       .metric-value {
         font-family: "Space Mono", monospace;
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         font-weight: 700;
       }
       .upload-area {
@@ -184,13 +187,13 @@
         width: 100%;
         border-collapse: collapse;
         font-family: "Space Mono";
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         white-space: nowrap;
       }
       th {
         background: #000;
         color: #fff;
-        padding: 12px 10px;
+        padding: 12px 8px;
         text-align: left;
         text-transform: uppercase;
         border-right: 1px solid #333;
@@ -201,7 +204,7 @@
         cursor: pointer;
       }
       td {
-        padding: 8px 10px;
+        padding: 8px;
         border-bottom: 1px solid #000;
         border-right: 1px solid #000;
         vertical-align: middle;
@@ -223,6 +226,11 @@
       }
       .val-zerado {
         color: #ccc;
+      }
+      .val-total-linha {
+        background: #f0f0f0;
+        font-weight: 900;
+        color: #000;
       }
       .modal-overlay {
         display: none;
@@ -262,7 +270,7 @@
         overflow-y: auto;
         padding: 20px;
         font-family: "Space Mono", monospace;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
       }
       .modal-close {
         background: var(--c-red);
@@ -291,15 +299,6 @@
         font-family: "Space Grotesk";
         font-weight: 800;
         box-shadow: 2px 2px 0 0 #000;
-      }
-      .gap-alert {
-        background: #fff4f4;
-        color: #d32f2f;
-        padding: 10px;
-        border: 2px solid #d32f2f;
-        margin-bottom: 1.5rem;
-        font-weight: bold;
-        font-family: "Space Mono";
       }
     </style>
   </head>
@@ -337,7 +336,7 @@
           opacity: 0.8;
         "
       >
-        Análise Fiscal<br />Padrão Nacional
+        Análise Fiscal<br />Sete Lagoas/Nacional
       </div>
     </aside>
 
@@ -370,12 +369,16 @@
             <div class="metric-value" id="valorTotal">0,00</div>
           </div>
           <div class="metric-card orange">
-            <div class="metric-title">Ret. Federal (Total)</div>
-            <div class="metric-value" id="totalRetido">0,00</div>
+            <div class="metric-title">Federais Retidos</div>
+            <div class="metric-value" id="totalRetidoFed">0,00</div>
+          </div>
+          <div class="metric-card blue">
+            <div class="metric-title">ISS Retido</div>
+            <div class="metric-value" id="totalRetidoISS">0,00</div>
           </div>
           <div class="metric-card red">
-            <div class="metric-title">Pulos na Seq.</div>
-            <div class="metric-value" id="totalGaps">0</div>
+            <div class="metric-title">Total Retenções</div>
+            <div class="metric-value" id="totalGeralRetencao">0,00</div>
           </div>
         </div>
 
@@ -398,26 +401,28 @@
             <thead>
               <tr>
                 <th class="center">Ver</th>
-                <th class="sortable" onclick="ordenarPor('numero')">
-                  Número <i class="fas fa-sort"></i>
-                </th>
-                <th class="sortable" onclick="ordenarPor('data')">
-                  Data <i class="fas fa-sort"></i>
-                </th>
+                <th class="sortable" onclick="ordenarPor('numero')">Nº</th>
+                <th class="sortable" onclick="ordenarPor('data')">Data</th>
                 <th>Tomador</th>
                 <th
                   class="sortable"
                   style="text-align: right"
                   onclick="ordenarPor('total')"
                 >
-                  Valor Serv. <i class="fas fa-sort"></i>
+                  Valor Serv.
                 </th>
                 <th style="text-align: right; border-left: 3px solid #000">
-                  PIS (Ret)
+                  PIS
                 </th>
-                <th style="text-align: right">COFINS (Ret)</th>
+                <th style="text-align: right">COFINS</th>
                 <th style="text-align: right">IRRF</th>
                 <th style="text-align: right">CSLL</th>
+                <th style="text-align: right; border-left: 2px solid #000">
+                  ISS Ret.
+                </th>
+                <th style="text-align: right; background: #333; color: #fff">
+                  ∑ Retenção
+                </th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -454,8 +459,12 @@
           style: "currency",
           currency: "BRL",
         }).format(v);
-      const getTagValue = (el, tag) =>
-        el.getElementsByTagName(tag)[0]?.textContent || "";
+
+      // Função de busca de tag melhorada para lidar com múltiplos namespaces e níveis
+      const getTagValue = (el, tag) => {
+        const found = el.getElementsByTagName(tag);
+        return found.length > 0 ? found[0].textContent : "";
+      };
 
       function formatDate(dateString) {
         if (!dateString) return "-";
@@ -469,9 +478,7 @@
 
       async function handleFiles(files) {
         if (files.length === 0) return;
-        document.getElementById("statusMsg").innerText = "Processando...";
-
-        // Reset inicial para nova carga de arquivos
+        document.getElementById("statusMsg").innerText = "Lendo...";
         allItems = [];
 
         for (let file of files) {
@@ -482,7 +489,6 @@
             parsearXML(text);
           }
         }
-
         finalizarProcessamento();
       }
 
@@ -497,56 +503,48 @@
             }
           }
         } catch (e) {
-          console.error("Erro ao ler ZIP:", e);
+          console.error("Erro no ZIP:", e);
         }
       }
 
       function parsearXML(xmlText) {
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+
+        // No padrão Sete Lagoas/Nacional, o nó principal pode ser infNFSe
         const notas = xmlDoc.getElementsByTagName("infNFSe");
 
         for (let i = 0; i < notas.length; i++) {
           const nota = notas[i];
           const num = getTagValue(nota, "nNFSe");
-          const dps = nota.getElementsByTagName("infDPS")[0];
-          let dhEmi = "",
-            tomador = "Consumidor",
-            vServ = 0,
-            vPis = 0,
+          const dhEmi = getTagValue(nota, "dhEmi");
+          const tomador = getTagValue(nota, "xNome") || "Não Informado";
+
+          // Captura Valor do Serviço
+          let vServ = parseFloat(getTagValue(nota, "vServ")) || 0;
+
+          // Captura Retenções Federais
+          let vPis = 0,
             vCofins = 0,
             vIr = 0,
             vCsll = 0;
 
-          if (dps) {
-            dhEmi = getTagValue(dps, "dhEmi");
-            const toma = dps.getElementsByTagName("toma")[0];
-            if (toma) tomador = getTagValue(toma, "xNome") || "Não Informado";
-            const valores = dps.getElementsByTagName("valores")[0];
-            if (valores) {
-              const vServPrest = valores.getElementsByTagName("vServPrest")[0];
-              if (vServPrest)
-                vServ = parseFloat(getTagValue(vServPrest, "vServ")) || 0;
-              const trib = valores.getElementsByTagName("trib")[0];
-              if (trib) {
-                const tribFed = trib.getElementsByTagName("tribFed")[0];
-                if (tribFed) {
-                  const piscofins =
-                    tribFed.getElementsByTagName("piscofins")[0];
-                  if (
-                    piscofins &&
-                    getTagValue(piscofins, "tpRetPisCofins") === "1"
-                  ) {
-                    vPis = parseFloat(getTagValue(piscofins, "vPis")) || 0;
-                    vCofins =
-                      parseFloat(getTagValue(piscofins, "vCofins")) || 0;
-                  }
-                  vIr = parseFloat(getTagValue(tribFed, "vRetIRRF")) || 0;
-                  vCsll = parseFloat(getTagValue(tribFed, "vRetCSLL")) || 0;
-                }
-              }
-            }
+          const tpRetPisCofins = getTagValue(nota, "tpRetPisCofins");
+          if (tpRetPisCofins === "1") {
+            vPis = parseFloat(getTagValue(nota, "vPis")) || 0;
+            vCofins = parseFloat(getTagValue(nota, "vCofins")) || 0;
           }
+          vIr = parseFloat(getTagValue(nota, "vRetIRRF")) || 0;
+          vCsll = parseFloat(getTagValue(nota, "vRetCSLL")) || 0;
+
+          // REGRA ISS RETIDO: tpRetISSQN == 2
+          let vIssRet = 0;
+          const tpRetISSQN = getTagValue(nota, "tpRetISSQN");
+          if (tpRetISSQN === "2") {
+            vIssRet = parseFloat(getTagValue(nota, "vISSQN")) || 0;
+          }
+
+          const totalRetencaoLinha = vPis + vCofins + vIr + vCsll + vIssRet;
 
           allItems.push({
             id: allItems.length,
@@ -559,6 +557,8 @@
             cofins: vCofins,
             ir: vIr,
             csll: vCsll,
+            iss: vIssRet,
+            totalRet: totalRetencaoLinha,
             rawNode: nota,
           });
         }
@@ -572,7 +572,74 @@
         renderizarTabela();
         document.getElementById(
           "statusMsg"
-        ).innerText = `${allItems.length} notas processadas.`;
+        ).innerText = `${allItems.length} notas carregadas.`;
+      }
+
+      function atualizarDashboard() {
+        let somaServ = 0,
+          somaFed = 0,
+          somaISS = 0,
+          somaTotal = 0;
+        filteredItems.forEach((i) => {
+          somaServ += i.total;
+          somaFed += i.pis + i.cofins + i.ir + i.csll;
+          somaISS += i.iss;
+          somaTotal += i.totalRet;
+        });
+        document.getElementById("totalNotas").innerText = filteredItems.length;
+        document.getElementById("valorTotal").innerText = formatMoney(somaServ);
+        document.getElementById("totalRetidoFed").innerText =
+          formatMoney(somaFed);
+        document.getElementById("totalRetidoISS").innerText =
+          formatMoney(somaISS);
+        document.getElementById("totalGeralRetencao").innerText =
+          formatMoney(somaTotal);
+      }
+
+      function renderizarTabela() {
+        const tbody = document.querySelector("#tabelaDados tbody");
+        tbody.innerHTML = "";
+        const start = (currentPage - 1) * itemsPerPage;
+        const items = filteredItems.slice(start, start + itemsPerPage);
+
+        const fmt = (v) =>
+          v > 0
+            ? `<td style="text-align:right" class="val-retido">${formatMoney(
+                v
+              )}</td>`
+            : `<td style="text-align:right" class="val-zerado">0,00</td>`;
+
+        items.forEach((item) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td class="center"><button class="btn-details" onclick="verDetalhes(${
+              item.id
+            })"><i class="fas fa-eye"></i></button></td>
+            <td><strong>${item.numero}</strong></td>
+            <td>${item.data}</td>
+            <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis">${
+              item.tomador
+            }</td>
+            <td style="text-align:right; font-weight:bold">${formatMoney(
+              item.total
+            )}</td>
+            ${fmt(item.pis)}
+            ${fmt(item.cofins)}
+            ${fmt(item.ir)}
+            ${fmt(item.csll)}
+            <td style="text-align:right; border-left: 2px solid #000" class="${
+              item.iss > 0 ? "val-retido" : "val-zerado"
+            }">${formatMoney(item.iss)}</td>
+            <td style="text-align:right" class="val-total-linha">${formatMoney(
+              item.totalRet
+            )}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+        const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
+        document.getElementById(
+          "pageInfo"
+        ).innerText = `${currentPage} / ${totalPages}`;
       }
 
       function validarSequencia() {
@@ -581,17 +648,14 @@
         const container = document.getElementById("gapAlertContainer");
         container.innerHTML = "";
         if (numeros.length > 0) {
-          const min = numeros[0];
-          const max = numeros[numeros.length - 1];
           const setExistente = new Set(numeros);
-          for (let i = min; i <= max; i++)
+          for (let i = numeros[0]; i <= numeros[numeros.length - 1]; i++)
             if (!setExistente.has(i)) gaps.push(i);
         }
-        document.getElementById("totalGaps").innerText = gaps.length;
         if (gaps.length > 0) {
           const alertDiv = document.createElement("div");
           alertDiv.className = "gap-alert";
-          alertDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Atenção: Pulos na sequência: ${gaps.join(
+          alertDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Pulos na sequência: ${gaps.join(
             ", "
           )}`;
           container.appendChild(alertDiv);
@@ -601,7 +665,7 @@
       function exportarCSV() {
         if (allItems.length === 0) return alert("Sem dados.");
         let csv =
-          "Numero;Data;Tomador;Valor Servico;PIS Retido;COFINS Retido;IRRF;CSLL\n";
+          "Numero;Data;Tomador;Valor Servico;PIS;COFINS;IRRF;CSLL;ISS_Retido;Total_Retencao\n";
         allItems.forEach((item) => {
           csv += `${item.numero};${item.data};${item.tomador.replace(
             /;/g,
@@ -612,16 +676,20 @@
             .toFixed(2)
             .replace(".", ",")};${item.ir
             .toFixed(2)
-            .replace(".", ",")};${item.csll.toFixed(2).replace(".", ",")}\n`;
+            .replace(".", ",")};${item.csll
+            .toFixed(2)
+            .replace(".", ",")};${item.iss
+            .toFixed(2)
+            .replace(".", ",")};${item.totalRet
+            .toFixed(2)
+            .replace(".", ",")}\n`;
         });
         const blob = new Blob(["\ufeff" + csv], {
           type: "text/csv;charset=utf-8;",
         });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = `auditoria_nfse_${
-          new Date().toISOString().split("T")[0]
-        }.csv`;
+        link.download = `auditoria_nfse.csv`;
         link.click();
       }
 
@@ -640,59 +708,6 @@
         renderizarTabela();
       }
 
-      function atualizarDashboard() {
-        let somaServ = 0,
-          somaRet = 0;
-        filteredItems.forEach((i) => {
-          somaServ += i.total;
-          somaRet += i.pis + i.cofins + i.ir + i.csll;
-        });
-        document.getElementById("totalNotas").innerText = filteredItems.length;
-        document.getElementById("valorTotal").innerText = formatMoney(somaServ);
-        document.getElementById("totalRetido").innerText = formatMoney(somaRet);
-      }
-
-      function renderizarTabela() {
-        const tbody = document.querySelector("#tabelaDados tbody");
-        tbody.innerHTML = "";
-        const start = (currentPage - 1) * itemsPerPage;
-        const items = filteredItems.slice(start, start + itemsPerPage);
-
-        items.forEach((item) => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td class="center"><button class="btn-details" onclick="verDetalhes(${
-              item.id
-            })"><i class="fas fa-eye"></i></button></td>
-            <td><strong>${item.numero}</strong></td>
-            <td>${item.data}</td>
-            <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis">${
-              item.tomador
-            }</td>
-            <td style="text-align:right; font-weight:bold">${formatMoney(
-              item.total
-            )}</td>
-            <td style="text-align:right; border-left: 3px solid #000" class="${
-              item.pis > 0 ? "val-retido" : "val-zerado"
-            }">${formatMoney(item.pis)}</td>
-            <td style="text-align:right" class="${
-              item.cofins > 0 ? "val-retido" : "val-zerado"
-            }">${formatMoney(item.cofins)}</td>
-            <td style="text-align:right" class="${
-              item.ir > 0 ? "val-retido" : "val-zerado"
-            }">${formatMoney(item.ir)}</td>
-            <td style="text-align:right" class="${
-              item.csll > 0 ? "val-retido" : "val-zerado"
-            }">${formatMoney(item.csll)}</td>
-          `;
-          tbody.appendChild(tr);
-        });
-        const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
-        document.getElementById(
-          "pageInfo"
-        ).innerText = `${currentPage} / ${totalPages}`;
-      }
-
       function mudarPagina(d) {
         const total = Math.ceil(filteredItems.length / itemsPerPage);
         if (currentPage + d > 0 && currentPage + d <= total) {
@@ -708,7 +723,6 @@
         document.getElementById("statusMsg").innerText = "Limpo.";
         document.querySelector("#tabelaDados tbody").innerHTML = "";
         document.getElementById("gapAlertContainer").innerHTML = "";
-        document.getElementById("totalGaps").innerText = "0";
         atualizarDashboard();
       }
 
@@ -747,9 +761,8 @@
         return html;
       }
 
-      window.onclick = function (event) {
-        if (event.target == document.getElementById("modalDetails"))
-          closeModal();
+      window.onclick = (e) => {
+        if (e.target == document.getElementById("modalDetails")) closeModal();
       };
     </script>
   </body>
