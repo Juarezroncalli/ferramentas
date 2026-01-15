@@ -46,7 +46,6 @@
         display: flex;
       }
 
-      /* SIDEBAR */
       .sidebar {
         width: 240px;
         background: var(--c-purple);
@@ -92,7 +91,6 @@
         background: var(--c-blue);
       }
 
-      /* MAIN CONTENT */
       .main-content {
         flex: 1;
         display: flex;
@@ -124,7 +122,6 @@
         text-transform: uppercase;
       }
 
-      /* UPLOAD AREA */
       .upload-area {
         background: var(--c-pink);
         border: 3px dashed #000;
@@ -153,7 +150,6 @@
         cursor: pointer;
       }
 
-      /* TABELA */
       .table-container {
         overflow-x: auto;
         border: var(--border-width) solid #000;
@@ -183,7 +179,6 @@
         border-right: 1px solid #eee;
       }
 
-      /* BOTÕES REFINADOS */
       .btn-neo {
         background: #fff;
         border: 2px solid #000;
@@ -205,9 +200,6 @@
         box-shadow: 3px 3px 0 0 #000;
       }
 
-      .btn-neo.green {
-        background: var(--c-green);
-      }
       .btn-neo.blue {
         background: var(--c-blue);
         color: #000;
@@ -218,14 +210,6 @@
         border-color: #000;
       }
 
-      .btn-neo:disabled {
-        background: #ccc;
-        cursor: not-allowed;
-        box-shadow: none;
-        transform: none;
-      }
-
-      /* STATUS BADGE */
       .status-badge {
         padding: 2px 6px;
         border: 1px solid #000;
@@ -287,9 +271,7 @@
     <main class="main-content">
       <div class="scroll-content">
         <header class="neo-header">
-          <div>
-            <h1>Validador de Endereço NFSe</h1>
-          </div>
+          <div><h1>Validador NFSe</h1></div>
           <div id="fileCount" class="info-text">0 Arquivos</div>
         </header>
 
@@ -298,7 +280,7 @@
             type="file"
             id="xmlInput"
             multiple
-            accept=".xml"
+            accept=".xml,.zip"
             onchange="handleFiles(this.files)"
           />
           <div class="upload-label">
@@ -307,7 +289,7 @@
               style="margin-bottom: 10px"
             ></i
             ><br />
-            Clique ou arraste seus arquivos XML aqui
+            Arraste XMLs ou arquivos ZIP aqui
           </div>
         </div>
 
@@ -315,7 +297,7 @@
           <table id="resultTable">
             <thead>
               <tr>
-                <th>Nome do Arquivo</th>
+                <th>Arquivo</th>
                 <th>Nota</th>
                 <th>Emitente</th>
                 <th>cMun (Emit)</th>
@@ -345,90 +327,89 @@
       let processedFiles = [];
 
       async function handleFiles(files) {
-        const tbody = document.querySelector("#resultTable tbody");
         const statusMsg = document.getElementById("statusMsg");
         const fileList = Array.from(files);
-
         statusMsg.innerText = "Processando...";
 
         for (const file of fileList) {
-          try {
+          if (file.name.toLowerCase().endsWith(".zip")) {
+            await handleZipFile(file);
+          } else if (file.name.toLowerCase().endsWith(".xml")) {
             const text = await file.text();
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(text, "text/xml");
-
-            // 1. Extrair cMun do Emitente
-            const emit = xmlDoc.getElementsByTagName("emit")[0];
-            const cMunEmit = emit?.getElementsByTagName("cMun")[0]?.textContent;
-            const nomeEmit =
-              emit?.getElementsByTagName("xNome")[0]?.textContent ||
-              "Não identificado";
-
-            const nNFSe =
-              xmlDoc.getElementsByTagName("nNFSe")[0]?.textContent || "---";
-
-            if (!cMunEmit) {
-              addRow(
-                file.name,
-                nNFSe,
-                nomeEmit,
-                "N/A",
-                "ERRO: Emitente sem cMun",
-                false
-              );
-              continue;
-            }
-
-            // 2. Verificar/Incluir no Tomador
-            const toma = xmlDoc.getElementsByTagName("toma")[0];
-            let status = "";
-            let foiCorrigido = false;
-
-            if (toma) {
-              let endTag = toma.getElementsByTagName("end")[0];
-
-              if (!endTag) {
-                // Criar estrutura <end><endNac><cMun>...
-                const ns =
-                  xmlDoc.documentElement.namespaceURI ||
-                  "http://www.sped.fazenda.gov.br/nfse";
-                endTag = xmlDoc.createElementNS(ns, "end");
-                const endNac = xmlDoc.createElementNS(ns, "endNac");
-                const cMun = xmlDoc.createElementNS(ns, "cMun");
-
-                cMun.textContent = cMunEmit;
-                endNac.appendChild(cMun);
-                endTag.appendChild(endNac);
-
-                // Tenta inserir antes do email para manter ordem comum
-                const email = toma.getElementsByTagName("email")[0];
-                email
-                  ? toma.insertBefore(endTag, email)
-                  : toma.appendChild(endTag);
-
-                status = "Corrigido (Tag Incluída)";
-                foiCorrigido = true;
-              } else {
-                status = "Já possuía tag <end>";
-              }
-            }
-
-            const serializer = new XMLSerializer();
-            const finalXml = serializer.serializeToString(xmlDoc);
-
-            processedFiles.push({
-              name: file.name,
-              content: finalXml,
-            });
-
-            addRow(file.name, nNFSe, nomeEmit, cMunEmit, status, foiCorrigido);
-          } catch (e) {
-            console.error(e);
-            addRow(file.name, "---", "---", "---", "Erro ao ler XML", false);
+            await processXmlContent(text, file.name);
           }
         }
+        finalizeProcessing();
+      }
 
-        statusMsg.innerText = "Processamento concluído.";
+      async function handleZipFile(zipFile) {
+        try {
+          const zip = await JSZip.loadAsync(zipFile);
+          const entries = Object.keys(zip.files).filter((name) =>
+            name.toLowerCase().endsWith(".xml")
+          );
+          for (const name of entries) {
+            const content = await zip.files[name].async("string");
+            await processXmlContent(content, name);
+          }
+        } catch (e) {
+          console.error("Erro no ZIP:", e);
+        }
+      }
+
+      async function processXmlContent(text, fileName) {
+        try {
+          const parser = new DOMParser();
+          const xmlDoc = parser.parseFromString(text, "text/xml");
+          const emit = xmlDoc.getElementsByTagName("emit")[0];
+          const cMunEmit = emit?.getElementsByTagName("cMun")[0]?.textContent;
+          const nomeEmit =
+            emit?.getElementsByTagName("xNome")[0]?.textContent ||
+            "Não identificado";
+          const nNFSe =
+            xmlDoc.getElementsByTagName("nNFSe")[0]?.textContent || "---";
+
+          if (!cMunEmit) {
+            addRow(fileName, nNFSe, nomeEmit, "N/A", "ERRO: Sem cMun", false);
+            return;
+          }
+
+          const toma = xmlDoc.getElementsByTagName("toma")[0];
+          let status = "Já possuía tag <end>";
+          let foiCorrigido = false;
+
+          if (toma) {
+            let endTag = toma.getElementsByTagName("end")[0];
+            if (!endTag) {
+              const ns =
+                xmlDoc.documentElement.namespaceURI ||
+                "http://www.sped.fazenda.gov.br/nfse";
+              endTag = xmlDoc.createElementNS(ns, "end");
+              const endNac = xmlDoc.createElementNS(ns, "endNac");
+              const cMun = xmlDoc.createElementNS(ns, "cMun");
+              cMun.textContent = cMunEmit;
+              endNac.appendChild(cMun);
+              endTag.appendChild(endNac);
+              const email = toma.getElementsByTagName("email")[0];
+              email
+                ? toma.insertBefore(endTag, email)
+                : toma.appendChild(endTag);
+              status = "Corrigido";
+              foiCorrigido = true;
+            }
+          }
+
+          const serializer = new XMLSerializer();
+          const finalXml = serializer.serializeToString(xmlDoc);
+          processedFiles.push({ name: fileName, content: finalXml });
+          addRow(fileName, nNFSe, nomeEmit, cMunEmit, status, foiCorrigido);
+        } catch (e) {
+          addRow(fileName, "---", "---", "---", "Erro XML", false);
+        }
+      }
+
+      function finalizeProcessing() {
+        document.getElementById("statusMsg").innerText = "Concluído.";
         document.getElementById(
           "fileCount"
         ).innerText = `${processedFiles.length} Arquivos`;
@@ -439,20 +420,14 @@
       function addRow(fileName, nota, emit, cmun, status, corrigido) {
         const tbody = document.querySelector("#resultTable tbody");
         const tr = document.createElement("tr");
-
         const badgeClass = corrigido ? "st-fix" : "st-ok";
-
         tr.innerHTML = `
           <td style="font-weight:bold">${fileName}</td>
           <td>${nota}</td>
           <td>${emit}</td>
           <td><span class="status-badge" style="background:#eee">${cmun}</span></td>
           <td><span class="status-badge ${badgeClass}">${status}</span></td>
-          <td>
-            <button class="btn-neo blue" onclick="downloadSingle('${fileName}')">
-              <i class="fas fa-download"></i>
-            </button>
-          </td>
+          <td><button class="btn-neo blue" onclick="downloadSingle('${fileName}')"><i class="fas fa-download"></i></button></td>
         `;
         tbody.appendChild(tr);
       }
@@ -461,22 +436,21 @@
         const file = processedFiles.find((f) => f.name === fileName);
         if (!file) return;
         const blob = new Blob([file.content], { type: "text/xml" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = file.name;
+        const a = Object.assign(document.createElement("a"), {
+          href: URL.createObjectURL(blob),
+          download: file.name,
+        });
         a.click();
       }
 
       async function exportAll() {
-        if (processedFiles.length === 0) return;
         const zip = new JSZip();
         processedFiles.forEach((f) => zip.file(f.name, f.content));
-        const content = await zip.generateAsync({ type: "blob" });
-        const url = URL.createObjectURL(content);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "NFSe_Corrigidas.zip";
+        const blob = await zip.generateAsync({ type: "blob" });
+        const a = Object.assign(document.createElement("a"), {
+          href: URL.createObjectURL(blob),
+          download: "NFSe_Corrigidas.zip",
+        });
         a.click();
       }
     </script>
