@@ -16,7 +16,7 @@
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ferramentas Contábeis [COLOR_BRUTALISM]</title>
+    <title>Ferramentas Contábeis [NEO-BRUTALISM]</title>
     <link rel="icon" href="icone.ico" type="image/x-icon" />
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -31,20 +31,16 @@
     />
 
     <style>
-      /* --- VARIÁVEIS VIBRANTES --- */
       :root {
         --bg-body: #fff7ed;
         --card-bg: #ffffff;
         --border-color: #000000;
-
-        /* Paleta Neo-Brutalista */
-        --color-primary: #8b5cf6; /* Roxo */
-        --color-secondary: #f472b6; /* Rosa */
-        --color-accent: #facc15; /* Amarelo */
-        --color-info: #06b6d4; /* Ciano */
-        --color-success: #22c55e; /* Verde */
-        --color-danger: #ef4444; /* Vermelho */
-
+        --color-primary: #8b5cf6;
+        --color-secondary: #f472b6;
+        --color-accent: #facc15;
+        --color-info: #06b6d4;
+        --color-success: #22c55e;
+        --color-danger: #ef4444;
         --border-width: 3px;
         --shadow-dist: 6px;
       }
@@ -61,334 +57,54 @@
         background-image: linear-gradient(#fff 2px, transparent 2px),
           linear-gradient(90deg, #fff 2px, transparent 2px);
         background-size: 40px 40px;
-        background-position: -2px -2px;
         color: var(--border-color);
-        min-height: 100vh;
         padding: 20px;
         padding-top: 100px;
       }
 
       .container {
-        max-width: 1100px;
+        max-width: 1250px;
         margin: 0 auto;
-      }
-
-      /* --- NAVEGAÇÃO --- */
-      .main-nav {
-        background-color: var(--color-accent);
-        border-bottom: var(--border-width) solid var(--border-color);
-        padding: 1rem 0;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 500;
-        box-shadow: 0 4px 0 rgba(0, 0, 0, 1);
-      }
-
-      .main-nav ul {
-        list-style: none;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 15px;
-        padding: 0 20px;
-      }
-
-      .main-nav a {
-        text-decoration: none;
-        color: #000;
-        font-weight: 800;
-        font-family: "Space Mono", monospace;
-        text-transform: uppercase;
-        background: #fff;
-        padding: 10px 15px;
-        border: var(--border-width) solid #000;
-        box-shadow: 4px 4px 0 #000;
-        transition: transform 0.1s, box-shadow 0.1s;
-      }
-
-      .main-nav a:hover,
-      .main-nav a.active {
-        background-color: var(--color-secondary);
-        color: #fff;
-        transform: translate(-2px, -2px);
-        box-shadow: 6px 6px 0 #000;
-      }
-
-      /* --- LAYOUT --- */
-      .page-content {
-        display: none;
-        animation: slideIn 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-      }
-
-      .page-content.active {
-        display: block;
-      }
-
-      @keyframes slideIn {
-        from {
-          opacity: 0;
-          transform: translateY(30px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
       }
 
       .header {
         text-align: center;
-        margin-bottom: 3rem;
+        margin-bottom: 2rem;
         background: var(--color-primary);
         border: var(--border-width) solid #000;
-        padding: 2rem;
+        padding: 1.5rem;
         box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
         color: #fff;
       }
 
       .header h1 {
-        font-size: 2.5rem;
+        font-size: 2rem;
         text-transform: uppercase;
-        text-shadow: 3px 3px 0 #000;
-        margin-bottom: 0.5rem;
+        text-shadow: 2px 2px 0 #000;
       }
 
-      .header p {
-        font-family: "Space Mono", monospace;
-        font-size: 1.1rem;
-        background: #000;
-        color: var(--color-accent);
-        display: inline-block;
-        padding: 5px 10px;
-      }
-
-      /* --- CARDS --- */
       .content-card {
         background: #fff;
         border: var(--border-width) solid #000;
-        border-radius: 0;
-        padding: 2.5rem;
-        margin-bottom: 2.5rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
         box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
-        position: relative;
       }
 
       .content-card h2 {
         background-color: var(--color-accent);
         border: var(--border-width) solid #000;
-        padding: 10px 20px;
+        padding: 8px 15px;
         display: inline-block;
-        margin-bottom: 2rem;
-        font-weight: 900;
+        margin-bottom: 1.5rem;
+        font-size: 1.2rem;
         text-transform: uppercase;
-        transform: rotate(-1deg);
-        box-shadow: 4px 4px 0 #000;
+        box-shadow: 3px 3px 0 #000;
       }
 
-      /* --- FORMULÁRIOS --- */
-      .form-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-        align-items: flex-end;
-      }
-
-      .form-group {
-        margin-bottom: 1rem;
-      }
-
-      label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 800;
-        font-family: "Space Mono", monospace;
-        text-transform: uppercase;
-        font-size: 0.9rem;
-      }
-
-      input[type="text"],
-      input[type="number"],
-      input[type="date"],
-      select {
-        width: 100%;
-        padding: 15px;
-        border: var(--border-width) solid #000;
-        font-family: "Space Mono", monospace;
-        font-size: 1rem;
-        background: #f3f4f6;
-        outline: none;
-        transition: all 0.2s;
-      }
-
-      input:focus {
-        background: #fff;
-        box-shadow: 5px 5px 0 var(--color-primary);
-        transform: translate(-3px, -3px);
-      }
-
-      /* --- VALIDATION STYLES (NOVO) --- */
-      .input-error {
-        border-color: var(--color-danger) !important;
-        background-color: #fee2e2 !important; /* Fundo avermelhado */
-        color: #991b1b !important;
-        box-shadow: 4px 4px 0 var(--color-danger) !important;
-        animation: shake 0.4s ease-in-out;
-      }
-
-      .duplicate-error {
-        border-color: var(--color-accent) !important;
-        background-color: #fef3c7 !important;
-        box-shadow: 4px 4px 0 var(--color-accent) !important;
-      }
-
-      @keyframes shake {
-        0%,
-        100% {
-          transform: translateX(0);
-        }
-        25% {
-          transform: translateX(-5px);
-        }
-        50% {
-          transform: translateX(5px);
-        }
-        75% {
-          transform: translateX(-5px);
-        }
-      }
-
-      /* --- BOTÕES --- */
-      .btn {
-        border: var(--border-width) solid #000;
-        padding: 15px 30px;
-        font-weight: 800;
-        font-family: "Space Grotesk", sans-serif;
-        text-transform: uppercase;
-        cursor: pointer;
-        font-size: 1rem;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        background-color: #fff;
-        box-shadow: 5px 5px 0 #000;
-        transition: all 0.1s;
-      }
-
-      .btn:hover:not(:disabled) {
-        transform: translate(-3px, -3px);
-        box-shadow: 8px 8px 0 #000;
-      }
-
-      .btn:active {
-        transform: translate(0, 0);
-        box-shadow: 0 0 0 #000;
-      }
-
-      .btn:disabled {
-        background: #e5e5e5;
-        color: #888;
-        box-shadow: none;
-        cursor: not-allowed;
-      }
-
-      #nfs-add-row-btn,
-      #reinf-addMappingBtn {
-        background-color: var(--color-info);
-      }
-      #nfs-generate-btn,
-      #ativo-gerarTxtBtn,
-      #reinf-downloadButton {
-        background-color: var(--color-secondary);
-        color: #fff;
-        text-shadow: 1px 1px 0 #000;
-      }
-      #sm-calculateButton,
-      #rbt12-calculateButton {
-        background-color: var(--color-success);
-      }
-      #ativo-processExcelBtn,
-      #reinf-processButton {
-        background-color: var(--color-primary);
-        color: #fff;
-      }
-
-      /* --- UPLOAD --- */
-      .upload-area {
-        background-color: #fef9c3;
-        border: 3px dashed #000;
-        padding: 3rem;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.2s;
-        margin-top: 1.5rem;
-      }
-
-      .upload-area:hover {
-        background-color: var(--color-accent);
-        border-style: solid;
-        box-shadow: 6px 6px 0 #000;
-        transform: translate(-2px, -2px);
-      }
-
-      .upload-icon {
-        font-size: 3rem;
-        margin-bottom: 10px;
-        color: #000;
-      }
-
-      /* --- FILE INFO --- */
-      .file-info {
-        background: #fff;
-        border: var(--border-width) solid #000;
-        padding: 15px;
-        margin-top: 15px;
-        display: none;
-        align-items: center;
-        gap: 15px;
-        box-shadow: 5px 5px 0 var(--color-success);
-      }
-      .file-info.show {
-        display: flex;
-      }
-      .file-icon {
-        color: var(--color-success);
-        font-size: 1.5rem;
-      }
-
-      /* --- TABELAS --- */
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 2rem;
-        border: var(--border-width) solid #000;
-      }
-
-      th {
-        background: #000;
-        color: #fff;
-        padding: 15px;
-        text-align: left;
-        font-family: "Space Mono", monospace;
-        text-transform: uppercase;
-      }
-
-      td {
-        border: 2px solid #000;
-        padding: 12px;
-        background: #fff;
-        font-family: "Space Mono", monospace;
-      }
-
-      tr:nth-child(even) td {
-        background-color: #f0fdfa;
-      }
-
-      /* --- INPUT GRID (NFS) --- */
       .input-grid-container {
         border: var(--border-width) solid #000;
-        padding: 15px;
+        padding: 10px;
         background: var(--color-primary);
         overflow-x: auto;
       }
@@ -397,86 +113,110 @@
         display: flex;
         background: #000;
         color: #fff;
-        padding: 10px;
+        padding: 8px;
         font-family: "Space Mono", monospace;
+        font-size: 0.75rem;
         font-weight: bold;
-        margin-bottom: 10px;
+        text-transform: uppercase;
+        gap: 8px;
       }
 
       .input-row-header div {
         flex: 1;
         text-align: center;
       }
-      .col-cnpj {
-        flex: 2 !important;
+      .col-small {
+        flex: 0.6 !important;
+      }
+      .col-medium {
+        flex: 1.2 !important;
       }
       .col-action {
-        flex: 0.5 !important;
+        flex: 0.3 !important;
       }
 
       .input-row {
         display: flex;
         background: #fff;
-        border: 3px solid #000;
-        padding: 10px;
-        margin-bottom: 10px;
-        gap: 10px;
-        box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.2);
+        border: 2px solid #000;
+        padding: 8px;
+        margin-top: 8px;
+        gap: 8px;
+        align-items: flex-end;
       }
 
       .input-row div {
         flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .input-row label {
+        font-family: "Space Mono", monospace;
+        font-size: 0.65rem;
+        font-weight: bold;
+        margin-bottom: 4px;
       }
 
       .input-row input {
-        border: 2px solid #ccc;
-        padding: 5px;
+        width: 100%;
+        padding: 6px;
+        border: 2px solid #000;
+        font-family: "Space Mono", monospace;
+        font-size: 0.85rem;
+        background: #f3f4f6;
+      }
+
+      .input-row input:focus {
+        background: #fff;
+        outline: none;
+        box-shadow: 2px 2px 0 var(--color-primary);
+      }
+
+      .btn {
+        border: var(--border-width) solid #000;
+        padding: 10px 20px;
+        font-weight: 800;
+        font-family: "Space Grotesk", sans-serif;
+        text-transform: uppercase;
+        cursor: pointer;
         font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background-color: #fff;
+        box-shadow: 4px 4px 0 #000;
+        transition: all 0.1s;
+      }
+
+      .btn:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 #000;
+      }
+      #nfs-add-row-btn {
+        background-color: var(--color-info);
+      }
+      #nfs-generate-btn {
+        background-color: var(--color-secondary);
+        color: #fff;
+      }
+      #nfs-how-to-import-btn {
+        background-color: var(--color-accent);
       }
 
       .delete-row-btn {
         background: var(--color-danger);
         color: #fff;
         border: 2px solid #000;
-        width: 100%;
-        height: 100%;
+        height: 32px;
+        width: 32px;
         cursor: pointer;
+        font-weight: bold;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: bold;
       }
 
-      /* --- RESULTADOS --- */
-      #ativo-resultBox,
-      #reinf-report,
-      #ecf-results-content {
-        background-color: #1e1e1e;
-        color: #33ff00;
-        font-family: "Courier New", Courier, monospace;
-        padding: 1.5rem;
-        border: var(--border-width) solid #000;
-        box-shadow: 8px 8px 0 var(--color-secondary);
-        max-height: 400px;
-        overflow-y: auto;
-        margin-top: 1rem;
-      }
-
-      .anexo-result {
-        background: #fff;
-        border: 3px solid #000;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        box-shadow: 5px 5px 0 var(--color-info);
-      }
-
-      .anexo-aliquota {
-        font-size: 2rem;
-        color: var(--color-primary);
-        font-weight: 800;
-      }
-
-      /* --- MODAL --- */
       .custom-modal-overlay {
         position: fixed;
         top: 0;
@@ -490,11 +230,9 @@
         z-index: 2000;
         backdrop-filter: blur(5px);
       }
-
       .custom-modal-overlay.visible {
         display: flex;
       }
-
       .custom-modal-content {
         background: #fff;
         border: 5px solid #000;
@@ -504,37 +242,12 @@
         text-align: center;
       }
 
-      .custom-modal-content h3 {
-        background: var(--color-accent);
-        border: 3px solid #000;
-        display: inline-block;
-        padding: 10px 20px;
-        font-size: 1.5rem;
-        margin-bottom: 20px;
-      }
-
-      .empty-state {
-        border: 3px dashed #000;
-        padding: 2rem;
-        text-align: center;
-        background: #fdfdfd;
-        color: #888;
-      }
-
       @media (max-width: 992px) {
         .input-row-header {
           display: none;
         }
         .input-row {
           flex-direction: column;
-        }
-      }
-
-      @media (max-width: 768px) {
-        .main-nav {
-          overflow-x: auto;
-          white-space: nowrap;
-          justify-content: flex-start;
         }
       }
     </style>
@@ -551,29 +264,31 @@
           <form id="nfs-data-form" novalidate>
             <div class="input-grid-container">
               <div class="input-row-header">
-                <div>Espécie</div>
-                <div class="col-cnpj">CNPJ</div>
-                <div>Acumulador</div>
-                <div>CFOP</div>
-                <div>NF</div>
+                <div class="col-small">Espécie</div>
+                <div class="col-medium">CNPJ</div>
+                <div class="col-small">Acumul.</div>
+                <div class="col-small">CFOP</div>
+                <div class="col-small">NF</div>
                 <div>Data Entrada</div>
-                <div class="col-valor">Valor NF</div>
-                <div class="col-valor">Valor IRRF</div>
-                <div class="col-valor">Valor CSRF</div>
+                <div class="col-small">Valor NF</div>
+                <div class="col-small">IRRF</div>
+                <div class="col-small">CSRF</div>
                 <div class="col-action"></div>
               </div>
               <div id="nfs-input-rows"></div>
             </div>
-            <div class="actions" style="margin-top: 20px">
+            <div
+              class="actions"
+              style="margin-top: 20px; display: flex; gap: 10px"
+            >
               <button type="button" id="nfs-add-row-btn" class="btn">
                 <i class="fa-solid fa-plus"></i> Add Linha
               </button>
-              <button
-                type="button"
-                id="nfs-generate-btn"
-                class="btn btn-accent"
-              >
+              <button type="button" id="nfs-generate-btn" class="btn">
                 <i class="fa-solid fa-file-export"></i> GERAR TXT
+              </button>
+              <button type="button" id="nfs-how-to-import-btn" class="btn">
+                <i class="fa-solid fa-circle-question"></i> COMO IMPORTAR?
               </button>
             </div>
           </form>
@@ -581,424 +296,29 @@
       </div>
     </main>
 
-    <main id="page-ativo" class="page-content">
-      <div class="container">
-        <div class="header">
-          <h1>Layout Patrimônio</h1>
-          <p>Excel para PMBEM</p>
-        </div>
-
-        <div class="content-card" id="ativo-uploadCard">
-          <h2>1. Configuração</h2>
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="ativo-numeroEmpresa"
-                >Número da Empresa (Domínio)*</label
-              >
-              <input
-                type="number"
-                id="ativo-numeroEmpresa"
-                required
-                max="99999"
-                maxlength="5"
-                placeholder="Ex: 123"
-                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-              />
-            </div>
-          </div>
-
-          <div
-            class="upload-area"
-            onclick="document.getElementById('ativo-excelFile').click()"
-          >
-            <div class="upload-icon"><i class="fas fa-file-excel"></i></div>
-            <div class="upload-text">CLIQUE PARA CARREGAR EXCEL</div>
-            <div class="upload-subtext">.xlsx ou .xls</div>
-            <input
-              type="file"
-              id="ativo-excelFile"
-              accept=".xlsx, .xls"
-              style="display: none"
-            />
-          </div>
-
-          <div class="file-info" id="ativo-file-info">
-            <div class="file-icon"><i class="fas fa-check-circle"></i></div>
-            <div class="file-details">
-              <div class="file-name" id="ativo-file-name"></div>
-              <div class="file-size" id="ativo-file-size"></div>
-            </div>
-          </div>
-
-          <div
-            style="
-              margin-top: 1.5rem;
-              background: #fff;
-              border: 3px solid #000;
-              padding: 10px;
-              display: inline-flex;
-              align-items: center;
-              gap: 10px;
-              box-shadow: 4px 4px 0 #ccc;
-            "
-          >
-            <input
-              type="checkbox"
-              id="ativo-processarBaixadosCheckbox"
-              style="width: 20px; height: 20px; margin: 0"
-            />
-            <label
-              for="ativo-processarBaixadosCheckbox"
-              style="margin: 0; cursor: pointer"
-              >Incluir itens com 'Baixa Total'?</label
-            >
-          </div>
-        </div>
-
-        <div class="content-card" id="ativo-mappingCard" style="display: none">
-          <h2>2. Mapeamento</h2>
-          <p style="margin-bottom: 1rem">
-            Informe a Conta Patrimonial para cada Conta do Excel.
-          </p>
-          <div id="ativo-mappingTableContainer"></div>
-          <div class="actions" style="margin-top: 20px">
-            <button id="ativo-processExcelBtn" class="btn">
-              <i class="fas fa-cogs"></i> PROCESSAR DADOS
-            </button>
-          </div>
-        </div>
-
-        <div class="content-card" id="ativo-itemsListCard">
-          <h2>3. Itens Gerados</h2>
-          <div id="ativo-itemsContainer" style="display: grid; gap: 1rem"></div>
-          <div id="ativo-emptyState" class="empty-state">
-            <div style="font-size: 3rem">📂</div>
-            <h3>Nada aqui ainda</h3>
-            <p>Carregue o arquivo acima para começar.</p>
-          </div>
-          <div class="actions" style="margin-top: 20px">
-            <button id="ativo-gerarTxtBtn" class="btn" disabled>
-              <i class="fa-solid fa-download"></i> BAIXAR ARQUIVO FINAL
-            </button>
-          </div>
-        </div>
-
-        <div class="content-card" id="ativo-resultArea" style="display: none">
-          <h2 style="background: #000; color: #33ff00; transform: none">
-            RESULTADO
-          </h2>
-          <div id="ativo-resultBox"></div>
-          <div class="actions" style="margin-top: 20px">
-            <button id="ativo-downloadBtn" class="btn">
-              <i class="fa-solid fa-download"></i> Download
-            </button>
-            <button id="ativo-copyBtn" class="btn">
-              <i class="fa-solid fa-copy"></i> Copiar
-            </button>
-          </div>
-        </div>
-      </div>
-    </main>
-
-    <main id="page-reinf" class="page-content">
-      <div class="container">
-        <div class="header">
-          <h1>Gerador REINF</h1>
-          <p>Mapeamento Nome > CPF</p>
-        </div>
-
-        <div class="content-card">
-          <h2>1. Mapeamento</h2>
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Nome (Busca)</label>
-              <input type="text" id="reinf-nameInput" placeholder="Ex: JOÃO" />
-            </div>
-            <div class="form-group">
-              <label>CPF Destino</label>
-              <input
-                type="text"
-                id="reinf-cpfInput"
-                placeholder="Somente números"
-              />
-            </div>
-            <div class="form-group">
-              <label>&nbsp;</label>
-              <button id="reinf-addMappingBtn" class="btn" style="width: 100%">
-                <i class="fa-solid fa-plus"></i>
-              </button>
-            </div>
-          </div>
-          <table id="reinf-mapping-table">
-            <thead>
-              <tr>
-                <th>Nome Buscado</th>
-                <th>CPF</th>
-                <th>Ação</th>
-              </tr>
-            </thead>
-            <tbody id="reinf-mapping-body"></tbody>
-          </table>
-        </div>
-
-        <div class="content-card">
-          <h2>2. Processamento</h2>
-          <div
-            class="upload-area"
-            onclick="document.getElementById('reinf-excelFile').click()"
-          >
-            <div class="upload-icon"><i class="fas fa-file-excel"></i></div>
-            <div class="upload-text">UPLOAD EXCEL</div>
-            <input
-              type="file"
-              id="reinf-excelFile"
-              accept=".xlsx, .xls"
-              style="display: none"
-            />
-          </div>
-
-          <div class="file-info" id="reinf-file-info">
-            <div class="file-icon"><i class="fas fa-check"></i></div>
-            <div class="file-details">
-              <div class="file-name" id="reinf-file-name"></div>
-              <div class="file-size" id="reinf-file-size"></div>
-            </div>
-          </div>
-
-          <button
-            id="reinf-processButton"
-            class="btn"
-            style="width: 100%; margin-top: 20px"
-            disabled
-          >
-            PROCESSAR E GERAR
-          </button>
-        </div>
-
-        <div class="content-card">
-          <h2>3. Resultados</h2>
-          <div
-            id="reinf-status"
-            style="border: 2px solid #000; padding: 10px; margin-bottom: 10px"
-          >
-            Aguardando...
-          </div>
-
-          <div
-            id="reinf-cpfTotalsSection"
-            style="display: none; margin-bottom: 20px"
-          >
-            <h3>Totais por CPF</h3>
-            <table id="reinf-cpfTotalsTable">
-              <thead>
-                <tr>
-                  <th>CPF</th>
-                  <th>Total (R$)</th>
-                </tr>
-              </thead>
-              <tbody id="reinf-cpfTotalsTableBody"></tbody>
-            </table>
-          </div>
-
-          <button
-            id="reinf-downloadButton"
-            class="btn"
-            style="display: none; width: 100%"
-            disabled
-          >
-            <i class="fa-solid fa-download"></i> BAIXAR TXT(s)
-          </button>
-        </div>
-      </div>
-    </main>
-
-    <main id="page-ecf" class="page-content">
-      <div class="container">
-        <div class="header">
-          <h1>Leitor ECF</h1>
-          <p>N030 e M500</p>
-        </div>
-
-        <div class="content-card">
-          <div
-            class="upload-area"
-            onclick="document.getElementById('ecf-file-input').click()"
-          >
-            <div class="upload-icon"><i class="fas fa-file-alt"></i></div>
-            <div class="upload-text">SELECIONAR ARQUIVO .TXT</div>
-            <input
-              type="file"
-              id="ecf-file-input"
-              accept=".txt"
-              style="display: none"
-            />
-          </div>
-
-          <div class="file-info" id="ecf-file-info">
-            <div class="file-name" id="ecf-file-name"></div>
-            <div class="file-size" id="ecf-file-size"></div>
-          </div>
-
-          <button
-            class="btn btn-accent"
-            id="ecf-process-btn"
-            style="width: 100%; margin-top: 20px"
-            disabled
-          >
-            LER ARQUIVO
-          </button>
-        </div>
-
-        <div
-          class="content-card"
-          id="ecf-loading"
-          style="display: none; text-align: center"
-        >
-          <div style="font-size: 3rem; animation: spin 1s infinite linear">
-            ⚙️
-          </div>
-          <p>Processando...</p>
-        </div>
-
-        <div class="content-card" id="ecf-results" style="display: none">
-          <h2>Resultados</h2>
-          <div id="ecf-results-content"></div>
-        </div>
-      </div>
-    </main>
-
-    <main id="page-simples-mensal" class="page-content">
-      <div class="container" style="max-width: 800px">
-        <div class="header">
-          <h1>Simples Nacional</h1>
-          <p>Cálculo Mensal</p>
-        </div>
-        <div class="content-card">
-          <h2>1. Dados</h2>
-          <div class="form-group">
-            <label>Faturamento Mensal (R$)</label>
-            <input
-              type="text"
-              id="sm-monthlyRevenueInput"
-              placeholder="10000,00"
-              inputmode="decimal"
-            />
-          </div>
-          <div
-            style="
-              background: var(--color-accent);
-              border: 3px solid #000;
-              padding: 10px;
-              margin-bottom: 20px;
-              font-weight: bold;
-            "
-          >
-            ⚠ O sistema multiplicará este valor por 12.
-          </div>
-          <button id="sm-calculateButton" class="btn" style="width: 100%">
-            CALCULAR
-          </button>
-          <div id="sm-errorMessage"></div>
-        </div>
-        <div class="content-card">
-          <h2>2. Resultado</h2>
-          <div id="sm-resultsOutput">
-            <div class="empty-state">Aguardando cálculo...</div>
-          </div>
-        </div>
-      </div>
-    </main>
-
-    <main id="page-simples-rbt12" class="page-content">
-      <div class="container" style="max-width: 800px">
-        <div class="header">
-          <h1>Simples Nacional</h1>
-          <p>Cálculo RBT12</p>
-        </div>
-        <div class="content-card">
-          <h2>1. Dados</h2>
-          <div class="form-group">
-            <label>RBT12 (Últimos 12 meses)</label>
-            <input
-              type="text"
-              id="rbt12-rbt12Input"
-              placeholder="120000,00"
-              inputmode="decimal"
-            />
-          </div>
-          <button id="rbt12-calculateButton" class="btn" style="width: 100%">
-            CALCULAR
-          </button>
-          <div id="rbt12-errorMessage"></div>
-        </div>
-        <div class="content-card">
-          <h2>2. Resultado</h2>
-          <div id="rbt12-resultsOutput">
-            <div class="empty-state">Aguardando cálculo...</div>
-          </div>
-        </div>
-      </div>
-    </main>
-
     <div id="generic-modal" class="custom-modal-overlay">
       <div class="custom-modal-content">
-        <h3 id="generic-modal-title">AVISO</h3>
-        <p
-          id="generic-modal-text"
+        <h3
+          id="generic-modal-title"
           style="
-            font-family: 'Space Mono', monospace;
-            font-size: 1.1rem;
-            margin: 20px 0;
+            background: var(--color-accent);
+            border: 3px solid #000;
+            padding: 5px 10px;
+            margin-bottom: 15px;
+            display: inline-block;
           "
-        ></p>
+        >
+          AVISO
+        </h3>
+        <div
+          id="generic-modal-text"
+          style="font-family: 'Space Mono'; margin-bottom: 20px"
+        ></div>
         <button id="generic-modal-close-btn" class="btn">ENTENDIDO</button>
       </div>
     </div>
 
     <script>
-      // --- NAVEGAÇÃO ---
-      document.addEventListener("DOMContentLoaded", function () {
-        const navLinks = document.querySelectorAll(".nav-link");
-        const pages = document.querySelectorAll(".page-content");
-
-        function showPage(pageId) {
-          pages.forEach((page) => page.classList.remove("active"));
-          navLinks.forEach((link) => link.classList.remove("active"));
-          const targetPage = document.getElementById(pageId);
-          const targetLink = document.querySelector(
-            `.nav-link[data-page="${pageId}"]`
-          );
-          if (targetPage) targetPage.classList.add("active");
-          if (targetLink) targetLink.classList.add("active");
-
-          if (pageId !== "page-nfs") {
-            window.location.hash = pageId.replace("page-", "");
-          } else if (window.location.hash) {
-            history.pushState(
-              "",
-              document.title,
-              window.location.pathname + window.location.search
-            );
-          }
-        }
-
-        navLinks.forEach((link) => {
-          link.addEventListener("click", function (e) {
-            e.preventDefault();
-            const pageId = this.getAttribute("data-page");
-            showPage(pageId);
-          });
-        });
-
-        const initialPage = window.location.hash.substring(1);
-        if (initialPage && document.getElementById("page-" + initialPage)) {
-          showPage("page-" + initialPage);
-        } else {
-          showPage("page-nfs");
-        }
-      });
-
-      // --- MODAL GENÉRICO ---
       const genericModal = document.getElementById("generic-modal");
       const genericModalTitle = document.getElementById("generic-modal-title");
       const genericModalText = document.getElementById("generic-modal-text");
@@ -1011,1107 +331,88 @@
         genericModalText.innerHTML = message;
         genericModal.classList.add("visible");
       }
-      function hideGenericModal() {
+      genericModalCloseBtn.onclick = () =>
         genericModal.classList.remove("visible");
-      }
-      genericModalCloseBtn.addEventListener("click", hideGenericModal);
-      genericModal.addEventListener("click", (e) => {
-        if (e.target === genericModal) hideGenericModal();
-      });
 
-      // --- SCRIPT DO GERADOR DE NOTAS FISCAIS (NFS) ATUALIZADO ---
       (function () {
         const page = document.getElementById("page-nfs");
-        if (!page) return;
+        const container = page.querySelector("#nfs-input-rows");
+        const addBtn = page.querySelector("#nfs-add-row-btn");
+        const genBtn = page.querySelector("#nfs-generate-btn");
+        const helpBtn = page.querySelector("#nfs-how-to-import-btn");
 
-        const inputRowsContainer = page.querySelector("#nfs-input-rows");
-        const addRowBtn = page.querySelector("#nfs-add-row-btn");
-        const generateBtn = page.querySelector("#nfs-generate-btn");
-        const form = page.querySelector("#nfs-data-form");
-
-        const rowTemplateHTML = `
+        // PLACEHOLDER OPCIONAL REINSERIDO
+        const rowHTML = `
             <div class="input-row">
-                <div><label>Espécie</label><input type="text" name="especie" placeholder="Ex: 39" required /></div>
-                <div class="col-cnpj"><label>CNPJ (14 dígitos)</label><input type="text" name="cnpj" placeholder="Só números" required pattern="\\d{14}" maxlength="14" /></div>
-                <div><label>Acumulador</label><input type="text" name="acumulador" placeholder="Ex: 100" required /></div>
-                <div><label>CFOP</label><input type="text" name="cfop" placeholder="Ex: 1933" required /></div>
-                <div><label>NF</label><input type="text" name="nf" placeholder="Ex: 12345" required /></div>
-                <div><label>Data Entrada</label><input type="date" name="data_entrada" required /></div>
-                <div class="col-valor"><label>Valor NF</label><input type="number" name="valor" placeholder="Ex: 1000.50" step="0.01" min="0.01" required /></div>
-                <div class="col-valor"><label>Valor IRRF</label><input type="number" name="irrf" placeholder="Opcional" step="0.01" min="0" /></div>
-                <div class="col-valor"><label>Valor CSRF</label><input type="number" name="csrf" placeholder="Opcional" step="0.01" min="0" /></div>
-                <div class="col-action"><button type="button" class="delete-row-btn" title="Remover Linha"><i class="fa-solid fa-xmark"></i></button></div>
+                <div class="col-small"><label>ESPÉCIE</label><input type="text" name="especie" placeholder="Ex: 39" required /></div>
+                <div class="col-medium"><label>CNPJ</label><input type="text" name="cnpj" placeholder="Só números" required maxlength="14" /></div>
+                <div class="col-small"><label>ACUMUL.</label><input type="text" name="acumulador" required /></div>
+                <div class="col-small"><label>CFOP</label><input type="text" name="cfop" required /></div>
+                <div class="col-small"><label>NF</label><input type="text" name="nf" required /></div>
+                <div><label>DATA ENTRADA</label><input type="date" name="data_entrada" required /></div>
+                <div class="col-small"><label>VALOR NF</label><input type="number" name="valor" step="0.01" required /></div>
+                <div class="col-small"><label>IRRF</label><input type="number" name="irrf" step="0.01" placeholder="Opcional" /></div>
+                <div class="col-small"><label>CSRF</label><input type="number" name="csrf" step="0.01" placeholder="Opcional" /></div>
+                <div class="col-action"><button type="button" class="delete-row-btn">✕</button></div>
             </div>`;
-        const templateElement = document.createElement("div");
-        templateElement.innerHTML = rowTemplateHTML.trim();
-        const firstRowTemplate = templateElement.firstChild;
 
-        const STORAGE_KEY = "nfGeneratorFormData";
-
-        function saveDataToLocalStorage() {
-          const rows = inputRowsContainer.querySelectorAll(".input-row");
-          const dataToSave = Array.from(rows).map((row) => {
-            const rowData = {};
-            row.querySelectorAll("input[name]").forEach((input) => {
-              rowData[input.name] = input.value;
-            });
-            return rowData;
-          });
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+        function addRow() {
+          const div = document.createElement("div");
+          div.innerHTML = rowHTML.trim();
+          container.appendChild(div.firstChild);
         }
 
-        function addInputListenersToRow(rowElement) {
-          rowElement.querySelectorAll("input[name]").forEach((input) => {
-            input.addEventListener("change", saveDataToLocalStorage);
-          });
-        }
-
-        function addRow(data = null) {
-          const newRow = firstRowTemplate.cloneNode(true);
-          if (data) {
-            Object.keys(data).forEach((inputName) => {
-              const input = newRow.querySelector(`input[name="${inputName}"]`);
-              if (input) input.value = data[inputName] || "";
-            });
-          }
-          addInputListenersToRow(newRow);
-          inputRowsContainer.appendChild(newRow);
-          updateDeleteButtonsVisibility();
-        }
-
-        function updateDeleteButtonsVisibility() {
-          const rows = inputRowsContainer.querySelectorAll(".input-row");
-          rows.forEach((row) => {
-            const btn = row.querySelector(".delete-row-btn");
-            if (btn) btn.style.display = rows.length > 1 ? "flex" : "none";
-          });
-        }
-
-        function loadDataFromLocalStorage() {
-          const savedDataJson = localStorage.getItem(STORAGE_KEY);
-          inputRowsContainer.innerHTML = "";
-          if (savedDataJson) {
-            try {
-              const savedData = JSON.parse(savedDataJson);
-              if (Array.isArray(savedData) && savedData.length > 0) {
-                savedData.forEach((rowData) => addRow(rowData));
-              } else {
-                addRow();
-              }
-            } catch (error) {
-              addRow();
-            }
-          } else {
-            addRow();
-          }
-        }
-
-        addRowBtn.addEventListener("click", addRow);
-
-        inputRowsContainer.addEventListener("click", (event) => {
-          const deleteBtn = event.target.closest(".delete-row-btn");
-          if (deleteBtn) {
-            deleteBtn.closest(".input-row").remove();
-            saveDataToLocalStorage();
-            updateDeleteButtonsVisibility();
-          }
+        addBtn.addEventListener("click", addRow);
+        container.addEventListener("click", (e) => {
+          if (e.target.classList.contains("delete-row-btn"))
+            e.target.closest(".input-row").remove();
         });
 
-        // --- VALIDAÇÃO ATUALIZADA ---
-        generateBtn.addEventListener("click", () => {
-          // 1. Limpa erros visuais anteriores
-          form
-            .querySelectorAll(".input-error, .duplicate-error")
-            .forEach((el) =>
-              el.classList.remove("input-error", "duplicate-error")
-            );
-
-          // 2. Validação visual de campos vazios ou inválidos (HTML5)
-          const allInputs = form.querySelectorAll("input");
-          let hasValidationError = false;
-
-          allInputs.forEach((input) => {
-            // Verifica se o campo está invalido segundo as regras do HTML
-            if (!input.checkValidity()) {
-              input.classList.add("input-error");
-              hasValidationError = true;
-            }
-          });
-
-          // Se houver erro de validação básica, para aqui e avisa
-          if (hasValidationError) {
-            showGenericModal(
-              "Existem campos obrigatórios vazios ou preenchidos incorretamente (marcados em vermelho).",
-              "Erro de Validação"
-            );
-            return;
-          }
-
-          // 3. Validação de Duplicidade
-          let txtContent = "";
-          const rows = Array.from(
-            inputRowsContainer.querySelectorAll(".input-row")
+        helpBtn.addEventListener("click", () => {
+          showGenericModal(
+            `
+            <div style="background:#000; color:#facc15; padding:10px; margin-bottom:15px; font-weight:bold;">SISTEMA FISCAL DOMÍNIO</div>
+            <p style="text-align:left; font-size:0.9rem;"><b>Caminho:</b> Utilitários > Importação > Importador > Importar<br><br><b>Opções:</b> TXT e Conjunto "Completo (Leiaute Domínio Sistemas)"</p>
+          `,
+            "Como Importar?"
           );
-          const uniqueSignatures = new Set();
-          let hasDuplicates = false;
-
-          rows.forEach((row) => {
-            const signature = Array.from(row.querySelectorAll("input[name]"))
-              .map((i) => i.value.trim())
-              .join("|");
-            if (uniqueSignatures.has(signature) && signature) {
-              row
-                .querySelectorAll("input")
-                .forEach((i) => i.classList.add("duplicate-error"));
-              hasDuplicates = true;
-            } else {
-              uniqueSignatures.add(signature);
-            }
-          });
-
-          if (hasDuplicates) {
-            showGenericModal(
-              "Foram encontradas linhas duplicadas. Remova ou corrija.",
-              "Erro de Duplicidade"
-            );
-            return;
-          }
-
-          // 4. Geração do Arquivo
-          rows.forEach((row) => {
-            const getVal = (name) =>
-              row.querySelector(`input[name="${name}"]`).value;
-            const rawDate = getVal("data_entrada");
-            if (!rawDate) return;
-
-            const [year, month, day] = rawDate.split("-");
-            const dataFmt = `${day}/${month}/${year}`;
-            const valFmt = (v) =>
-              (parseFloat(v) || 0).toFixed(2).replace(".", ",");
-
-            txtContent +=
-              `|1000|${getVal("especie")}|${getVal("cnpj")}||${getVal(
-                "acumulador"
-              )}|${getVal("cfop")}||${getVal(
-                "nf"
-              )}|U||${dataFmt}|${dataFmt}|${valFmt(
-                getVal("valor")
-              )}||||||||||||||||||||||||||${valFmt(
-                getVal("valor")
-              )}||||||||||||||||||||||||||||||||||||||||||||||||||||||||||` +
-              "\n";
-            if (parseFloat(getVal("irrf")) > 0)
-              txtContent += `|1020|16||${valFmt(getVal("valor"))}|1,50|${valFmt(
-                getVal("irrf")
-              )}|||||${valFmt(getVal("valor"))}|170806||||\n`;
-            if (parseFloat(getVal("csrf")) > 0)
-              txtContent += `|1020|25||${valFmt(getVal("valor"))}|4,65|${valFmt(
-                getVal("csrf")
-              )}|||||${valFmt(getVal("valor"))}|595207||||\n`;
-          });
-
-          if (!txtContent.trim()) {
-            showGenericModal(
-              "Nenhum dado válido para gerar o arquivo.",
-              "Atenção"
-            );
-            return;
-          }
-
-          const blob = new Blob([txtContent], {
-            type: "text/plain;charset=utf-8",
-          });
-          const link = document.createElement("a");
-          link.href = URL.createObjectURL(blob);
-          link.download = "layout_gerado.txt";
-          link.click();
-          URL.revokeObjectURL(link.href);
-          showGenericModal("Arquivo TXT gerado com sucesso!", "Sucesso");
         });
 
-        loadDataFromLocalStorage();
-      })();
+        genBtn.addEventListener("click", () => {
+          let txt = "";
+          container.querySelectorAll(".input-row").forEach((row) => {
+            const v = (n) => row.querySelector(`input[name="${n}"]`).value;
+            const dataRaw = v("data_entrada");
+            if (!dataRaw || !v("nf")) return;
+            const data = dataRaw.split("-").reverse().join("/");
+            const fmtV = (val) =>
+              (parseFloat(val) || 0).toFixed(2).replace(".", ",");
 
-      // --- SCRIPT DO GERADOR DE PATRIMÔNIO (ATIVO) ---
-      (function () {
-        const page = document.getElementById("page-ativo");
-        if (!page) return;
-        let items = [],
-          excelData = [];
-        const numeroEmpresaInput = page.querySelector("#ativo-numeroEmpresa");
-        const excelFileInput = page.querySelector("#ativo-excelFile");
-        const processarBaixadosCheckbox = page.querySelector(
-          "#ativo-processarBaixadosCheckbox"
-        );
-        const mappingCard = page.querySelector("#ativo-mappingCard");
-        const mappingTableContainer = page.querySelector(
-          "#ativo-mappingTableContainer"
-        );
-        const processExcelBtn = page.querySelector("#ativo-processExcelBtn");
-        const itemsContainer = page.querySelector("#ativo-itemsContainer");
-        const emptyState = page.querySelector("#ativo-emptyState");
-        const gerarTxtBtn = page.querySelector("#ativo-gerarTxtBtn");
-        const resultArea = page.querySelector("#ativo-resultArea");
-        const resultBox = page.querySelector("#ativo-resultBox");
-        const downloadBtn = page.querySelector("#ativo-downloadBtn");
-        const copyBtn = page.querySelector("#ativo-copyBtn");
-        const uploadArea = page.querySelector(".upload-area");
-        const fileInfo = page.querySelector("#ativo-file-info");
-        const fileName = page.querySelector("#ativo-file-name");
-        const fileSize = page.querySelector("#ativo-file-size");
-
-        const formatDateToYYYYMMDD = (d) => {
-          if (!d) return "";
-          if (d instanceof Date)
-            return `${d.getFullYear()}${(d.getMonth() + 1)
-              .toString()
-              .padStart(2, "0")}${d.getDate().toString().padStart(2, "0")}`;
-          const s = String(d);
-          if (s.includes("/")) {
-            const p = s.split("/");
-            return p.length === 3 ? `${p[2]}${p[1]}${p[0]}` : s;
-          }
-          return s;
-        };
-        const formatValorMonetario = (v) =>
-          (parseFloat(String(v).replace(",", ".")) || 0)
-            .toFixed(2)
-            .replace(".", ",");
-        const formatDateDisplay = (d) =>
-          !d || d.length !== 8
-            ? d
-            : `${d.substring(6, 8)}/${d.substring(4, 6)}/${d.substring(0, 4)}`;
-        const formatFileSize = (b) => {
-          if (b === 0) return "0 Bytes";
-          const k = 1024,
-            s = ["Bytes", "KB", "MB", "GB"],
-            i = Math.floor(Math.log(b) / Math.log(k));
-          return parseFloat((b / Math.pow(k, i)).toFixed(2)) + " " + s[i];
-        };
-
-        function renderItems() {
-          if (items.length === 0) {
-            emptyState.style.display = "block";
-            itemsContainer.innerHTML = "";
-            gerarTxtBtn.disabled = true;
-            resultArea.style.display = "none";
-          } else {
-            emptyState.style.display = "none";
-            gerarTxtBtn.disabled = false;
-            itemsContainer.innerHTML = items
-              .map((item, index) => {
-                const valor = parseFloat(
-                  String(item.valorAquisicao).replace(",", ".")
-                );
-                return `<div class="anexo-result" style="border-left-width: 3px; position:relative;">
-                      <button class="delete-row-btn" data-index="${index}" title="Remover item" style="position:absolute; top:1rem; right:1rem; width: 40px; height: 40px;">✕</button>
-                      <h4 style="padding-right:35px; border-bottom: none; background: none; box-shadow: none; display: block; margin: 0; transform: none; padding: 0;">${
-                        item.nome || "Nome não informado"
-                      } (Cód: ${item.codigo})</h4>
-                      <div class="item-details" style="display:grid; gap:0.5rem 1rem; font-size:0.9rem; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); margin-top: 10px;">
-                          <div><strong>Empresa:</strong> ${
-                            item.numeroEmpresa
-                          }</div>
-                          <div><strong>Aquisição:</strong> ${formatDateDisplay(
-                            item.dataAquisicao
-                          )}</div>
-                          <div><strong>Valor:</strong> ${valor.toLocaleString(
-                            "pt-BR",
-                            { style: "currency", currency: "BRL" }
-                          )}</div>
-                          <div><strong>C. Patrimonial:</strong> ${
-                            item.contaPatrimonial
-                          }</div>
-                          <div style="grid-column: 1 / -1;"><strong>Histórico:</strong> ${
-                            item.historico
-                          }</div>
-                      </div>
-                  </div>`;
-              })
-              .join("");
-            itemsContainer.querySelectorAll(".delete-row-btn").forEach((b) =>
-              b.addEventListener("click", (e) => {
-                items.splice(parseInt(e.target.dataset.index), 1);
-                renderItems();
-              })
-            );
-          }
-        }
-
-        function handleFileSelect(file) {
-          if (!file || !/\.(xlsx|xls)$/i.test(file.name)) {
-            showGenericModal(
-              "Por favor, selecione um arquivo Excel (.xlsx ou .xls) válido.",
-              "Erro"
-            );
-            return;
-          }
-          fileName.textContent = file.name;
-          fileSize.textContent = formatFileSize(file.size);
-          fileInfo.classList.add("show");
-          items = [];
-          excelData = [];
-          renderItems();
-          mappingCard.style.display = "none";
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            try {
-              const workbook = XLSX.read(new Uint8Array(e.target.result), {
-                type: "array",
-                cellDates: true,
-              });
-              excelData = XLSX.utils.sheet_to_json(
-                workbook.Sheets[workbook.SheetNames[0]]
-              );
-              if (!excelData.length) {
-                showGenericModal("A planilha parece estar vazia.", "Atenção");
-                return;
-              }
-              const required = [
-                "Conta Principal",
-                "Código",
-                "Descrição",
-                "Aquisição",
-                "Valor total do bem",
-              ];
-              const missing = required.filter((col) => !(col in excelData[0]));
-              if (missing.length) {
-                showGenericModal(
-                  `Colunas obrigatórias não encontradas:<br><b>${missing.join(
-                    ", "
-                  )}</b>`,
-                  "Erro na Planilha"
-                );
-                return;
-              }
-              const contas = [
-                ...new Set(
-                  excelData.map((r) => r["Conta Principal"]).filter(Boolean)
-                ),
-              ];
-              mappingTableContainer.innerHTML = `<table><thead><tr><th>Conta Principal (do Excel)</th><th>Conta Patrimonial (De/Para)*</th></tr></thead><tbody>${contas
-                .map(
-                  (c) =>
-                    `<tr><td>${c}</td><td><input type="text" class="conta-patrimonial-input" data-conta-principal="${c}" required placeholder="Digite a conta"></td></tr>`
-                )
-                .join("")}</tbody></table>`;
-              mappingCard.style.display = "block";
-            } catch (err) {
-              showGenericModal(
-                `Erro ao ler o arquivo Excel: ${err.message}`,
-                "Erro"
-              );
-            }
-          };
-          reader.readAsArrayBuffer(file);
-        }
-
-        ["dragenter", "dragover", "dragleave", "drop"].forEach((evt) =>
-          uploadArea.addEventListener(evt, (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          })
-        );
-        ["dragenter", "dragover"].forEach((evt) =>
-          uploadArea.addEventListener(evt, () =>
-            uploadArea.classList.add("dragover")
-          )
-        );
-        ["dragleave", "drop"].forEach((evt) =>
-          uploadArea.addEventListener(evt, () =>
-            uploadArea.classList.remove("dragover")
-          )
-        );
-        uploadArea.addEventListener("drop", (e) =>
-          handleFileSelect(e.dataTransfer.files[0])
-        );
-        excelFileInput.addEventListener("change", (e) =>
-          handleFileSelect(e.target.files[0])
-        );
-
-        processExcelBtn.addEventListener("click", () => {
-          if (!numeroEmpresaInput.value) {
-            showGenericModal("Informe o Número da Empresa.", "Erro");
-            return;
-          }
-          const deParaMap = new Map(
-            Array.from(page.querySelectorAll(".conta-patrimonial-input")).map(
-              (i) => [String(i.dataset.contaPrincipal), i.value.trim()]
-            )
-          );
-          if (Array.from(deParaMap.values()).some((v) => !v)) {
-            showGenericModal("Preencha todas as Contas Patrimoniais.", "Erro");
-            return;
-          }
-
-          items = excelData
-            .filter(
-              (row) =>
-                processarBaixadosCheckbox.checked ||
-                String(row["Status"]).trim().toLowerCase() !== "baixa total"
-            )
-            .map((row) => {
-              const historicoBase = String(row["Observação"] || "").trim();
-              const nf = String(row["NF/Documento"] || "").trim();
-              const fornecedor = String(row["Nome Fornecedor"] || "").trim();
-              return {
-                numeroEmpresa: numeroEmpresaInput.value,
-                codigo: String(row["Código"]).trim(),
-                identificador: String(row["Código"]).trim(),
-                nome: String(row["Descrição"] || "")
-                  .trim()
-                  .replace(/;/g, ","),
-                dataAquisicao: formatDateToYYYYMMDD(row["Aquisição"]),
-                contaPatrimonial:
-                  deParaMap.get(String(row["Conta Principal"])) || "",
-                centroCusto: "1",
-                historico: `${historicoBase}${
-                  nf || fornecedor
-                    ? `${
-                        historicoBase ? " - " : ""
-                      }CONF. N.F. Nr: ${nf} de ${fornecedor}.`
-                    : ""
-                }`.replace(/;/g, ","),
-                funcao: "ATIVO",
-                valorAquisicao: String(row["Valor total do bem"] || "0"),
-              };
-            });
-          renderItems();
-          if (items.length) {
-            showGenericModal("Dados processados com sucesso!", "Sucesso");
-            mappingCard.style.display = "none";
-          }
-        });
-
-        gerarTxtBtn.addEventListener("click", () => {
-          if (!items.length) return;
-          const result = items
-            .map(
-              (item) =>
-                `${item.numeroEmpresa};${item.codigo};${item.identificador};${
-                  item.nome
-                };${item.dataAquisicao};;${item.contaPatrimonial};${
-                  item.centroCusto
-                };${item.historico};B;I;;;${item.funcao};${formatValorMonetario(
-                  item.valorAquisicao
-                )};;;;;;;;;;;${formatValorMonetario(
-                  item.valorAquisicao
-                )};;;;;;S;N;${
-                  item.dataAquisicao
-                };N;;;;;N;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;`
-            )
-            .join("\n");
-          resultBox.textContent = result;
-          resultArea.style.display = "block";
-          downloadBtn.disabled = false;
-          copyBtn.disabled = false;
-        });
-
-        downloadBtn.addEventListener("click", () => {
-          const blob = new Blob([resultBox.textContent], {
-            type: "text/plain;charset=utf-8",
+            txt += `|1000|${v("especie")}|${v("cnpj")}||${v("acumulador")}|${v(
+              "cfop"
+            )}||${v("nf")}|U||${data}|${data}|${fmtV(
+              v("valor")
+            )}||||||||||||||||||||||||||${fmtV(
+              v("valor")
+            )}||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n`;
+            if (parseFloat(v("irrf")) > 0)
+              txt += `|1020|16||${fmtV(v("valor"))}|1,50|${fmtV(
+                v("irrf")
+              )}|||||${fmtV(v("valor"))}|170806||||\n`;
+            if (parseFloat(v("csrf")) > 0)
+              txt += `|1020|25||${fmtV(v("valor"))}|4,65|${fmtV(
+                v("csrf")
+              )}|||||${fmtV(v("valor"))}|595207||||\n`;
           });
-          const url = URL.createObjectURL(blob);
+          if (!txt) return showGenericModal("Nenhum dado válido.");
+          const blob = new Blob([txt], { type: "text/plain" });
           const a = document.createElement("a");
-          a.href = url;
-          a.download = "patrimonio_layout.txt";
+          a.href = URL.createObjectURL(blob);
+          a.download = "layout_gerado.txt";
           a.click();
-          URL.revokeObjectURL(url);
         });
 
-        copyBtn.addEventListener("click", () => {
-          navigator.clipboard.writeText(resultBox.textContent).then(() => {
-            copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copiado!';
-            setTimeout(() => {
-              copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i> Copiar';
-            }, 2000);
-          });
-        });
-      })();
-
-      // --- SCRIPT DO PROCESSADOR REINF ---
-      (function () {
-        const page = document.getElementById("page-reinf");
-        if (!page) return;
-
-        let mappings = {};
-        let processedDataByQuarter = {};
-        const nameInput = page.querySelector("#reinf-nameInput");
-        const cpfInput = page.querySelector("#reinf-cpfInput");
-        const addMappingBtn = page.querySelector("#reinf-addMappingBtn");
-        const mappingBody = page.querySelector("#reinf-mapping-body");
-        const excelFileInput = page.querySelector("#reinf-excelFile");
-        const processButton = page.querySelector("#reinf-processButton");
-        const downloadButton = page.querySelector("#reinf-downloadButton");
-        const statusDiv = page.querySelector("#reinf-status");
-        const cpfTotalsSectionDiv = page.querySelector(
-          "#reinf-cpfTotalsSection"
-        );
-        const cpfTotalsTableBody = page.querySelector(
-          "#reinf-cpfTotalsTableBody"
-        );
-        const uploadArea = page.querySelector(".upload-area");
-        const fileInfo = page.querySelector("#reinf-file-info");
-        const fileName = page.querySelector("#reinf-file-name");
-        const fileSize = page.querySelector("#reinf-file-size");
-
-        const normalize = (s) =>
-          s
-            ? s
-                .toString()
-                .toUpperCase()
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-            : "";
-        const formatCPF = (s) =>
-          s && s.length === 11
-            ? s.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4")
-            : s;
-
-        const renderMapping = () => {
-          mappingBody.innerHTML = "";
-          const names = Object.keys(mappings);
-          if (names.length === 0) {
-            mappingBody.innerHTML =
-              '<tr><td colspan="3" style="text-align:center">Nenhum mapeamento.</td></tr>';
-          } else {
-            names.sort().forEach((name) => {
-              const row = document.createElement("tr");
-              row.innerHTML = `<td>${name}</td><td>${formatCPF(
-                mappings[name]
-              )}</td><td><button class="delete-row-btn reinf-remove" data-name="${name}">✕</button></td>`;
-              mappingBody.appendChild(row);
-            });
-          }
-          processButton.disabled = !(
-            excelFileInput.files.length > 0 && names.length > 0
-          );
-        };
-
-        addMappingBtn.addEventListener("click", () => {
-          const name = nameInput.value.trim();
-          const cpf = cpfInput.value.replace(/\D/g, "");
-          if (name && cpf.length === 11) {
-            mappings[name] = cpf;
-            renderMapping();
-            nameInput.value = "";
-            cpfInput.value = "";
-            nameInput.focus();
-          } else {
-            showGenericModal(
-              "Por favor, insira um nome e um CPF válido de 11 dígitos.",
-              "Erro"
-            );
-          }
-        });
-
-        mappingBody.addEventListener("click", (e) => {
-          if (e.target.classList.contains("reinf-remove")) {
-            delete mappings[e.target.dataset.name];
-            renderMapping();
-          }
-        });
-
-        const handleFileSelect = (file) => {
-          if (
-            (file && file.name.toLowerCase().endsWith(".xls")) ||
-            file.name.toLowerCase().endsWith(".xlsx")
-          ) {
-            const size = file.size;
-            const i =
-              size === 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
-            fileName.textContent = file.name;
-            fileSize.textContent =
-              (size / Math.pow(1024, i)).toFixed(2) +
-              " " +
-              ["Bytes", "KB", "MB", "GB"][i];
-            fileInfo.classList.add("show");
-            processButton.disabled = Object.keys(mappings).length === 0;
-          } else {
-            showGenericModal(
-              "Por favor, selecione um arquivo Excel válido.",
-              "Erro"
-            );
-          }
-        };
-
-        ["dragenter", "dragover", "dragleave", "drop"].forEach((evt) =>
-          uploadArea.addEventListener(evt, (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          })
-        );
-        ["dragenter", "dragover"].forEach((evt) =>
-          uploadArea.addEventListener(evt, () =>
-            uploadArea.classList.add("dragover")
-          )
-        );
-        ["dragleave", "drop"].forEach((evt) =>
-          uploadArea.addEventListener(evt, () =>
-            uploadArea.classList.remove("dragover")
-          )
-        );
-        uploadArea.addEventListener("drop", (e) =>
-          handleFileSelect(e.dataTransfer.files[0])
-        );
-        excelFileInput.addEventListener("change", (e) =>
-          handleFileSelect(e.target.files[0])
-        );
-
-        processButton.addEventListener("click", () => {
-          const file = excelFileInput.files[0];
-          if (!file) return;
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            const workbook = XLSX.read(new Uint8Array(e.target.result), {
-              type: "array",
-              cellDates: true,
-            });
-            const excelData = XLSX.utils.sheet_to_json(
-              workbook.Sheets[workbook.SheetNames[0]],
-              { raw: false, dateNF: "dd/mm/yyyy" }
-            );
-
-            processedDataByQuarter = {};
-            const cpfTotals = {};
-            let totalProcessed = 0;
-
-            const headers = Object.keys(excelData[0] || {});
-            const historicoKey = headers.find(
-              (h) => normalize(h) === "HISTORICO"
-            );
-            const valorKey = headers.find((h) => normalize(h) === "VALOR");
-            const dataKey = headers.find((h) => normalize(h) === "DATA");
-
-            if (!historicoKey || !valorKey || !dataKey) {
-              statusDiv.textContent =
-                'Colunas "Histórico", "Valor" e "Data" são obrigatórias.';
-              statusDiv.className = "error";
-              return;
-            }
-
-            excelData.forEach((row) => {
-              const historico = row[historicoKey];
-              const valor = parseFloat(String(row[valorKey]).replace(",", "."));
-              const data = row[dataKey];
-
-              let match = Object.keys(mappings).find((m) =>
-                normalize(historico).includes(normalize(m))
-              );
-              if (match) {
-                const cpf = mappings[match];
-                const date = new Date(data);
-                const month = date.getMonth();
-                const year = date.getFullYear();
-
-                let periodStart;
-                if (month <= 2) periodStart = new Date(year, 3, 1);
-                else if (month <= 5) periodStart = new Date(year, 6, 1);
-                else if (month <= 8) periodStart = new Date(year, 9, 1);
-                else periodStart = new Date(year + 1, 0, 1);
-
-                const periodStr = `${String(periodStart.getDate()).padStart(
-                  2,
-                  "0"
-                )}/${String(periodStart.getMonth() + 1).padStart(
-                  2,
-                  "0"
-                )}/${periodStart.getFullYear()}`;
-                const quarterKey = `${String(
-                  periodStart.getMonth() + 1
-                ).padStart(2, "0")}${periodStart.getFullYear()}`;
-
-                const line = `${periodStr};${cpf};BRASIL;12001;${valor
-                  .toFixed(2)
-                  .replace(".", ",")};${data};;;;;;;;;;;;;`;
-                if (!processedDataByQuarter[quarterKey])
-                  processedDataByQuarter[quarterKey] = [];
-                processedDataByQuarter[quarterKey].push(line);
-                cpfTotals[cpf] = (cpfTotals[cpf] || 0) + valor;
-                totalProcessed++;
-              }
-            });
-
-            statusDiv.textContent = `Processamento concluído. ${totalProcessed} linhas geradas em ${
-              Object.keys(processedDataByQuarter).length
-            } arquivo(s).`;
-            statusDiv.className = "success";
-            downloadButton.style.display =
-              totalProcessed > 0 ? "inline-flex" : "none";
-            downloadButton.disabled = totalProcessed === 0;
-
-            cpfTotalsTableBody.innerHTML = Object.keys(cpfTotals)
-              .map(
-                (cpf) =>
-                  `<tr><td>${formatCPF(cpf)}</td><td>${cpfTotals[
-                    cpf
-                  ].toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}</td></tr>`
-              )
-              .join("");
-            cpfTotalsSectionDiv.style.display =
-              Object.keys(cpfTotals).length > 0 ? "block" : "none";
-          };
-          reader.readAsArrayBuffer(file);
-        });
-
-        downloadButton.addEventListener("click", () => {
-          Object.keys(processedDataByQuarter).forEach((key) => {
-            const content = processedDataByQuarter[key].join("\r\n");
-            const blob = new Blob([content], {
-              type: "text/plain;charset=utf-8",
-            });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `Importador_Reinf_Trim_${key}.txt`;
-            link.click();
-          });
-        });
-
-        renderMapping();
-      })();
-
-      // --- SCRIPT DO PROCESSADOR ECF ---
-      (function () {
-        const page = document.getElementById("page-ecf");
-        if (!page) return;
-        const fileInput = page.querySelector("#ecf-file-input");
-        const fileInfo = page.querySelector("#ecf-file-info");
-        const fileName = page.querySelector("#ecf-file-name");
-        const fileSize = page.querySelector("#ecf-file-size");
-        const processBtn = page.querySelector("#ecf-process-btn");
-        const loading = page.querySelector("#ecf-loading");
-        const results = page.querySelector("#ecf-results");
-        const resultsContent = page.querySelector("#ecf-results-content");
-        const uploadArea = page.querySelector(".upload-area");
-
-        const handleFileSelect = (file) => {
-          if (file && file.name.toLowerCase().endsWith(".txt")) {
-            fileName.textContent = file.name;
-            const size = file.size;
-            const i =
-              size === 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
-            fileSize.textContent =
-              (size / Math.pow(1024, i)).toFixed(2) +
-              " " +
-              ["Bytes", "KB", "MB", "GB"][i];
-            fileInfo.classList.add("show");
-            processBtn.disabled = false;
-            results.style.display = "none";
-          } else {
-            showGenericModal(
-              "Por favor, selecione um arquivo .txt válido",
-              "Erro"
-            );
-          }
-        };
-
-        ["dragenter", "dragover", "dragleave", "drop"].forEach((evt) =>
-          uploadArea.addEventListener(evt, (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          })
-        );
-        ["dragenter", "dragover"].forEach((evt) =>
-          uploadArea.addEventListener(evt, () =>
-            uploadArea.classList.add("dragover")
-          )
-        );
-        ["dragleave", "drop"].forEach((evt) =>
-          uploadArea.addEventListener(evt, () =>
-            uploadArea.classList.remove("dragover")
-          )
-        );
-        uploadArea.addEventListener("drop", (e) =>
-          handleFileSelect(e.dataTransfer.files[0])
-        );
-        fileInput.addEventListener("change", (e) =>
-          handleFileSelect(e.target.files[0])
-        );
-
-        processBtn.addEventListener("click", () => {
-          const file = fileInput.files[0];
-          if (!file) return;
-          loading.style.display = "block";
-          results.style.display = "none";
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            setTimeout(() => {
-              const lines = e.target.result.split("\n");
-              const n030 = {},
-                m500 = {};
-              let currentN030Date = null,
-                currentM030Value = null;
-
-              lines.forEach((line) => {
-                const parts = line.split("|");
-                if (line.startsWith("|N030|") && parts.length > 2) {
-                  const rawDate = parts[2].trim();
-                  currentN030Date = `${rawDate.substring(
-                    0,
-                    2
-                  )}/${rawDate.substring(2, 4)}/${rawDate.substring(4, 8)}`;
-                  if (!n030[currentN030Date])
-                    n030[currentN030Date] = { irpj: null, csll: null };
-                } else if (
-                  line.startsWith("|N630|26|") &&
-                  currentN030Date &&
-                  parts.length > 4
-                ) {
-                  n030[currentN030Date].irpj = parseFloat(
-                    parts[4].replace(",", ".")
-                  ).toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  });
-                } else if (
-                  line.startsWith("|N670|21|") &&
-                  currentN030Date &&
-                  parts.length > 4
-                ) {
-                  n030[currentN030Date].csll = parseFloat(
-                    parts[4].replace(",", ".")
-                  ).toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  });
-                } else if (line.startsWith("|M030|") && parts.length > 4) {
-                  currentM030Value = parts[4].trim();
-                  if (!m500[currentM030Value]) m500[currentM030Value] = [];
-                } else if (line.startsWith("|M500|") && currentM030Value) {
-                  m500[currentM030Value].push(line.trim());
-                }
-              });
-
-              let html = "";
-              if (Object.keys(n030).length) {
-                html += `<h3><i class="fas fa-calendar-alt"></i> Resultados N030</h3>`;
-                for (const date in n030) {
-                  html += `<div class="anexo-result"><h4>Data: ${date}</h4>`;
-                  if (n030[date].irpj)
-                    html += `<p><strong>IRPJ a Pagar:</strong> ${n030[date].irpj}</p>`;
-                  if (n030[date].csll)
-                    html += `<p><strong>CSLL a Pagar:</strong> ${n030[date].csll}</p>`;
-                  html += `</div>`;
-                }
-              }
-              if (Object.keys(m500).length) {
-                html += `<h3 style="margin-top:2rem;"><i class="fas fa-list-ul"></i> Resultados M500</h3>`;
-                for (const key in m500) {
-                  html += `<div class="anexo-result"><h4>Valor M030: ${key}</h4>${m500[
-                    key
-                  ]
-                    .map(
-                      (line) =>
-                        `<p style="font-family:monospace; font-size:0.85rem;">${line}</p>`
-                    )
-                    .join("")}</div>`;
-                }
-              }
-
-              if (!html) {
-                html =
-                  '<div class="empty-state"><h3>Nenhum dado encontrado</h3><p>Não foram encontrados registros N030 ou M500 no arquivo.</p></div>';
-              }
-              resultsContent.innerHTML = html;
-              loading.style.display = "none";
-              results.style.display = "block";
-            }, 1000);
-          };
-          reader.readAsText(file, "ISO-8859-1");
-        });
-      })();
-
-      // --- SCRIPTS DAS CALCULADORAS SIMPLES NACIONAL ---
-      (function () {
-        const calculators = [
-          {
-            idPrefix: "sm-",
-            pageId: "page-simples-mensal",
-            inputType: "monthly",
-          },
-          {
-            idPrefix: "rbt12-",
-            pageId: "page-simples-rbt12",
-            inputType: "rbt12",
-          },
-        ];
-
-        const parseCurrency = (s) => {
-          if (typeof s !== "string" || !s.trim()) return null;
-          let c = s
-            .replace(/R\$\s?/g, "")
-            .replace(/\./g, "")
-            .trim()
-            .replace(",", ".");
-          if (!/^-?\d+(\.\d+)?$/.test(c)) return null;
-          return parseFloat(c);
-        };
-        const formatCurrency = (v) =>
-          typeof v !== "number" || isNaN(v)
-            ? ""
-            : v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-        const formatPercentage = (v) =>
-          typeof v !== "number" || isNaN(v)
-            ? ""
-            : `${v.toLocaleString("pt-BR", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}%`;
-        const getEffectiveRate = (ac, an, pd) =>
-          ac === 0 ? an * 100 : ((ac * an - pd) / ac) * 100;
-        const calcAnexoI = (ac) => {
-          if (ac > 4800000) return `RBT12 excede o limite.`;
-          if (ac <= 180000)
-            return formatPercentage(getEffectiveRate(ac, 0.04, 0));
-          if (ac <= 360000)
-            return formatPercentage(getEffectiveRate(ac, 0.073, 5940));
-          if (ac <= 720000)
-            return formatPercentage(getEffectiveRate(ac, 0.095, 13860));
-          if (ac <= 1800000)
-            return formatPercentage(getEffectiveRate(ac, 0.107, 22500));
-          if (ac <= 3600000)
-            return formatPercentage(getEffectiveRate(ac, 0.143, 87300));
-          return formatPercentage(getEffectiveRate(ac, 0.19, 378000));
-        };
-        const calcAnexoII = (ac) => {
-          if (ac > 4800000) return `RBT12 excede o limite.`;
-          if (ac <= 180000)
-            return formatPercentage(getEffectiveRate(ac, 0.045, 0));
-          if (ac <= 360000)
-            return formatPercentage(getEffectiveRate(ac, 0.078, 5940));
-          if (ac <= 720000)
-            return formatPercentage(getEffectiveRate(ac, 0.1, 13860));
-          if (ac <= 1800000)
-            return formatPercentage(getEffectiveRate(ac, 0.112, 22500));
-          if (ac <= 3600000)
-            return formatPercentage(getEffectiveRate(ac, 0.147, 85500));
-          return formatPercentage(getEffectiveRate(ac, 0.3, 720000));
-        };
-        const calcAnexoIII = (ac) => {
-          if (ac > 4800000) return `RBT12 excede o limite.`;
-          if (ac <= 180000)
-            return formatPercentage(getEffectiveRate(ac, 0.06, 0));
-          if (ac <= 360000)
-            return formatPercentage(getEffectiveRate(ac, 0.112, 9360));
-          if (ac <= 720000)
-            return formatPercentage(getEffectiveRate(ac, 0.135, 17640));
-          if (ac <= 1800000)
-            return formatPercentage(getEffectiveRate(ac, 0.16, 35640));
-          if (ac <= 3600000)
-            return formatPercentage(getEffectiveRate(ac, 0.21, 125640));
-          return formatPercentage(getEffectiveRate(ac, 0.33, 648000));
-        };
-        const calcAnexoIV = (ac) => {
-          if (ac > 4800000) return `RBT12 excede o limite.`;
-          if (ac <= 180000)
-            return formatPercentage(getEffectiveRate(ac, 0.045, 0));
-          if (ac <= 360000)
-            return formatPercentage(getEffectiveRate(ac, 0.09, 8100));
-          if (ac <= 720000)
-            return formatPercentage(getEffectiveRate(ac, 0.102, 12420));
-          if (ac <= 1800000)
-            return formatPercentage(getEffectiveRate(ac, 0.14, 39780));
-          if (ac <= 3600000)
-            return formatPercentage(getEffectiveRate(ac, 0.22, 183780));
-          return formatPercentage(getEffectiveRate(ac, 0.33, 828000));
-        };
-        const calcAnexoV = (ac) => {
-          if (ac > 4800000) return `RBT12 excede o limite.`;
-          if (ac <= 180000)
-            return formatPercentage(getEffectiveRate(ac, 0.155, 0));
-          if (ac <= 360000)
-            return formatPercentage(getEffectiveRate(ac, 0.18, 4500));
-          if (ac <= 720000)
-            return formatPercentage(getEffectiveRate(ac, 0.195, 9900));
-          if (ac <= 1800000)
-            return formatPercentage(getEffectiveRate(ac, 0.205, 17100));
-          if (ac <= 3600000)
-            return formatPercentage(getEffectiveRate(ac, 0.23, 62100));
-          return formatPercentage(getEffectiveRate(ac, 0.305, 540000));
-        };
-
-        calculators.forEach((calc) => {
-          const page = document.getElementById(calc.pageId);
-          if (!page) return;
-          const input = page.querySelector(
-            `#${calc.idPrefix}monthlyRevenueInput, #${calc.idPrefix}rbt12Input`
-          );
-          const button = page.querySelector(`#${calc.idPrefix}calculateButton`);
-          const resultsOutput = page.querySelector(
-            `#${calc.idPrefix}resultsOutput`
-          );
-          const errorMessage = page.querySelector(
-            `#${calc.idPrefix}errorMessage`
-          );
-
-          const clearStatus = () => {
-            errorMessage.textContent = "";
-            errorMessage.style.display = "none";
-            resultsOutput.innerHTML = `<div class="empty-state"><p>Aguardando valor...</p></div>`;
-          };
-
-          button.addEventListener("click", () => {
-            const inputValue = parseCurrency(input.value);
-            if (inputValue === null || inputValue < 0) {
-              errorMessage.textContent =
-                "Por favor, insira um valor válido e não negativo.";
-              errorMessage.style.display = "block";
-              return;
-            }
-
-            clearStatus();
-            let rbt12Value =
-              calc.inputType === "monthly" ? inputValue * 12 : inputValue;
-
-            resultsOutput.innerHTML = `<p class="results-intro" style="font-family:'Space Mono'; margin-bottom: 20px; text-align:center;">${
-              calc.inputType === "monthly"
-                ? `Faturamento Mensal = <strong>${formatCurrency(
-                    inputValue
-                  )}</strong><br>(RBT12 calculado = <strong>${formatCurrency(
-                    rbt12Value
-                  )}</strong>)`
-                : `RBT12 = <strong>${formatCurrency(rbt12Value)}</strong>`
-            }:</p>`;
-
-            const grid = document.createElement("div");
-            grid.className = "results-grid";
-            grid.style.display = "grid";
-            grid.style.gap = "1rem";
-            grid.style.gridTemplateColumns =
-              "repeat(auto-fit, minmax(280px, 1fr))";
-
-            const createBlock = (title, result) =>
-              `<div class="anexo-result"><h4>${title}</h4><p class="anexo-aliquota">${result}</p></div>`;
-            grid.innerHTML += createBlock(
-              "Anexo I (Comércio)",
-              calcAnexoI(rbt12Value)
-            );
-            grid.innerHTML += createBlock(
-              "Anexo II (Indústria)",
-              calcAnexoII(rbt12Value)
-            );
-            grid.innerHTML += createBlock(
-              "Anexo III (Serviços)",
-              calcAnexoIII(rbt12Value)
-            );
-            grid.innerHTML += createBlock(
-              "Anexo IV (Serviços)",
-              calcAnexoIV(rbt12Value)
-            );
-            grid.innerHTML += createBlock(
-              "Anexo V (Serviços)",
-              calcAnexoV(rbt12Value)
-            );
-            resultsOutput.appendChild(grid);
-          });
-
-          input.addEventListener("input", () => {
-            errorMessage.style.display = "none";
-          });
-        });
+        addRow();
       })();
     </script>
   </body>
