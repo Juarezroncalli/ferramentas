@@ -167,6 +167,30 @@
         background: #f3f4f6;
       }
 
+      /* ESTILO DE ERRO */
+      .input-error {
+        border-color: var(--color-danger) !important;
+        background-color: #fee2e2 !important;
+        box-shadow: 3px 3px 0 var(--color-danger) !important;
+        animation: shake 0.4s ease-in-out;
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-5px);
+        }
+        50% {
+          transform: translateX(5px);
+        }
+        75% {
+          transform: translateX(-5px);
+        }
+      }
+
       .input-row input:focus {
         background: #fff;
         outline: none;
@@ -341,13 +365,12 @@
         const genBtn = page.querySelector("#nfs-generate-btn");
         const helpBtn = page.querySelector("#nfs-how-to-import-btn");
 
-        // PLACEHOLDER OPCIONAL REINSERIDO
         const rowHTML = `
             <div class="input-row">
                 <div class="col-small"><label>ESPÉCIE</label><input type="text" name="especie" placeholder="Ex: 39" required /></div>
                 <div class="col-medium"><label>CNPJ</label><input type="text" name="cnpj" placeholder="Só números" required maxlength="14" /></div>
-                <div class="col-small"><label>ACUMUL.</label><input type="text" name="acumulador" placeholder="Ex: 120" required /></div>
-                <div class="col-small"><label>CFOP</label><input type="text" name="cfop" placeholder="Ex: 1933" required /></div>
+                <div class="col-small"><label>ACUMUL.</label><input type="text" name="acumulador" required /></div>
+                <div class="col-small"><label>CFOP</label><input type="text" name="cfop" required /></div>
                 <div class="col-small"><label>NF</label><input type="text" name="nf" required /></div>
                 <div><label>DATA ENTRADA</label><input type="date" name="data_entrada" required /></div>
                 <div class="col-small"><label>VALOR NF</label><input type="number" name="valor" step="0.01" required /></div>
@@ -379,32 +402,58 @@
         });
 
         genBtn.addEventListener("click", () => {
+          let hasError = false;
           let txt = "";
-          container.querySelectorAll(".input-row").forEach((row) => {
-            const v = (n) => row.querySelector(`input[name="${n}"]`).value;
-            const dataRaw = v("data_entrada");
-            if (!dataRaw || !v("nf")) return;
-            const data = dataRaw.split("-").reverse().join("/");
-            const fmtV = (val) =>
-              (parseFloat(val) || 0).toFixed(2).replace(".", ",");
 
-            txt += `|1000|${v("especie")}|${v("cnpj")}||${v("acumulador")}|${v(
-              "cfop"
-            )}||${v("nf")}|U||${data}|${data}|${fmtV(
-              v("valor")
-            )}||||||||||||||||||||||||||${fmtV(
-              v("valor")
-            )}||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n`;
-            if (parseFloat(v("irrf")) > 0)
-              txt += `|1020|16||${fmtV(v("valor"))}|1,50|${fmtV(
-                v("irrf")
-              )}|||||${fmtV(v("valor"))}|170806||||\n`;
-            if (parseFloat(v("csrf")) > 0)
-              txt += `|1020|25||${fmtV(v("valor"))}|4,65|${fmtV(
-                v("csrf")
-              )}|||||${fmtV(v("valor"))}|595207||||\n`;
+          container.querySelectorAll(".input-row").forEach((row) => {
+            const inputs = row.querySelectorAll("input[required]");
+            inputs.forEach((input) => {
+              if (!input.value.trim()) {
+                input.classList.add("input-error");
+                hasError = true;
+              } else {
+                input.classList.remove("input-error");
+              }
+            });
+
+            if (!hasError) {
+              const v = (n) => row.querySelector(`input[name="${n}"]`).value;
+              const dataRaw = v("data_entrada");
+              const data = dataRaw.split("-").reverse().join("/");
+              const fmtV = (val) =>
+                (parseFloat(val) || 0).toFixed(2).replace(".", ",");
+
+              txt += `|1000|${v("especie")}|${v("cnpj")}||${v(
+                "acumulador"
+              )}|${v("cfop")}||${v("nf")}|U||${data}|${data}|${fmtV(
+                v("valor")
+              )}||||||||||||||||||||||||||${fmtV(
+                v("valor")
+              )}||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n`;
+              if (parseFloat(v("irrf")) > 0)
+                txt += `|1020|16||${fmtV(v("valor"))}|1,50|${fmtV(
+                  v("irrf")
+                )}|||||${fmtV(v("valor"))}|170806||||\n`;
+              if (parseFloat(v("csrf")) > 0)
+                txt += `|1020|25||${fmtV(v("valor"))}|4,65|${fmtV(
+                  v("csrf")
+                )}|||||${fmtV(v("valor"))}|595207||||\n`;
+            }
           });
-          if (!txt) return showGenericModal("Nenhum dado válido.");
+
+          if (hasError) {
+            showGenericModal(
+              "Existem campos obrigatórios não preenchidos. Por favor, corrija os campos destacados em vermelho.",
+              "Erro de Validação"
+            );
+            return;
+          }
+
+          if (!txt)
+            return showGenericModal(
+              "Nenhum dado válido encontrado para gerar o arquivo."
+            );
+
           const blob = new Blob([txt], { type: "text/plain" });
           const a = document.createElement("a");
           a.href = URL.createObjectURL(blob);
