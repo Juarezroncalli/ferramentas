@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
   <head>
     <script
@@ -12,6 +12,7 @@
       }
       gtag("js", new Date());
 
+      // Configurações para proteção de dados e privacidade
       gtag("config", "G-6XKND47T4H", {
         anonymize_ip: true,
         allow_google_signals: false,
@@ -21,14 +22,12 @@
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Auditor Reforma Tributária [V 4.1 FIXED]</title>
+    <title>Auditor Reforma Tributária [V 4.0 FIXED]</title>
     <link rel="icon" href="icone.ico" type="image/x-icon" />
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -38,9 +37,11 @@
 
     <style>
       :root {
+        /* Paleta Neo Brutalism */
         --bg-body: #ffde00;
         --card-bg: #ffffff;
         --border-black: #000000;
+
         --c-purple: #8b5cf6;
         --c-pink: #ff90e8;
         --c-blue: #06b6d4;
@@ -48,6 +49,7 @@
         --c-red: #ff4d4d;
         --c-orange: #f97316;
         --c-gray: #9ca3af;
+
         --border-width: 3px;
       }
 
@@ -68,7 +70,7 @@
         display: flex;
       }
 
-      /* SIDEBAR */
+      /* --- SIDEBAR --- */
       .sidebar {
         width: 240px;
         background: var(--c-purple);
@@ -116,7 +118,7 @@
         background: var(--c-blue);
       }
 
-      /* MAIN CONTENT */
+      /* --- MAIN CONTENT --- */
       .main-content {
         flex: 1;
         display: flex;
@@ -132,7 +134,7 @@
         padding-bottom: 80px;
       }
 
-      /* HEADER */
+      /* Header */
       .neo-header {
         background: #fff;
         border: var(--border-width) solid #000;
@@ -157,7 +159,7 @@
         font-weight: bold;
       }
 
-      /* CARDS */
+      /* Cards */
       .dashboard-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -197,7 +199,7 @@
         font-weight: 700;
       }
 
-      /* UPLOAD */
+      /* Upload */
       .upload-area {
         background: var(--c-pink);
         border: 3px dashed #000;
@@ -228,7 +230,7 @@
         cursor: pointer;
       }
 
-      /* FILTROS */
+      /* Filtros */
       .filters-container {
         background: #fff;
         border: var(--border-width) solid #000;
@@ -238,6 +240,7 @@
       }
       .filters-grid {
         display: grid;
+        /* Grid reajustado para caber o novo filtro */
         grid-template-columns: 1.5fr 0.8fr 0.8fr 1.1fr 1.1fr auto;
         gap: 1rem;
         align-items: end;
@@ -266,7 +269,7 @@
         box-shadow: 3px 3px 0 0 var(--c-purple);
       }
 
-      /* TOGGLES */
+      /* ESTILOS PARA OS BOTÕES TOGGLE */
       .crt-toggles {
         display: flex;
         gap: 5px;
@@ -275,7 +278,7 @@
         flex: 1;
         background: #fff;
         border: 2px solid #000;
-        padding: 8px 4px;
+        padding: 8px 4px; /* Padding reduzido para caber */
         font-family: "Space Mono";
         font-size: 0.7rem;
         font-weight: bold;
@@ -311,7 +314,7 @@
         box-shadow: 3px 3px 0 0 #000;
       }
 
-      /* TABELA */
+      /* Tabela */
       .table-container {
         overflow-x: auto;
         border: var(--border-width) solid #000;
@@ -349,9 +352,9 @@
         background: #fdfce5;
       }
 
-      /* ESTILOS DE COLUNA TRUNCADA */
+      /* Coluna Produto - Tooltip Trigger */
       .col-prod {
-        max-width: 200px;
+        max-width: 215px; /* Aumentado conforme solicitado */
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -363,17 +366,7 @@
         color: var(--c-purple);
       }
 
-      /* NOVA COLUNA EMITENTE */
-      .col-emit {
-        max-width: 140px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        display: block;
-        font-weight: bold;
-      }
-
-      /* TOOLTIP */
+      /* TOOLTIP / BALÃO INTERATIVO */
       #floatingTooltip {
         position: fixed;
         display: none;
@@ -392,6 +385,8 @@
         transform: translate(2px, 2px);
         box-shadow: 4px 4px 0 0 #000;
       }
+
+      /* Quebra de linha para chave */
       #floatingTooltip .break-text {
         word-break: break-all;
         font-family: "Space Mono", monospace;
@@ -403,6 +398,7 @@
         font-size: 0.7rem;
         line-height: 1.2;
       }
+
       .tooltip-header {
         font-weight: 900;
         text-transform: uppercase;
@@ -425,7 +421,7 @@
         gap: 5px;
       }
 
-      /* TAGS E STATUS */
+      /* Status Styles e CRT Styles */
       .status-badge {
         display: inline-block;
         padding: 2px 5px;
@@ -499,7 +495,7 @@
         font-weight: bold;
       }
 
-      /* FOOTER */
+      /* Footer Fixo */
       .footer-controls {
         background: #fff;
         border-top: var(--border-width) solid #000;
@@ -607,7 +603,7 @@
           border: 4px solid #000;
           box-shadow: 10px 10px 0 #8b5cf6;
           max-width: 500px;
-          font-family: &quot;Space Grotesk&quot;;
+          font-family: 'Space Grotesk';
         "
       >
         <h2
@@ -645,7 +641,7 @@
           </li>
         </ul>
         <button
-          onclick="document.getElementById('lgpdModal').style.display = 'none'"
+          onclick="document.getElementById('lgpdModal').style.display='none'"
           style="
             background: #22c55e;
             color: #000;
@@ -688,7 +684,7 @@
           background: rgba(0, 0, 0, 0.2);
           border: 2px solid #000;
           font-size: 0.65rem;
-          font-family: &quot;Space Mono&quot;;
+          font-family: 'Space Mono';
           color: #fff;
         "
       >
@@ -704,7 +700,7 @@
           margin-top: auto;
           font-size: 0.6rem;
           opacity: 0.8;
-          font-family: &quot;Space Mono&quot;;
+          font-family: 'Space Mono';
         "
       >
         V 4.0 - By J.Roncalli
@@ -751,12 +747,12 @@
             type="file"
             id="xmlInput"
             multiple
-            accept=".xml, .zip"
+            accept=".xml"
             onchange="handleFiles(this.files)"
           />
           <div class="upload-label">
             <i class="fas fa-cloud-upload-alt fa-2x"></i><br />
-            Arraste XMLs ou ZIP (Lotes Grandes)
+            Arraste XMLs (Lotes Grandes)
           </div>
         </div>
 
@@ -858,7 +854,6 @@
             <thead>
               <tr>
                 <th>Nota</th>
-                <th>Emitente</th>
                 <th>Regime</th>
                 <th>Produto</th>
                 <th>NCM/CFOP</th>
@@ -900,9 +895,11 @@
       let debounceTimer;
       let currentKeyToCopy = "";
 
+      // Estado dos filtros
       let filterRegime = "all";
       let filterTags = "all";
 
+      // --- TOOLTIP LOGIC ---
       const tooltip = document.getElementById("floatingTooltip");
 
       function showTooltip(e, idx) {
@@ -1037,54 +1034,25 @@
 
       async function handleFiles(files) {
         const status = document.getElementById("statusMsg");
-        status.innerText = `Preparando ${files.length} arquivos...`;
+        status.innerText = `Iniciando leitura de ${files.length} arquivos...`;
 
-        const xmlTextList = [];
-
-        for (let i = 0; i < files.length; i++) {
-          const file = files[i];
-
-          if (file.name.toLowerCase().endsWith(".xml")) {
-            const text = await file.text();
-            xmlTextList.push(text);
-          } else if (file.name.toLowerCase().endsWith(".zip")) {
-            try {
-              status.innerText = `Descompactando ${file.name}...`;
-              await new Promise((r) => setTimeout(r, 10));
-
-              const zip = await JSZip.loadAsync(file);
-              const promises = [];
-              zip.forEach((relativePath, zipEntry) => {
-                if (
-                  !zipEntry.dir &&
-                  zipEntry.name.toLowerCase().endsWith(".xml")
-                ) {
-                  promises.push(zipEntry.async("string"));
-                }
-              });
-
-              const extractedXmls = await Promise.all(promises);
-              extractedXmls.forEach((t) => xmlTextList.push(t));
-            } catch (err) {
-              console.error("Erro ao descompactar", file.name, err);
-            }
-          }
-        }
-
-        status.innerText = `Iniciando leitura de ${xmlTextList.length} XMLs...`;
         await new Promise((r) => setTimeout(r, 50));
 
         const parser = new DOMParser();
         const BATCH_SIZE = 100;
+
+        const fileList = Array.from(files);
         let processedCount = 0;
 
-        for (let i = 0; i < xmlTextList.length; i += BATCH_SIZE) {
-          const batch = xmlTextList.slice(i, i + BATCH_SIZE);
-          let currentBatchEmit = "";
+        for (let i = 0; i < fileList.length; i += BATCH_SIZE) {
+          const batch = fileList.slice(i, i + BATCH_SIZE);
+          const textPromises = batch.map((f) => f.text());
+          const texts = await Promise.all(textPromises);
 
-          batch.forEach((xmlText) => {
+          texts.forEach((xmlText) => {
             try {
               const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+
               const emitList = xmlDoc.getElementsByTagName("emit");
               const emit = emitList.length > 0 ? emitList[0] : null;
 
@@ -1096,7 +1064,6 @@
                 emitNome = getTagValue(emit, "xNome") || emitNome;
                 emitCNPJ = getTagValue(emit, "CNPJ") || emitCNPJ;
                 crtCode = getTagValue(emit, "CRT");
-                currentBatchEmit = emitNome;
               }
 
               let regimeDesc = "OUTROS";
@@ -1131,6 +1098,8 @@
                 const ncm = getTagValue(prod, "NCM");
                 const cfop = getTagValue(prod, "CFOP");
                 const xProd = getTagValue(prod, "xProd");
+
+                // Variável vProd inicial
                 let vProd = getTagValueFloat(prod, "vProd");
 
                 let vCBS = 0,
@@ -1153,7 +1122,9 @@
                   const vBcTags = nodeIbsCbs.getElementsByTagName("vBC");
                   if (vBcTags.length > 0) {
                     const foundVal = parseFloat(vBcTags[0].textContent);
-                    if (!isNaN(foundVal) && foundVal > 0) vProd = foundVal;
+                    if (!isNaN(foundVal) && foundVal > 0) {
+                      vProd = foundVal;
+                    }
                   }
 
                   const gCBSList = nodeIbsCbs.getElementsByTagName("gCBS");
@@ -1162,8 +1133,9 @@
                     vCBS = getTagValueFloat(gCBS, "vCBS");
                     pCBS = getTagValueFloat(gCBS, "pCBS");
                     const gRedList = gCBS.getElementsByTagName("gRed");
-                    if (gRedList.length > 0)
+                    if (gRedList.length > 0) {
                       pRedCBS = getTagValueFloat(gRedList[0], "pRedAliq");
+                    }
                   }
 
                   const gIBSUFList = nodeIbsCbs.getElementsByTagName("gIBSUF");
@@ -1171,9 +1143,11 @@
                     const gIBSUF = gIBSUFList[0];
                     pIBS = getTagValueFloat(gIBSUF, "pIBSUF");
                     let vIbsUf = getTagValueFloat(gIBSUF, "vIBSUF");
+
                     const gRedUFList = gIBSUF.getElementsByTagName("gRed");
-                    if (gRedUFList.length > 0)
+                    if (gRedUFList.length > 0) {
                       pRedIBS = getTagValueFloat(gRedUFList[0], "pRedAliq");
+                    }
                     const vIBSTotal = getTagValueFloat(nodeIbsCbs, "vIBS");
                     vIBS = vIBSTotal > 0 ? vIBSTotal : vIbsUf;
                   } else {
@@ -1212,14 +1186,9 @@
           });
 
           processedCount += batch.length;
-          let displayEmit =
-            currentBatchEmit.length > 20
-              ? currentBatchEmit.substring(0, 20) + "..."
-              : currentBatchEmit;
-          if (!displayEmit) displayEmit = "Lendo...";
-          status.innerText = `Lendo: ${displayEmit} (${processedCount} / ${xmlTextList.length})`;
+          status.innerText = `Lendo... ${processedCount} / ${files.length}`;
 
-          if (i + BATCH_SIZE < xmlTextList.length) {
+          if (i + BATCH_SIZE < fileList.length) {
             await new Promise((r) => setTimeout(r, 0));
           }
         }
@@ -1240,8 +1209,9 @@
             item.xProd.toLowerCase().includes(fProd);
 
           let matchRegime = true;
-          if (filterRegime !== "all")
+          if (filterRegime !== "all") {
             matchRegime = item.regimeDesc === filterRegime;
+          }
 
           let matchTags = true;
           if (filterTags === "yes") matchTags = item.hasTags === true;
@@ -1259,6 +1229,8 @@
         let totalIbs = 0,
           totalCbs = 0,
           totalRed = 0;
+
+        // Lógica para estatística do Regime Normal (Baseado em Chaves Únicas de Nota)
         const notasNormal = new Set();
         const notasNormalComTags = new Set();
 
@@ -1269,20 +1241,27 @@
           if (item.hasTags && (item.pRedCBS > 0 || item.pRedIBS > 0))
             totalRed++;
 
+          // Soma estatística Regime Normal
           if (item.regimeDesc === "NORMAL") {
             notasNormal.add(item.chNFe);
-            if (item.hasTags) notasNormalComTags.add(item.chNFe);
+            if (item.hasTags) {
+              notasNormalComTags.add(item.chNFe);
+            }
           }
         }
 
+        // Cálculo do percentual
         let percentual = 0;
-        if (notasNormal.size > 0)
+        if (notasNormal.size > 0) {
           percentual = (notasNormalComTags.size / notasNormal.size) * 100;
+        }
 
         document.getElementById("totalItens").innerText = filteredItems.length;
         document.getElementById("totalReducao").innerText = totalRed;
         document.getElementById("totalIbs").innerText = formatMoney(totalIbs);
         document.getElementById("totalCbs").innerText = formatMoney(totalCbs);
+
+        // Atualiza card novo
         document.getElementById("percTagsNormal").innerText =
           percentual.toFixed(1) + "%";
       }
@@ -1330,29 +1309,34 @@
 
           const tr = document.createElement("tr");
           tr.innerHTML = `
-                <td style="font-weight:bold">${item.nNF}</td>
-                <td><span class="col-emit" title="${item.emitNome}">${item.emitNome}</span></td>
-                <td>${regimeBadge}</td>
-                <td>
-                  <span class="col-prod" 
-                        onclick="copyFromProduct(${index})"
-                        onmouseover="showTooltip(event, ${index})" 
-                        onmousemove="moveTooltip(event)" 
-                        onmouseout="hideTooltip()">
-                    ${item.xProd}
-                  </span>
-                </td>
-                <td>${item.ncm}<br><small style="color:#666">${item.cfop}</small></td>
-                <td>${displayClass}<br>${displayCst}</td>
-                <td>${formatMoney(item.vProd)}</td>
-                <td class="money">${formatPercent(item.pCBS)}</td>
-                <td class="center">${item.pRedCBS > 0 ? item.pRedCBS + "%" : "-"}</td>
-                <td class="money ${cbsClass}">${formatMoney(item.vCBS)}</td>
-                <td class="money">${formatPercent(item.pIBS)}</td>
-                <td class="center">${item.pRedIBS > 0 ? item.pRedIBS + "%" : "-"}</td>
-                <td class="money ${ibsClass}">${formatMoney(item.vIBS)}</td>
-                <td class="center">${statusHtml}</td>
-          `;
+                    <td style="font-weight:bold">${item.nNF}</td>
+                    <td>${regimeBadge}</td>
+                    <td>
+                      <span class="col-prod" 
+                            onclick="copyFromProduct(${index})"
+                            onmouseover="showTooltip(event, ${index})" 
+                            onmousemove="moveTooltip(event)" 
+                            onmouseout="hideTooltip()">
+                        ${item.xProd}
+                      </span>
+                    </td>
+                    <td>${item.ncm}<br><small style="color:#666">${
+            item.cfop
+          }</small></td>
+                    <td>${displayClass}<br>${displayCst}</td>
+                    <td>${formatMoney(item.vProd)}</td>
+                    <td class="money">${formatPercent(item.pCBS)}</td>
+                    <td class="center">${
+                      item.pRedCBS > 0 ? item.pRedCBS + "%" : "-"
+                    }</td>
+                    <td class="money ${cbsClass}">${formatMoney(item.vCBS)}</td>
+                    <td class="money">${formatPercent(item.pIBS)}</td>
+                    <td class="center">${
+                      item.pRedIBS > 0 ? item.pRedIBS + "%" : "-"
+                    }</td>
+                    <td class="money ${ibsClass}">${formatMoney(item.vIBS)}</td>
+                    <td class="center">${statusHtml}</td>
+              `;
           fragment.appendChild(tr);
         });
 
@@ -1362,8 +1346,9 @@
 
       function atualizarControlesPaginacao() {
         const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
-        document.getElementById("pageInfo").innerText =
-          `${currentPage} / ${totalPages}`;
+        document.getElementById(
+          "pageInfo"
+        ).innerText = `${currentPage} / ${totalPages}`;
         document.getElementById("btnPrev").disabled = currentPage === 1;
         document.getElementById("btnNext").disabled =
           currentPage === totalPages;
@@ -1404,12 +1389,19 @@
             ? r.pRedCBS > 0 || r.pRedIBS > 0
               ? "REDUCAO"
               : r.vCBS == 0
-                ? "ZERADO"
-                : "OK"
+              ? "ZERADO"
+              : "OK"
             : "SEM_TAGS";
           const prodClean = r.xProd.replace(/,/g, " ");
-          const emitClean = r.emitNome.replace(/,/g, " ");
-          csv += `${emitClean},${r.regimeDesc},'${r.chNFe},${r.nNF},${r.data},${prodClean},${r.ncm},${r.cfop},${r.cClassTrib},${r.cst},${r.vProd.toFixed(2)},${r.pCBS.toFixed(2)},${r.pRedCBS.toFixed(2)},${r.vCBS.toFixed(2)},${r.pIBS.toFixed(2)},${r.pRedIBS.toFixed(2)},${r.vIBS.toFixed(2)},${status}\n`;
+          csv += `${r.emitNome},${r.regimeDesc},'${r.chNFe},${r.nNF},${
+            r.data
+          },${prodClean},${r.ncm},${r.cfop},${r.cClassTrib},${
+            r.cst
+          },${r.vProd.toFixed(2)},${r.pCBS.toFixed(2)},${r.pRedCBS.toFixed(
+            2
+          )},${r.vCBS.toFixed(2)},${r.pIBS.toFixed(2)},${r.pRedIBS.toFixed(
+            2
+          )},${r.vIBS.toFixed(2)},${status}\n`;
         });
         const link = document.createElement("a");
         link.href = encodeURI(csv);
