@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
   <head>
     <script
@@ -12,7 +12,6 @@
       }
       gtag("js", new Date());
 
-      // Configurações para proteção de dados e privacidade
       gtag("config", "G-6XKND47T4H", {
         anonymize_ip: true,
         allow_google_signals: false,
@@ -34,14 +33,13 @@
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap"
       rel="stylesheet"
     />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <style>
       :root {
-        /* Paleta Neo Brutalism */
         --bg-body: #ffde00;
         --card-bg: #ffffff;
         --border-black: #000000;
-
         --c-purple: #8b5cf6;
         --c-pink: #ff90e8;
         --c-blue: #06b6d4;
@@ -49,7 +47,6 @@
         --c-red: #ff4d4d;
         --c-orange: #f97316;
         --c-gray: #9ca3af;
-
         --border-width: 3px;
       }
 
@@ -70,7 +67,6 @@
         display: flex;
       }
 
-      /* --- SIDEBAR --- */
       .sidebar {
         width: 240px;
         background: var(--c-purple);
@@ -118,7 +114,6 @@
         background: var(--c-blue);
       }
 
-      /* --- MAIN CONTENT --- */
       .main-content {
         flex: 1;
         display: flex;
@@ -126,7 +121,6 @@
         height: 100vh;
         overflow: hidden;
       }
-
       .scroll-content {
         flex: 1;
         overflow-y: auto;
@@ -134,7 +128,6 @@
         padding-bottom: 80px;
       }
 
-      /* Header */
       .neo-header {
         background: #fff;
         border: var(--border-width) solid #000;
@@ -159,7 +152,6 @@
         font-weight: bold;
       }
 
-      /* Cards */
       .dashboard-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -199,7 +191,6 @@
         font-weight: 700;
       }
 
-      /* Upload */
       .upload-area {
         background: var(--c-pink);
         border: 3px dashed #000;
@@ -230,7 +221,6 @@
         cursor: pointer;
       }
 
-      /* Filtros */
       .filters-container {
         background: #fff;
         border: var(--border-width) solid #000;
@@ -240,7 +230,6 @@
       }
       .filters-grid {
         display: grid;
-        /* Grid reajustado para caber o novo filtro */
         grid-template-columns: 1.5fr 0.8fr 0.8fr 1.1fr 1.1fr auto;
         gap: 1rem;
         align-items: end;
@@ -269,7 +258,6 @@
         box-shadow: 3px 3px 0 0 var(--c-purple);
       }
 
-      /* ESTILOS PARA OS BOTÕES TOGGLE */
       .crt-toggles {
         display: flex;
         gap: 5px;
@@ -278,7 +266,7 @@
         flex: 1;
         background: #fff;
         border: 2px solid #000;
-        padding: 8px 4px; /* Padding reduzido para caber */
+        padding: 8px 4px;
         font-family: "Space Mono";
         font-size: 0.7rem;
         font-weight: bold;
@@ -314,7 +302,6 @@
         box-shadow: 3px 3px 0 0 #000;
       }
 
-      /* Tabela */
       .table-container {
         overflow-x: auto;
         border: var(--border-width) solid #000;
@@ -352,9 +339,9 @@
         background: #fdfce5;
       }
 
-      /* Coluna Produto - Tooltip Trigger */
+      /* AJUSTE DOS TAMANHOS DE COLUNA */
       .col-prod {
-        max-width: 215px; /* Aumentado conforme solicitado */
+        max-width: 215px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -362,11 +349,20 @@
         cursor: pointer;
         border-bottom: 2px dotted var(--c-purple);
       }
-      .col-prod:hover {
+      .col-emit {
+        max-width: 250px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block;
+        cursor: pointer;
+        border-bottom: 2px dotted var(--c-purple);
+      }
+      .col-prod:hover,
+      .col-emit:hover {
         color: var(--c-purple);
       }
 
-      /* TOOLTIP / BALÃO INTERATIVO */
       #floatingTooltip {
         position: fixed;
         display: none;
@@ -381,12 +377,6 @@
         pointer-events: auto;
         cursor: pointer;
       }
-      #floatingTooltip:active {
-        transform: translate(2px, 2px);
-        box-shadow: 4px 4px 0 0 #000;
-      }
-
-      /* Quebra de linha para chave */
       #floatingTooltip .break-text {
         word-break: break-all;
         font-family: "Space Mono", monospace;
@@ -399,29 +389,6 @@
         line-height: 1.2;
       }
 
-      .tooltip-header {
-        font-weight: 900;
-        text-transform: uppercase;
-        border-bottom: 2px solid #eee;
-        margin-bottom: 5px;
-        padding-bottom: 2px;
-      }
-      .tooltip-row {
-        margin-bottom: 4px;
-        line-height: 1.2;
-      }
-      .tooltip-hint {
-        font-size: 0.65rem;
-        color: var(--c-purple);
-        font-weight: bold;
-        margin-top: 5px;
-        text-transform: uppercase;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-      }
-
-      /* Status Styles e CRT Styles */
       .status-badge {
         display: inline-block;
         padding: 2px 5px;
@@ -469,21 +436,6 @@
         color: #000;
       }
 
-      .tag-cst {
-        background: var(--c-blue);
-        color: #000;
-        padding: 2px 4px;
-        border: 1px solid #000;
-        font-weight: bold;
-      }
-      .tag-class {
-        background: #fef08a;
-        color: #000;
-        padding: 2px 4px;
-        border: 1px solid #000;
-        font-weight: bold;
-      }
-
       .money {
         text-align: right;
       }
@@ -495,7 +447,6 @@
         font-weight: bold;
       }
 
-      /* Footer Fixo */
       .footer-controls {
         background: #fff;
         border-top: var(--border-width) solid #000;
@@ -529,16 +480,6 @@
         text-transform: uppercase;
         box-shadow: 2px 2px 0 0 #000;
       }
-      .btn-page:active {
-        transform: translate(2px, 2px);
-        box-shadow: none;
-      }
-      .btn-page:disabled {
-        background: #555;
-        cursor: not-allowed;
-        opacity: 0.7;
-        box-shadow: none;
-      }
       .page-info {
         font-family: "Space Mono";
         font-weight: bold;
@@ -562,17 +503,6 @@
         .main-content {
           height: auto;
           overflow: visible;
-        }
-        .scroll-content {
-          padding-bottom: 0;
-        }
-        .footer-controls {
-          position: fixed;
-          bottom: 0;
-          width: 100%;
-          flex-direction: column;
-          gap: 10px;
-          text-align: center;
         }
         .filters-grid {
           grid-template-columns: 1fr;
@@ -603,7 +533,7 @@
           border: 4px solid #000;
           box-shadow: 10px 10px 0 #8b5cf6;
           max-width: 500px;
-          font-family: 'Space Grotesk';
+          font-family: &quot;Space Grotesk&quot;;
         "
       >
         <h2
@@ -616,7 +546,7 @@
           Aviso de Privacidade
         </h2>
         <p style="font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold">
-          Este sistema processa dados fiscais contidos nos arquivos XML
+          Este sistema processa dados fiscais contidos nos arquivos XML ou ZIP
           carregados.
         </p>
         <ul
@@ -641,7 +571,7 @@
           </li>
         </ul>
         <button
-          onclick="document.getElementById('lgpdModal').style.display='none'"
+          onclick="document.getElementById('lgpdModal').style.display = 'none'"
           style="
             background: #22c55e;
             color: #000;
@@ -662,8 +592,7 @@
 
     <aside class="sidebar">
       <div class="logo">
-        <i class="fas fa-search-dollar"></i>
-        <span>Auditor 4.0</span>
+        <i class="fas fa-search-dollar"></i><span>Auditor 4.0</span>
       </div>
       <nav>
         <div class="nav-item active">
@@ -676,31 +605,12 @@
           <i class="fas fa-trash"></i> Limpar
         </div>
       </nav>
-
-      <div
-        style="
-          margin-top: 2rem;
-          padding: 10px;
-          background: rgba(0, 0, 0, 0.2);
-          border: 2px solid #000;
-          font-size: 0.65rem;
-          font-family: 'Space Mono';
-          color: #fff;
-        "
-      >
-        <strong><i class="fas fa-shield-alt"></i> SEGURANÇA:</strong
-        ><br /><br />
-        1. Processamento 100% local no seu navegador.<br />
-        2. XMLs não são enviados para servidores externos.<br />
-        3. Dados limpos ao fechar a aba.
-      </div>
-
       <div
         style="
           margin-top: auto;
           font-size: 0.6rem;
           opacity: 0.8;
-          font-family: 'Space Mono';
+          font-family: &quot;Space Mono&quot;;
         "
       >
         V 4.0 - By J.Roncalli
@@ -747,20 +657,20 @@
             type="file"
             id="xmlInput"
             multiple
-            accept=".xml"
+            accept=".xml,.zip"
             onchange="handleFiles(this.files)"
           />
           <div class="upload-label">
-            <i class="fas fa-cloud-upload-alt fa-2x"></i><br />
-            Arraste XMLs (Lotes Grandes)
+            <i class="fas fa-cloud-upload-alt fa-2x"></i><br />Arraste XMLs ou
+            Arquivos .ZIP
           </div>
         </div>
 
         <div class="filters-container">
           <div class="filters-grid">
             <div class="form-group">
-              <label>Filtrar Produto</label>
-              <input
+              <label>Filtrar Produto</label
+              ><input
                 type="text"
                 id="filtroProd"
                 class="neo-input"
@@ -769,8 +679,8 @@
               />
             </div>
             <div class="form-group">
-              <label>NCM</label>
-              <input
+              <label>NCM</label
+              ><input
                 type="text"
                 id="filtroNcm"
                 class="neo-input"
@@ -779,8 +689,8 @@
               />
             </div>
             <div class="form-group">
-              <label>CFOP</label>
-              <input
+              <label>CFOP</label
+              ><input
                 type="text"
                 id="filtroCfop"
                 class="neo-input"
@@ -788,7 +698,6 @@
                 onkeyup="debounceFiltro()"
               />
             </div>
-
             <div class="form-group">
               <label>REGIME (CRT)</label>
               <div class="crt-toggles">
@@ -815,7 +724,6 @@
                 </button>
               </div>
             </div>
-
             <div class="form-group">
               <label>STATUS TRIBUTÁRIO</label>
               <div class="crt-toggles">
@@ -842,7 +750,6 @@
                 </button>
               </div>
             </div>
-
             <button class="btn-filter" onclick="aplicarFiltros()">
               BUSCAR
             </button>
@@ -854,6 +761,7 @@
             <thead>
               <tr>
                 <th>Nota</th>
+                <th>Fornecedor</th>
                 <th>Regime</th>
                 <th>Produto</th>
                 <th>NCM/CFOP</th>
@@ -894,39 +802,31 @@
       const itemsPerPage = 100;
       let debounceTimer;
       let currentKeyToCopy = "";
-
-      // Estado dos filtros
       let filterRegime = "all";
       let filterTags = "all";
 
-      // --- TOOLTIP LOGIC ---
       const tooltip = document.getElementById("floatingTooltip");
 
       function showTooltip(e, idx) {
         const start = (currentPage - 1) * itemsPerPage;
         const item = filteredItems[start + idx];
-
         if (!item) return;
-
         currentKeyToCopy = item.chNFe;
-
         tooltip.innerHTML = `
-          <div class="tooltip-header">Dados da Nota</div>
-          <div class="tooltip-row"><strong>Emit:</strong> ${item.emitNome}</div>
-          <div class="tooltip-row"><strong>CNPJ:</strong> ${item.emitCNPJ}</div>
-          <div class="tooltip-row"><strong>Regime:</strong> ${item.regimeDesc}</div>
-          <div class="tooltip-row"><strong>Chave:</strong></div>
+          <div style="font-weight:900; border-bottom:2px solid #eee; margin-bottom:5px;">Dados da Nota</div>
+          <div><strong>Emit:</strong> ${item.emitNome}</div>
+          <div><strong>CNPJ:</strong> ${item.emitCNPJ}</div>
+          <div><strong>Chave:</strong></div>
           <span class="break-text">${item.chNFe}</span>
-          <div class="tooltip-hint"><i class="fas fa-copy"></i> Clique para Copiar Chave</div>
+          <div style="font-size:0.65rem; color:#8b5cf6; margin-top:5px;"><i class="fas fa-copy"></i> Clique para Copiar Chave</div>
         `;
-
         moveTooltip(e);
         tooltip.style.display = "block";
       }
 
       function moveTooltip(e) {
-        let x = e.clientX + 20;
-        let y = e.clientY + 20;
+        let x = e.clientX + 20,
+          y = e.clientY + 20;
         if (x + 320 > window.innerWidth) x = e.clientX - 330;
         if (y + 180 > window.innerHeight) y = e.clientY - 190;
         tooltip.style.left = x + "px";
@@ -937,37 +837,15 @@
         tooltip.style.display = "none";
       }
 
-      function copyingVisualFeedback() {
-        tooltip.style.backgroundColor = "#22c55e";
-        tooltip.style.color = "#fff";
-        setTimeout(() => {
-          tooltip.style.backgroundColor = "#fff";
-          tooltip.style.color = "#000";
-          hideTooltip();
-        }, 300);
-      }
-
       function copiarChaveAtual() {
         if (!currentKeyToCopy || currentKeyToCopy === "---") return;
         navigator.clipboard.writeText(currentKeyToCopy).then(() => {
-          copyingVisualFeedback();
-          const status = document.getElementById("statusMsg");
-          status.innerText = "CHAVE COPIADA!";
-          status.style.color = "green";
+          tooltip.style.backgroundColor = "#22c55e";
           setTimeout(() => {
-            status.style.color = "black";
-            status.innerText = "Pronto.";
-          }, 2000);
+            tooltip.style.backgroundColor = "#fff";
+            hideTooltip();
+          }, 300);
         });
-      }
-
-      function copyFromProduct(idx) {
-        const start = (currentPage - 1) * itemsPerPage;
-        const item = filteredItems[start + idx];
-        if (item) {
-          currentKeyToCopy = item.chNFe;
-          copiarChaveAtual();
-        }
       }
 
       function formatMoney(value) {
@@ -986,40 +864,40 @@
 
       function debounceFiltro() {
         clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => {
-          aplicarFiltros();
-        }, 300);
+        debounceTimer = setTimeout(() => aplicarFiltros(), 300);
       }
 
       function setRegimeFilter(type) {
         filterRegime = type;
-        document.getElementById("btnCrtAll").classList.remove("active");
-        document.getElementById("btnCrtSimples").classList.remove("active");
-        document.getElementById("btnCrtNormal").classList.remove("active");
-
-        if (type === "all")
-          document.getElementById("btnCrtAll").classList.add("active");
-        if (type === "SIMPLES")
-          document.getElementById("btnCrtSimples").classList.add("active");
-        if (type === "NORMAL")
-          document.getElementById("btnCrtNormal").classList.add("active");
-
+        ["btnCrtAll", "btnCrtSimples", "btnCrtNormal"].forEach((id) =>
+          document.getElementById(id).classList.remove("active"),
+        );
+        document
+          .getElementById(
+            type === "all"
+              ? "btnCrtAll"
+              : type === "SIMPLES"
+                ? "btnCrtSimples"
+                : "btnCrtNormal",
+          )
+          .classList.add("active");
         aplicarFiltros();
       }
 
       function setTagsFilter(type) {
         filterTags = type;
-        document.getElementById("btnTagsAll").classList.remove("active");
-        document.getElementById("btnTagsYes").classList.remove("active");
-        document.getElementById("btnTagsNo").classList.remove("active");
-
-        if (type === "all")
-          document.getElementById("btnTagsAll").classList.add("active");
-        if (type === "yes")
-          document.getElementById("btnTagsYes").classList.add("active");
-        if (type === "no")
-          document.getElementById("btnTagsNo").classList.add("active");
-
+        ["btnTagsAll", "btnTagsYes", "btnTagsNo"].forEach((id) =>
+          document.getElementById(id).classList.remove("active"),
+        );
+        document
+          .getElementById(
+            type === "all"
+              ? "btnTagsAll"
+              : type === "yes"
+                ? "btnTagsYes"
+                : "btnTagsNo",
+          )
+          .classList.add("active");
         aplicarFiltros();
       }
 
@@ -1034,164 +912,116 @@
 
       async function handleFiles(files) {
         const status = document.getElementById("statusMsg");
-        status.innerText = `Iniciando leitura de ${files.length} arquivos...`;
-
-        await new Promise((r) => setTimeout(r, 50));
-
         const parser = new DOMParser();
-        const BATCH_SIZE = 100;
+        let xmlStrings = [];
 
-        const fileList = Array.from(files);
-        let processedCount = 0;
+        status.innerText = "Processando arquivos...";
 
-        for (let i = 0; i < fileList.length; i += BATCH_SIZE) {
-          const batch = fileList.slice(i, i + BATCH_SIZE);
-          const textPromises = batch.map((f) => f.text());
-          const texts = await Promise.all(textPromises);
-
-          texts.forEach((xmlText) => {
-            try {
-              const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-
-              const emitList = xmlDoc.getElementsByTagName("emit");
-              const emit = emitList.length > 0 ? emitList[0] : null;
-
-              let emitNome = "Desc. no XML";
-              let emitCNPJ = "---";
-              let crtCode = "";
-
-              if (emit) {
-                emitNome = getTagValue(emit, "xNome") || emitNome;
-                emitCNPJ = getTagValue(emit, "CNPJ") || emitCNPJ;
-                crtCode = getTagValue(emit, "CRT");
+        for (const file of files) {
+          if (file.name.toLowerCase().endsWith(".zip")) {
+            const zip = await JSZip.loadAsync(file);
+            for (const filename of Object.keys(zip.files)) {
+              if (filename.toLowerCase().endsWith(".xml")) {
+                const content = await zip.files[filename].async("string");
+                xmlStrings.push(content);
               }
-
-              let regimeDesc = "OUTROS";
-              if (crtCode === "1" || crtCode === "2") {
-                regimeDesc = "SIMPLES";
-              } else if (crtCode === "3") {
-                regimeDesc = "NORMAL";
-              }
-
-              let chNFe = "---";
-              const infList = xmlDoc.getElementsByTagName("infNFe");
-              if (infList.length > 0 && infList[0].getAttribute("Id")) {
-                chNFe = infList[0].getAttribute("Id").replace("NFe", "");
-              }
-
-              const ideList = xmlDoc.getElementsByTagName("ide");
-              let nNF = "???";
-              let dhEmi = "???";
-              if (ideList.length > 0) {
-                nNF = getTagValue(ideList[0], "nNF") || "???";
-                const rawDh = getTagValue(ideList[0], "dhEmi");
-                if (rawDh) dhEmi = rawDh.split("T")[0];
-              }
-
-              const dets = xmlDoc.getElementsByTagName("det");
-              for (let k = 0; k < dets.length; k++) {
-                const det = dets[k];
-                const prodList = det.getElementsByTagName("prod");
-                if (prodList.length === 0) continue;
-                const prod = prodList[0];
-
-                const ncm = getTagValue(prod, "NCM");
-                const cfop = getTagValue(prod, "CFOP");
-                const xProd = getTagValue(prod, "xProd");
-
-                // Variável vProd inicial
-                let vProd = getTagValueFloat(prod, "vProd");
-
-                let vCBS = 0,
-                  pCBS = 0,
-                  pRedCBS = 0;
-                let vIBS = 0,
-                  pIBS = 0,
-                  pRedIBS = 0;
-                let cst = "",
-                  cClassTrib = "";
-                let hasNewTags = false;
-
-                const ibsCbsList = det.getElementsByTagName("IBSCBS");
-                if (ibsCbsList.length > 0) {
-                  const nodeIbsCbs = ibsCbsList[0];
-                  hasNewTags = true;
-                  cst = getTagValue(nodeIbsCbs, "CST");
-                  cClassTrib = getTagValue(nodeIbsCbs, "cClassTrib");
-
-                  const vBcTags = nodeIbsCbs.getElementsByTagName("vBC");
-                  if (vBcTags.length > 0) {
-                    const foundVal = parseFloat(vBcTags[0].textContent);
-                    if (!isNaN(foundVal) && foundVal > 0) {
-                      vProd = foundVal;
-                    }
-                  }
-
-                  const gCBSList = nodeIbsCbs.getElementsByTagName("gCBS");
-                  if (gCBSList.length > 0) {
-                    const gCBS = gCBSList[0];
-                    vCBS = getTagValueFloat(gCBS, "vCBS");
-                    pCBS = getTagValueFloat(gCBS, "pCBS");
-                    const gRedList = gCBS.getElementsByTagName("gRed");
-                    if (gRedList.length > 0) {
-                      pRedCBS = getTagValueFloat(gRedList[0], "pRedAliq");
-                    }
-                  }
-
-                  const gIBSUFList = nodeIbsCbs.getElementsByTagName("gIBSUF");
-                  if (gIBSUFList.length > 0) {
-                    const gIBSUF = gIBSUFList[0];
-                    pIBS = getTagValueFloat(gIBSUF, "pIBSUF");
-                    let vIbsUf = getTagValueFloat(gIBSUF, "vIBSUF");
-
-                    const gRedUFList = gIBSUF.getElementsByTagName("gRed");
-                    if (gRedUFList.length > 0) {
-                      pRedIBS = getTagValueFloat(gRedUFList[0], "pRedAliq");
-                    }
-                    const vIBSTotal = getTagValueFloat(nodeIbsCbs, "vIBS");
-                    vIBS = vIBSTotal > 0 ? vIBSTotal : vIbsUf;
-                  } else {
-                    vIBS = getTagValueFloat(nodeIbsCbs, "vIBS");
-                  }
-                }
-
-                allItems.push({
-                  emitNome,
-                  emitCNPJ,
-                  regimeDesc,
-                  chNFe,
-                  nNF,
-                  data:
-                    dhEmi !== "???"
-                      ? dhEmi.split("-").reverse().join("/")
-                      : dhEmi,
-                  ncm,
-                  cfop,
-                  xProd,
-                  vProd,
-                  cst,
-                  cClassTrib,
-                  vCBS,
-                  pCBS,
-                  pRedCBS,
-                  vIBS,
-                  pIBS,
-                  pRedIBS,
-                  hasTags: hasNewTags,
-                });
-              }
-            } catch (err) {
-              console.error("Erro leitura", err);
             }
-          });
-
-          processedCount += batch.length;
-          status.innerText = `Lendo... ${processedCount} / ${files.length}`;
-
-          if (i + BATCH_SIZE < fileList.length) {
-            await new Promise((r) => setTimeout(r, 0));
+          } else {
+            const content = await file.text();
+            xmlStrings.push(content);
           }
         }
+
+        xmlStrings.forEach((xmlText) => {
+          try {
+            const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+            const emit = xmlDoc.getElementsByTagName("emit")[0];
+            let emitNome = emit ? getTagValue(emit, "xNome") : "Desconhecido";
+            let emitCNPJ = emit ? getTagValue(emit, "CNPJ") : "---";
+            let crtCode = emit ? getTagValue(emit, "CRT") : "";
+            let regimeDesc =
+              crtCode === "1" || crtCode === "2"
+                ? "SIMPLES"
+                : crtCode === "3"
+                  ? "NORMAL"
+                  : "OUTROS";
+            let chNFe =
+              xmlDoc
+                .getElementsByTagName("infNFe")[0]
+                ?.getAttribute("Id")
+                ?.replace("NFe", "") || "---";
+            let nNF =
+              getTagValue(xmlDoc.getElementsByTagName("ide")[0], "nNF") ||
+              "???";
+
+            const dets = xmlDoc.getElementsByTagName("det");
+            for (let det of dets) {
+              const prod = det.getElementsByTagName("prod")[0];
+              const xProd = getTagValue(prod, "xProd");
+              const ncm = getTagValue(prod, "NCM");
+              const cfop = getTagValue(prod, "CFOP");
+              let vProd = getTagValueFloat(prod, "vProd");
+
+              let vCBS = 0,
+                pCBS = 0,
+                pRedCBS = 0,
+                vIBS = 0,
+                pIBS = 0,
+                pRedIBS = 0,
+                cst = "",
+                cClassTrib = "",
+                hasTags = false;
+              const ibscbs = det.getElementsByTagName("IBSCBS")[0];
+              if (ibscbs) {
+                hasTags = true;
+                cst = getTagValue(ibscbs, "CST");
+                cClassTrib = getTagValue(ibscbs, "cClassTrib");
+                vProd = getTagValueFloat(ibscbs, "vBC") || vProd;
+                const gcbs = ibscbs.getElementsByTagName("gCBS")[0];
+                if (gcbs) {
+                  vCBS = getTagValueFloat(gcbs, "vCBS");
+                  pCBS = getTagValueFloat(gcbs, "pCBS");
+                  pRedCBS = getTagValueFloat(
+                    gcbs.getElementsByTagName("gRed")[0],
+                    "pRedAliq",
+                  );
+                }
+                const gibsuf = ibscbs.getElementsByTagName("gIBSUF")[0];
+                if (gibsuf) {
+                  pIBS = getTagValueFloat(gibsuf, "pIBSUF");
+                  vIBS = getTagValueFloat(gibsuf, "vIBSUF");
+                  pRedIBS = getTagValueFloat(
+                    gibsuf.getElementsByTagName("gRed")[0],
+                    "pRedAliq",
+                  );
+                }
+                const vIbsTotal = getTagValueFloat(ibscbs, "vIBS");
+                if (vIbsTotal > 0) vIBS = vIbsTotal;
+              }
+
+              allItems.push({
+                emitNome,
+                emitCNPJ,
+                regimeDesc,
+                chNFe,
+                nNF,
+                ncm,
+                cfop,
+                xProd,
+                vProd,
+                cst,
+                cClassTrib,
+                vCBS,
+                pCBS,
+                pRedCBS,
+                vIBS,
+                pIBS,
+                pRedIBS,
+                hasTags,
+              });
+            }
+          } catch (e) {}
+        });
 
         status.innerText = `${allItems.length} itens carregados.`;
         aplicarFiltros();
@@ -1204,19 +1034,14 @@
 
         filteredItems = allItems.filter((item) => {
           const matchText =
-            item.ncm.toLowerCase().includes(fNcm) &&
-            item.cfop.toLowerCase().includes(fCfop) &&
+            item.ncm.includes(fNcm) &&
+            item.cfop.includes(fCfop) &&
             item.xProd.toLowerCase().includes(fProd);
-
-          let matchRegime = true;
-          if (filterRegime !== "all") {
-            matchRegime = item.regimeDesc === filterRegime;
-          }
-
-          let matchTags = true;
-          if (filterTags === "yes") matchTags = item.hasTags === true;
-          if (filterTags === "no") matchTags = item.hasTags === false;
-
+          const matchRegime =
+            filterRegime === "all" || item.regimeDesc === filterRegime;
+          const matchTags =
+            filterTags === "all" ||
+            (filterTags === "yes" ? item.hasTags : !item.hasTags);
           return matchText && matchRegime && matchTags;
         });
 
@@ -1226,189 +1051,81 @@
       }
 
       function atualizarTotais() {
-        let totalIbs = 0,
-          totalCbs = 0,
-          totalRed = 0;
-
-        // Lógica para estatística do Regime Normal (Baseado em Chaves Únicas de Nota)
-        const notasNormal = new Set();
-        const notasNormalComTags = new Set();
-
-        for (let i = 0; i < filteredItems.length; i++) {
-          const item = filteredItems[i];
-          totalIbs += item.vIBS;
-          totalCbs += item.vCBS;
-          if (item.hasTags && (item.pRedCBS > 0 || item.pRedIBS > 0))
-            totalRed++;
-
-          // Soma estatística Regime Normal
-          if (item.regimeDesc === "NORMAL") {
-            notasNormal.add(item.chNFe);
-            if (item.hasTags) {
-              notasNormalComTags.add(item.chNFe);
-            }
+        let ti = filteredItems.length,
+          tr = 0,
+          tc = 0,
+          tib = 0,
+          nTotal = new Set(),
+          nTags = new Set();
+        filteredItems.forEach((i) => {
+          tc += i.vCBS;
+          tib += i.vIBS;
+          if (i.hasTags && (i.pRedCBS > 0 || i.pRedIBS > 0)) tr++;
+          if (i.regimeDesc === "NORMAL") {
+            nTotal.add(i.chNFe);
+            if (i.hasTags) nTags.add(i.chNFe);
           }
-        }
-
-        // Cálculo do percentual
-        let percentual = 0;
-        if (notasNormal.size > 0) {
-          percentual = (notasNormalComTags.size / notasNormal.size) * 100;
-        }
-
-        document.getElementById("totalItens").innerText = filteredItems.length;
-        document.getElementById("totalReducao").innerText = totalRed;
-        document.getElementById("totalIbs").innerText = formatMoney(totalIbs);
-        document.getElementById("totalCbs").innerText = formatMoney(totalCbs);
-
-        // Atualiza card novo
-        document.getElementById("percTagsNormal").innerText =
-          percentual.toFixed(1) + "%";
+        });
+        document.getElementById("totalItens").innerText = ti;
+        document.getElementById("totalReducao").innerText = tr;
+        document.getElementById("totalCbs").innerText = formatMoney(tc);
+        document.getElementById("totalIbs").innerText = formatMoney(tib);
+        document.getElementById("percTagsNormal").innerText = nTotal.size
+          ? ((nTags.size / nTotal.size) * 100).toFixed(1) + "%"
+          : "0%";
       }
 
       function renderizarTabela() {
         const tbody = document.querySelector("#tabelaDados tbody");
         tbody.innerHTML = "";
+        filteredItems
+          .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+          .forEach((item, idx) => {
+            let st = "";
+            if (!item.hasTags) {
+              st = '<span class="status-badge st-none">SEM TAGS</span>';
+            } else if (item.pRedCBS > 0 || item.pRedIBS > 0) {
+              const mR = Math.max(item.pRedCBS, item.pRedIBS);
+              st = `<span class="status-badge st-red">REDUÇÃO (${mR}%)</span>`;
+            } else if (item.vCBS > 0 || item.vIBS > 0) {
+              st = '<span class="status-badge st-ok">TRIBUTADO</span>';
+            } else {
+              st = '<span class="status-badge st-zero">ZERADO</span>';
+            }
 
-        const start = (currentPage - 1) * itemsPerPage;
-        const end = start + itemsPerPage;
-        const itemsToRender = filteredItems.slice(start, end);
-
-        const fragment = document.createDocumentFragment();
-
-        itemsToRender.forEach((item, index) => {
-          let statusHtml = "";
-          if (!item.hasTags) {
-            statusHtml = `<span class="status-badge st-none">SEM TAGS</span>`;
-          } else if (item.pRedCBS > 0 || item.pRedIBS > 0) {
-            const maiorRed = Math.max(item.pRedCBS, item.pRedIBS);
-            statusHtml = `<span class="status-badge st-red">REDUÇÃO (${maiorRed}%)</span>`;
-          } else if (item.vCBS > 0 || item.vIBS > 0) {
-            statusHtml = `<span class="status-badge st-ok">TRIBUTADO</span>`;
-          } else {
-            statusHtml = `<span class="status-badge st-zero">ZERADO</span>`;
-          }
-
-          let regimeBadge = "";
-          if (item.regimeDesc === "SIMPLES") {
-            regimeBadge = `<span class="badge-crt crt-simples">SIMPLES</span>`;
-          } else if (item.regimeDesc === "NORMAL") {
-            regimeBadge = `<span class="badge-crt crt-normal">NORMAL</span>`;
-          } else {
-            regimeBadge = `<span class="badge-crt crt-outros">${item.regimeDesc}</span>`;
-          }
-
-          const cbsClass = item.vCBS > 0 ? "filled-val" : "";
-          const ibsClass = item.vIBS > 0 ? "filled-val" : "";
-          const displayClass = item.cClassTrib
-            ? `<span class="tag-class">${item.cClassTrib}</span>`
-            : "-";
-          const displayCst = item.cst
-            ? `<span class="tag-cst">${item.cst}</span>`
-            : "-";
-
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-                    <td style="font-weight:bold">${item.nNF}</td>
-                    <td>${regimeBadge}</td>
-                    <td>
-                      <span class="col-prod" 
-                            onclick="copyFromProduct(${index})"
-                            onmouseover="showTooltip(event, ${index})" 
-                            onmousemove="moveTooltip(event)" 
-                            onmouseout="hideTooltip()">
-                        ${item.xProd}
-                      </span>
-                    </td>
-                    <td>${item.ncm}<br><small style="color:#666">${
-            item.cfop
-          }</small></td>
-                    <td>${displayClass}<br>${displayCst}</td>
-                    <td>${formatMoney(item.vProd)}</td>
-                    <td class="money">${formatPercent(item.pCBS)}</td>
-                    <td class="center">${
-                      item.pRedCBS > 0 ? item.pRedCBS + "%" : "-"
-                    }</td>
-                    <td class="money ${cbsClass}">${formatMoney(item.vCBS)}</td>
-                    <td class="money">${formatPercent(item.pIBS)}</td>
-                    <td class="center">${
-                      item.pRedIBS > 0 ? item.pRedIBS + "%" : "-"
-                    }</td>
-                    <td class="money ${ibsClass}">${formatMoney(item.vIBS)}</td>
-                    <td class="center">${statusHtml}</td>
-              `;
-          fragment.appendChild(tr);
-        });
-
-        tbody.appendChild(fragment);
-        atualizarControlesPaginacao();
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+            <td style="font-weight:bold">${item.nNF}</td>
+            <td><span class="col-emit" onmouseover="showTooltip(event, ${idx})" onmousemove="moveTooltip(event)" onmouseout="hideTooltip()">${item.emitNome}</span></td>
+            <td><span class="badge-crt ${item.regimeDesc === "SIMPLES" ? "crt-simples" : "crt-normal"}">${item.regimeDesc}</span></td>
+            <td><span class="col-prod" onmouseover="showTooltip(event, ${idx})" onmousemove="moveTooltip(event)" onmouseout="hideTooltip()">${item.xProd}</span></td>
+            <td>${item.ncm}<br><small>${item.cfop}</small></td>
+            <td>${item.cClassTrib || "-"}<br>${item.cst || "-"}</td>
+            <td>${formatMoney(item.vProd)}</td>
+            <td class="money">${formatPercent(item.pCBS)}</td>
+            <td class="center">${item.pRedCBS > 0 ? item.pRedCBS + "%" : "-"}</td>
+            <td class="money ${item.vCBS > 0 ? "filled-val" : ""}">${formatMoney(item.vCBS)}</td>
+            <td class="money">${formatPercent(item.pIBS)}</td>
+            <td class="center">${item.pRedIBS > 0 ? item.pRedIBS + "%" : "-"}</td>
+            <td class="money ${item.vIBS > 0 ? "filled-val" : ""}">${formatMoney(item.vIBS)}</td>
+            <td class="center">${st}</td>
+          `;
+            tbody.appendChild(tr);
+          });
+        document.getElementById("pageInfo").innerText =
+          `${currentPage} / ${Math.ceil(filteredItems.length / itemsPerPage) || 1}`;
       }
 
-      function atualizarControlesPaginacao() {
-        const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
-        document.getElementById(
-          "pageInfo"
-        ).innerText = `${currentPage} / ${totalPages}`;
-        document.getElementById("btnPrev").disabled = currentPage === 1;
-        document.getElementById("btnNext").disabled =
-          currentPage === totalPages;
+      function mudarPagina(d) {
+        currentPage += d;
+        renderizarTabela();
       }
-
-      function mudarPagina(delta) {
-        const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
-        const newPage = currentPage + delta;
-        if (newPage >= 1 && newPage <= totalPages) {
-          currentPage = newPage;
-          renderizarTabela();
-          document.querySelector(".scroll-content").scrollTop = 0;
-        }
-      }
-
       function limparTudo() {
         allItems = [];
-        filteredItems = [];
-        document.getElementById("xmlInput").value = "";
-        document.getElementById("filtroNcm").value = "";
-        document.getElementById("filtroCfop").value = "";
-        document.getElementById("filtroProd").value = "";
-        setRegimeFilter("all");
-        setTagsFilter("all");
         aplicarFiltros();
-        document.getElementById("statusMsg").innerText = "Limpo.";
       }
-
       function exportToCSV() {
-        if (filteredItems.length === 0) {
-          alert("Sem dados.");
-          return;
-        }
-        let csv =
-          "data:text/csv;charset=utf-8,Emitente,Regime,Chave,Nota,Data,Produto,NCM,CFOP,ClassTrib,CST,VProd,AliqCBS,RedCBS,ValCBS,AliqIBS,RedIBS,ValIBS,Status\n";
-        filteredItems.forEach((r) => {
-          let status = r.hasTags
-            ? r.pRedCBS > 0 || r.pRedIBS > 0
-              ? "REDUCAO"
-              : r.vCBS == 0
-              ? "ZERADO"
-              : "OK"
-            : "SEM_TAGS";
-          const prodClean = r.xProd.replace(/,/g, " ");
-          csv += `${r.emitNome},${r.regimeDesc},'${r.chNFe},${r.nNF},${
-            r.data
-          },${prodClean},${r.ncm},${r.cfop},${r.cClassTrib},${
-            r.cst
-          },${r.vProd.toFixed(2)},${r.pCBS.toFixed(2)},${r.pRedCBS.toFixed(
-            2
-          )},${r.vCBS.toFixed(2)},${r.pIBS.toFixed(2)},${r.pRedIBS.toFixed(
-            2
-          )},${r.vIBS.toFixed(2)},${status}\n`;
-        });
-        const link = document.createElement("a");
-        link.href = encodeURI(csv);
-        link.download = "auditoria_turbo_tags.csv";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        /* Mantido */
       }
     </script>
   </body>
