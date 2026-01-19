@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
   <head>
     <script
@@ -53,7 +53,8 @@
       body {
         font-family: "Space Grotesk", sans-serif;
         background-color: var(--bg-body);
-        background-image: linear-gradient(#fff 2px, transparent 2px),
+        background-image:
+          linear-gradient(#fff 2px, transparent 2px),
           linear-gradient(90deg, #fff 2px, transparent 2px);
         background-size: 40px 40px;
         background-position: -2px -2px;
@@ -238,7 +239,9 @@
         border: var(--border-width) solid var(--border-black);
         padding: 1.5rem;
         box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
-        transition: transform 0.1s, box-shadow 0.1s;
+        transition:
+          transform 0.1s,
+          box-shadow 0.1s;
         display: flex;
         flex-direction: column;
         cursor: pointer;
@@ -1038,6 +1041,21 @@
             <h3 class="tool-name">Conversor Universal</h3>
             <p class="tool-description">
               Converta vendas de diversos cartões de crédito/débito.
+            </p>
+            <button class="access-btn">
+              Acessar <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+
+          <div
+            class="tool-card"
+            data-url="https://ferramentas-seven.vercel.app/conversor-pagbank.html"
+          >
+            <div class="tool-icon"><i class="fas fa-globe"></i></div>
+            <h3 class="tool-name">Conversor do extrato financeiro (PagBank)</h3>
+            <p class="tool-description">
+              Converta vendas do extrato financeiro do PagBank. Não é o extrato
+              da conta-corrente.
             </p>
             <button class="access-btn">
               Acessar <i class="fas fa-arrow-right"></i>

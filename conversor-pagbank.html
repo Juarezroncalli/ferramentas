@@ -1,0 +1,813 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conversor PagBank [PDF]</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    </script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        /* --- PALETA NEO BRUTALISTA (Saved Preferences) --- */
+        --bg-body: #ffde00; /* Amarelo Vibrante */
+        --card-bg: #ffffff;
+        --border-black: #000000;
+
+        --color-primary: #8b5cf6; /* Roxo */
+        --color-secondary: #ff90e8; /* Rosa */
+        --color-accent: #22c55e; /* Verde */
+        --color-danger: #ff4d4d; /* Vermelho */
+
+        --shadow-dist: 6px;
+        --border-width: 3px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Space Grotesk", sans-serif;
+        background-color: var(--bg-body);
+        /* Padrão pontilhado sutil para textura */
+        background-image: radial-gradient(#000 1px, transparent 1px);
+        background-size: 20px 20px;
+        color: var(--border-black);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* --- Layout Sidebar + Content --- */
+      .app-container {
+        display: flex;
+        flex: 1;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .sidebar {
+        width: 280px;
+        background: #fff;
+        border-right: var(--border-width) solid var(--border-black);
+        display: flex;
+        flex-direction: column;
+        padding: 2rem 1.5rem;
+        flex-shrink: 0;
+        overflow-y: auto;
+      }
+
+      .logo {
+        font-weight: 900;
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 3rem;
+        text-transform: uppercase;
+        letter-spacing: -1px;
+        line-height: 1;
+      }
+
+      .logo i {
+        background: var(--border-black);
+        color: var(--bg-body);
+        padding: 12px;
+        border-radius: 0;
+        font-size: 1.2rem;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 15px;
+        margin-bottom: 1rem;
+        font-weight: 800;
+        color: #000;
+        cursor: pointer;
+        transition: 0.1s;
+        border: var(--border-width) solid var(--border-black);
+        background: var(--color-secondary);
+        box-shadow: 4px 4px 0 0 black;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+      }
+
+      .nav-item.active {
+        background-color: var(--color-primary);
+        color: #fff;
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 0 black;
+      }
+
+      .main-content {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+      }
+
+      /* --- Header --- */
+      .neo-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2.5rem;
+        background: #fff;
+        border: var(--border-width) solid var(--border-black);
+        padding: 2rem;
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
+      }
+
+      .header-title h1 {
+        font-weight: 900;
+        font-size: 2.5rem;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+      }
+
+      .tag-badge {
+        font-family: "Space Mono", monospace;
+        font-size: 0.9rem;
+        font-weight: 700;
+        background: var(--border-black);
+        color: #fff;
+        padding: 5px 10px;
+      }
+
+      /* --- Config Grid --- */
+      .config-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .config-item {
+        background: #fff;
+        border: var(--border-width) solid var(--border-black);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
+        transition: transform 0.2s;
+      }
+
+      .config-item:hover {
+        transform: translate(-3px, -3px);
+        box-shadow: 8px 8px 0 0 black;
+      }
+
+      .config-item label {
+        font-weight: 800;
+        font-size: 0.8rem;
+        margin-bottom: 0.5rem;
+        display: block;
+        font-family: "Space Mono", monospace;
+        text-transform: uppercase;
+      }
+
+      .neo-input {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid var(--border-black);
+        font-family: "Space Mono", monospace;
+        font-size: 1rem;
+        font-weight: bold;
+        background: #f3f4f6;
+        outline: none;
+      }
+
+      .neo-input:focus {
+        background-color: #fff;
+        border-color: var(--color-primary);
+      }
+
+      /* --- Upload Area --- */
+      .upload-container {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 3rem;
+      }
+
+      .upload-area {
+        flex: 2;
+        background: #fff;
+        border: 3px dashed var(--border-black);
+        padding: 3rem;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.2s;
+        position: relative;
+      }
+
+      .upload-area:hover {
+        background-color: #f0fdf4;
+        border-style: solid;
+        transform: translate(-4px, -4px);
+        box-shadow: 8px 8px 0 0 black;
+      }
+
+      .actions-section {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      /* --- Buttons --- */
+      .neo-btn {
+        padding: 15px;
+        font-weight: 800;
+        font-size: 1rem;
+        font-family: "Space Grotesk", sans-serif;
+        border: var(--border-width) solid var(--border-black);
+        cursor: pointer;
+        box-shadow: 4px 4px 0 0 black;
+        transition: all 0.1s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        text-transform: uppercase;
+        width: 100%;
+      }
+
+      .neo-btn:active {
+        box-shadow: 0 0 0 0 black;
+        transform: translate(4px, 4px);
+      }
+
+      .neo-btn:disabled {
+        background-color: #e5e5e5;
+        color: #888;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+      }
+
+      .btn-primary {
+        background-color: var(--color-primary);
+        color: #fff;
+      }
+      .btn-success {
+        background-color: var(--color-accent);
+        color: #000;
+      }
+      .btn-black {
+        background-color: black;
+        color: white;
+      }
+
+      /* --- Results --- */
+      .results-area {
+        background: #fff;
+        border: var(--border-width) solid black;
+        padding: 2rem;
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
+        display: none;
+      }
+      .results-area.show {
+        display: block;
+      }
+
+      .summary-cards {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .summary-card {
+        flex: 1;
+        padding: 1.5rem;
+        border: 3px solid black;
+        box-shadow: 4px 4px 0 0 rgba(0, 0, 0, 0.2);
+      }
+
+      .card-vendas {
+        background: #dcfce7;
+      }
+      .card-taxas {
+        background: #fee2e2;
+      }
+      .card-liquido {
+        background: #e0e7ff;
+      }
+
+      .summary-label {
+        font-family: "Space Mono", monospace;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        font-weight: bold;
+      }
+      .summary-value {
+        font-size: 2rem;
+        font-weight: 900;
+        margin-top: 10px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 3px solid black;
+        margin-top: 1rem;
+        font-family: "Space Mono", monospace;
+      }
+
+      th {
+        background: black;
+        color: #fff;
+        padding: 1rem;
+        text-align: left;
+        text-transform: uppercase;
+      }
+
+      td {
+        padding: 1rem;
+        border: 1px solid black;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f9fafb;
+      }
+
+      /* Loading */
+      .loader {
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid var(--color-primary);
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+        display: none;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Responsividade básica */
+      @media (max-width: 768px) {
+        .app-container {
+          flex-direction: column;
+          overflow: auto;
+        }
+        .sidebar {
+          width: 100%;
+          height: auto;
+          border-right: none;
+          border-bottom: 3px solid black;
+        }
+        .upload-container {
+          flex-direction: column;
+        }
+        .summary-cards {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <aside class="sidebar">
+        <div class="logo">
+          <i class="fas fa-bolt"></i>
+          <div>PagBank<br />Converter</div>
+        </div>
+        <nav>
+          <div class="nav-item active">
+            <i class="fas fa-file-pdf"></i> Leitor PDF
+          </div>
+        </nav>
+        <div
+          style="
+            margin-top: auto;
+            font-family: &quot;Space Mono&quot;;
+            font-size: 0.7rem;
+            opacity: 0.7;
+          "
+        >
+          NeoBrutalism v2.0
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <div class="neo-header">
+          <div class="header-title">
+            <h1>Extrato PagBank</h1>
+            <span class="tag-badge">PDF TO TXT</span>
+          </div>
+          <button class="neo-btn btn-black" style="width: auto">
+            <i class="fas fa-question"></i> Ajuda
+          </button>
+        </div>
+
+        <div class="config-grid">
+          <div class="config-item">
+            <label>Conta Clientes (D)</label>
+            <input
+              type="text"
+              class="neo-input"
+              id="conta-clientes"
+              placeholder="Ex: 27"
+              value="27"
+            />
+          </div>
+          <div class="config-item">
+            <label>Conta Banco/Cartão</label>
+            <input
+              type="text"
+              class="neo-input"
+              id="conta-cartao"
+              placeholder="Ex: 31"
+              value="31"
+            />
+          </div>
+          <div class="config-item">
+            <label>Conta Tarifas (D)</label>
+            <input
+              type="text"
+              class="neo-input"
+              id="conta-tarifas"
+              placeholder="Ex: 957"
+              value="957"
+            />
+          </div>
+        </div>
+
+        <div class="upload-container">
+          <div
+            class="upload-area"
+            onclick="document.getElementById('pdf-input').click()"
+          >
+            <i
+              class="fas fa-cloud-upload-alt"
+              style="font-size: 3rem; margin-bottom: 1rem"
+            ></i>
+            <h3>Clique ou Arraste o PDF do PagBank</h3>
+            <p
+              style="
+                font-family: &quot;Space Mono&quot;;
+                margin-top: 0.5rem;
+                color: #666;
+              "
+            >
+              Apenas arquivos .PDF
+            </p>
+            <input
+              type="file"
+              id="pdf-input"
+              accept=".pdf"
+              style="display: none"
+            />
+            <div
+              id="file-name"
+              style="
+                margin-top: 1rem;
+                font-weight: bold;
+                color: var(--color-primary);
+              "
+            ></div>
+          </div>
+
+          <div class="actions-section">
+            <button
+              class="neo-btn btn-primary"
+              id="process-btn"
+              disabled
+              onclick="processarPDF()"
+            >
+              <i class="fas fa-cogs"></i> PROCESSAR PDF
+            </button>
+            <div class="loader" id="loader"></div>
+          </div>
+        </div>
+
+        <div class="results-area" id="results-area">
+          <h2 style="margin-bottom: 1.5rem; text-transform: uppercase">
+            Consolidado Diário
+          </h2>
+
+          <div class="summary-cards">
+            <div class="summary-card card-vendas">
+              <span class="summary-label">Total Vendas (Bruto)</span>
+              <div class="summary-value" id="total-vendas">R$ 0,00</div>
+            </div>
+            <div class="summary-card card-taxas">
+              <span class="summary-label">Total Taxas</span>
+              <div
+                class="summary-value"
+                id="total-taxas"
+                style="color: #d32f2f"
+              >
+                R$ 0,00
+              </div>
+            </div>
+            <div class="summary-card card-liquido">
+              <span class="summary-label">Total Líquido Estimado</span>
+              <div class="summary-value" id="total-liquido">R$ 0,00</div>
+            </div>
+          </div>
+
+          <div style="overflow-x: auto">
+            <table id="preview-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Vendas (R$)</th>
+                  <th>Taxas (R$)</th>
+                  <th>Líquido (R$)</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <button
+            class="neo-btn btn-success"
+            style="margin-top: 2rem"
+            onclick="baixarTXT()"
+          >
+            <i class="fas fa-download"></i> BAIXAR ARQUIVO .TXT
+          </button>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      let dadosProcessados = [];
+      const pdfInput = document.getElementById("pdf-input");
+      const processBtn = document.getElementById("process-btn");
+      const fileNameDisplay = document.getElementById("file-name");
+      const loader = document.getElementById("loader");
+      const resultsArea = document.getElementById("results-area");
+
+      // Manipulação de Arquivo
+      pdfInput.addEventListener("change", (e) => {
+        if (e.target.files.length > 0) {
+          fileNameDisplay.textContent = e.target.files[0].name;
+          processBtn.disabled = false;
+        }
+      });
+
+      async function processarPDF() {
+        const file = pdfInput.files[0];
+        if (!file) return;
+
+        loader.style.display = "block";
+        processBtn.disabled = true;
+        resultsArea.classList.remove("show");
+
+        try {
+          const arrayBuffer = await file.arrayBuffer();
+          const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+
+          let textoCompleto = [];
+
+          // Extrair texto de todas as páginas
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+
+            // Simplesmente junta os itens de texto.
+            // O PDF do PagBank costuma vir picotado, então vamos usar Regex global depois.
+            const pageTextItems = textContent.items
+              .map((item) => item.str)
+              .join(" | ");
+            textoCompleto.push(pageTextItems);
+          }
+
+          const rawText = textoCompleto.join(" ||| ");
+          analisarTexto(rawText);
+        } catch (error) {
+          console.error(error);
+          alert(
+            "Erro ao ler PDF. Verifique se o arquivo não está corrompido ou protegido.",
+          );
+        } finally {
+          loader.style.display = "none";
+          processBtn.disabled = false;
+        }
+      }
+
+      function analisarTexto(text) {
+        // Normaliza espaços
+        const cleanText = text.replace(/\s+/g, " ");
+
+        // Regex para capturar padrões
+        // 1. Encontrar Datas (DD/MM/YYYY)
+        // 2. Encontrar "Venda pela Moderninha" e o valor associado
+        // 3. Encontrar "Taxa de..." e o valor associado
+
+        // Estratégia: Dividir o texto em blocos baseados em datas ou IDs
+        // Como o texto do PDF vem misturado, vamos usar uma abordagem de tokens
+
+        const tokens = cleanText.split("|"); // O delimitador que inserimos
+        let transacoes = [];
+        let dataAtual = null;
+
+        // Regex helpers
+        const regexData = /(\d{2}\/\d{2}\/\d{4})/;
+        const regexValor = /(-?\d{1,3}(?:\.\d{3})*,\d{2})/;
+
+        // Iterar sobre tokens para extrair contexto
+        for (let i = 0; i < tokens.length; i++) {
+          const token = tokens[i].trim();
+
+          // Detectar Data
+          const matchData = token.match(regexData);
+          if (matchData) {
+            dataAtual = matchData[1];
+          }
+
+          if (!dataAtual) continue; // Só processa se já tivermos uma data de referência
+
+          // Detectar Venda
+          if (token.includes("Venda pela Moderninha")) {
+            // Procura o valor nos próximos tokens (o PDF costuma colocar Descrição -> Valor ou Valor -> Descrição)
+            const valor = procurarValorProximo(tokens, i);
+            if (valor > 0) {
+              transacoes.push({ data: dataAtual, tipo: "venda", valor: valor });
+            }
+          }
+
+          // Detectar Taxa (Intermediação ou Parcelamento)
+          if (token.includes("Taxa de")) {
+            const valor = procurarValorProximo(tokens, i);
+            // Taxas geralmente aparecem negativas no extrato, convertemos para absoluto se for o caso
+            // Mas no fluxo contábil de saída, trataremos conforme a lógica.
+            if (valor !== 0) {
+              transacoes.push({
+                data: dataAtual,
+                tipo: "taxa",
+                valor: Math.abs(valor),
+              });
+            }
+          }
+        }
+
+        consolidarDados(transacoes);
+      }
+
+      function procurarValorProximo(tokens, indexAtual) {
+        const regexValor = /(-?\d{1,3}(?:\.\d{3})*,\d{2})/;
+        // Olha 3 tokens para frente e 3 para trás
+        for (let j = 1; j <= 4; j++) {
+          // Check Forward
+          if (tokens[indexAtual + j]) {
+            let match = tokens[indexAtual + j].match(regexValor);
+            if (match) return parseMoney(match[0]);
+          }
+          // Check Backward
+          if (tokens[indexAtual - j]) {
+            let match = tokens[indexAtual - j].match(regexValor);
+            if (match) return parseMoney(match[0]);
+          }
+        }
+        return 0;
+      }
+
+      function parseMoney(str) {
+        if (!str) return 0;
+        // Remove pontos de milhar e troca vírgula por ponto
+        const cleanStr = str.replace(/\./g, "").replace(",", ".");
+        return parseFloat(cleanStr);
+      }
+
+      function consolidarDados(transacoes) {
+        const mapa = {};
+
+        transacoes.forEach((t) => {
+          if (!mapa[t.data]) {
+            mapa[t.data] = { vendas: 0, taxas: 0 };
+          }
+          if (t.tipo === "venda") mapa[t.data].vendas += t.valor;
+          if (t.tipo === "taxa") mapa[t.data].taxas += t.valor; // Somando valor absoluto
+        });
+
+        // Converter para array e ordenar
+        dadosProcessados = Object.keys(mapa)
+          .map((data) => {
+            return {
+              data: data,
+              vendas: mapa[data].vendas,
+              taxas: mapa[data].taxas,
+              liquido: mapa[data].vendas - mapa[data].taxas,
+            };
+          })
+          .sort((a, b) => {
+            // Ordenar por data (DD/MM/YYYY)
+            const da = a.data.split("/").reverse().join("-");
+            const db = b.data.split("/").reverse().join("-");
+            return da.localeCompare(db);
+          });
+
+        renderizarTabela();
+      }
+
+      function renderizarTabela() {
+        const tbody = document.querySelector("#preview-table tbody");
+        tbody.innerHTML = "";
+
+        let totalV = 0;
+        let totalT = 0;
+        let totalL = 0;
+
+        dadosProcessados.forEach((d) => {
+          totalV += d.vendas;
+          totalT += d.taxas;
+          totalL += d.liquido;
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${d.data}</td>
+            <td>${formatCurrency(d.vendas)}</td>
+            <td style="color: red;">${formatCurrency(d.taxas)}</td>
+            <td style="font-weight: bold;">${formatCurrency(d.liquido)}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        document.getElementById("total-vendas").textContent =
+          formatCurrency(totalV);
+        document.getElementById("total-taxas").textContent =
+          formatCurrency(totalT);
+        document.getElementById("total-liquido").textContent =
+          formatCurrency(totalL);
+
+        resultsArea.classList.add("show");
+      }
+
+      function formatCurrency(val) {
+        return val.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
+      }
+
+      function baixarTXT() {
+        const contaClientes = document.getElementById("conta-clientes").value;
+        const contaCartao = document.getElementById("conta-cartao").value;
+        const contaTarifas = document.getElementById("conta-tarifas").value;
+
+        if (!contaClientes || !contaCartao || !contaTarifas) {
+          alert("Preencha as contas contábeis nas configurações acima.");
+          return;
+        }
+
+        let linhas = [];
+
+        dadosProcessados.forEach((d) => {
+          const dataStr = d.data;
+
+          // Linha de Venda (Entrada no Banco/Cartão vs Cliente ou Receita)
+          // Lógica Padrão: D: Cartão/Banco | C: Clientes/Receita
+          // Layout Cartoes.html: DATA;DEBITO;CREDITO;VALOR;HISTORICO
+
+          if (d.vendas > 0) {
+            const valorVenda = d.vendas.toFixed(2).replace(".", ",");
+            linhas.push(
+              `${dataStr};${contaCartao};${contaClientes};${valorVenda};;VALOR DE VENDAS C/ CARTAO DE CREDITO/DEBITO, CONF. EXTRATO PAGBANK;;;;`,
+            );
+          }
+
+          // Linha de Taxa (Despesa)
+          // Lógica Padrão: D: Despesa Tarifas | C: Cartão/Banco (Reduz o liquido)
+          if (d.taxas > 0) {
+            const valorTaxa = d.taxas.toFixed(2).replace(".", ",");
+            linhas.push(
+              `${dataStr};${contaTarifas};${contaCartao};${valorTaxa};;TAXA OPERADORA DE CARTOES CREDITO/DEBITO, CONF. EXTRATO PAGBANK;;;;`,
+            );
+          }
+        });
+
+        const blob = new Blob([linhas.join("\r\n")], { type: "text/plain" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `PAGBANK_CONSOLIDADO_${new Date().toLocaleDateString("pt-BR").replace(/\//g, "-")}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    </script>
+  </body>
+</html>
