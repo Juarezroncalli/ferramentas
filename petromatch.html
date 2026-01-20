@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PETROLUB - Conferência de Pedidos</title>
+    <title>PETROLUB RM - Conferência de Pedidos</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -375,12 +375,18 @@
         button {
           display: none !important;
         }
+
         .po-widget {
           box-shadow: none;
           border: 1px solid #ccc;
-          margin-bottom: 20px;
-          break-inside: avoid;
+          margin-bottom: 0;
+          break-inside: auto;
+          page-break-after: always;
         }
+        .po-widget:last-child {
+          page-break-after: auto;
+        }
+
         .table-scroll {
           max-height: none !important;
           overflow: visible !important;
@@ -656,7 +662,6 @@
         };
       }
 
-      // --- PARSER PDF OTIMIZADO (CORREÇÃO 1,50M) ---
       async function parsePDF(file) {
         const buffer = await file.arrayBuffer();
         const pdf = await pdfjsLib.getDocument(buffer).promise;
@@ -676,18 +681,28 @@
         if (idxNum > -1 && allTokens[idxNum + 1])
           orderNum = allTokens[idxNum + 1];
 
+        // LÓGICA DE FORNECEDOR AJUSTADA (BASEADO NO DUMP [16] NOME, [17] LABEL)
         let vendor = "N/A";
         const idxFor = allTokens.findIndex((t) => t.match(/Fornecedor:/i));
-        if (idxFor > -1 && allTokens[idxFor + 1])
-          vendor = allTokens[idxFor + 1];
+
+        if (idxFor > -1) {
+          // Tenta pegar o token ANTERIOR (comportamento observado no seu arquivo)
+          if (
+            idxFor > 0 &&
+            allTokens[idxFor - 1] &&
+            !allTokens[idxFor - 1].includes(":")
+          ) {
+            vendor = allTokens[idxFor - 1];
+          }
+          // Fallback: Tenta pegar o token POSTERIOR (padrão comum)
+          else if (allTokens[idxFor + 1]) {
+            vendor = allTokens[idxFor + 1];
+          }
+        }
 
         const items = [];
         const isInt = (s) => /^\d+$/.test(s);
-
-        // CORREÇÃO: REGEX ESTRITA PARA PREÇO (Início e Fim)
-        // Evita capturar "1,50M" como preço
         const isPrice = (s) => /^\d{1,3}(?:\.\d{3})*,\d{2}$/.test(s);
-
         const parseMoney = (s) =>
           parseFloat(s.replace(".", "").replace(",", "."));
         const isUnit = (s) =>
@@ -696,7 +711,6 @@
         for (let i = 0; i < allTokens.length; i++) {
           const token = allTokens[i];
           if (isInt(token) && parseInt(token) < 500) {
-            // Verifica se é quantidade do próximo
             if (i + 1 < allTokens.length && isInt(allTokens[i + 1])) continue;
 
             const itemIdx = parseInt(token);
@@ -825,6 +839,7 @@
             pdfPan.innerHTML = `
                 <div class="panel-header">
                     <div class="panel-header-top"><span>Ordem de Compra (RM)</span> <span>${grp.orderData.items.length} itens</span></div>
+                    <div class="panel-sub" title="${grp.orderData.vendor}">${grp.orderData.vendor}</div>
                 </div>`;
             pdfPan.appendChild(createTable(grp.orderData.items, "pdf", gIdx));
             pdfPan.innerHTML += `
