@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PETROLUB RM - Conferência de Pedidos</title>
+    <title>TOTVS RM - Conferência de Pedidos</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -82,7 +82,7 @@
       }
 
       .rm-logo::before {
-        content: "PETROLUB";
+        content: "TOTVS";
         font-weight: 900;
         background: white;
         color: var(--totvs-brand);
@@ -212,7 +212,7 @@
         border-bottom: 1px solid var(--border-color);
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 6px;
         font-size: 0.85rem;
       }
 
@@ -226,14 +226,22 @@
         font-size: 0.8rem;
         color: var(--totvs-brand);
         font-weight: normal;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        white-space: pre-wrap;
+        line-height: 1.4;
       }
 
+      .key-display {
+        display: block;
+        font-family: "Consolas", "Monaco", monospace;
+        font-size: 0.75rem;
+        color: #555;
+        margin-top: 2px;
+      }
+
+      /* ALTERAÇÃO AQUI: Barra de rolagem removida para exibir tudo */
       .table-scroll {
-        max-height: 500px;
-        overflow-y: auto;
+        /* max-height: 500px;  <-- REMOVIDO */
+        /* overflow-y: auto;   <-- REMOVIDO */
         background: white;
         border-right: 1px solid var(--border-color);
       }
@@ -568,6 +576,7 @@
             xmlFilesData.push({
               filename: x.filename,
               vendor: x.vendor,
+              key: x.key,
               installments: x.installments,
               totalValue: x.items.reduce((acc, i) => acc + i.totalPrice, 0),
             });
@@ -599,6 +608,17 @@
         const vendor = emit
           ? emit.getElementsByTagName("xNome")[0]?.textContent
           : "Fornecedor Desconhecido";
+
+        let key = "Chave não encontrada";
+        const chNFe = doc.getElementsByTagName("chNFe")[0];
+        if (chNFe) {
+          key = chNFe.textContent;
+        } else {
+          const infNFe = doc.getElementsByTagName("infNFe")[0];
+          if (infNFe && infNFe.hasAttribute("Id")) {
+            key = infNFe.getAttribute("Id").replace("NFe", "");
+          }
+        }
 
         const cobr = doc.getElementsByTagName("cobr")[0];
         let installments = [];
@@ -656,6 +676,7 @@
         return {
           filename,
           vendor,
+          key,
           installments,
           infCpl: doc.getElementsByTagName("infCpl")[0]?.textContent || "",
           items,
@@ -681,21 +702,17 @@
         if (idxNum > -1 && allTokens[idxNum + 1])
           orderNum = allTokens[idxNum + 1];
 
-        // LÓGICA DE FORNECEDOR AJUSTADA (BASEADO NO DUMP [16] NOME, [17] LABEL)
         let vendor = "N/A";
         const idxFor = allTokens.findIndex((t) => t.match(/Fornecedor:/i));
 
         if (idxFor > -1) {
-          // Tenta pegar o token ANTERIOR (comportamento observado no seu arquivo)
           if (
             idxFor > 0 &&
             allTokens[idxFor - 1] &&
             !allTokens[idxFor - 1].includes(":")
           ) {
             vendor = allTokens[idxFor - 1];
-          }
-          // Fallback: Tenta pegar o token POSTERIOR (padrão comum)
-          else if (allTokens[idxFor + 1]) {
+          } else if (allTokens[idxFor + 1]) {
             vendor = allTokens[idxFor + 1];
           }
         }
@@ -831,9 +848,11 @@
               0,
             );
 
-            const distinctVendors = [
-              ...new Set(grp.xmlFilesData.map((x) => x.vendor)),
-            ].join(", ");
+            const headerInfo = grp.xmlFilesData
+              .map((f) => {
+                return `<div style="margin-bottom:4px;"><strong>${f.vendor}</strong><span class="key-display">Chave: ${f.key}</span></div>`;
+              })
+              .join("");
 
             const pdfPan = document.createElement("div");
             pdfPan.innerHTML = `
@@ -853,7 +872,7 @@
             xmlPan.innerHTML = `
                 <div class="panel-header">
                     <div class="panel-header-top"><span>Nota Fiscal (XML)</span> <span>${grp.xmlData.length} itens</span></div>
-                    <div class="panel-sub" title="${distinctVendors}">${distinctVendors}</div>
+                    <div class="panel-sub">${headerInfo}</div>
                 </div>`;
             xmlPan.appendChild(createTable(grp.xmlData, "xml", gIdx));
 
@@ -923,10 +942,12 @@
 
           const money = (v) =>
             v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
           const desc =
             side === "xml"
-              ? `<span style="font-weight:500">${item.desc}</span><br><small style="color:#999; font-size:0.75rem">${item._file}</small>`
+              ? `<span style="font-weight:500">${item.desc}</span>`
               : `<span style="font-weight:500">${item.desc}</span>`;
+
           const num = side === "pdf" ? item.itemIdx : idx + 1;
 
           html += `<tr class="${rowClass}" onclick="handleItemClick(${gIdx}, '${side}', ${idx})">
