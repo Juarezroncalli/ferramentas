@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planejamento 2026 - Íris Dias Psicologia</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #ffde00; /* Amarelo Vibrante solicitado */
+            --card-bg: #ffffff;
+            --accent-pink: #ff90e8;
+            --accent-blue: #a3d5ff;
+            --accent-green: #bcff93;
+            --border-color: #000000;
+            --border-width: 4px;
+            --shadow-offset: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--border-color);
+            margin: 0;
+            padding: 40px 20px;
+            line-height: 1.5;
+        }
+
+        /* Utilitários Neo Brutalismo */
+        .brutal-box {
+            background: var(--card-bg);
+            border: var(--border-width) solid var(--border-color);
+            box-shadow: var(--shadow-offset) var(--shadow-offset) 0px var(--border-color);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.2s ease;
+        }
+
+        .brutal-box:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 12px 12px 0px var(--border-color);
+        }
+
+        h1, h2, h3 {
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-top: 0;
+            line-height: 1.1;
+        }
+
+        h1 { font-size: 2.5rem; letter-spacing: -2px; }
+        h2 { font-size: 1.8rem; background: var(--border-color); color: #fff; display: inline-block; padding: 5px 10px; }
+        
+        .mono {
+            font-family: 'Space Mono', monospace;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .tag {
+            background: var(--accent-pink);
+            border: 3px solid var(--border-color);
+            padding: 5px 15px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: inline-block;
+            box-shadow: 4px 4px 0px var(--border-color);
+            margin-bottom: 1rem;
+        }
+
+        /* Grid de Cenários */
+        .scenarios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .scenario-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-header {
+            border-bottom: 3px solid var(--border-color);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 1rem 0;
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px dashed var(--border-color);
+            padding: 8px 0;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .alert-box {
+            background: var(--accent-pink);
+            border: 3px solid var(--border-color);
+            padding: 10px;
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* Cores Específicas */
+        .card-simples { background-color: #fff; }
+        .card-lp-alto { background-color: var(--accent-blue); }
+        .card-lp-min { background-color: var(--accent-green); }
+
+        /* Rodapé de Análise */
+        .analysis-section {
+            max-width: 900px;
+            margin: 3rem auto 0;
+            text-align: left;
+        }
+
+        .btn-action {
+            background: var(--border-color);
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            width: 100%;
+            display: block;
+            margin-top: 2rem;
+            text-transform: uppercase;
+        }
+
+        .btn-action:hover {
+            background: #333;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8rem; }
+            .brutal-box { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="tag">PLANEJAMENTO TRIBUTÁRIO 2026</div>
+        <h1>ÍRIS DIAS<br>PSICOLOGIA CLÍNICA E NEUROPSICOLOGIA</h1>
+        <p class="mono"><strong>Base de Cálculo:</strong> Faturamento Médio R$ 50.000,00 / Mês</p>
+    </header>
+
+    <main>
+        <div class="scenarios-grid">
+            
+            <div class="brutal-box scenario-card card-simples">
+                <div class="card-header">
+                    <h3>Simples Nacional</h3>
+                    <span class="mono">Anexo III (Com Fator R)</span>
+                </div>
+                
+                <div class="mono">
+                    <div class="list-item">
+                        <span>Alíquota Efetiva:</span>
+                        <span>10,58%</span>
+                    </div>
+                    <div class="list-item">
+                        <span>DAS (Guia Única):</span>
+                        <span>R$ 5.290,00</span>
+                    </div>
+                </div>
+
+                <div class="card-value mono">
+                    R$ 5.290,00*
+                </div>
+                
+                <div class="alert-box">
+                    ⚠ *ATENÇÃO: Este valor exige Folha de R$ 14.000,00.
+                    <br><br>
+                    Custo REAL é maior devido ao IRRF e INSS sobre o Pro-Labore inflado para atingir o Fator R.
+                </div>
+            </div>
+
+            <div class="brutal-box scenario-card card-lp-alto">
+                <div class="card-header">
+                    <h3>Lucro Presumido A</h3>
+                    <span class="mono">Pro-Labore: R$ 7.945,00</span>
+                </div>
+
+                <div class="mono">
+                    <div class="list-item"><span>IRPJ:</span><span>R$ 2.400,00</span></div>
+                    <div class="list-item"><span>CSLL:</span><span>R$ 1.440,00</span></div>
+                    <div class="list-item"><span>PIS:</span><span>R$ 325,00</span></div>
+                    <div class="list-item"><span>COFINS:</span><span>R$ 1.500,00</span></div>
+                    <div class="list-item"><span>ISS:</span><span>R$ 1.500,00</span></div>
+                    <div class="list-item"><span>INSS:</span><span>R$ 3.230,55</span></div>
+                </div>
+
+                <div class="card-value mono">
+                    R$ 10.395,55
+                </div>
+                <p class="mono" style="font-size: 0.8rem; text-align: right;">Custo Mensal Total</p>
+            </div>
+
+            <div class="brutal-box scenario-card card-lp-min">
+                <div class="card-header">
+                    <h3>Lucro Presumido B</h3>
+                    <span class="mono">Pro-Labore: Salário Mínimo</span>
+                </div>
+
+                <div class="mono">
+                    <div class="list-item"><span>IRPJ:</span><span>R$ 2.400,00</span></div>
+                    <div class="list-item"><span>CSLL:</span><span>R$ 1.440,00</span></div>
+                    <div class="list-item"><span>PIS:</span><span>R$ 325,00</span></div>
+                    <div class="list-item"><span>COFINS:</span><span>R$ 1.500,00</span></div>
+                    <div class="list-item"><span>ISS:</span><span>R$ 1.500,00</span></div>
+                    <div class="list-item"><span>INSS:</span><span>R$ 1.965,75</span></div>
+                </div>
+
+                <div class="card-value mono">
+                    R$ 9.130,75
+                </div>
+                <p class="mono" style="font-size: 0.8rem; text-align: right;">Opção mais econômica no Presumido</p>
+            </div>
+
+        </div>
+
+        <section class="brutal-box analysis-section">
+            <h2>VEREDITO PRELIMINAR</h2>
+            <p>
+                Para manter o <strong>Simples Nacional (R$ 5.290,00)</strong>, a empresa é obrigada a inflar o Pro-Labore para atingir R$ 14.000,00 de folha (sendo que a folha atual é apenas 6 mil).
+            </p>
+            <p>
+                <strong>O Ponto Crítico:</strong> Embora a guia do Simples pareça menor à primeira vista, o custo de impostos na Pessoa Física (IRRF + INSS retido) para sustentar esse Pro-Labore alto provavelmente ultrapassará a economia gerada.
+            </p>
+            <ul class="mono" style="border: 3px solid #000; padding: 20px; list-style: none;">
+                <li style="margin-bottom: 10px;">➜ <strong>Cenário Presumido B (R$ 9.130,75)</strong> oferece previsibilidade e reduz drasticamente o impacto na Pessoa Física.</li>
+                <li>➜ Recomendação: Calcular o impacto exato do IRRF PF no cenário do Simples para validar a migração para o Presumido B.</li>
+            </ul>
+
+            <button class="btn-action" onclick="window.print()">Imprimir Planejamento PDF</button>
+        </section>
+
+    </main>
+</body>
+</html>

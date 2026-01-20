@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PETROMATCH - Conferência Inteligente</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    </script>
+
+    <style>
+      :root {
+        /* Branding Petrolub (Verde) */
+        --bg-brand: #00d26a;
+        --black: #111111;
+        --white: #ffffff;
+
+        /* Cores Funcionais */
+        --success-bg: #d1fae5;
+        --success-border: #059669;
+
+        --error-bg: #fee2e2;
+        --error-border: #dc2626;
+
+        --highlight: #bbf7d0;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        background-color: var(--bg-brand);
+        font-family: "Space Grotesk", sans-serif;
+        color: var(--black);
+        margin: 0;
+        padding: 20px;
+      }
+
+      /* Estilos de Impressão */
+      @media print {
+        body {
+          background: white;
+          padding: 0;
+        }
+        .no-print,
+        .upload-grid,
+        button {
+          display: none !important;
+        }
+        .neo-box {
+          box-shadow: none;
+          border: 2px solid black;
+          break-inside: avoid;
+          margin-bottom: 20px;
+        }
+        .table-scroll {
+          max-height: none !important;
+          overflow: visible !important;
+          border-bottom: 2px solid black;
+        }
+        .panel-header {
+          background: #eee !important;
+          color: black !important;
+        }
+        .total-display {
+          background: white !important;
+          border-top: 2px solid black;
+        }
+      }
+
+      .container {
+        max-width: 1800px;
+        margin: 0 auto;
+      }
+
+      h1,
+      h2 {
+        text-transform: uppercase;
+        letter-spacing: -1px;
+        margin-top: 0;
+      }
+
+      .neo-box {
+        background: var(--white);
+        border: 3px solid var(--black);
+        box-shadow: 8px 8px 0px 0px var(--black);
+        padding: 20px;
+        margin-bottom: 30px;
+      }
+
+      .neo-btn {
+        background: var(--white);
+        border: 3px solid var(--black);
+        box-shadow: 4px 4px 0px 0px var(--black);
+        padding: 10px 20px;
+        font-family: "Space Mono", monospace;
+        font-weight: bold;
+        cursor: pointer;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        margin-right: 10px;
+        margin-bottom: 5px;
+        transition: all 0.1s;
+      }
+
+      .neo-btn:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0px 0px var(--black);
+      }
+      .neo-btn:active {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0px 0px var(--black);
+      }
+
+      .neo-btn.primary {
+        background-color: var(--black);
+        color: var(--bg-brand);
+      }
+      .neo-btn.danger {
+        background-color: var(--error-border);
+        color: white;
+        border-color: var(--black);
+      }
+      .neo-btn.active-mode {
+        background-color: var(--black);
+        color: white;
+      }
+
+      .upload-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 40px;
+      }
+
+      .upload-zone {
+        border: 4px dashed var(--black);
+        background-color: var(--bg-brand); /* Verde da marca */
+        padding: 30px;
+        text-align: center;
+        cursor: pointer;
+        transition: background 0.2s;
+        font-weight: bold;
+      }
+      .upload-zone:hover {
+        background-color: var(--white);
+      }
+      .upload-zone.highlight {
+        background-color: var(--highlight);
+        border-style: solid;
+      }
+
+      .recon-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+
+      .panel-header {
+        background: var(--black);
+        color: var(--bg-brand);
+        padding: 12px;
+        font-family: "Space Mono", monospace;
+        font-weight: bold;
+        border: 3px solid var(--black);
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .table-scroll {
+        max-height: 500px;
+        overflow-y: auto;
+        border: 3px solid var(--black);
+        border-top: none;
+        background: white;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: "Space Mono", monospace;
+        font-size: 0.85rem;
+      }
+
+      th {
+        background: #e6e6e6;
+        border-bottom: 3px solid var(--black);
+        padding: 10px;
+        text-align: left;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      td {
+        border-bottom: 1px solid #ccc;
+        padding: 8px;
+        vertical-align: middle;
+      }
+
+      tr.item-row {
+        cursor: pointer;
+      }
+      tr.item-row:hover {
+        background: #f0f0f0;
+      }
+
+      .selected {
+        background: var(--highlight) !important;
+        outline: 2px solid black;
+      }
+      .is-match {
+        background: var(--success-bg);
+      }
+      .is-error {
+        background: var(--error-bg);
+      }
+
+      .badge {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        line-height: 20px;
+        text-align: center;
+        border: 2px solid black;
+        border-radius: 50%;
+        font-weight: bold;
+        background: white;
+        font-size: 0.75rem;
+      }
+
+      .total-display {
+        background: var(--black);
+        color: var(--white);
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 1.2rem;
+        font-weight: 700;
+        padding: 15px;
+        text-align: right;
+        border: 3px solid var(--black);
+        border-top: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div
+        class="neo-box no-print"
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <h1 style="margin: 0">PETROMATCH</h1>
+        <button class="neo-btn primary" onclick="window.print()">
+          🖨️ Imprimir Relatório
+        </button>
+      </div>
+
+      <div class="upload-grid no-print">
+        <div class="neo-box" style="margin: 0">
+          <h3>1. Ordens de Compra (PDF)</h3>
+          <div
+            class="upload-zone"
+            id="dropPDF"
+            onclick="document.getElementById('inputPDF').click()"
+          >
+            <p>Arraste PDFs aqui</p>
+            <input
+              type="file"
+              id="inputPDF"
+              multiple
+              accept=".pdf"
+              style="display: none"
+            />
+          </div>
+          <div
+            id="statusPDF"
+            style="
+              margin-top: 10px;
+              font-weight: bold;
+              font-family: &quot;Space Mono&quot;;
+            "
+          >
+            0 arquivos
+          </div>
+        </div>
+
+        <div class="neo-box" style="margin: 0">
+          <h3>2. Notas Fiscais (XML)</h3>
+          <div
+            class="upload-zone"
+            id="dropXML"
+            onclick="document.getElementById('inputXML').click()"
+          >
+            <p>Arraste XMLs aqui</p>
+            <input
+              type="file"
+              id="inputXML"
+              multiple
+              accept=".xml"
+              style="display: none"
+            />
+          </div>
+          <div
+            id="statusXML"
+            style="
+              margin-top: 10px;
+              font-weight: bold;
+              font-family: &quot;Space Mono&quot;;
+            "
+          >
+            0 arquivos
+          </div>
+        </div>
+      </div>
+
+      <div id="resultsArea"></div>
+    </div>
+
+    <script>
+      const state = {
+        rawPdfs: [],
+        rawXmls: [],
+        groups: [],
+        selection: { grpIdx: null, side: null, itemIdx: null },
+      };
+
+      setupUpload("dropPDF", "inputPDF", "statusPDF", "pdf");
+      setupUpload("dropXML", "inputXML", "statusXML", "xml");
+
+      function setupUpload(dropId, inputId, statusId, type) {
+        const drop = document.getElementById(dropId);
+        const input = document.getElementById(inputId);
+        const status = document.getElementById(statusId);
+
+        ["dragenter", "dragover", "dragleave", "drop"].forEach((ev) => {
+          drop.addEventListener(ev, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          });
+        });
+
+        drop.addEventListener("dragenter", () =>
+          drop.classList.add("highlight"),
+        );
+        drop.addEventListener("dragleave", () =>
+          drop.classList.remove("highlight"),
+        );
+        drop.addEventListener("drop", (e) => {
+          drop.classList.remove("highlight");
+          handleFiles(e.dataTransfer.files, type, status);
+        });
+        input.addEventListener("change", () =>
+          handleFiles(input.files, type, status),
+        );
+      }
+
+      async function handleFiles(files, type, statusElem) {
+        const arr = Array.from(files);
+        statusElem.innerText = `Processando ${arr.length} arquivos...`;
+
+        if (type === "pdf") {
+          for (const f of arr) {
+            if (
+              f.type === "application/pdf" ||
+              f.name.toLowerCase().endsWith(".pdf")
+            ) {
+              const data = await parsePDF(f);
+              state.rawPdfs.push(data);
+            }
+          }
+        } else {
+          for (const f of arr) {
+            if (f.name.toLowerCase().endsWith(".xml")) {
+              const text = await f.text();
+              state.rawXmls.push(parseXML(text, f.name));
+            }
+          }
+        }
+
+        statusElem.innerText = `${type === "pdf" ? state.rawPdfs.length : state.rawXmls.length} arquivos carregados`;
+        recalcGroups();
+      }
+
+      function recalcGroups() {
+        state.groups = [];
+
+        state.rawPdfs.forEach((pdf) => {
+          const cleanPdfNum = parseInt(pdf.orderNum.replace(/\D/g, "")) || 0;
+
+          const relatedXMLs = state.rawXmls.filter((xml) => {
+            const cleanBody = xml.infCpl.replace(/\D/g, "");
+            const foundInItems = xml.items.some((i) => {
+              const cleanPed = parseInt(i.xPed.replace(/\D/g, "")) || 0;
+              return cleanPed === cleanPdfNum && cleanPdfNum !== 0;
+            });
+            return xml.infCpl.includes(cleanPdfNum) || foundInItems;
+          });
+
+          let allXmlItems = [];
+          relatedXMLs.forEach((x) => {
+            x.items.forEach((item, idx) => {
+              allXmlItems.push({ ...item, _file: x.filename, _realId: idx });
+            });
+          });
+
+          state.groups.push({
+            orderNum: pdf.orderNum,
+            orderData: pdf,
+            xmlData: allXmlItems,
+            hasXml: relatedXMLs.length > 0,
+            matches: [],
+            errors: [],
+            errorMode: false,
+          });
+        });
+        render();
+      }
+
+      function parseXML(text, filename) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, "text/xml");
+
+        const items = [];
+        const dets = doc.getElementsByTagName("det");
+
+        for (let i = 0; i < dets.length; i++) {
+          const prod = dets[i].getElementsByTagName("prod")[0];
+          const xPed = prod.getElementsByTagName("xPed")[0]?.textContent || "";
+          const infAd =
+            dets[i].getElementsByTagName("infAdProd")[0]?.textContent || "";
+
+          let finalPed = xPed;
+          if (!finalPed) {
+            const m = infAd.match(/Ped\.?:?\s*(\d+)/i);
+            if (m) finalPed = m[1];
+          }
+
+          items.push({
+            desc: prod.getElementsByTagName("xProd")[0]?.textContent,
+            qty: parseFloat(
+              prod.getElementsByTagName("qCom")[0]?.textContent || 0,
+            ),
+            unitPrice: parseFloat(
+              prod.getElementsByTagName("vUnCom")[0]?.textContent || 0,
+            ),
+            totalPrice: parseFloat(
+              prod.getElementsByTagName("vProd")[0]?.textContent || 0,
+            ),
+            xPed: finalPed,
+          });
+        }
+        return {
+          filename,
+          infCpl: doc.getElementsByTagName("infCpl")[0]?.textContent || "",
+          items,
+        };
+      }
+
+      // --- PARSER PDF V7 (BLINDADO PARA QUANTIDADES) ---
+      async function parsePDF(file) {
+        const buffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument(buffer).promise;
+        let allTokens = [];
+
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          const strings = content.items
+            .map((it) => it.str.trim())
+            .filter((s) => s.length > 0);
+          allTokens = allTokens.concat(strings);
+        }
+
+        let orderNum = "N/A";
+        const idxNum = allTokens.findIndex((t) => t.match(/N(?:ú|u)mero:/i));
+        if (idxNum > -1 && allTokens[idxNum + 1]) {
+          orderNum = allTokens[idxNum + 1];
+        }
+
+        let vendor = "N/A";
+        const idxFor = allTokens.findIndex((t) => t.match(/Fornecedor:/i));
+        if (idxFor > -1 && allTokens[idxFor + 1]) {
+          vendor = allTokens[idxFor + 1];
+        }
+
+        const items = [];
+
+        // Funções auxiliares
+        const isInt = (s) => /^\d+$/.test(s);
+        const isPrice = (s) => /[0-9]+,[0-9]{2}/.test(s);
+        const parseMoney = (s) =>
+          parseFloat(s.replace(".", "").replace(",", "."));
+        const isUnit = (s) =>
+          ["UN", "PC", "KG", "L", "TB200", "M", "CX"].includes(s.toUpperCase());
+
+        for (let i = 0; i < allTokens.length; i++) {
+          const token = allTokens[i];
+
+          // É um Índice de Item (1, 2, 3...)?
+          if (isInt(token) && parseInt(token) < 500) {
+            // REGRA DO VIZINHO:
+            // Se o token ATUAL é int E o PRÓXIMO também é int,
+            // então o ATUAL é Quantidade e o PRÓXIMO é o Índice.
+            // Devemos pular este token.
+            if (i + 1 < allTokens.length && isInt(allTokens[i + 1])) {
+              continue; // Pula, é quantidade do próximo item
+            }
+
+            const itemIdx = parseInt(token);
+
+            // Agora fazemos o Rastreamento Reverso (Scan Backwards)
+            // Padrão esperado: ... [Preço] [Total] [Desc] [UNs] [Qtd?] [Índice]
+
+            let qty = 1;
+            let descEndIndex = i - 1;
+
+            // Tenta achar Quantidade imediatamente antes (se for número)
+            if (i > 0 && isInt(allTokens[i - 1])) {
+              qty = parseInt(allTokens[i - 1]);
+              descEndIndex = i - 2;
+            }
+
+            // Pula Unidades (UN, PC, L, etc) para achar o fim da Descrição
+            while (descEndIndex > 0 && isUnit(allTokens[descEndIndex])) {
+              descEndIndex--;
+            }
+
+            // Procura o Preço Total voltando até 15 casas
+            let totalPriceIndex = -1;
+            for (let k = descEndIndex; k >= Math.max(0, i - 15); k--) {
+              if (isPrice(allTokens[k])) {
+                totalPriceIndex = k;
+                break;
+              }
+            }
+
+            if (totalPriceIndex > -1 && totalPriceIndex > 0) {
+              const totalVal = parseMoney(allTokens[totalPriceIndex]);
+
+              // O Preço Unitário geralmente vem antes do Total
+              let unitVal = 0;
+              if (isPrice(allTokens[totalPriceIndex - 1])) {
+                unitVal = parseMoney(allTokens[totalPriceIndex - 1]);
+              } else {
+                unitVal = totalVal; // Fallback
+              }
+
+              // A Descrição está entre o Preço Total e as Unidades
+              let descParts = [];
+              for (let d = totalPriceIndex + 1; d <= descEndIndex; d++) {
+                descParts.push(allTokens[d]);
+              }
+              const desc = descParts.join(" ");
+
+              items.push({
+                itemIdx: itemIdx,
+                desc: desc,
+                qty: qty,
+                unitPrice: unitVal,
+                totalPrice: totalVal,
+              });
+            }
+          }
+        }
+
+        return { filename: file.name, orderNum, vendor, items };
+      }
+
+      // --- LÓGICA DE ID INTELIGENTE ---
+      function getNextAvailableId(matches) {
+        const usedIds = matches.map((m) => m.id);
+        let id = 1;
+        while (usedIds.includes(id)) {
+          id++;
+        }
+        return id;
+      }
+
+      function render() {
+        const area = document.getElementById("resultsArea");
+        area.innerHTML = "";
+
+        if (
+          state.groups.length === 0 &&
+          (state.rawPdfs.length > 0 || state.rawXmls.length > 0)
+        ) {
+          area.innerHTML =
+            '<div class="neo-box"><h3>Arquivos carregados, mas nenhum vínculo de Pedido encontrado. Verifique se o número do pedido consta no XML (xPed ou InfCpl).</h3></div>';
+          return;
+        }
+
+        state.groups.forEach((grp, gIdx) => {
+          const box = document.createElement("div");
+          box.className = "neo-box";
+
+          const status = grp.hasXml
+            ? `<span style="background:var(--success-bg); color:var(--success-border); padding:5px 10px; border:2px solid var(--black); font-weight:bold">XML OK</span>`
+            : `<span style="background:var(--error-bg); color:var(--error-border); padding:5px 10px; border:2px solid var(--black); font-weight:bold">SEM XML</span>`;
+
+          box.innerHTML = `
+                <div style="display:flex; justify-content:space-between; border-bottom:3px solid black; padding-bottom:10px; margin-bottom:15px;">
+                    <div><h2 style="margin:0">Pedido ${grp.orderNum}</h2><small>${grp.orderData.vendor}</small></div>
+                    <div>${status}</div>
+                </div>
+            `;
+
+          if (grp.hasXml) {
+            const tools = document.createElement("div");
+            tools.className = "no-print";
+            tools.style.marginBottom = "15px";
+            tools.innerHTML = `
+                    <button class="neo-btn" onclick="autoMatch(${gIdx})">⚡ Auto Match (Valor)</button>
+                    <button class="neo-btn ${grp.errorMode ? "active-mode danger" : ""}" onclick="toggleError(${gIdx})">
+                        ${grp.errorMode ? "Terminar Desacordo" : "❌ Desacordo Individual"}
+                    </button>
+                    <button class="neo-btn" onclick="clearGroup(${gIdx})">🧹 Limpar</button>
+                `;
+            box.appendChild(tools);
+
+            if (grp.errorMode) {
+              box.innerHTML += `<div style="background:var(--error-bg); padding:10px; margin-bottom:15px; font-weight:bold; border:2px solid red;">MODO DESACORDO ATIVO: Clique nos itens para marcar problemas.</div>`;
+            }
+
+            const grid = document.createElement("div");
+            grid.className = "recon-grid";
+
+            const totalPDF = grp.orderData.items.reduce(
+              (acc, i) => acc + i.totalPrice,
+              0,
+            );
+            const totalXML = grp.xmlData.reduce(
+              (acc, i) => acc + i.totalPrice,
+              0,
+            );
+            const money = (v) =>
+              v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+            const pdfPan = document.createElement("div");
+            pdfPan.innerHTML = `<div class="panel-header"><span>ORDEM DE COMPRA</span> <span>${grp.orderData.items.length} itens</span></div>`;
+            pdfPan.appendChild(createTable(grp.orderData.items, "pdf", gIdx));
+            pdfPan.innerHTML += `<div class="total-display">TOTAL: ${money(totalPDF)}</div>`;
+            grid.appendChild(pdfPan);
+
+            const xmlPan = document.createElement("div");
+            xmlPan.innerHTML = `<div class="panel-header"><span>NOTA FISCAL</span> <span>${grp.xmlData.length} itens</span></div>`;
+            xmlPan.appendChild(createTable(grp.xmlData, "xml", gIdx));
+            xmlPan.innerHTML += `<div class="total-display">TOTAL: ${money(totalXML)}</div>`;
+            grid.appendChild(xmlPan);
+
+            box.appendChild(grid);
+          } else {
+            box.innerHTML += `<p>Nenhum XML com o pedido ${grp.orderNum} foi encontrado.</p>`;
+          }
+
+          area.appendChild(box);
+        });
+      }
+
+      function createTable(items, side, gIdx) {
+        const wrap = document.createElement("div");
+        wrap.className = "table-scroll";
+
+        let html = `<table><thead><tr><th width="30">St</th><th width="30">#</th><th>Produto</th><th>Qtd</th><th>Unit</th><th>Total</th></tr></thead><tbody>`;
+
+        items.forEach((item, idx) => {
+          const grp = state.groups[gIdx];
+          const match = grp.matches.find((m) =>
+            m.items.some((x) => x.side === side && x.idx === idx),
+          );
+          const isErr = grp.errors.some(
+            (e) => e.side === side && e.idx === idx,
+          );
+          const isSel =
+            state.selection.grpIdx === gIdx &&
+            state.selection.side === side &&
+            state.selection.itemIdx === idx;
+
+          let rowClass = "item-row";
+          let badge = "";
+
+          if (match) {
+            rowClass += " is-match";
+            badge = `<span class="badge" style="border-color:green; color:green">✓${match.id}</span>`;
+          } else if (isErr) {
+            rowClass += " is-error";
+            badge = `<span class="badge" style="background:red; color:white; border-color:red">X</span>`;
+          }
+          if (isSel) rowClass += " selected";
+
+          const money = (v) =>
+            v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+          const desc =
+            side === "xml"
+              ? `${item.desc}<br><small style="color:#666">${item._file}</small>`
+              : item.desc;
+          const num = side === "pdf" ? item.itemIdx : idx + 1;
+
+          html += `<tr class="${rowClass}" onclick="handleItemClick(${gIdx}, '${side}', ${idx})">
+                <td>${badge}</td><td>${num}</td><td>${desc}</td><td>${item.qty}</td><td>${money(item.unitPrice)}</td><td>${money(item.totalPrice)}</td>
+            </tr>`;
+        });
+        html += `</tbody></table>`;
+        wrap.innerHTML = html;
+        return wrap;
+      }
+
+      function handleItemClick(gIdx, side, idx) {
+        const grp = state.groups[gIdx];
+
+        if (grp.errorMode) {
+          const errIndex = grp.errors.findIndex(
+            (e) => e.side === side && e.idx === idx,
+          );
+          if (errIndex > -1) {
+            grp.errors.splice(errIndex, 1);
+          } else {
+            grp.matches = grp.matches.filter(
+              (m) => !m.items.some((x) => x.side === side && x.idx === idx),
+            );
+            grp.errors.push({ side, idx });
+          }
+          render();
+          return;
+        }
+
+        const sel = state.selection;
+
+        if (sel.grpIdx === gIdx && sel.side === side && sel.itemIdx === idx) {
+          state.selection = { grpIdx: null, side: null, itemIdx: null };
+        } else if (sel.grpIdx === gIdx && sel.side && sel.side !== side) {
+          cleanItem(gIdx, sel.side, sel.itemIdx);
+          cleanItem(gIdx, side, idx);
+
+          // ID RECYCLE LOGIC
+          const newId = getNextAvailableId(grp.matches);
+
+          grp.matches.push({
+            id: newId,
+            items: [
+              { side: sel.side, idx: sel.itemIdx },
+              { side, idx },
+            ],
+          });
+          state.selection = { grpIdx: null, side: null, itemIdx: null };
+        } else {
+          state.selection = { grpIdx: gIdx, side, itemIdx: idx };
+        }
+        render();
+      }
+
+      function autoMatch(gIdx) {
+        const grp = state.groups[gIdx];
+        let changes = false;
+        grp.orderData.items.forEach((pItem, pIdx) => {
+          if (isBusy(grp, "pdf", pIdx)) return;
+          const xIdx = grp.xmlData.findIndex((xItem, xi) => {
+            if (isBusy(grp, "xml", xi)) return false;
+            return Math.abs(xItem.unitPrice - pItem.unitPrice) < 0.05;
+          });
+
+          if (xIdx > -1) {
+            const newId = getNextAvailableId(grp.matches);
+            grp.matches.push({
+              id: newId,
+              items: [
+                { side: "pdf", idx: pIdx },
+                { side: "xml", idx: xIdx },
+              ],
+            });
+            changes = true;
+          }
+        });
+        if (changes) render();
+        else alert("Nenhum match automático encontrado.");
+      }
+
+      function toggleError(gIdx) {
+        state.groups[gIdx].errorMode = !state.groups[gIdx].errorMode;
+        render();
+      }
+      function clearGroup(gIdx) {
+        if (confirm("Limpar tudo?")) {
+          state.groups[gIdx].matches = [];
+          state.groups[gIdx].errors = [];
+          render();
+        }
+      }
+      function cleanItem(gIdx, side, idx) {
+        state.groups[gIdx].matches = state.groups[gIdx].matches.filter(
+          (m) => !m.items.some((x) => x.side === side && x.idx === idx),
+        );
+        state.groups[gIdx].errors = state.groups[gIdx].errors.filter(
+          (e) => !(e.side === side && e.idx === idx),
+        );
+      }
+      function isBusy(grp, side, idx) {
+        return (
+          grp.matches.some((m) =>
+            m.items.some((x) => x.side === side && x.idx === idx),
+          ) || grp.errors.some((e) => e.side === side && e.idx === idx)
+        );
+      }
+    </script>
+  </body>
+</html>
