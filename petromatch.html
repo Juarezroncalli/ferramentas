@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PETROLUB RM - Conferência de Pedidos</title>
+    <title>TOTVS RM - Conferência de Pedidos</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -21,7 +21,7 @@
     <style>
       :root {
         /* Paleta TOTVS Portinari / RM Nova MDI */
-        --totvs-brand: #0c5e9b; /* Azul TOTVS */
+        --totvs-brand: #0c5e9b;
         --totvs-brand-hover: #00447a;
 
         --bg-app: #f0f2f5;
@@ -36,8 +36,8 @@
         --success-color: #0c9451;
         --success-bg: #e7f7ef;
 
-        --error-color: #c62828;
-        --error-bg: #fde8e8;
+        --error-color: #d32f2f;
+        --error-bg: #ffebee;
 
         --highlight-bg: #e3f2fd;
         --selection-border: #2196f3;
@@ -82,7 +82,7 @@
       }
 
       .rm-logo::before {
-        content: "PETROLUB";
+        content: "TOTVS";
         font-weight: 900;
         background: white;
         color: var(--totvs-brand);
@@ -104,7 +104,6 @@
         font-weight: 600;
         color: var(--text-primary);
       }
-
       h2 {
         font-size: 1.1rem;
       }
@@ -113,7 +112,6 @@
         color: var(--text-secondary);
       }
 
-      /* Cards estilo Portinari UI (Widget) */
       .po-widget {
         background: var(--bg-card);
         border: 1px solid var(--border-color);
@@ -123,7 +121,6 @@
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
       }
 
-      /* Botões estilo Portinari */
       .po-btn {
         background: white;
         border: 1px solid var(--totvs-brand);
@@ -139,12 +136,10 @@
         align-items: center;
         gap: 6px;
       }
-
       .po-btn:hover {
         background-color: #f5f9ff;
         box-shadow: 0 2px 4px rgba(12, 94, 155, 0.15);
       }
-
       .po-btn.primary {
         background-color: var(--totvs-brand);
         color: white;
@@ -152,7 +147,6 @@
       .po-btn.primary:hover {
         background-color: var(--totvs-brand-hover);
       }
-
       .po-btn.danger {
         border-color: var(--error-color);
         color: var(--error-color);
@@ -160,13 +154,11 @@
       .po-btn.danger:hover {
         background-color: var(--error-bg);
       }
-
       .po-btn.active-mode {
         background-color: var(--error-color);
         color: white;
       }
 
-      /* Grid de Upload */
       .upload-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -187,14 +179,8 @@
       .upload-zone:hover {
         border-color: var(--totvs-brand);
         background-color: #f5f9ff;
-        color: var(--totvs-brand);
-      }
-      .upload-zone.highlight {
-        border-color: var(--totvs-brand);
-        background-color: #e3f2fd;
       }
 
-      /* Grids de Conferência */
       .recon-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -221,7 +207,6 @@
         justify-content: space-between;
         text-transform: uppercase;
       }
-
       .panel-sub {
         font-size: 0.8rem;
         color: var(--totvs-brand);
@@ -229,7 +214,6 @@
         white-space: pre-wrap;
         line-height: 1.4;
       }
-
       .key-display {
         display: block;
         font-family: "Consolas", "Monaco", monospace;
@@ -239,7 +223,6 @@
       }
 
       .table-scroll {
-        /* Barra de rolagem removida para exibir todos os itens */
         background: white;
         border-right: 1px solid var(--border-color);
       }
@@ -280,7 +263,6 @@
       tr.item-row:hover {
         background: #f5f5f5;
       }
-
       tr.item-row:nth-child(even) {
         background-color: #fafafa;
       }
@@ -289,15 +271,39 @@
         background: var(--highlight-bg) !important;
         box-shadow: inset 3px 0 0 var(--selection-border);
       }
-
       .is-match {
         background: var(--success-bg) !important;
         color: var(--success-color);
       }
 
+      /* ESTILO DO ERRO COM A SETA */
       .is-error {
-        background: var(--error-bg) !important;
+        background: #fff5f5 !important;
         color: var(--error-color);
+        font-weight: bold;
+      }
+
+      /* --- CONFIGURAÇÃO DA SETA GORDINHA CORRIGIDA --- */
+      .fat-arrow {
+        width: 32px;
+        height: 32px;
+        fill: var(--error-color);
+        filter: drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.2));
+        display: none; /* Oculta por padrão */
+
+        /* CORREÇÃO DO ÂNGULO: */
+        transform-origin: center;
+        transform: rotate(
+          -180deg
+        ); /* Gira 45 graus anti-horário (aponta para cima-direita) */
+
+        vertical-align: middle;
+        margin-right: 5px;
+      }
+
+      /* Exibe a seta apenas quando há erro */
+      .is-error .fat-arrow {
+        display: inline-block;
       }
 
       .badge {
@@ -321,20 +327,40 @@
         cursor: pointer;
         transition: background 0.2s;
         border-left: 4px solid transparent;
+        position: relative;
+        min-height: 80px;
       }
-
       .footer-panel:hover {
         background: #eef2f6;
       }
 
       .footer-panel.finance-error {
-        background: var(--error-bg);
+        background: #fff5f5;
         border-left-color: var(--error-color);
       }
-
       .footer-panel.finance-error .total-display,
       .footer-panel.finance-error .payment-header {
         color: var(--error-color);
+      }
+
+      /* Container da Seta no Financeiro */
+      .footer-arrow-container {
+        position: absolute;
+        left: 10px;
+        top: 35%;
+        display: none;
+        z-index: 10;
+      }
+
+      .footer-panel.finance-error .footer-arrow-container {
+        display: block;
+      }
+      .footer-panel.finance-error .footer-arrow-container .fat-arrow {
+        display: block; /* Força display block dentro do container */
+      }
+
+      .footer-panel.finance-error {
+        padding-left: 50px; /* Abre espaço para a seta */
       }
 
       .total-display {
@@ -344,7 +370,6 @@
         text-align: right;
         margin-bottom: 10px;
       }
-
       .payment-info {
         font-size: 0.8rem;
         background: white;
@@ -353,7 +378,6 @@
         border-radius: 4px;
         margin-top: 8px;
       }
-
       .payment-header {
         font-weight: 700;
         color: var(--totvs-brand);
@@ -361,7 +385,6 @@
         border-bottom: 1px solid #eee;
         padding-bottom: 4px;
       }
-
       .installment-row {
         display: flex;
         justify-content: space-between;
@@ -418,9 +441,17 @@
         .recon-grid {
           border: 1px solid #ccc;
         }
+
+        .fat-arrow,
+        .footer-panel.finance-error .footer-arrow-container svg {
+          fill: red !important;
+          -webkit-print-color-adjust: exact;
+          filter: none;
+        }
         .footer-panel.finance-error {
           border: 2px solid red !important;
-          background: #ffecec !important;
+          background: #fff0f0 !important;
+          -webkit-print-color-adjust: exact;
         }
       }
     </style>
@@ -509,6 +540,13 @@
     </div>
 
     <script>
+      // Seta Gordinha (SVG) - Desenhada apontando para a DIREITA (3 horas)
+      // Path: M4,12 (Centro Esq) -> L10,6 (Topo) -> ... Ponta Direita (20,12)
+      const FAT_ARROW_SVG = `
+      <svg class="fat-arrow" viewBox="0 0 24 24">
+        <path d="M2,12 L10,4 L10,9 L22,9 L22,15 L10,15 L10,20 Z" />
+      </svg>`;
+
       const state = {
         rawPdfs: [],
         rawXmls: [],
@@ -736,19 +774,13 @@
           }
         }
 
-        // --- CORREÇÃO DA LÓGICA DE COND. PAGAMENTO ---
-        // Em vez de confiar na posição do label (que está errada no fluxo),
-        // buscamos diretamente o padrão do texto (Ex: "30 DIAS", "34/62 DIAS", "A VISTA").
         let payCond = "Não identificado";
         const payPattern = /^(\d+(\/\d+)*\s*DIAS|A VISTA|PAGAMENTO À VISTA)$/i;
-
-        // Procura no array inteiro
         const foundPay = allTokens.find((t) => payPattern.test(t));
 
         if (foundPay) {
           payCond = foundPay;
         } else {
-          // Fallback: Tenta a lógica antiga, mas ignora se for um Label (termina com :)
           const idxPay = allTokens.findIndex((t) =>
             t.match(/CONDIÇÕES DE PAGAMENTO:/i),
           );
@@ -909,6 +941,7 @@
 
             pdfPan.innerHTML += `
                 <div class="footer-panel ${financeClass}" onclick="togglePaymentError(${gIdx})" title="Clique para apontar divergência financeira">
+                    <div class="footer-arrow-container">${FAT_ARROW_SVG}</div>
                     <div class="total-display">Total OC: ${money(totalPDF)}</div>
                     <div class="payment-info" style="border-left:4px solid var(--totvs-brand)">
                         <div class="payment-header">Condição de Pagamento</div>
@@ -927,6 +960,7 @@
             xmlPan.appendChild(createTable(grp.xmlData, "xml", gIdx));
 
             let financeHtml = `<div class="footer-panel ${financeClass}" onclick="togglePaymentError(${gIdx})" title="Clique para apontar divergência financeira">
+                               <div class="footer-arrow-container">${FAT_ARROW_SVG}</div>
                                <div class="total-display">Total NF: ${money(totalXML)}</div>`;
 
             grp.xmlFilesData.forEach((f) => {
@@ -980,6 +1014,7 @@
             state.selection.itemIdx === idx;
 
           let rowClass = "item-row";
+
           let badge = "";
 
           if (match) {
@@ -987,7 +1022,7 @@
             badge = `<span class="badge" style="background:#0c9451; color:white; border:none;">${match.id}</span>`;
           } else if (isErr) {
             rowClass += " is-error";
-            badge = `<span class="badge" style="background:#c62828; color:white; border:none;">!</span>`;
+            badge = FAT_ARROW_SVG;
           }
           if (isSel) rowClass += " selected";
 
