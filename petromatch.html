@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PETROMATCH - Conferência Inteligente</title>
+    <title>TOTVS RM - Conferência de Pedidos</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
 
@@ -20,19 +20,27 @@
 
     <style>
       :root {
-        /* Branding Petrolub (Verde) */
-        --bg-brand: #00d26a;
-        --black: #111111;
-        --white: #ffffff;
+        /* Paleta TOTVS Portinari / RM Nova MDI */
+        --totvs-brand: #0c5e9b; /* Azul TOTVS */
+        --totvs-brand-hover: #00447a;
 
-        /* Cores Funcionais */
-        --success-bg: #d1fae5;
-        --success-border: #059669;
+        --bg-app: #f0f2f5;
+        --bg-card: #ffffff;
 
-        --error-bg: #fee2e2;
-        --error-border: #dc2626;
+        --text-primary: #262626;
+        --text-secondary: #6e7a85;
 
-        --highlight: #bbf7d0;
+        --border-color: #d6d6d6;
+        --divider-color: #e6e6e6;
+
+        --success-color: #0c9451;
+        --success-bg: #e7f7ef;
+
+        --error-color: #c62828;
+        --error-bg: #fde8e8;
+
+        --highlight-bg: #e3f2fd;
+        --selection-border: #2196f3;
       }
 
       * {
@@ -40,11 +48,279 @@
       }
 
       body {
-        background-color: var(--bg-brand);
-        font-family: "Space Grotesk", sans-serif;
-        color: var(--black);
+        background-color: var(--bg-app);
+        font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+        color: var(--text-primary);
         margin: 0;
-        padding: 20px;
+        padding: 0;
+        font-size: 14px;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Topbar estilo RM */
+      .rm-header {
+        background-color: var(--totvs-brand);
+        color: white;
+        padding: 0 24px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .rm-logo {
+        font-weight: 700;
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .rm-logo::before {
+        content: "TOTVS"; /* Simulação do Logo */
+        font-weight: 900;
+        background: white;
+        color: var(--totvs-brand);
+        padding: 2px 6px;
+        border-radius: 2px;
+        font-size: 0.8rem;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 20px auto;
+        padding: 0 20px;
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin-top: 0;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      h2 {
+        font-size: 1.1rem;
+      }
+      h3 {
+        font-size: 1rem;
+        color: var(--text-secondary);
+      }
+
+      /* Cards estilo Portinari UI (Widget) */
+      .po-widget {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+
+      /* Botões estilo Portinari */
+      .po-btn {
+        background: white;
+        border: 1px solid var(--totvs-brand);
+        color: var(--totvs-brand);
+        padding: 8px 16px;
+        font-family: inherit;
+        font-weight: 600;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .po-btn:hover {
+        background-color: #f5f9ff;
+        box-shadow: 0 2px 4px rgba(12, 94, 155, 0.15);
+      }
+
+      .po-btn.primary {
+        background-color: var(--totvs-brand);
+        color: white;
+      }
+      .po-btn.primary:hover {
+        background-color: var(--totvs-brand-hover);
+      }
+
+      .po-btn.danger {
+        border-color: var(--error-color);
+        color: var(--error-color);
+      }
+      .po-btn.danger:hover {
+        background-color: var(--error-bg);
+      }
+
+      .po-btn.active-mode {
+        background-color: var(--error-color);
+        color: white;
+      }
+
+      /* Grid de Upload */
+      .upload-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 24px;
+      }
+
+      .upload-zone {
+        border: 1px dashed #b0b0b0;
+        background-color: #fafafa;
+        padding: 40px;
+        text-align: center;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.2s;
+        color: var(--text-secondary);
+      }
+      .upload-zone:hover {
+        border-color: var(--totvs-brand);
+        background-color: #f5f9ff;
+        color: var(--totvs-brand);
+      }
+      .upload-zone.highlight {
+        border-color: var(--totvs-brand);
+        background-color: #e3f2fd;
+      }
+
+      /* Grids de Conferência */
+      .recon-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0; /* Colados visualmente */
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .panel-header {
+        background: #f7f9fa;
+        color: var(--text-secondary);
+        padding: 12px 16px;
+        font-weight: 600;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+      }
+
+      .table-scroll {
+        max-height: 500px;
+        overflow-y: auto;
+        background: white;
+        border-right: 1px solid var(--border-color);
+      }
+      .table-scroll:last-child {
+        border-right: none;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+      }
+
+      th {
+        background: #ffffff;
+        color: var(--text-secondary);
+        font-weight: 600;
+        padding: 12px 8px;
+        text-align: left;
+        border-bottom: 2px solid var(--border-color);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        font-size: 0.8rem;
+      }
+
+      td {
+        border-bottom: 1px solid var(--divider-color);
+        padding: 10px 8px;
+        vertical-align: middle;
+        color: var(--text-primary);
+      }
+
+      tr.item-row {
+        cursor: pointer;
+        transition: background 0.1s;
+      }
+      tr.item-row:hover {
+        background: #f5f5f5;
+      }
+
+      /* Efeitos de Linha */
+      tr.item-row:nth-child(even) {
+        background-color: #fafafa;
+      }
+
+      .selected {
+        background: var(--highlight-bg) !important;
+        box-shadow: inset 3px 0 0 var(--selection-border);
+      }
+
+      .is-match {
+        background: var(--success-bg) !important;
+        color: var(--success-color);
+      }
+
+      .is-error {
+        background: var(--error-bg) !important;
+        color: var(--error-color);
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 20px;
+        min-width: 20px;
+        padding: 0 6px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 0.7rem;
+        background: white;
+        border: 1px solid #ddd;
+      }
+
+      .total-display {
+        background: #f7f9fa;
+        color: var(--text-primary);
+        font-size: 1rem;
+        font-weight: 700;
+        padding: 16px;
+        text-align: right;
+        border-top: 1px solid var(--border-color);
+      }
+
+      /* Status Labels */
+      .status-tag {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: 4px;
+        text-transform: uppercase;
+      }
+      .status-success {
+        background: var(--success-bg);
+        color: var(--success-color);
+        border: 1px solid transparent;
+      }
+      .status-error {
+        background: var(--error-bg);
+        color: var(--error-color);
+        border: 1px solid transparent;
       }
 
       /* Estilos de Impressão */
@@ -54,230 +330,57 @@
           padding: 0;
         }
         .no-print,
+        .rm-header,
         .upload-grid,
         button {
           display: none !important;
         }
-        .neo-box {
+        .po-widget {
           box-shadow: none;
-          border: 2px solid black;
-          break-inside: avoid;
+          border: 1px solid #ccc;
           margin-bottom: 20px;
+          break-inside: avoid;
         }
         .table-scroll {
           max-height: none !important;
           overflow: visible !important;
-          border-bottom: 2px solid black;
+          border: none;
         }
-        .panel-header {
-          background: #eee !important;
-          color: black !important;
+        .recon-grid {
+          border: 1px solid #ccc;
         }
-        .total-display {
-          background: white !important;
-          border-top: 2px solid black;
-        }
-      }
-
-      .container {
-        max-width: 1800px;
-        margin: 0 auto;
-      }
-
-      h1,
-      h2 {
-        text-transform: uppercase;
-        letter-spacing: -1px;
-        margin-top: 0;
-      }
-
-      .neo-box {
-        background: var(--white);
-        border: 3px solid var(--black);
-        box-shadow: 8px 8px 0px 0px var(--black);
-        padding: 20px;
-        margin-bottom: 30px;
-      }
-
-      .neo-btn {
-        background: var(--white);
-        border: 3px solid var(--black);
-        box-shadow: 4px 4px 0px 0px var(--black);
-        padding: 10px 20px;
-        font-family: "Space Mono", monospace;
-        font-weight: bold;
-        cursor: pointer;
-        text-transform: uppercase;
-        font-size: 0.9rem;
-        margin-right: 10px;
-        margin-bottom: 5px;
-        transition: all 0.1s;
-      }
-
-      .neo-btn:hover {
-        transform: translate(-2px, -2px);
-        box-shadow: 6px 6px 0px 0px var(--black);
-      }
-      .neo-btn:active {
-        transform: translate(2px, 2px);
-        box-shadow: 2px 2px 0px 0px var(--black);
-      }
-
-      .neo-btn.primary {
-        background-color: var(--black);
-        color: var(--bg-brand);
-      }
-      .neo-btn.danger {
-        background-color: var(--error-border);
-        color: white;
-        border-color: var(--black);
-      }
-      .neo-btn.active-mode {
-        background-color: var(--black);
-        color: white;
-      }
-
-      .upload-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 30px;
-        margin-bottom: 40px;
-      }
-
-      .upload-zone {
-        border: 4px dashed var(--black);
-        background-color: var(--bg-brand); /* Verde da marca */
-        padding: 30px;
-        text-align: center;
-        cursor: pointer;
-        transition: background 0.2s;
-        font-weight: bold;
-      }
-      .upload-zone:hover {
-        background-color: var(--white);
-      }
-      .upload-zone.highlight {
-        background-color: var(--highlight);
-        border-style: solid;
-      }
-
-      .recon-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-      }
-
-      .panel-header {
-        background: var(--black);
-        color: var(--bg-brand);
-        padding: 12px;
-        font-family: "Space Mono", monospace;
-        font-weight: bold;
-        border: 3px solid var(--black);
-        display: flex;
-        justify-content: space-between;
-      }
-
-      .table-scroll {
-        max-height: 500px;
-        overflow-y: auto;
-        border: 3px solid var(--black);
-        border-top: none;
-        background: white;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        font-family: "Space Mono", monospace;
-        font-size: 0.85rem;
-      }
-
-      th {
-        background: #e6e6e6;
-        border-bottom: 3px solid var(--black);
-        padding: 10px;
-        text-align: left;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-      }
-
-      td {
-        border-bottom: 1px solid #ccc;
-        padding: 8px;
-        vertical-align: middle;
-      }
-
-      tr.item-row {
-        cursor: pointer;
-      }
-      tr.item-row:hover {
-        background: #f0f0f0;
-      }
-
-      .selected {
-        background: var(--highlight) !important;
-        outline: 2px solid black;
-      }
-      .is-match {
-        background: var(--success-bg);
-      }
-      .is-error {
-        background: var(--error-bg);
-      }
-
-      .badge {
-        display: inline-block;
-        width: 24px;
-        height: 24px;
-        line-height: 20px;
-        text-align: center;
-        border: 2px solid black;
-        border-radius: 50%;
-        font-weight: bold;
-        background: white;
-        font-size: 0.75rem;
-      }
-
-      .total-display {
-        background: var(--black);
-        color: var(--white);
-        font-family: "Space Grotesk", sans-serif;
-        font-size: 1.2rem;
-        font-weight: 700;
-        padding: 15px;
-        text-align: right;
-        border: 3px solid var(--black);
-        border-top: none;
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <div
-        class="neo-box no-print"
-        style="
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        "
-      >
-        <h1 style="margin: 0">PETROMATCH</h1>
-        <button class="neo-btn primary" onclick="window.print()">
+    <div class="rm-header no-print">
+      <div class="rm-logo">RM | Conferência de Pedidos</div>
+      <div>
+        <button
+          class="po-btn"
+          style="
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 0.85rem;
+          "
+          onclick="window.print()"
+        >
           🖨️ Imprimir Relatório
         </button>
       </div>
+    </div>
 
+    <div class="container">
       <div class="upload-grid no-print">
-        <div class="neo-box" style="margin: 0">
-          <h3>1. Ordens de Compra (PDF)</h3>
+        <div class="po-widget" style="margin: 0">
+          <h3>Ordens de Compra (PDF)</h3>
           <div
             class="upload-zone"
             id="dropPDF"
             onclick="document.getElementById('inputPDF').click()"
           >
-            <p>Arraste PDFs aqui</p>
+            <p>Clique ou arraste os arquivos PDF aqui</p>
             <input
               type="file"
               id="inputPDF"
@@ -289,23 +392,24 @@
           <div
             id="statusPDF"
             style="
-              margin-top: 10px;
-              font-weight: bold;
-              font-family: &quot;Space Mono&quot;;
+              margin-top: 12px;
+              font-size: 0.85rem;
+              color: var(--totvs-brand);
+              font-weight: 600;
             "
           >
-            0 arquivos
+            0 arquivos selecionados
           </div>
         </div>
 
-        <div class="neo-box" style="margin: 0">
-          <h3>2. Notas Fiscais (XML)</h3>
+        <div class="po-widget" style="margin: 0">
+          <h3>Notas Fiscais (XML)</h3>
           <div
             class="upload-zone"
             id="dropXML"
             onclick="document.getElementById('inputXML').click()"
           >
-            <p>Arraste XMLs aqui</p>
+            <p>Clique ou arraste os arquivos XML aqui</p>
             <input
               type="file"
               id="inputXML"
@@ -317,12 +421,13 @@
           <div
             id="statusXML"
             style="
-              margin-top: 10px;
-              font-weight: bold;
-              font-family: &quot;Space Mono&quot;;
+              margin-top: 12px;
+              font-size: 0.85rem;
+              color: var(--totvs-brand);
+              font-weight: 600;
             "
           >
-            0 arquivos
+            0 arquivos selecionados
           </div>
         </div>
       </div>
@@ -370,7 +475,7 @@
 
       async function handleFiles(files, type, statusElem) {
         const arr = Array.from(files);
-        statusElem.innerText = `Processando ${arr.length} arquivos...`;
+        statusElem.innerText = `Lendo ${arr.length} arquivos...`;
 
         if (type === "pdf") {
           for (const f of arr) {
@@ -433,7 +538,6 @@
       function parseXML(text, filename) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(text, "text/xml");
-
         const items = [];
         const dets = doc.getElementsByTagName("det");
 
@@ -470,7 +574,6 @@
         };
       }
 
-      // --- PARSER PDF V7 (BLINDADO PARA QUANTIDADES) ---
       async function parsePDF(file) {
         const buffer = await file.arrayBuffer();
         const pdf = await pdfjsLib.getDocument(buffer).promise;
@@ -487,19 +590,15 @@
 
         let orderNum = "N/A";
         const idxNum = allTokens.findIndex((t) => t.match(/N(?:ú|u)mero:/i));
-        if (idxNum > -1 && allTokens[idxNum + 1]) {
+        if (idxNum > -1 && allTokens[idxNum + 1])
           orderNum = allTokens[idxNum + 1];
-        }
 
         let vendor = "N/A";
         const idxFor = allTokens.findIndex((t) => t.match(/Fornecedor:/i));
-        if (idxFor > -1 && allTokens[idxFor + 1]) {
+        if (idxFor > -1 && allTokens[idxFor + 1])
           vendor = allTokens[idxFor + 1];
-        }
 
         const items = [];
-
-        // Funções auxiliares
         const isInt = (s) => /^\d+$/.test(s);
         const isPrice = (s) => /[0-9]+,[0-9]{2}/.test(s);
         const parseMoney = (s) =>
@@ -509,37 +608,19 @@
 
         for (let i = 0; i < allTokens.length; i++) {
           const token = allTokens[i];
-
-          // É um Índice de Item (1, 2, 3...)?
           if (isInt(token) && parseInt(token) < 500) {
-            // REGRA DO VIZINHO:
-            // Se o token ATUAL é int E o PRÓXIMO também é int,
-            // então o ATUAL é Quantidade e o PRÓXIMO é o Índice.
-            // Devemos pular este token.
-            if (i + 1 < allTokens.length && isInt(allTokens[i + 1])) {
-              continue; // Pula, é quantidade do próximo item
-            }
-
+            if (i + 1 < allTokens.length && isInt(allTokens[i + 1])) continue;
             const itemIdx = parseInt(token);
-
-            // Agora fazemos o Rastreamento Reverso (Scan Backwards)
-            // Padrão esperado: ... [Preço] [Total] [Desc] [UNs] [Qtd?] [Índice]
-
             let qty = 1;
             let descEndIndex = i - 1;
 
-            // Tenta achar Quantidade imediatamente antes (se for número)
             if (i > 0 && isInt(allTokens[i - 1])) {
               qty = parseInt(allTokens[i - 1]);
               descEndIndex = i - 2;
             }
-
-            // Pula Unidades (UN, PC, L, etc) para achar o fim da Descrição
-            while (descEndIndex > 0 && isUnit(allTokens[descEndIndex])) {
+            while (descEndIndex > 0 && isUnit(allTokens[descEndIndex]))
               descEndIndex--;
-            }
 
-            // Procura o Preço Total voltando até 15 casas
             let totalPriceIndex = -1;
             for (let k = descEndIndex; k >= Math.max(0, i - 15); k--) {
               if (isPrice(allTokens[k])) {
@@ -550,43 +631,35 @@
 
             if (totalPriceIndex > -1 && totalPriceIndex > 0) {
               const totalVal = parseMoney(allTokens[totalPriceIndex]);
-
-              // O Preço Unitário geralmente vem antes do Total
               let unitVal = 0;
               if (isPrice(allTokens[totalPriceIndex - 1])) {
                 unitVal = parseMoney(allTokens[totalPriceIndex - 1]);
               } else {
-                unitVal = totalVal; // Fallback
+                unitVal = totalVal;
               }
 
-              // A Descrição está entre o Preço Total e as Unidades
               let descParts = [];
-              for (let d = totalPriceIndex + 1; d <= descEndIndex; d++) {
+              for (let d = totalPriceIndex + 1; d <= descEndIndex; d++)
                 descParts.push(allTokens[d]);
-              }
               const desc = descParts.join(" ");
 
               items.push({
-                itemIdx: itemIdx,
-                desc: desc,
-                qty: qty,
+                itemIdx,
+                desc,
+                qty,
                 unitPrice: unitVal,
                 totalPrice: totalVal,
               });
             }
           }
         }
-
         return { filename: file.name, orderNum, vendor, items };
       }
 
-      // --- LÓGICA DE ID INTELIGENTE ---
       function getNextAvailableId(matches) {
         const usedIds = matches.map((m) => m.id);
         let id = 1;
-        while (usedIds.includes(id)) {
-          id++;
-        }
+        while (usedIds.includes(id)) id++;
         return id;
       }
 
@@ -599,21 +672,24 @@
           (state.rawPdfs.length > 0 || state.rawXmls.length > 0)
         ) {
           area.innerHTML =
-            '<div class="neo-box"><h3>Arquivos carregados, mas nenhum vínculo de Pedido encontrado. Verifique se o número do pedido consta no XML (xPed ou InfCpl).</h3></div>';
+            '<div class="po-widget" style="text-align:center; padding:40px; color:#666"><h3>Nenhum vínculo automático encontrado</h3><p>Verifique se o número do pedido consta no XML (tag xPed ou InfCpl).</p></div>';
           return;
         }
 
         state.groups.forEach((grp, gIdx) => {
           const box = document.createElement("div");
-          box.className = "neo-box";
+          box.className = "po-widget";
 
           const status = grp.hasXml
-            ? `<span style="background:var(--success-bg); color:var(--success-border); padding:5px 10px; border:2px solid var(--black); font-weight:bold">XML OK</span>`
-            : `<span style="background:var(--error-bg); color:var(--error-border); padding:5px 10px; border:2px solid var(--black); font-weight:bold">SEM XML</span>`;
+            ? `<span class="status-tag status-success">Vínculo XML OK</span>`
+            : `<span class="status-tag status-error">Sem XML correspondente</span>`;
 
           box.innerHTML = `
-                <div style="display:flex; justify-content:space-between; border-bottom:3px solid black; padding-bottom:10px; margin-bottom:15px;">
-                    <div><h2 style="margin:0">Pedido ${grp.orderNum}</h2><small>${grp.orderData.vendor}</small></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee; padding-bottom:15px; margin-bottom:20px;">
+                    <div>
+                        <h2 style="margin:0; font-size:1.2rem; color:var(--totvs-brand)">Pedido: ${grp.orderNum}</h2>
+                        <small style="color:#666">${grp.orderData.vendor}</small>
+                    </div>
                     <div>${status}</div>
                 </div>
             `;
@@ -621,18 +697,21 @@
           if (grp.hasXml) {
             const tools = document.createElement("div");
             tools.className = "no-print";
-            tools.style.marginBottom = "15px";
+            tools.style.marginBottom = "20px";
+            tools.style.display = "flex";
+            tools.style.gap = "10px";
+
             tools.innerHTML = `
-                    <button class="neo-btn" onclick="autoMatch(${gIdx})">⚡ Auto Match (Valor)</button>
-                    <button class="neo-btn ${grp.errorMode ? "active-mode danger" : ""}" onclick="toggleError(${gIdx})">
-                        ${grp.errorMode ? "Terminar Desacordo" : "❌ Desacordo Individual"}
+                    <button class="po-btn primary" onclick="autoMatch(${gIdx})">⚡ Conciliação Automática</button>
+                    <button class="po-btn ${grp.errorMode ? "active-mode" : "danger"}" onclick="toggleError(${gIdx})">
+                        ${grp.errorMode ? "Finalizar Apontamento" : "⚠️ Apontar Divergência"}
                     </button>
-                    <button class="neo-btn" onclick="clearGroup(${gIdx})">🧹 Limpar</button>
+                    <button class="po-btn" onclick="clearGroup(${gIdx})">Limpar Seleção</button>
                 `;
             box.appendChild(tools);
 
             if (grp.errorMode) {
-              box.innerHTML += `<div style="background:var(--error-bg); padding:10px; margin-bottom:15px; font-weight:bold; border:2px solid red;">MODO DESACORDO ATIVO: Clique nos itens para marcar problemas.</div>`;
+              box.innerHTML += `<div style="background:var(--error-bg); color:var(--error-color); padding:12px; margin-bottom:15px; border-radius:4px; font-weight:600; font-size:0.9rem;">Modo de Apontamento Ativo: Clique nos itens para marcar divergências.</div>`;
             }
 
             const grid = document.createElement("div");
@@ -650,20 +729,21 @@
               v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
             const pdfPan = document.createElement("div");
-            pdfPan.innerHTML = `<div class="panel-header"><span>ORDEM DE COMPRA</span> <span>${grp.orderData.items.length} itens</span></div>`;
+            pdfPan.innerHTML = `<div class="panel-header"><span>Ordem de Compra (RM)</span> <span>${grp.orderData.items.length} itens</span></div>`;
             pdfPan.appendChild(createTable(grp.orderData.items, "pdf", gIdx));
-            pdfPan.innerHTML += `<div class="total-display">TOTAL: ${money(totalPDF)}</div>`;
+            pdfPan.innerHTML += `<div class="total-display">Total OC: ${money(totalPDF)}</div>`;
             grid.appendChild(pdfPan);
 
             const xmlPan = document.createElement("div");
-            xmlPan.innerHTML = `<div class="panel-header"><span>NOTA FISCAL</span> <span>${grp.xmlData.length} itens</span></div>`;
+            xmlPan.style.borderLeft = "1px solid #e0e0e0";
+            xmlPan.innerHTML = `<div class="panel-header"><span>Nota Fiscal (XML)</span> <span>${grp.xmlData.length} itens</span></div>`;
             xmlPan.appendChild(createTable(grp.xmlData, "xml", gIdx));
-            xmlPan.innerHTML += `<div class="total-display">TOTAL: ${money(totalXML)}</div>`;
+            xmlPan.innerHTML += `<div class="total-display">Total NF: ${money(totalXML)}</div>`;
             grid.appendChild(xmlPan);
 
             box.appendChild(grid);
           } else {
-            box.innerHTML += `<p>Nenhum XML com o pedido ${grp.orderNum} foi encontrado.</p>`;
+            box.innerHTML += `<div style="padding:20px; background:#f9f9f9; border-radius:4px; color:#666">Nenhum XML com o pedido <strong>${grp.orderNum}</strong> foi localizado nos arquivos carregados.</div>`;
           }
 
           area.appendChild(box);
@@ -674,7 +754,7 @@
         const wrap = document.createElement("div");
         wrap.className = "table-scroll";
 
-        let html = `<table><thead><tr><th width="30">St</th><th width="30">#</th><th>Produto</th><th>Qtd</th><th>Unit</th><th>Total</th></tr></thead><tbody>`;
+        let html = `<table><thead><tr><th width="40">St</th><th width="40">#</th><th>Produto/Serviço</th><th width="60">Qtd</th><th>Valor Unit.</th><th>Valor Total</th></tr></thead><tbody>`;
 
         items.forEach((item, idx) => {
           const grp = state.groups[gIdx];
@@ -694,10 +774,10 @@
 
           if (match) {
             rowClass += " is-match";
-            badge = `<span class="badge" style="border-color:green; color:green">✓${match.id}</span>`;
+            badge = `<span class="badge" style="background:#0c9451; color:white; border:none;">${match.id}</span>`;
           } else if (isErr) {
             rowClass += " is-error";
-            badge = `<span class="badge" style="background:red; color:white; border-color:red">X</span>`;
+            badge = `<span class="badge" style="background:#c62828; color:white; border:none;">!</span>`;
           }
           if (isSel) rowClass += " selected";
 
@@ -705,12 +785,17 @@
             v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
           const desc =
             side === "xml"
-              ? `${item.desc}<br><small style="color:#666">${item._file}</small>`
-              : item.desc;
+              ? `<span style="font-weight:500">${item.desc}</span><br><small style="color:#999; font-size:0.75rem">${item._file}</small>`
+              : `<span style="font-weight:500">${item.desc}</span>`;
           const num = side === "pdf" ? item.itemIdx : idx + 1;
 
           html += `<tr class="${rowClass}" onclick="handleItemClick(${gIdx}, '${side}', ${idx})">
-                <td>${badge}</td><td>${num}</td><td>${desc}</td><td>${item.qty}</td><td>${money(item.unitPrice)}</td><td>${money(item.totalPrice)}</td>
+                <td align="center">${badge}</td>
+                <td align="center" style="color:#888">${num}</td>
+                <td>${desc}</td>
+                <td align="center">${item.qty}</td>
+                <td>${money(item.unitPrice)}</td>
+                <td style="font-weight:600">${money(item.totalPrice)}</td>
             </tr>`;
         });
         html += `</tbody></table>`;
@@ -745,9 +830,7 @@
           cleanItem(gIdx, sel.side, sel.itemIdx);
           cleanItem(gIdx, side, idx);
 
-          // ID RECYCLE LOGIC
           const newId = getNextAvailableId(grp.matches);
-
           grp.matches.push({
             id: newId,
             items: [
@@ -785,7 +868,8 @@
           }
         });
         if (changes) render();
-        else alert("Nenhum match automático encontrado.");
+        else
+          alert("Nenhum match automático encontrado para os itens restantes.");
       }
 
       function toggleError(gIdx) {
@@ -793,7 +877,7 @@
         render();
       }
       function clearGroup(gIdx) {
-        if (confirm("Limpar tudo?")) {
+        if (confirm("Deseja limpar todas as conciliações deste pedido?")) {
           state.groups[gIdx].matches = [];
           state.groups[gIdx].errors = [];
           render();
