@@ -238,10 +238,8 @@
         margin-top: 2px;
       }
 
-      /* ALTERAÇÃO AQUI: Barra de rolagem removida para exibir tudo */
       .table-scroll {
-        /* max-height: 500px;  <-- REMOVIDO */
-        /* overflow-y: auto;   <-- REMOVIDO */
+        /* Barra de rolagem removida para exibir todos os itens */
         background: white;
         border-right: 1px solid var(--border-color);
       }
@@ -320,6 +318,23 @@
         background: #f7f9fa;
         border-top: 1px solid var(--border-color);
         padding: 16px;
+        cursor: pointer;
+        transition: background 0.2s;
+        border-left: 4px solid transparent;
+      }
+
+      .footer-panel:hover {
+        background: #eef2f6;
+      }
+
+      .footer-panel.finance-error {
+        background: var(--error-bg);
+        border-left-color: var(--error-color);
+      }
+
+      .footer-panel.finance-error .total-display,
+      .footer-panel.finance-error .payment-header {
+        color: var(--error-color);
       }
 
       .total-display {
@@ -402,6 +417,10 @@
         }
         .recon-grid {
           border: 1px solid #ccc;
+        }
+        .footer-panel.finance-error {
+          border: 2px solid red !important;
+          background: #ffecec !important;
         }
       }
     </style>
@@ -594,6 +613,7 @@
             hasXml: relatedXMLs.length > 0,
             matches: [],
             errors: [],
+            paymentError: false,
             errorMode: false,
           });
         });
@@ -704,7 +724,6 @@
 
         let vendor = "N/A";
         const idxFor = allTokens.findIndex((t) => t.match(/Fornecedor:/i));
-
         if (idxFor > -1) {
           if (
             idxFor > 0 &&
@@ -714,6 +733,30 @@
             vendor = allTokens[idxFor - 1];
           } else if (allTokens[idxFor + 1]) {
             vendor = allTokens[idxFor + 1];
+          }
+        }
+
+        // --- CORREÇÃO DA LÓGICA DE COND. PAGAMENTO ---
+        // Em vez de confiar na posição do label (que está errada no fluxo),
+        // buscamos diretamente o padrão do texto (Ex: "30 DIAS", "34/62 DIAS", "A VISTA").
+        let payCond = "Não identificado";
+        const payPattern = /^(\d+(\/\d+)*\s*DIAS|A VISTA|PAGAMENTO À VISTA)$/i;
+
+        // Procura no array inteiro
+        const foundPay = allTokens.find((t) => payPattern.test(t));
+
+        if (foundPay) {
+          payCond = foundPay;
+        } else {
+          // Fallback: Tenta a lógica antiga, mas ignora se for um Label (termina com :)
+          const idxPay = allTokens.findIndex((t) =>
+            t.match(/CONDIÇÕES DE PAGAMENTO:/i),
+          );
+          if (idxPay > -1 && allTokens[idxPay + 1]) {
+            const candidate = allTokens[idxPay + 1];
+            if (!candidate.trim().endsWith(":")) {
+              payCond = candidate;
+            }
           }
         }
 
@@ -773,7 +816,7 @@
             }
           }
         }
-        return { filename: file.name, orderNum, vendor, items };
+        return { filename: file.name, orderNum, vendor, payCond, items };
       }
 
       function getNextAvailableId(matches) {
@@ -831,7 +874,7 @@
             box.appendChild(tools);
 
             if (grp.errorMode) {
-              box.innerHTML += `<div style="background:var(--error-bg); color:var(--error-color); padding:12px; margin-bottom:15px; border-radius:4px; font-weight:600; font-size:0.9rem;">Modo de Apontamento Ativo: Clique nos itens para marcar divergências.</div>`;
+              box.innerHTML += `<div style="background:var(--error-bg); color:var(--error-color); padding:12px; margin-bottom:15px; border-radius:4px; font-weight:600; font-size:0.9rem;">Modo de Apontamento Ativo: Clique nos itens ou nos painéis financeiros para marcar divergências.</div>`;
             }
 
             const grid = document.createElement("div");
@@ -854,6 +897,8 @@
               })
               .join("");
 
+            const financeClass = grp.paymentError ? "finance-error" : "";
+
             const pdfPan = document.createElement("div");
             pdfPan.innerHTML = `
                 <div class="panel-header">
@@ -861,9 +906,14 @@
                     <div class="panel-sub" title="${grp.orderData.vendor}">${grp.orderData.vendor}</div>
                 </div>`;
             pdfPan.appendChild(createTable(grp.orderData.items, "pdf", gIdx));
+
             pdfPan.innerHTML += `
-                <div class="footer-panel">
+                <div class="footer-panel ${financeClass}" onclick="togglePaymentError(${gIdx})" title="Clique para apontar divergência financeira">
                     <div class="total-display">Total OC: ${money(totalPDF)}</div>
+                    <div class="payment-info" style="border-left:4px solid var(--totvs-brand)">
+                        <div class="payment-header">Condição de Pagamento</div>
+                        <div>${grp.orderData.payCond}</div>
+                    </div>
                 </div>`;
             grid.appendChild(pdfPan);
 
@@ -876,7 +926,8 @@
                 </div>`;
             xmlPan.appendChild(createTable(grp.xmlData, "xml", gIdx));
 
-            let financeHtml = `<div class="footer-panel"><div class="total-display">Total NF: ${money(totalXML)}</div>`;
+            let financeHtml = `<div class="footer-panel ${financeClass}" onclick="togglePaymentError(${gIdx})" title="Clique para apontar divergência financeira">
+                               <div class="total-display">Total NF: ${money(totalXML)}</div>`;
 
             grp.xmlFilesData.forEach((f) => {
               financeHtml += `<div class="payment-info">`;
@@ -1006,6 +1057,17 @@
         render();
       }
 
+      function togglePaymentError(gIdx) {
+        if (state.groups[gIdx].errorMode) {
+          state.groups[gIdx].paymentError = !state.groups[gIdx].paymentError;
+          render();
+        } else {
+          alert(
+            "Ative o modo 'Apontar Divergência' para sinalizar erros no financeiro.",
+          );
+        }
+      }
+
       function autoMatch(gIdx) {
         const grp = state.groups[gIdx];
         let changes = false;
@@ -1041,6 +1103,7 @@
         if (confirm("Deseja limpar todas as conciliações deste pedido?")) {
           state.groups[gIdx].matches = [];
           state.groups[gIdx].errors = [];
+          state.groups[gIdx].paymentError = false;
           render();
         }
       }
