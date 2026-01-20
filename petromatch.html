@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TOTVS RM - Conferência de Pedidos</title>
+    <title>PETROLUB - Conferência de Pedidos</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -211,9 +211,24 @@
         font-weight: 600;
         border-bottom: 1px solid var(--border-color);
         display: flex;
-        justify-content: space-between;
+        flex-direction: column; /* Alterado para permitir subtitulo */
+        gap: 4px;
         font-size: 0.85rem;
+      }
+
+      .panel-header-top {
+        display: flex;
+        justify-content: space-between;
         text-transform: uppercase;
+      }
+
+      .panel-sub {
+        font-size: 0.8rem;
+        color: var(--totvs-brand);
+        font-weight: normal;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .table-scroll {
@@ -294,14 +309,42 @@
         border: 1px solid #ddd;
       }
 
-      .total-display {
+      .footer-panel {
         background: #f7f9fa;
+        border-top: 1px solid var(--border-color);
+        padding: 16px;
+      }
+
+      .total-display {
         color: var(--text-primary);
         font-size: 1rem;
         font-weight: 700;
-        padding: 16px;
         text-align: right;
-        border-top: 1px solid var(--border-color);
+        margin-bottom: 10px;
+      }
+
+      .payment-info {
+        font-size: 0.8rem;
+        background: white;
+        border: 1px solid var(--divider-color);
+        padding: 10px;
+        border-radius: 4px;
+        margin-top: 8px;
+      }
+
+      .payment-header {
+        font-weight: 700;
+        color: var(--totvs-brand);
+        margin-bottom: 4px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 4px;
+      }
+
+      .installment-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 2px 0;
+        color: #555;
       }
 
       /* Status Labels */
@@ -516,7 +559,17 @@
           });
 
           let allXmlItems = [];
+          let xmlFilesData = [];
+
           relatedXMLs.forEach((x) => {
+            // Guarda metadados de cada arquivo XML associado a este pedido
+            xmlFilesData.push({
+              filename: x.filename,
+              vendor: x.vendor,
+              installments: x.installments,
+              totalValue: x.items.reduce((acc, i) => acc + i.totalPrice, 0),
+            });
+
             x.items.forEach((item, idx) => {
               allXmlItems.push({ ...item, _file: x.filename, _realId: idx });
             });
@@ -526,6 +579,7 @@
             orderNum: pdf.orderNum,
             orderData: pdf,
             xmlData: allXmlItems,
+            xmlFilesData: xmlFilesData, // Metadados para exibição
             hasXml: relatedXMLs.length > 0,
             matches: [],
             errors: [],
@@ -538,6 +592,40 @@
       function parseXML(text, filename) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(text, "text/xml");
+
+        // 1. Extração do Fornecedor
+        const emit = doc.getElementsByTagName("emit")[0];
+        const vendor = emit
+          ? emit.getElementsByTagName("xNome")[0]?.textContent
+          : "Fornecedor Desconhecido";
+
+        // 2. Extração Financeira (Fatura/Duplicatas)
+        const cobr = doc.getElementsByTagName("cobr")[0];
+        let installments = [];
+
+        if (cobr) {
+          const dups = cobr.getElementsByTagName("dup");
+          if (dups.length > 0) {
+            for (let i = 0; i < dups.length; i++) {
+              const dVenc =
+                dups[i].getElementsByTagName("dVenc")[0]?.textContent;
+              const vDup = parseFloat(
+                dups[i].getElementsByTagName("vDup")[0]?.textContent || 0,
+              );
+
+              // Formata a data de YYYY-MM-DD para DD/MM/YYYY
+              let dateFmt = dVenc;
+              if (dVenc && dVenc.includes("-")) {
+                const parts = dVenc.split("-");
+                dateFmt = `${parts[2]}/${parts[1]}/${parts[0]}`;
+              }
+
+              installments.push({ date: dateFmt, value: vDup });
+            }
+          }
+        }
+
+        // 3. Itens
         const items = [];
         const dets = doc.getElementsByTagName("det");
 
@@ -569,6 +657,8 @@
         }
         return {
           filename,
+          vendor,
+          installments,
           infCpl: doc.getElementsByTagName("infCpl")[0]?.textContent || "",
           items,
         };
@@ -717,6 +807,8 @@
             const grid = document.createElement("div");
             grid.className = "recon-grid";
 
+            const money = (v) =>
+              v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
             const totalPDF = grp.orderData.items.reduce(
               (acc, i) => acc + i.totalPrice,
               0,
@@ -725,20 +817,58 @@
               (acc, i) => acc + i.totalPrice,
               0,
             );
-            const money = (v) =>
-              v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
+            // Monta lista de fornecedores dos XMLs para o header
+            const distinctVendors = [
+              ...new Set(grp.xmlFilesData.map((x) => x.vendor)),
+            ].join(", ");
+
+            // --- LADO DO PDF ---
             const pdfPan = document.createElement("div");
-            pdfPan.innerHTML = `<div class="panel-header"><span>Ordem de Compra (RM)</span> <span>${grp.orderData.items.length} itens</span></div>`;
+            pdfPan.innerHTML = `
+                <div class="panel-header">
+                    <div class="panel-header-top"><span>Ordem de Compra (RM)</span> <span>${grp.orderData.items.length} itens</span></div>
+                </div>`;
             pdfPan.appendChild(createTable(grp.orderData.items, "pdf", gIdx));
-            pdfPan.innerHTML += `<div class="total-display">Total OC: ${money(totalPDF)}</div>`;
+            pdfPan.innerHTML += `
+                <div class="footer-panel">
+                    <div class="total-display">Total OC: ${money(totalPDF)}</div>
+                </div>`;
             grid.appendChild(pdfPan);
 
+            // --- LADO DO XML (Com Financeiro) ---
             const xmlPan = document.createElement("div");
             xmlPan.style.borderLeft = "1px solid #e0e0e0";
-            xmlPan.innerHTML = `<div class="panel-header"><span>Nota Fiscal (XML)</span> <span>${grp.xmlData.length} itens</span></div>`;
+            xmlPan.innerHTML = `
+                <div class="panel-header">
+                    <div class="panel-header-top"><span>Nota Fiscal (XML)</span> <span>${grp.xmlData.length} itens</span></div>
+                    <div class="panel-sub" title="${distinctVendors}">${distinctVendors}</div>
+                </div>`;
             xmlPan.appendChild(createTable(grp.xmlData, "xml", gIdx));
-            xmlPan.innerHTML += `<div class="total-display">Total NF: ${money(totalXML)}</div>`;
+
+            // Geração do Painel Financeiro
+            let financeHtml = `<div class="footer-panel"><div class="total-display">Total NF: ${money(totalXML)}</div>`;
+
+            grp.xmlFilesData.forEach((f) => {
+              financeHtml += `<div class="payment-info">`;
+              financeHtml += `<div class="payment-header">${f.vendor} (Total: ${money(f.totalValue)})</div>`;
+
+              if (f.installments.length > 0) {
+                f.installments.forEach((inst, idxInst) => {
+                  financeHtml += `
+                            <div class="installment-row">
+                                <span>Parc ${idxInst + 1} (${inst.date})</span>
+                                <span>${money(inst.value)}</span>
+                            </div>`;
+                });
+              } else {
+                financeHtml += `<div class="installment-row"><span>Pagamento Único / À Vista</span><span>${money(f.totalValue)}</span></div>`;
+              }
+              financeHtml += `</div>`;
+            });
+            financeHtml += `</div>`;
+
+            xmlPan.innerHTML += financeHtml;
             grid.appendChild(xmlPan);
 
             box.appendChild(grid);
