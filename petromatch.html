@@ -18,6 +18,10 @@
         "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
     </script>
 
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
+
     <style>
       :root {
         /* Paleta TOTVS Portinari / RM Nova MDI */
@@ -91,6 +95,11 @@
         font-size: 0.8rem;
       }
 
+      .header-tools {
+        display: flex;
+        gap: 8px;
+      }
+
       .container {
         max-width: 1400px;
         margin: 20px auto;
@@ -157,6 +166,16 @@
       .po-btn.active-mode {
         background-color: var(--error-color);
         color: white;
+      }
+      /* Botão transparente para header */
+      .po-btn.ghost {
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+      }
+      .po-btn.ghost:hover {
+        background: rgba(255, 255, 255, 0.25);
+        box-shadow: none;
       }
 
       .upload-grid {
@@ -276,32 +295,24 @@
         color: var(--success-color);
       }
 
-      /* ESTILO DO ERRO COM A SETA */
       .is-error {
         background: #fff5f5 !important;
         color: var(--error-color);
         font-weight: bold;
       }
 
-      /* --- CONFIGURAÇÃO DA SETA GORDINHA CORRIGIDA --- */
       .fat-arrow {
         width: 32px;
         height: 32px;
         fill: var(--error-color);
         filter: drop-shadow(2px 2px 0px rgba(0, 0, 0, 0.2));
-        display: none; /* Oculta por padrão */
-
-        /* CORREÇÃO DO ÂNGULO: */
+        display: none;
         transform-origin: center;
-        transform: rotate(
-          -180deg
-        ); /* Gira 45 graus anti-horário (aponta para cima-direita) */
-
+        transform: rotate(-180deg);
         vertical-align: middle;
         margin-right: 5px;
       }
 
-      /* Exibe a seta apenas quando há erro */
       .is-error .fat-arrow {
         display: inline-block;
       }
@@ -343,7 +354,6 @@
         color: var(--error-color);
       }
 
-      /* Container da Seta no Financeiro */
       .footer-arrow-container {
         position: absolute;
         left: 10px;
@@ -356,11 +366,11 @@
         display: block;
       }
       .footer-panel.finance-error .footer-arrow-container .fat-arrow {
-        display: block; /* Força display block dentro do container */
+        display: block;
       }
 
       .footer-panel.finance-error {
-        padding-left: 50px; /* Abre espaço para a seta */
+        padding-left: 50px;
       }
 
       .total-display {
@@ -459,18 +469,23 @@
   <body>
     <div class="rm-header no-print">
       <div class="rm-logo">RM | Conferência de Pedidos</div>
-      <div>
+      <div class="header-tools">
+        <button class="po-btn ghost" onclick="exportToExcel()">
+          📊 Exportar Excel
+        </button>
+        <button class="po-btn ghost" onclick="generateErrorReport()">
+          📑 Relatório Divergências
+        </button>
+        <button class="po-btn ghost" onclick="window.print()">
+          🖨️ Imprimir
+        </button>
         <button
-          class="po-btn"
-          style="
-            background: transparent;
-            border: none;
-            color: white;
-            font-size: 0.85rem;
-          "
-          onclick="window.print()"
+          class="po-btn ghost"
+          style="border-color: #ff8888; color: #ffcccc"
+          onclick="clearState()"
+          title="Limpar memória e reiniciar"
         >
-          🖨️ Imprimir Relatório
+          🗑️ Limpar Dados Salvos
         </button>
       </div>
     </div>
@@ -612,6 +627,14 @@
       }
 
       function recalcGroups() {
+        // Se vier de um restore de localStorage, não recalcula do zero se já tiver groups,
+        // mas aqui assumimos que rawPdfs/Xmls mudaram, então recalcula.
+        // Se for só refresh, vamos confiar no restoreState.
+        // Para garantir consistência ao adicionar novos arquivos, limpamos groups antigos e recriamos.
+        // A lógica original não preservava estado ao adicionar arquivos novos sobre velhos,
+        // então manteremos o padrão de reconstruir.
+        // Nota: Se quiser preservar matches anteriores ao adicionar novos arquivos, a logica seria mais complexa.
+
         state.groups = [];
 
         state.rawPdfs.forEach((pdf) => {
@@ -859,6 +882,10 @@
       }
 
       function render() {
+        // --- PERSISTÊNCIA: SALVAR O ESTADO AO RENDERIZAR ---
+        saveState();
+        // --------------------------------------------------
+
         const area = document.getElementById("resultsArea");
         area.innerHTML = "";
 
@@ -1157,6 +1184,240 @@
           ) || grp.errors.some((e) => e.side === side && e.idx === idx)
         );
       }
+
+      // ------------------------------------------
+      // NOVAS FUNÇÕES: EXCEL, PDF E PERSISTÊNCIA
+      // ------------------------------------------
+
+      function saveState() {
+        try {
+          // Salva o objeto state inteiro.
+          // rawPdfs/Xmls são necessários para reconstruir a estrutura caso a página feche.
+          localStorage.setItem("petromatch_state", JSON.stringify(state));
+        } catch (e) {
+          console.warn(
+            "Não foi possível salvar o estado (limite excedido?)",
+            e,
+          );
+        }
+      }
+
+      function loadState() {
+        const saved = localStorage.getItem("petromatch_state");
+        if (saved) {
+          try {
+            const parsed = JSON.parse(saved);
+            // Copia propriedades salvas para o objeto state em memória
+            Object.assign(state, parsed);
+
+            // Atualiza contadores visuais
+            document.getElementById("statusPDF").innerText =
+              state.rawPdfs.length + " arquivos restaurados";
+            document.getElementById("statusXML").innerText =
+              state.rawXmls.length + " arquivos restaurados";
+
+            // Força renderização
+            render();
+            console.log("Estado restaurado do localStorage");
+          } catch (e) {
+            console.error("Erro ao carregar estado salvo", e);
+          }
+        }
+      }
+
+      function clearState() {
+        if (
+          confirm(
+            "Isso apagará todos os dados carregados e reiniciará a ferramenta. Deseja continuar?",
+          )
+        ) {
+          localStorage.removeItem("petromatch_state");
+          location.reload();
+        }
+      }
+
+      function exportToExcel() {
+        if (state.groups.length === 0) {
+          alert("Sem dados para exportar.");
+          return;
+        }
+
+        let exportData = [];
+
+        state.groups.forEach((grp) => {
+          // 1. Itens Conciliados
+          grp.matches.forEach((m) => {
+            const pdfItem = grp.orderData.items[m.items[0].idx];
+            const xmlItem = grp.xmlData[m.items[1].idx];
+            exportData.push({
+              Pedido: grp.orderNum,
+              Fornecedor: grp.orderData.vendor,
+              Status: "Conciliado",
+              Produto: pdfItem.desc,
+              "Qtd Pedida": pdfItem.qty,
+              "Qtd XML": xmlItem.qty,
+              "Preço Unit Pedido": pdfItem.unitPrice,
+              "Preço Unit XML": xmlItem.unitPrice,
+              "Total Pedido": pdfItem.totalPrice,
+              "Total XML": xmlItem.totalPrice,
+            });
+          });
+
+          // 2. Divergências Apontadas (Manual)
+          grp.errors.forEach((err) => {
+            let item, sideStr;
+            if (err.side === "pdf") {
+              item = grp.orderData.items[err.idx];
+              sideStr = "Pedido (PDF)";
+            } else {
+              item = grp.xmlData[err.idx];
+              sideStr = "Nota (XML)";
+            }
+            exportData.push({
+              Pedido: grp.orderNum,
+              Fornecedor: grp.orderData.vendor,
+              Status: "Divergência",
+              Produto: item.desc + ` [Origem: ${sideStr}]`,
+              "Qtd Pedida": err.side === "pdf" ? item.qty : "",
+              "Qtd XML": err.side === "xml" ? item.qty : "",
+              "Preço Unit Pedido": err.side === "pdf" ? item.unitPrice : "",
+              "Preço Unit XML": err.side === "xml" ? item.unitPrice : "",
+              "Total Pedido": err.side === "pdf" ? item.totalPrice : "",
+              "Total XML": err.side === "xml" ? item.totalPrice : "",
+            });
+          });
+
+          // 3. Pendentes (Nem match, nem erro)
+          // Percorre PDF
+          grp.orderData.items.forEach((pItem, idx) => {
+            if (!isBusy(grp, "pdf", idx)) {
+              exportData.push({
+                Pedido: grp.orderNum,
+                Fornecedor: grp.orderData.vendor,
+                Status: "Pendente PDF",
+                Produto: pItem.desc,
+                "Qtd Pedida": pItem.qty,
+                "Qtd XML": "",
+                "Preço Unit Pedido": pItem.unitPrice,
+                "Preço Unit XML": "",
+                "Total Pedido": pItem.totalPrice,
+                "Total XML": "",
+              });
+            }
+          });
+          // Percorre XML
+          grp.xmlData.forEach((xItem, idx) => {
+            if (!isBusy(grp, "xml", idx)) {
+              exportData.push({
+                Pedido: grp.orderNum,
+                Fornecedor: grp.orderData.vendor,
+                Status: "Pendente XML",
+                Produto: xItem.desc,
+                "Qtd Pedida": "",
+                "Qtd XML": xItem.qty,
+                "Preço Unit Pedido": "",
+                "Preço Unit XML": xItem.unitPrice,
+                "Total Pedido": "",
+                "Total XML": xItem.totalPrice,
+              });
+            }
+          });
+        });
+
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Conferencia");
+        XLSX.writeFile(wb, "Conferencia_Pedidos.xlsx");
+      }
+
+      function generateErrorReport() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        doc.setFontSize(16);
+        doc.text("Relatório de Divergências - PETROLUB", 14, 20);
+        doc.setFontSize(10);
+        doc.text(`Gerado em: ${new Date().toLocaleString()}`, 14, 28);
+
+        let bodyData = [];
+
+        state.groups.forEach((grp) => {
+          let hasIssues = false;
+          // Cabeçalho do Grupo
+          if (grp.errors.length > 0 || grp.paymentError) {
+            bodyData.push([
+              {
+                content: `Pedido: ${grp.orderNum} | Fornecedor: ${grp.orderData.vendor}`,
+                colSpan: 4,
+                styles: {
+                  fillColor: [220, 220, 220],
+                  fontStyle: "bold",
+                  halign: "left",
+                },
+              },
+            ]);
+            hasIssues = true;
+          }
+
+          // Divergências Financeiras
+          if (grp.paymentError) {
+            bodyData.push([
+              {
+                content: "DIVERGÊNCIA FINANCEIRA (Totais ou Prazos não batem)",
+                colSpan: 4,
+                styles: { textColor: [200, 0, 0] },
+              },
+            ]);
+          }
+
+          // Divergências de Itens
+          grp.errors.forEach((err) => {
+            let item, type, val;
+            if (err.side === "pdf") {
+              item = grp.orderData.items[err.idx];
+              type = "No Pedido (Falta XML)";
+              val = item.totalPrice;
+            } else {
+              item = grp.xmlData[err.idx];
+              type = "Na Nota (Falta Pedido)";
+              val = item.totalPrice;
+            }
+
+            bodyData.push([
+              type,
+              item.desc,
+              item.qty.toString(),
+              val.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              }),
+            ]);
+          });
+        });
+
+        if (bodyData.length === 0) {
+          alert(
+            "Nenhuma divergência apontada para gerar relatório. Marque itens como 'Apontar Divergência' primeiro.",
+          );
+          return;
+        }
+
+        doc.autoTable({
+          head: [["Tipo", "Produto", "Qtd", "Valor Total"]],
+          body: bodyData,
+          startY: 35,
+          theme: "grid",
+          styles: { fontSize: 9 },
+          headStyles: { fillColor: [12, 94, 155] }, // Cor TOTVS Brand
+        });
+
+        doc.save("Relatorio_Divergencias.pdf");
+      }
+
+      // Inicia restaurando estado se existir
+      window.addEventListener("DOMContentLoaded", () => {
+        loadState();
+      });
     </script>
   </body>
 </html>
