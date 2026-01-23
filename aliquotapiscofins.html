@@ -1,0 +1,1389 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-6XKND47T4H"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-6XKND47T4H", {
+        anonymize_ip: true,
+        allow_google_signals: false,
+        allow_ad_personalization_signals: false,
+      });
+    </script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auditor PIS/COFINS [Neo Brutal]</title>
+    <link rel="icon" href="icone.ico" type="image/x-icon" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg-body: #ffde00;
+        --card-bg: #ffffff;
+        --border-black: #000000;
+        --c-purple: #8b5cf6;
+        --c-pink: #ff90e8;
+        --c-blue: #06b6d4;
+        --c-green: #22c55e;
+        --c-red: #ff4d4d;
+        --c-orange: #f97316;
+        --c-gray: #9ca3af;
+        --border-width: 3px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Space Grotesk", sans-serif;
+        background-color: var(--bg-body);
+        background-image: radial-gradient(#000 1px, transparent 1px);
+        background-size: 20px 20px;
+        color: var(--border-black);
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+      }
+
+      /* SIDEBAR */
+      .sidebar {
+        width: 240px;
+        background: var(--c-purple);
+        border-right: var(--border-width) solid var(--border-black);
+        padding: 1.5rem 1rem;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        color: #fff;
+        overflow-y: auto;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        margin-bottom: 2rem;
+        text-shadow: 3px 3px 0 #000;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .nav-item {
+        background: #fff;
+        color: #000;
+        padding: 0.8rem;
+        margin-bottom: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        border: var(--border-width) solid #000;
+        box-shadow: 3px 3px 0 0 #000;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: 0.2s;
+        font-size: 0.9rem;
+      }
+
+      .nav-item:hover,
+      .nav-item.active {
+        transform: translate(-2px, -2px);
+        box-shadow: 5px 5px 0 0 #000;
+        background: var(--c-blue);
+      }
+
+      /* MAIN CONTENT */
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .scroll-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem;
+        padding-bottom: 80px;
+      }
+
+      /* HEADER */
+      .neo-header {
+        background: #fff;
+        border: var(--border-width) solid #000;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 5px 5px 0 0 #000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .neo-header h1 {
+        font-weight: 900;
+        font-size: 1.8rem;
+        text-transform: uppercase;
+      }
+      .badge {
+        background: var(--c-pink);
+        font-family: "Space Mono", monospace;
+        padding: 3px 8px;
+        border: 2px solid #000;
+        font-size: 0.8rem;
+        font-weight: bold;
+      }
+
+      /* CARDS */
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .metric-card {
+        background: #fff;
+        border: var(--border-width) solid #000;
+        padding: 1rem;
+        box-shadow: 4px 4px 0 0 #000;
+        position: relative;
+      }
+      .metric-card.purple {
+        border-top: 6px solid var(--c-purple);
+      }
+      .metric-card.green {
+        border-top: 6px solid var(--c-green);
+      }
+      .metric-card.blue {
+        border-top: 6px solid var(--c-blue);
+      }
+      .metric-card.orange {
+        border-top: 6px solid var(--c-orange);
+      }
+
+      .metric-title {
+        font-weight: 900;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        margin-bottom: 0.3rem;
+        color: #555;
+      }
+      .metric-value {
+        font-family: "Space Mono", monospace;
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+
+      /* UPLOAD */
+      .upload-area {
+        background: var(--c-pink);
+        border: 3px dashed #000;
+        padding: 1.5rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        cursor: pointer;
+        transition: 0.2s;
+        position: relative;
+      }
+      .upload-area:hover {
+        background: #ffbdf2;
+        transform: scale(1.005);
+      }
+      .upload-label {
+        font-weight: 800;
+        font-size: 1rem;
+        text-transform: uppercase;
+        pointer-events: none;
+      }
+      #xmlInput {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      /* FILTROS */
+      .filters-container {
+        background: #fff;
+        border: var(--border-width) solid #000;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 4px 4px 0 0 #000;
+      }
+      .filters-grid {
+        display: grid;
+        grid-template-columns: 1.5fr 0.8fr 0.8fr 1.1fr 1.1fr auto;
+        gap: 1rem;
+        align-items: end;
+      }
+
+      .form-group label {
+        display: block;
+        font-weight: 800;
+        margin-bottom: 0.3rem;
+        font-family: "Space Mono";
+        text-transform: uppercase;
+        font-size: 0.75rem;
+      }
+      .neo-input {
+        width: 100%;
+        padding: 8px;
+        border: 2px solid #000;
+        background: #f0f0f0;
+        font-family: "Space Mono";
+        font-size: 0.9rem;
+        font-weight: bold;
+        outline: none;
+      }
+      .neo-input:focus {
+        background: #fff;
+        box-shadow: 3px 3px 0 0 var(--c-purple);
+      }
+
+      /* TOGGLES */
+      .crt-toggles {
+        display: flex;
+        gap: 5px;
+      }
+      .btn-toggle {
+        flex: 1;
+        background: #fff;
+        border: 2px solid #000;
+        padding: 8px 4px;
+        font-family: "Space Mono";
+        font-size: 0.7rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        cursor: pointer;
+        text-align: center;
+        white-space: nowrap;
+      }
+      .btn-toggle:hover {
+        background: #eee;
+      }
+      .btn-toggle.active {
+        background: #000;
+        color: #fff;
+        box-shadow: 2px 2px 0 0 var(--c-blue);
+      }
+
+      .btn-filter {
+        background: #000;
+        color: #fff;
+        border: none;
+        padding: 10px 18px;
+        font-family: "Space Grotesk";
+        font-weight: 800;
+        text-transform: uppercase;
+        cursor: pointer;
+        border: 2px solid #000;
+        font-size: 0.9rem;
+      }
+      .btn-filter:hover {
+        background: var(--c-green);
+        color: #000;
+        box-shadow: 3px 3px 0 0 #000;
+      }
+
+      /* TABELA */
+      .table-container {
+        overflow-x: auto;
+        border: var(--border-width) solid #000;
+        box-shadow: 4px 4px 0 0 #000;
+        background: #fff;
+        margin-bottom: 1rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: "Space Mono";
+        font-size: 0.7rem;
+        white-space: nowrap;
+      }
+      th {
+        background: #000;
+        color: #fff;
+        padding: 8px 6px;
+        text-align: left;
+        text-transform: uppercase;
+        font-weight: bold;
+        border-right: 1px solid #333;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        font-size: 0.75rem;
+      }
+      td {
+        padding: 6px 6px;
+        border-bottom: 1px solid #000;
+        border-right: 1px solid #000;
+        vertical-align: middle;
+      }
+      tr:hover {
+        background: #fdfce5;
+      }
+
+      /* ESTILOS DE COLUNA TRUNCADA */
+      .col-prod {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block;
+        cursor: pointer;
+        border-bottom: 2px dotted var(--c-purple);
+      }
+      .col-prod:hover {
+        color: var(--c-purple);
+      }
+
+      /* NOVA COLUNA EMITENTE */
+      .col-emit {
+        max-width: 140px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block;
+        font-weight: bold;
+      }
+
+      /* TOOLTIP */
+      #floatingTooltip {
+        position: fixed;
+        display: none;
+        background: #fff;
+        border: 3px solid #000;
+        box-shadow: 8px 8px 0 0 rgba(0, 0, 0, 1);
+        padding: 12px;
+        z-index: 9999;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 0.8rem;
+        max-width: 320px;
+        pointer-events: auto;
+        cursor: pointer;
+      }
+      #floatingTooltip:active {
+        transform: translate(2px, 2px);
+        box-shadow: 4px 4px 0 0 #000;
+      }
+      #floatingTooltip .break-text {
+        word-break: break-all;
+        font-family: "Space Mono", monospace;
+        background: #eee;
+        padding: 3px;
+        border: 1px solid #000;
+        display: block;
+        margin-top: 3px;
+        font-size: 0.7rem;
+        line-height: 1.2;
+      }
+      .tooltip-header {
+        font-weight: 900;
+        text-transform: uppercase;
+        border-bottom: 2px solid #eee;
+        margin-bottom: 5px;
+        padding-bottom: 2px;
+      }
+      .tooltip-row {
+        margin-bottom: 4px;
+        line-height: 1.2;
+      }
+      .tooltip-hint {
+        font-size: 0.65rem;
+        color: var(--c-purple);
+        font-weight: bold;
+        margin-top: 5px;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      /* TAGS E STATUS */
+      .status-badge {
+        display: inline-block;
+        padding: 2px 5px;
+        border: 1px solid #000;
+        font-weight: bold;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+      }
+      .st-ok {
+        background: var(--c-green);
+        color: #000;
+      }
+      .st-red {
+        background: var(--c-orange);
+        color: #000;
+      }
+      .st-zero {
+        background: #fef08a;
+        color: #000;
+      }
+      .st-none {
+        background: #e5e7eb;
+        color: #666;
+      }
+
+      .badge-crt {
+        display: inline-block;
+        padding: 2px 6px;
+        border: 1px solid #000;
+        font-weight: bold;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        box-shadow: 2px 2px 0 0 rgba(0, 0, 0, 0.1);
+      }
+      .crt-simples {
+        background: var(--c-green);
+        color: #000;
+      }
+      .crt-normal {
+        background: var(--c-pink);
+        color: #000;
+      }
+      .crt-outros {
+        background: #ccc;
+        color: #000;
+      }
+
+      .tag-cst {
+        background: var(--c-blue);
+        color: #000;
+        padding: 2px 4px;
+        border: 1px solid #000;
+        font-weight: bold;
+      }
+      .tag-class {
+        background: #fef08a;
+        color: #000;
+        padding: 2px 4px;
+        border: 1px solid #000;
+        font-weight: bold;
+      }
+
+      .money {
+        text-align: right;
+      }
+      .center {
+        text-align: center;
+      }
+      .filled-val {
+        color: var(--c-green);
+        font-weight: bold;
+      }
+
+      /* FOOTER */
+      .footer-controls {
+        background: #fff;
+        border-top: var(--border-width) solid #000;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        bottom: 0;
+        z-index: 100;
+        box-shadow: 0px -4px 0px 0px rgba(0, 0, 0, 0.1);
+      }
+      .status-bar {
+        font-weight: 700;
+        font-size: 0.8rem;
+        font-family: "Space Mono";
+      }
+      .pagination {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .btn-page {
+        background: var(--c-purple);
+        border: 2px solid #000;
+        color: #fff;
+        padding: 5px 15px;
+        cursor: pointer;
+        font-family: "Space Grotesk";
+        font-weight: 800;
+        text-transform: uppercase;
+        box-shadow: 2px 2px 0 0 #000;
+      }
+      .btn-page:active {
+        transform: translate(2px, 2px);
+        box-shadow: none;
+      }
+      .btn-page:disabled {
+        background: #555;
+        cursor: not-allowed;
+        opacity: 0.7;
+        box-shadow: none;
+      }
+      .page-info {
+        font-family: "Space Mono";
+        font-weight: bold;
+        font-size: 0.9rem;
+      }
+
+      @media (max-width: 768px) {
+        body {
+          flex-direction: column;
+          overflow: auto;
+        }
+        .sidebar {
+          width: 100%;
+          flex-direction: row;
+          border-right: none;
+          border-bottom: 3px solid #000;
+          padding: 1rem;
+          overflow-x: auto;
+          height: auto;
+        }
+        .main-content {
+          height: auto;
+          overflow: visible;
+        }
+        .scroll-content {
+          padding-bottom: 0;
+        }
+        .footer-controls {
+          position: fixed;
+          bottom: 0;
+          width: 100%;
+          flex-direction: column;
+          gap: 10px;
+          text-align: center;
+        }
+        .filters-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="lgpdModal"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      "
+    >
+      <div
+        style="
+          background: #fff;
+          padding: 2rem;
+          border: 4px solid #000;
+          box-shadow: 10px 10px 0 #8b5cf6;
+          max-width: 500px;
+          font-family: &quot;Space Grotesk&quot;;
+        "
+      >
+        <h2
+          style="
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            font-weight: 900;
+          "
+        >
+          Aviso de Privacidade
+        </h2>
+        <p style="font-size: 0.9rem; margin-bottom: 1rem; font-weight: bold">
+          Este sistema processa dados fiscais contidos nos arquivos XML
+          carregados.
+        </p>
+        <ul
+          style="
+            font-size: 0.8rem;
+            margin-bottom: 1.5rem;
+            list-style: none;
+            line-height: 1.4;
+          "
+        >
+          <li>
+            ✅ <strong>Processamento Local:</strong> Seus arquivos não saem do
+            seu navegador.
+          </li>
+          <li>
+            ✅ <strong>Sem Armazenamento:</strong> Não guardamos cópias das suas
+            notas fiscais.
+          </li>
+          <li>
+            ✅ <strong>Privacidade:</strong> Utilizamos apenas métricas
+            anônimas.
+          </li>
+        </ul>
+        <button
+          onclick="document.getElementById('lgpdModal').style.display = 'none'"
+          style="
+            background: #22c55e;
+            color: #000;
+            border: 3px solid #000;
+            padding: 12px 20px;
+            font-weight: 900;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+          "
+        >
+          CONCORDO E DESEJO CONTINUAR
+        </button>
+      </div>
+    </div>
+
+    <div id="floatingTooltip" onclick="copiarChaveAtual()"></div>
+
+    <aside class="sidebar">
+      <div class="logo">
+        <i class="fas fa-coins"></i>
+        <span>Audit PIS/COF</span>
+      </div>
+      <nav>
+        <div class="nav-item active">
+          <i class="fas fa-bolt"></i> Analisar (Turbo)
+        </div>
+        <div class="nav-item" onclick="exportToCSV()">
+          <i class="fas fa-file-excel"></i> Exportar CSV
+        </div>
+        <div class="nav-item" onclick="limparTudo()">
+          <i class="fas fa-trash"></i> Limpar
+        </div>
+      </nav>
+
+      <div
+        style="
+          margin-top: 2rem;
+          padding: 10px;
+          background: rgba(0, 0, 0, 0.2);
+          border: 2px solid #000;
+          font-size: 0.65rem;
+          font-family: &quot;Space Mono&quot;;
+          color: #fff;
+        "
+      >
+        <strong><i class="fas fa-shield-alt"></i> SEGURANÇA:</strong><br /><br />
+        1. Processamento 100% local.<br />
+        2. XMLs seguros.<br />
+        3. Focado em PIS/COFINS.
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="scroll-content">
+        <header class="neo-header">
+          <div>
+            <h1>Auditor PIS/COFINS</h1>
+            <span class="badge">Federal</span>
+          </div>
+          <div style="text-align: right">
+            <i class="fas fa-chart-pie fa-2x"></i>
+          </div>
+        </header>
+
+        <div class="dashboard-grid">
+          <div class="metric-card purple">
+            <div class="metric-title">Itens Totais</div>
+            <div class="metric-value" id="totalItens">0</div>
+          </div>
+          <div class="metric-card orange">
+            <div class="metric-title">CSTs Zerados (04/06)</div>
+            <div class="metric-value" id="totalZero">0</div>
+          </div>
+          <div class="metric-card blue">
+            <div class="metric-title">Tot. PIS (R$)</div>
+            <div class="metric-value" id="totalPis">0,00</div>
+          </div>
+          <div class="metric-card green">
+            <div class="metric-title">Tot. COFINS (R$)</div>
+            <div class="metric-value" id="totalCofins">0,00</div>
+          </div>
+          <div class="metric-card purple">
+            <div class="metric-title">Itens Tributados</div>
+            <div class="metric-value" id="totalTrib">0</div>
+          </div>
+        </div>
+
+        <div class="upload-area">
+          <input
+            type="file"
+            id="xmlInput"
+            multiple
+            accept=".xml, .zip"
+            onchange="handleFiles(this.files)"
+          />
+          <div class="upload-label">
+            <i class="fas fa-cloud-upload-alt fa-2x"></i><br />
+            Arraste XMLs ou ZIP (PIS/COFINS)
+          </div>
+        </div>
+
+        <div class="filters-container">
+          <div class="filters-grid">
+            <div class="form-group">
+              <label>Filtrar Produto</label>
+              <input
+                type="text"
+                id="filtroProd"
+                class="neo-input"
+                placeholder="Ex: Cimento..."
+                onkeyup="debounceFiltro()"
+              />
+            </div>
+            <div class="form-group">
+              <label>NCM</label>
+              <input
+                type="text"
+                id="filtroNcm"
+                class="neo-input"
+                placeholder="Ex: 2106"
+                onkeyup="debounceFiltro()"
+              />
+            </div>
+            <div class="form-group">
+              <label>CFOP</label>
+              <input
+                type="text"
+                id="filtroCfop"
+                class="neo-input"
+                placeholder="Ex: 5102"
+                onkeyup="debounceFiltro()"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>REGIME (CRT)</label>
+              <div class="crt-toggles">
+                <button
+                  class="btn-toggle active"
+                  id="btnCrtAll"
+                  onclick="setRegimeFilter('all')"
+                >
+                  Todos
+                </button>
+                <button
+                  class="btn-toggle"
+                  id="btnCrtSimples"
+                  onclick="setRegimeFilter('SIMPLES')"
+                >
+                  Simples
+                </button>
+                <button
+                  class="btn-toggle"
+                  id="btnCrtNormal"
+                  onclick="setRegimeFilter('NORMAL')"
+                >
+                  Normal
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>TIPO TRIBUTAÇÃO</label>
+              <div class="crt-toggles">
+                <button
+                  class="btn-toggle active"
+                  id="btnTaxAll"
+                  onclick="setTaxFilter('all')"
+                >
+                  Todos
+                </button>
+                <button
+                  class="btn-toggle"
+                  id="btnTaxTrib"
+                  onclick="setTaxFilter('trib')"
+                >
+                  Trib.
+                </button>
+                <button
+                  class="btn-toggle"
+                  id="btnTaxZero"
+                  onclick="setTaxFilter('zero')"
+                >
+                  Zerado
+                </button>
+              </div>
+            </div>
+
+            <button class="btn-filter" onclick="aplicarFiltros()">
+              BUSCAR
+            </button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table id="tabelaDados">
+            <thead>
+              <tr>
+                <th>Nota</th>
+                <th>Emitente</th>
+                <th>Regime</th>
+                <th>Produto</th>
+                <th>NCM/CFOP</th>
+                <th>V.Item</th>
+                <th class="center">CST PIS</th>
+                <th class="money">BC PIS</th>
+                <th class="money">% PIS</th>
+                <th class="money">R$ PIS</th>
+                <th class="center">CST COF</th>
+                <th class="money">BC COF</th>
+                <th class="money">% COF</th>
+                <th class="money">R$ COF</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="footer-controls">
+        <div class="status-bar" id="statusMsg">Pronto.</div>
+        <div class="pagination">
+          <button id="btnPrev" class="btn-page" onclick="mudarPagina(-1)">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <span id="pageInfo" class="page-info">1 / 1</span>
+          <button id="btnNext" class="btn-page" onclick="mudarPagina(1)">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      let allItems = [];
+      let filteredItems = [];
+      let currentPage = 1;
+      const itemsPerPage = 100;
+      let debounceTimer;
+      let currentKeyToCopy = "";
+
+      let filterRegime = "all";
+      let filterTax = "all"; // all, trib, zero
+
+      const tooltip = document.getElementById("floatingTooltip");
+
+      function showTooltip(e, idx) {
+        const start = (currentPage - 1) * itemsPerPage;
+        const item = filteredItems[start + idx];
+
+        if (!item) return;
+
+        currentKeyToCopy = item.chNFe;
+
+        tooltip.innerHTML = `
+          <div class="tooltip-header">Dados da Nota</div>
+          <div class="tooltip-row"><strong>Emit:</strong> ${item.emitNome}</div>
+          <div class="tooltip-row"><strong>CNPJ:</strong> ${item.emitCNPJ}</div>
+          <div class="tooltip-row"><strong>Regime:</strong> ${item.regimeDesc}</div>
+          <div class="tooltip-row"><strong>Chave:</strong></div>
+          <span class="break-text">${item.chNFe}</span>
+          <div class="tooltip-hint"><i class="fas fa-copy"></i> Clique para Copiar Chave</div>
+        `;
+
+        moveTooltip(e);
+        tooltip.style.display = "block";
+      }
+
+      function moveTooltip(e) {
+        let x = e.clientX + 20;
+        let y = e.clientY + 20;
+        if (x + 320 > window.innerWidth) x = e.clientX - 330;
+        if (y + 180 > window.innerHeight) y = e.clientY - 190;
+        tooltip.style.left = x + "px";
+        tooltip.style.top = y + "px";
+      }
+
+      function hideTooltip() {
+        tooltip.style.display = "none";
+      }
+
+      function copyingVisualFeedback() {
+        tooltip.style.backgroundColor = "#22c55e";
+        tooltip.style.color = "#fff";
+        setTimeout(() => {
+          tooltip.style.backgroundColor = "#fff";
+          tooltip.style.color = "#000";
+          hideTooltip();
+        }, 300);
+      }
+
+      function copiarChaveAtual() {
+        if (!currentKeyToCopy || currentKeyToCopy === "---") return;
+        navigator.clipboard.writeText(currentKeyToCopy).then(() => {
+          copyingVisualFeedback();
+          const status = document.getElementById("statusMsg");
+          status.innerText = "CHAVE COPIADA!";
+          status.style.color = "green";
+          setTimeout(() => {
+            status.style.color = "black";
+            status.innerText = "Pronto.";
+          }, 2000);
+        });
+      }
+
+      function copyFromProduct(idx) {
+        const start = (currentPage - 1) * itemsPerPage;
+        const item = filteredItems[start + idx];
+        if (item) {
+          currentKeyToCopy = item.chNFe;
+          copiarChaveAtual();
+        }
+      }
+
+      function formatMoney(value) {
+        return parseFloat(value).toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
+      }
+      function formatPercent(value) {
+        return (
+          parseFloat(value).toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+          }) + "%"
+        );
+      }
+
+      function debounceFiltro() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          aplicarFiltros();
+        }, 300);
+      }
+
+      function setRegimeFilter(type) {
+        filterRegime = type;
+        document.getElementById("btnCrtAll").classList.remove("active");
+        document.getElementById("btnCrtSimples").classList.remove("active");
+        document.getElementById("btnCrtNormal").classList.remove("active");
+
+        if (type === "all")
+          document.getElementById("btnCrtAll").classList.add("active");
+        if (type === "SIMPLES")
+          document.getElementById("btnCrtSimples").classList.add("active");
+        if (type === "NORMAL")
+          document.getElementById("btnCrtNormal").classList.add("active");
+
+        aplicarFiltros();
+      }
+
+      function setTaxFilter(type) {
+        filterTax = type;
+        document.getElementById("btnTaxAll").classList.remove("active");
+        document.getElementById("btnTaxTrib").classList.remove("active");
+        document.getElementById("btnTaxZero").classList.remove("active");
+
+        if (type === "all")
+          document.getElementById("btnTaxAll").classList.add("active");
+        if (type === "trib")
+          document.getElementById("btnTaxTrib").classList.add("active");
+        if (type === "zero")
+          document.getElementById("btnTaxZero").classList.add("active");
+
+        aplicarFiltros();
+      }
+
+      function getTagValue(parent, tagName) {
+        const els = parent.getElementsByTagName(tagName);
+        return els.length > 0 ? els[0].textContent : "";
+      }
+      function getTagValueFloat(parent, tagName) {
+        const val = getTagValue(parent, tagName);
+        return val ? parseFloat(val) : 0;
+      }
+
+      // Função Auxiliar para extrair dados de PIS ou COFINS
+      // Busca nas sub-tags (PISAliq, PISNT, PISOutr, etc)
+      function extractTaxData(det, type) {
+        // type = 'PIS' ou 'COFINS'
+        let cst = "";
+        let vBC = 0;
+        let pAliq = 0;
+        let vVal = 0;
+
+        const group = det.getElementsByTagName(type)[0];
+        if (group && group.children.length > 0) {
+          // O XML geralmente tem <PIS><PISAliq>...</PISAliq></PIS>
+          // O filho direto contém as tags de valor
+          const child = group.children[0];
+          cst = getTagValue(child, "CST");
+          vBC = getTagValueFloat(child, "vBC");
+
+          // Tenta pegar alíquota (pPIS ou pCOFINS)
+          let aliqTag = type === "PIS" ? "pPIS" : "pCOFINS";
+          pAliq = getTagValueFloat(child, aliqTag);
+
+          // Tenta pegar valor (vPIS ou vCOFINS)
+          let valTag = type === "PIS" ? "vPIS" : "vCOFINS";
+          vVal = getTagValueFloat(child, valTag);
+        }
+
+        return { cst, vBC, pAliq, vVal };
+      }
+
+      async function handleFiles(files) {
+        const status = document.getElementById("statusMsg");
+        status.innerText = `Preparando ${files.length} arquivos...`;
+
+        const xmlTextList = [];
+
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+
+          if (file.name.toLowerCase().endsWith(".xml")) {
+            const text = await file.text();
+            xmlTextList.push(text);
+          } else if (file.name.toLowerCase().endsWith(".zip")) {
+            try {
+              status.innerText = `Descompactando ${file.name}...`;
+              await new Promise((r) => setTimeout(r, 10));
+
+              const zip = await JSZip.loadAsync(file);
+              const promises = [];
+              zip.forEach((relativePath, zipEntry) => {
+                if (
+                  !zipEntry.dir &&
+                  zipEntry.name.toLowerCase().endsWith(".xml")
+                ) {
+                  promises.push(zipEntry.async("string"));
+                }
+              });
+
+              const extractedXmls = await Promise.all(promises);
+              extractedXmls.forEach((t) => xmlTextList.push(t));
+            } catch (err) {
+              console.error("Erro ao descompactar", file.name, err);
+            }
+          }
+        }
+
+        status.innerText = `Iniciando leitura de ${xmlTextList.length} XMLs...`;
+        await new Promise((r) => setTimeout(r, 50));
+
+        const parser = new DOMParser();
+        const BATCH_SIZE = 100;
+        let processedCount = 0;
+
+        for (let i = 0; i < xmlTextList.length; i += BATCH_SIZE) {
+          const batch = xmlTextList.slice(i, i + BATCH_SIZE);
+          let currentBatchEmit = "";
+
+          batch.forEach((xmlText) => {
+            try {
+              const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+              const emitList = xmlDoc.getElementsByTagName("emit");
+              const emit = emitList.length > 0 ? emitList[0] : null;
+
+              let emitNome = "Desc. no XML";
+              let emitCNPJ = "---";
+              let crtCode = "";
+
+              if (emit) {
+                emitNome = getTagValue(emit, "xNome") || emitNome;
+                emitCNPJ = getTagValue(emit, "CNPJ") || emitCNPJ;
+                crtCode = getTagValue(emit, "CRT");
+                currentBatchEmit = emitNome;
+              }
+
+              let regimeDesc = "OUTROS";
+              if (crtCode === "1" || crtCode === "2") {
+                regimeDesc = "SIMPLES";
+              } else if (crtCode === "3") {
+                regimeDesc = "NORMAL";
+              }
+
+              let chNFe = "---";
+              const infList = xmlDoc.getElementsByTagName("infNFe");
+              if (infList.length > 0 && infList[0].getAttribute("Id")) {
+                chNFe = infList[0].getAttribute("Id").replace("NFe", "");
+              }
+
+              const ideList = xmlDoc.getElementsByTagName("ide");
+              let nNF = "???";
+              let dhEmi = "???";
+              if (ideList.length > 0) {
+                nNF = getTagValue(ideList[0], "nNF") || "???";
+                const rawDh = getTagValue(ideList[0], "dhEmi");
+                if (rawDh) dhEmi = rawDh.split("T")[0];
+              }
+
+              const dets = xmlDoc.getElementsByTagName("det");
+              for (let k = 0; k < dets.length; k++) {
+                const det = dets[k];
+                const prodList = det.getElementsByTagName("prod");
+                if (prodList.length === 0) continue;
+                const prod = prodList[0];
+
+                const ncm = getTagValue(prod, "NCM");
+                const cfop = getTagValue(prod, "CFOP");
+                const xProd = getTagValue(prod, "xProd");
+                let vProd = getTagValueFloat(prod, "vProd");
+
+                // EXTRAÇÃO PIS
+                const pisData = extractTaxData(det, "PIS");
+                // EXTRAÇÃO COFINS
+                const cofData = extractTaxData(det, "COFINS");
+
+                allItems.push({
+                  emitNome,
+                  emitCNPJ,
+                  regimeDesc,
+                  chNFe,
+                  nNF,
+                  data:
+                    dhEmi !== "???"
+                      ? dhEmi.split("-").reverse().join("/")
+                      : dhEmi,
+                  ncm,
+                  cfop,
+                  xProd,
+                  vProd,
+                  // PIS
+                  cstPis: pisData.cst,
+                  vBcPis: pisData.vBC,
+                  pPis: pisData.pAliq,
+                  vPis: pisData.vVal,
+                  // COFINS
+                  cstCof: cofData.cst,
+                  vBcCof: cofData.vBC,
+                  pCof: cofData.pAliq,
+                  vCof: cofData.vVal,
+                });
+              }
+            } catch (err) {
+              console.error("Erro leitura", err);
+            }
+          });
+
+          processedCount += batch.length;
+          let displayEmit =
+            currentBatchEmit.length > 20
+              ? currentBatchEmit.substring(0, 20) + "..."
+              : currentBatchEmit;
+          if (!displayEmit) displayEmit = "Lendo...";
+          status.innerText = `Lendo: ${displayEmit} (${processedCount} / ${xmlTextList.length})`;
+
+          if (i + BATCH_SIZE < xmlTextList.length) {
+            await new Promise((r) => setTimeout(r, 0));
+          }
+        }
+
+        status.innerText = `${allItems.length} itens carregados.`;
+        aplicarFiltros();
+      }
+
+      function aplicarFiltros() {
+        const fNcm = document.getElementById("filtroNcm").value.toLowerCase();
+        const fCfop = document.getElementById("filtroCfop").value.toLowerCase();
+        const fProd = document.getElementById("filtroProd").value.toLowerCase();
+
+        filteredItems = allItems.filter((item) => {
+          const matchText =
+            item.ncm.toLowerCase().includes(fNcm) &&
+            item.cfop.toLowerCase().includes(fCfop) &&
+            item.xProd.toLowerCase().includes(fProd);
+
+          let matchRegime = true;
+          if (filterRegime !== "all")
+            matchRegime = item.regimeDesc === filterRegime;
+
+          let matchTax = true;
+          const totalImposto = item.vPis + item.vCof;
+          const isZero =
+            totalImposto === 0 || ["04", "06", "08"].includes(item.cstPis);
+
+          if (filterTax === "trib") matchTax = totalImposto > 0;
+          if (filterTax === "zero") matchTax = isZero;
+
+          return matchText && matchRegime && matchTax;
+        });
+
+        atualizarTotais();
+        currentPage = 1;
+        renderizarTabela();
+      }
+
+      function atualizarTotais() {
+        let totalPis = 0,
+          totalCofins = 0;
+        let qtdTrib = 0;
+        let qtdZero = 0;
+
+        for (let i = 0; i < filteredItems.length; i++) {
+          const item = filteredItems[i];
+          totalPis += item.vPis;
+          totalCofins += item.vCof;
+
+          if (item.vPis > 0 || item.vCof > 0) {
+            qtdTrib++;
+          } else {
+            // Verifica CSTs comuns de isenção/alíquota zero
+            if (["04", "05", "06", "07", "08", "09"].includes(item.cstPis)) {
+              qtdZero++;
+            }
+          }
+        }
+
+        document.getElementById("totalItens").innerText = filteredItems.length;
+        document.getElementById("totalZero").innerText = qtdZero;
+        document.getElementById("totalTrib").innerText = qtdTrib;
+        document.getElementById("totalPis").innerText = formatMoney(totalPis);
+        document.getElementById("totalCofins").innerText = formatMoney(totalCofins);
+      }
+
+      function renderizarTabela() {
+        const tbody = document.querySelector("#tabelaDados tbody");
+        tbody.innerHTML = "";
+
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const itemsToRender = filteredItems.slice(start, end);
+
+        const fragment = document.createDocumentFragment();
+
+        itemsToRender.forEach((item, index) => {
+          let regimeBadge = "";
+          if (item.regimeDesc === "SIMPLES") {
+            regimeBadge = `<span class="badge-crt crt-simples">SIMPLES</span>`;
+          } else if (item.regimeDesc === "NORMAL") {
+            regimeBadge = `<span class="badge-crt crt-normal">NORMAL</span>`;
+          } else {
+            regimeBadge = `<span class="badge-crt crt-outros">${item.regimeDesc}</span>`;
+          }
+
+          const pisClass = item.vPis > 0 ? "filled-val" : "";
+          const cofClass = item.vCof > 0 ? "filled-val" : "";
+
+          // Formatação CST: Destaque visual se for Tributado ou Isento
+          const styleCstPis =
+            item.vPis > 0
+              ? "background:#dcfce7"
+              : ["04", "06"].includes(item.cstPis)
+                ? "background:#fef9c3"
+                : "";
+          const styleCstCof =
+            item.vCof > 0
+              ? "background:#dcfce7"
+              : ["04", "06"].includes(item.cstCof)
+                ? "background:#fef9c3"
+                : "";
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+                <td style="font-weight:bold">${item.nNF}</td>
+                <td><span class="col-emit" title="${item.emitNome}">${item.emitNome}</span></td>
+                <td>${regimeBadge}</td>
+                <td>
+                  <span class="col-prod" 
+                        onclick="copyFromProduct(${index})"
+                        onmouseover="showTooltip(event, ${index})" 
+                        onmousemove="moveTooltip(event)" 
+                        onmouseout="hideTooltip()">
+                    ${item.xProd}
+                  </span>
+                </td>
+                <td>${item.ncm}<br><small style="color:#666">${item.cfop}</small></td>
+                <td>${formatMoney(item.vProd)}</td>
+
+                <td class="center"><span class="tag-cst" style="${styleCstPis}">${item.cstPis}</span></td>
+                <td class="money">${formatMoney(item.vBcPis)}</td>
+                <td class="money">${formatPercent(item.pPis)}</td>
+                <td class="money ${pisClass}">${formatMoney(item.vPis)}</td>
+
+                <td class="center"><span class="tag-cst" style="${styleCstCof}">${item.cstCof}</span></td>
+                <td class="money">${formatMoney(item.vBcCof)}</td>
+                <td class="money">${formatPercent(item.pCof)}</td>
+                <td class="money ${cofClass}">${formatMoney(item.vCof)}</td>
+          `;
+          fragment.appendChild(tr);
+        });
+
+        tbody.appendChild(fragment);
+        atualizarControlesPaginacao();
+      }
+
+      function atualizarControlesPaginacao() {
+        const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
+        document.getElementById("pageInfo").innerText =
+          `${currentPage} / ${totalPages}`;
+        document.getElementById("btnPrev").disabled = currentPage === 1;
+        document.getElementById("btnNext").disabled =
+          currentPage === totalPages;
+      }
+
+      function mudarPagina(delta) {
+        const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
+        const newPage = currentPage + delta;
+        if (newPage >= 1 && newPage <= totalPages) {
+          currentPage = newPage;
+          renderizarTabela();
+          document.querySelector(".scroll-content").scrollTop = 0;
+        }
+      }
+
+      function limparTudo() {
+        allItems = [];
+        filteredItems = [];
+        document.getElementById("xmlInput").value = "";
+        document.getElementById("filtroNcm").value = "";
+        document.getElementById("filtroCfop").value = "";
+        document.getElementById("filtroProd").value = "";
+        setRegimeFilter("all");
+        setTaxFilter("all");
+        aplicarFiltros();
+        document.getElementById("statusMsg").innerText = "Limpo.";
+      }
+
+      function exportToCSV() {
+        if (filteredItems.length === 0) {
+          alert("Sem dados.");
+          return;
+        }
+        let csv =
+          "data:text/csv;charset=utf-8,Emitente,Regime,Chave,Nota,Data,Produto,NCM,CFOP,VProd,CST_PIS,BC_PIS,ALIQ_PIS,VAL_PIS,CST_COF,BC_COF,ALIQ_COF,VAL_COF\n";
+        filteredItems.forEach((r) => {
+          const prodClean = r.xProd.replace(/,/g, " ");
+          const emitClean = r.emitNome.replace(/,/g, " ");
+          csv += `${emitClean},${r.regimeDesc},'${r.chNFe},${r.nNF},${r.data},${prodClean},${r.ncm},${r.cfop},${r.vProd.toFixed(2)},${r.cstPis},${r.vBcPis.toFixed(2)},${r.pPis.toFixed(2)},${r.vPis.toFixed(2)},${r.cstCof},${r.vBcCof.toFixed(2)},${r.pCof.toFixed(2)},${r.vCof.toFixed(2)}\n`;
+        });
+        const link = document.createElement("a");
+        link.href = encodeURI(csv);
+        link.download = "auditoria_pis_cofins.csv";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    </script>
+  </body>
+</html>
