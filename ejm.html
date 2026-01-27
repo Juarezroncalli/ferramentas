@@ -406,6 +406,18 @@
         background: var(--bg-hover);
       }
 
+      /* --- ROW STYLES FOR MISSING ITEMS (NEON RED) --- */
+      tr.row-missing {
+        background-color: rgba(229, 72, 77, 0.08); /* Fundo vermelho suave */
+      }
+      tr.row-missing:hover {
+        background-color: rgba(229, 72, 77, 0.15);
+      }
+      tr.row-missing td {
+        color: var(--data-red);
+        border-bottom: 1px solid rgba(229, 72, 77, 0.2);
+      }
+
       /* BADGES */
       .status-badge {
         display: inline-flex;
@@ -422,6 +434,29 @@
       .st-warn {
         background: var(--badge-orange-bg);
         color: var(--data-orange);
+      }
+
+      /* Estilo Neon Vermelho para o Status de Furo */
+      .st-neon-red {
+        background: rgba(229, 72, 77, 0.2);
+        color: var(--data-red);
+        border: 1px solid var(--data-red);
+        box-shadow: 0 0 6px rgba(229, 72, 77, 0.4);
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        animation: pulseRed 2s infinite;
+      }
+
+      @keyframes pulseRed {
+        0% {
+          box-shadow: 0 0 6px rgba(229, 72, 77, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 12px rgba(229, 72, 77, 0.6);
+        }
+        100% {
+          box-shadow: 0 0 6px rgba(229, 72, 77, 0.4);
+        }
       }
 
       /* FOOTER */
@@ -566,7 +601,7 @@
           <table id="resultTable">
             <thead>
               <tr>
-                <th style="width: 50px">#</th>
+                <th style="width: 50px">Seq.</th>
                 <th>Número Nota</th>
                 <th>ID (Chave/Código)</th>
                 <th>Nome do Arquivo</th>
@@ -660,7 +695,8 @@
       });
 
       // --- LOGIC: SPLITTER & AUDIT ---
-      let extractedNotes = [];
+      let extractedNotes = []; // Apenas as notas válidas (com conteúdo XML)
+      let notesMap = {}; // Mapa { numeroNota: objetoNota } para acesso rápido
       let missingNumbers = [];
 
       async function processXml(file) {
@@ -674,7 +710,9 @@
         // Reset UI
         tbody.innerHTML = "";
         extractedNotes = [];
+        notesMap = {};
         missingNumbers = [];
+
         document.getElementById("countNotas").innerText = "0";
         document.getElementById("seqInicio").innerText = "-";
         document.getElementById("seqFim").innerText = "-";
@@ -700,101 +738,125 @@
             return;
           }
 
-          let numerosEncontrados = [];
+          let minNum = Infinity;
+          let maxNum = -Infinity;
+          let notasSemNumero = [];
 
+          // 1. EXTRAÇÃO E MAPEAMENTO
           for (let i = 0; i < notas.length; i++) {
             const notaNode = notas[i];
 
-            // Tenta extrair ID
+            // ID
             const infNFSe = notaNode.getElementsByTagName("infNFSe")[0];
             let noteId = infNFSe ? infNFSe.getAttribute("Id") : `nota_${i + 1}`;
 
-            // CORREÇÃO AQUI: Priorizando nNFSe conforme solicitado
+            // NÚMERO (Prioridade nNFSe)
             let numTag = notaNode.getElementsByTagName("nNFSe")[0];
-
-            // Fallbacks caso algum arquivo venha misturado
             if (!numTag) numTag = notaNode.getElementsByTagName("Numero")[0];
             if (!numTag) numTag = notaNode.getElementsByTagName("nNF")[0];
 
-            let numeroNota = "N/D";
             let numeroInt = null;
-
             if (numTag) {
-              numeroNota = numTag.textContent;
-              numeroInt = parseInt(numeroNota);
-              if (!isNaN(numeroInt)) {
-                numerosEncontrados.push(numeroInt);
-              }
+              numeroInt = parseInt(numTag.textContent);
             }
 
             const fileName = `${noteId}.xml`;
-
-            // Serializa para salvar
             const serializer = new XMLSerializer();
             const xmlContent =
               `<?xml version="1.0" encoding="UTF-8"?>\n` +
               serializer.serializeToString(notaNode);
 
-            extractedNotes.push({
+            const notaObj = {
               name: fileName,
               content: xmlContent,
               numero: numeroInt,
-            });
+              id: noteId,
+              size: xmlContent.length,
+            };
 
-            // Adiciona na tabela (apenas visualização das primeiras 500 para performance se for mt grande)
-            if (i < 500) {
-              addRow(i + 1, numeroNota, noteId, fileName, xmlContent.length);
+            extractedNotes.push(notaObj);
+
+            if (numeroInt !== null && !isNaN(numeroInt)) {
+              notesMap[numeroInt] = notaObj;
+              if (numeroInt < minNum) minNum = numeroInt;
+              if (numeroInt > maxNum) maxNum = numeroInt;
+            } else {
+              notasSemNumero.push(notaObj);
             }
           }
 
-          if (notas.length > 500) {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `<td colspan="6" style="text-align:center; font-style:italic; padding:10px;">... e mais ${notas.length - 500} notas ocultas para desempenho ...</td>`;
-            tbody.appendChild(tr);
-          }
+          // 2. RENDERIZAÇÃO DA SEQUÊNCIA (DO MENOR AO MAIOR)
+          if (minNum !== Infinity && maxNum !== -Infinity) {
+            const fragment = document.createDocumentFragment();
+            let furosCount = 0;
 
-          // --- LOGICA DE AUDITORIA DE FUROS ---
-          if (numerosEncontrados.length > 0) {
-            // Ordena numérico
-            numerosEncontrados.sort((a, b) => a - b);
-
-            const minNum = numerosEncontrados[0];
-            const maxNum = numerosEncontrados[numerosEncontrados.length - 1];
-
-            // Set de busca rápida
-            const setNumeros = new Set(numerosEncontrados);
-
-            // Varre do menor ao maior procurando quem não está no set
+            // Renderiza sequência
             for (let n = minNum; n <= maxNum; n++) {
-              if (!setNumeros.has(n)) {
+              if (notesMap[n]) {
+                // Nota existe
+                const row = createRow(
+                  n,
+                  notesMap[n].id,
+                  notesMap[n].name,
+                  notesMap[n].size,
+                  "OK",
+                );
+                fragment.appendChild(row);
+              } else {
+                // Nota Faltante (FURO)
+                furosCount++;
                 missingNumbers.push(n);
+                const row = createMissingRow(n);
+                fragment.appendChild(row);
               }
             }
+
+            // Renderiza notas que não tinham numero (erros de parse, etc)
+            notasSemNumero.forEach((nota) => {
+              const row = createRow(
+                "?",
+                nota.id,
+                nota.name,
+                nota.size,
+                "SEM_NUMERO",
+              );
+              fragment.appendChild(row);
+            });
+
+            tbody.appendChild(fragment);
 
             // Atualiza Dashboard
             document.getElementById("seqInicio").innerText = minNum;
             document.getElementById("seqFim").innerText = maxNum;
-            document.getElementById("countFuros").innerText =
-              missingNumbers.length;
+            document.getElementById("countFuros").innerText = furosCount;
 
             const cardFuros = document.getElementById("cardFuros");
             const statusFuros = document.getElementById("statusFuros");
 
-            if (missingNumbers.length > 0) {
-              // Tem furos
+            if (furosCount > 0) {
               cardFuros.style.borderColor = "var(--data-red)";
               statusFuros.innerText = "Sequência incompleta detectada";
               statusFuros.style.color = "var(--data-red)";
               btnCsvFuros.style.display = "flex";
             } else {
-              // Sequencia perfeita
-              cardFuros.style.borderColor = "var(--data-green)"; // Visual override hack
+              cardFuros.style.borderColor = "var(--data-green)";
               document.getElementById("countFuros").style.color =
                 "var(--data-green)";
               statusFuros.innerText = "Sequência numérica íntegra";
               statusFuros.style.color = "var(--data-green)";
             }
           } else {
+            // Caso nenhuma nota tenha número
+            notasSemNumero.forEach((nota, idx) => {
+              addRowDirect(
+                tbody,
+                idx + 1,
+                "N/D",
+                nota.id,
+                nota.name,
+                nota.size,
+              );
+            });
             document.getElementById("statusFuros").innerText =
               "Numeração não identificada";
           }
@@ -810,17 +872,43 @@
         }
       }
 
-      function addRow(idx, numero, id, fileName, size) {
-        const tbody = document.querySelector("#resultTable tbody");
+      function createRow(numero, id, fileName, size, statusType) {
         const tr = document.createElement("tr");
-
         tr.innerHTML = `
-          <td style="color: var(--text-tertiary);">${idx}</td>
+          <td style="color: var(--text-tertiary);"><i class="fas fa-check" style="color:var(--data-green); font-size:9px"></i></td>
           <td style="font-weight:600; color: var(--text-primary);">${numero}</td>
           <td style="font-family: var(--font-code); font-size: 10px; color: var(--text-secondary);">${id}</td>
           <td>${fileName}</td>
           <td style="font-family: var(--font-code); color: var(--text-secondary);">${(size / 1024).toFixed(2)} KB</td>
           <td><span class="status-badge st-ok">EXTRAÍDO</span></td>
+        `;
+        return tr;
+      }
+
+      function createMissingRow(numero) {
+        const tr = document.createElement("tr");
+        tr.className = "row-missing"; // Classe CSS para destaque vermelho neon
+        tr.innerHTML = `
+          <td style="color: var(--data-red); font-weight:bold">!</td>
+          <td style="font-weight:800; font-size:14px">${numero}</td>
+          <td style="font-family: var(--font-code); opacity:0.5">---</td>
+          <td style="font-style: italic;">Arquivo Inexistente</td>
+          <td>---</td>
+          <td><span class="status-badge st-neon-red">XML INEXISTENTE</span></td>
+        `;
+        return tr;
+      }
+
+      // Helper legado para fallback
+      function addRowDirect(tbody, idx, numero, id, fileName, size) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td style="color: var(--text-tertiary);">${idx}</td>
+          <td style="font-weight:600;">${numero}</td>
+          <td style="font-family: var(--font-code); font-size: 10px;">${id}</td>
+          <td>${fileName}</td>
+          <td style="font-family: var(--font-code);">${(size / 1024).toFixed(2)} KB</td>
+          <td><span class="status-badge st-warn">S/ NUM</span></td>
         `;
         tbody.appendChild(tr);
       }
@@ -850,15 +938,16 @@
       function exportFurosCSV() {
         if (missingNumbers.length === 0) return;
 
-        let csvContent = "data:text/csv;charset=utf-8,Numero_Faltante,Status\n";
+        let csvContent =
+          "data:text/csv;charset=utf-8,Numero_Nota,Status_Auditoria\n";
         missingNumbers.forEach((num) => {
-          csvContent += `${num},NAO_ENCONTRADO_NO_XML\n`;
+          csvContent += `${num},XML_INEXISTENTE_NO_LOTE\n`;
         });
 
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "relatorio_furos_sequencia.csv");
+        link.setAttribute("download", "relatorio_furos_xml.csv");
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
