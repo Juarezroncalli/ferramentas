@@ -3,393 +3,630 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Relatório de Contratos [BRUTALISM]</title>
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-      rel="stylesheet"
-    />
+    <title>Gerador de Relatórios de Empréstimo</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
 
     <style>
       :root {
-        --bg-body: #06b6d4;
+        --bg-color: #ffde00; /* Amarelo Vibrante solicitado */
         --card-bg: #ffffff;
-        --border-black: #000000;
-        --color-primary: #8b5cf6;
-        --color-secondary: #f472b6;
-        --color-accent: #facc15;
-        --color-success: #22c55e;
-        --shadow-dist: 6px;
+        --text-color: #000000;
+        --border-color: #000000;
         --border-width: 3px;
+        --shadow-offset: 5px;
+        --accent-blue: #a6f0ff;
+        --accent-pink: #ffa6f6;
+        --accent-green: #a6ffc2;
+
+        --font-main: "Space Grotesk", sans-serif;
+        --font-mono: "Space Mono", monospace;
       }
 
       * {
-        margin: 0;
-        padding: 0;
         box-sizing: border-box;
+        outline: none;
       }
 
       body {
-        font-family: "Space Grotesk", sans-serif;
-        background-color: var(--bg-body);
-        background-image:
-          linear-gradient(#fff 2px, transparent 2px),
-          linear-gradient(90deg, #fff 2px, transparent 2px);
-        background-size: 40px 40px;
-        color: var(--border-black);
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        font-family: var(--font-main);
+        margin: 0;
+        padding: 20px;
         min-height: 100vh;
-        display: flex;
       }
 
-      .sidebar {
-        width: 280px;
-        background: var(--color-accent);
-        border-right: var(--border-width) solid var(--border-black);
-        display: flex;
-        flex-direction: column;
-        padding: 2rem 1.5rem;
-        flex-shrink: 0;
-        box-shadow: 4px 0 0 rgba(0, 0, 0, 0.1);
+      /* --- ESTILO NEO BRUTALISTA --- */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
       }
 
-      .logo {
-        font-weight: 900;
-        font-size: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 3rem;
-        text-transform: uppercase;
-      }
-
-      .logo i {
-        background: var(--color-primary);
-        color: #fff;
-        padding: 10px;
-        border: var(--border-width) solid var(--border-black);
-        box-shadow: 4px 4px 0 0 black;
-      }
-
-      .nav-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 15px;
-        font-weight: 800;
-        border: var(--border-width) solid var(--border-black);
-        background: #fff;
-        box-shadow: 4px 4px 0 0 black;
-        text-transform: uppercase;
-        font-size: 0.9rem;
-      }
-
-      .main-content {
-        flex: 1;
-        padding: 2rem;
-        overflow-y: auto;
-      }
-
-      .neo-header {
+      header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 2.5rem;
-        background: #fff;
-        border: var(--border-width) solid var(--border-black);
-        padding: 2rem;
-        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
+        margin-bottom: 40px;
+        padding: 20px;
+        background: var(--card-bg);
+        border: var(--border-width) solid var(--border-color);
+        box-shadow: var(--shadow-offset) var(--shadow-offset) 0px
+          var(--border-color);
       }
 
-      .neo-card {
-        background: #fff;
-        border: var(--border-width) solid var(--border-black);
-        padding: 2rem;
-        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
-        margin-bottom: 2rem;
-      }
-
-      .card-title {
-        font-weight: 900;
-        font-size: 1.2rem;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 10px;
+      h1 {
+        font-weight: 700;
         text-transform: uppercase;
-        border-bottom: 3px solid #000;
-        padding-bottom: 10px;
+        font-size: 2rem;
+        margin: 0;
+        letter-spacing: -1px;
       }
 
-      .upload-container {
-        border: 4px dashed var(--border-black);
-        padding: 3rem;
+      .upload-section {
+        background: var(--accent-blue);
+        border: var(--border-width) solid var(--border-color);
+        box-shadow: var(--shadow-offset) var(--shadow-offset) 0px
+          var(--border-color);
+        padding: 40px;
         text-align: center;
-        background: #f3f4f6;
-        cursor: pointer;
-        margin-bottom: 1.5rem;
+        margin-bottom: 40px;
+        transition: transform 0.2s;
       }
 
-      .btn {
-        padding: 1rem 2rem;
-        font-weight: 900;
-        border: var(--border-width) solid var(--border-black);
+      .upload-section:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 7px 7px 0px var(--border-color);
+      }
+
+      input[type="file"] {
+        display: none;
+      }
+
+      .btn-upload {
+        background: #fff;
+        border: var(--border-width) solid var(--border-color);
+        padding: 15px 30px;
+        font-family: var(--font-mono);
+        font-weight: 700;
+        font-size: 1.1rem;
         cursor: pointer;
-        box-shadow: 5px 5px 0 0 black;
-        text-transform: uppercase;
+        box-shadow: 4px 4px 0px var(--border-color);
+        transition: all 0.1s;
         display: inline-flex;
         align-items: center;
         gap: 10px;
-        background: var(--color-primary);
-        color: #fff;
       }
 
-      .btn-accent {
-        background: var(--color-success);
-        color: #000;
+      .btn-upload:active {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0px var(--border-color);
       }
 
-      .summary-grid {
+      .dashboard-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 1.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+        display: none; /* Escondido até carregar */
       }
 
-      .summary-card {
-        background: #fff;
-        border: 2px solid #000;
-        padding: 1.5rem;
-        box-shadow: 4px 4px 0 0 black;
+      .metric-card {
+        background: var(--card-bg);
+        border: var(--border-width) solid var(--border-color);
+        padding: 20px;
+        box-shadow: var(--shadow-offset) var(--shadow-offset) 0px
+          var(--border-color);
       }
 
-      .summary-value {
-        font-size: 1.5rem;
-        font-weight: 900;
-        font-family: "Space Mono", monospace;
+      .metric-card.purple {
+        background-color: #d4d1ff;
+      }
+      .metric-card.green {
+        background-color: var(--accent-green);
+      }
+      .metric-card.pink {
+        background-color: var(--accent-pink);
       }
 
-      .contract-card {
+      .metric-title {
+        font-family: var(--font-mono);
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        border-bottom: 2px solid #000;
+        padding-bottom: 5px;
+      }
+
+      .metric-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+      }
+
+      .actions-bar {
+        display: none; /* Escondido até carregar */
+        justify-content: flex-end;
+        margin-bottom: 20px;
+      }
+
+      .btn-print {
+        background: #000;
+        color: #fff;
+        border: 3px solid #fff;
+        padding: 15px 40px;
+        font-family: var(--font-main);
+        font-weight: 700;
+        font-size: 1.2rem;
+        text-transform: uppercase;
+        cursor: pointer;
+        box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.5);
+        /* Sombra diferente para destacar no fundo amarelo */
+      }
+
+      .btn-print:hover {
+        background: #333;
+      }
+
+      /* --- VISUALIZAÇÃO DOS CARDS NA TELA --- */
+      .cards-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        display: none;
+      }
+
+      .contrato-card {
         background: #fff;
         border: var(--border-width) solid #000;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        box-shadow: 6px 6px 0 0 black;
+        box-shadow: 5px 5px 0px #000;
+        padding: 20px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); /* Grid de 4 colunas */
+        gap: 15px;
       }
 
-      .contract-header {
+      .contrato-header {
+        grid-column: 1 / -1;
+        background: #000;
+        color: #fff;
+        padding: 10px;
+        font-weight: 700;
+        font-family: var(--font-mono);
+        text-transform: uppercase;
         display: flex;
         justify-content: space-between;
-        border-bottom: 3px solid #000;
-        padding-bottom: 1rem;
-        margin-bottom: 1.5rem;
       }
 
-      .info-label {
-        font-size: 0.7rem;
-        font-weight: 900;
+      .field {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .field label {
+        font-size: 0.75rem;
+        font-weight: 700;
         text-transform: uppercase;
-        color: #444;
-      }
-      .info-value {
-        font-family: "Space Mono", monospace;
-        font-weight: 700;
+        color: #666;
+        margin-bottom: 4px;
+        font-family: var(--font-mono);
       }
 
-      .employees-names li {
-        background: #f3f3f3;
-        border: 2px solid #000;
-        margin-bottom: 8px;
-        padding: 10px 15px;
-        font-weight: 700;
-        list-style: none;
+      .field span {
+        font-weight: 600;
+        font-size: 1rem;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 2px;
       }
 
+      /* --- ESTILOS DE IMPRESSÃO (PDF LAYOUT) --- */
       @media print {
-        .sidebar,
-        #upload-section,
-        .btn,
-        .pagination {
+        @page {
+          size: A4;
+          margin: 10mm;
+        }
+
+        body {
+          background: none;
+          padding: 0;
+          margin: 0;
+          color: #000;
+          -webkit-print-color-adjust: exact;
+        }
+
+        .container,
+        header,
+        .upload-section,
+        .dashboard-grid,
+        .actions-bar {
           display: none !important;
         }
-        body {
-          background: white !important;
+
+        /* Layout Específico para o Relatório */
+        #printArea {
+          display: block !important;
+          font-family:
+            "Helvetica", "Arial", sans-serif; /* Fonte padrão do PDF */
+          font-size: 10px;
         }
-        .main-content {
-          padding: 0 !important;
+
+        .report-header {
+          border-bottom: 1px solid #000;
+          margin-bottom: 20px;
+          padding-bottom: 10px;
         }
+
+        .report-title {
+          font-size: 16px;
+          font-weight: bold;
+          margin-bottom: 10px;
+        }
+
+        .report-summary-box {
+          border: 1px solid #ccc;
+          padding: 10px;
+          margin-bottom: 20px;
+          display: flex;
+          justify-content: space-between;
+        }
+
+        .contract-block {
+          border: 1px solid #ccc;
+          margin-bottom: 15px;
+          padding: 10px;
+          page-break-inside: avoid;
+        }
+
+        .contract-block-header {
+          background-color: #f0f0f0;
+          padding: 5px;
+          font-weight: bold;
+          border-bottom: 1px solid #ccc;
+          margin-bottom: 10px;
+          display: flex;
+          justify-content: space-between;
+        }
+
+        .info-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 8px;
+        }
+
+        .info-item {
+          margin-bottom: 5px;
+        }
+
+        .info-label {
+          font-weight: bold;
+          font-size: 9px;
+          color: #666;
+          display: block;
+        }
+
+        .info-value {
+          font-size: 11px;
+          color: #000;
+        }
+
+        .money-val {
+          font-family: monospace;
+        }
+      }
+
+      /* Esconde área de impressão na tela normal */
+      #printArea {
+        display: none;
       }
     </style>
   </head>
   <body>
-    <aside class="sidebar">
-      <div class="logo">
-        <i class="fas fa-file-contract"></i>
-        <span>Relatórios</span>
-      </div>
-      <nav><div class="nav-item">IMPORTAÇÃO</div></nav>
-    </aside>
-
-    <main class="main-content">
-      <header class="neo-header">
-        <h1>Relatório de Contratos 📁</h1>
-        <div
-          id="date-display"
-          style="
-            font-family: &quot;Space Mono&quot;;
-            background: var(--color-secondary);
-            padding: 5px 15px;
-            border: 2px solid #000;
-            color: #fff;
-            font-weight: 700;
-          "
-        ></div>
+    <div class="container">
+      <header>
+        <div style="display: flex; align-items: center; gap: 15px">
+          <i class="fas fa-file-invoice-dollar" style="font-size: 2.5rem"></i>
+          <div>
+            <h1>Portal de Empréstimos</h1>
+            <span style="font-family: var(--font-mono); font-size: 0.9rem"
+              >v2.0 // NEO BRUTALISM // 2026</span
+            >
+          </div>
+        </div>
+        <div style="font-family: var(--font-mono); font-weight: 700">
+          DATA: <span id="currentDate">--/--/----</span>
+        </div>
       </header>
 
-      <section class="neo-card" id="upload-section">
-        <div class="card-title">
-          <i class="fas fa-file-import"></i> 1. Carregar Dados
-        </div>
-        <div
-          class="upload-container"
-          onclick="document.getElementById('file-input').click()"
+      <div class="upload-section">
+        <label for="jsonInput" class="btn-upload">
+          <i class="fas fa-upload"></i> CARREGAR ARQUIVO JSON
+        </label>
+        <input
+          type="file"
+          id="jsonInput"
+          accept=".json"
+          onchange="handleFile(this)"
+        />
+        <p
+          style="
+            margin-top: 15px;
+            font-weight: 600;
+            font-family: var(--font-mono);
+          "
         >
-          <i
-            class="fas fa-cloud-upload-alt"
-            style="font-size: 3rem; margin-bottom: 1rem"
-          ></i>
-          <div>Clique para selecionar o arquivo JSON</div>
-          <input
-            type="file"
-            id="file-input"
-            accept=".json"
-            style="display: none"
-          />
+          Formatos aceitos: .JSON (Estrutura Padrão)
+        </p>
+      </div>
+
+      <div class="dashboard-grid" id="dashboard">
+        <div class="metric-card purple">
+          <div class="metric-title">Total de Contratos</div>
+          <div class="metric-value" id="totalContratos">0</div>
         </div>
-      </section>
-
-      <section id="report-section" style="display: none">
-        <div class="neo-header">
-          <h2>Relatório Gerado</h2>
-          <button class="btn btn-accent" id="download-btn">
-            <i class="fas fa-download"></i> Baixar HTML Final
-          </button>
+        <div class="metric-card green">
+          <div class="metric-title">Valor Total Empréstimo</div>
+          <div class="metric-value" id="totalValor">R$ 0,00</div>
         </div>
+        <div class="metric-card pink">
+          <div class="metric-title">Parcela Média</div>
+          <div class="metric-value" id="mediaParcela">R$ 0,00</div>
+        </div>
+      </div>
 
-        <div class="neo-card" id="summary-section"></div>
+      <div class="actions-bar" id="actions">
+        <button class="btn-print" onclick="window.print()">
+          <i class="fas fa-print"></i> Imprimir Relatório PDF
+        </button>
+      </div>
 
-        <div id="report-content"></div>
-      </section>
-    </main>
+      <div class="cards-container" id="cardsArea"></div>
+    </div>
+
+    <div id="printArea">
+      <div class="report-header">
+        <div class="report-title">Relatório de Empréstimos Consignados</div>
+        <div style="display: flex; justify-content: space-between">
+          <span
+            ><strong>Empresa:</strong> USILIDER USINAGEM DE METAIS LTDA</span
+          >
+          <span><strong>CNPJ:</strong> 05.159.982/0001-82</span>
+          <span><strong>Competência:</strong> 01/2026</span>
+        </div>
+      </div>
+
+      <div class="report-summary-box">
+        <div>
+          <span class="info-label">Total de Contratos</span>
+          <span class="info-value" id="printTotalContratos">0</span>
+        </div>
+        <div>
+          <span class="info-label">Valor Total Empréstimos</span>
+          <span class="info-value" id="printTotalValor">R$ 0,00</span>
+        </div>
+        <div>
+          <span class="info-label">Valor Total Liberado</span>
+          <span class="info-value" id="printTotalLiberado">R$ 0,00</span>
+        </div>
+        <div>
+          <span class="info-label">Data de Geração</span>
+          <span class="info-value" id="printDataGeracao">--/--/----</span>
+        </div>
+      </div>
+
+      <div id="printContractsList"></div>
+    </div>
 
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const fileInput = document.getElementById("file-input");
-        const reportSection = document.getElementById("report-section");
-        const reportContent = document.getElementById("report-content");
-        const summarySection = document.getElementById("summary-section");
-        const dateDisplay = document.getElementById("date-display");
+      // Configura Data Atual
+      const now = new Date();
+      document.getElementById("currentDate").innerText =
+        now.toLocaleDateString("pt-BR");
+      document.getElementById("printDataGeracao").innerText =
+        now.toLocaleString("pt-BR");
 
-        dateDisplay.textContent = new Date().toLocaleDateString("pt-BR");
-
-        fileInput.addEventListener("change", (e) => {
-          const file = e.target.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-              const data = JSON.parse(event.target.result);
-              processData(data);
-              reportSection.style.display = "block";
-              document.getElementById("upload-section").style.display = "none";
-            };
-            reader.readAsText(file);
-          }
+      function formatMoney(value) {
+        if (!value) return "R$ 0,00";
+        return parseFloat(value).toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
         });
+      }
 
-        function processData(data) {
-          let totalLoan = 0,
-            totalReleased = 0;
-          const employees = new Set();
-          let company = data[0]?.nomeEmpregador || "Empresa Não Identificada";
+      function handleFile(input) {
+        const file = input.files[0];
+        if (!file) return;
 
-          reportContent.innerHTML = "";
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const json = JSON.parse(e.target.result);
+            processData(json);
+          } catch (err) {
+            alert("Erro ao ler o arquivo JSON. Verifique o formato.");
+            console.error(err);
+          }
+        };
+        reader.readAsText(file);
+      }
 
-          data.forEach((item) => {
-            totalLoan += Number(item.valorEmprestimo) || 0;
-            totalReleased += Number(item.valorLiberado) || 0;
-            if (item.nomeTrabalhador) employees.add(item.nomeTrabalhador);
+      function processData(data) {
+        // Mostrar elementos
+        document.getElementById("dashboard").style.display = "grid";
+        document.getElementById("actions").style.display = "flex";
+        document.getElementById("cardsArea").style.display = "grid";
 
-            const card = document.createElement("div");
-            card.className = "contract-card";
-            card.innerHTML = `
-              <div class="contract-header">
-                <div style="font-weight:900; text-transform:uppercase">${item["ifConcessora.descricao"] || "BANCO"}</div>
-                <div style="background:var(--color-accent); padding:2px 10px; border:2px solid #000; font-weight:800">CONTRATO: ${item.contrato}</div>
-              </div>
-              <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px">
-                <div><div class="info-label">Trabalhador</div><div class="info-value">${item.nomeTrabalhador}</div></div>
-                <div><div class="info-label">CPF</div><div class="info-value">${item.cpf}</div></div>
-                <div><div class="info-label">Valor Liberado</div><div class="info-value">R$ ${Number(item.valorLiberado).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</div></div>
-              </div>
-            `;
-            reportContent.appendChild(card);
-          });
+        // Cálculos
+        const totalContratos = data.length;
+        const totalValor = data.reduce(
+          (acc, item) => acc + (item.valorEmprestimo || 0),
+          0,
+        );
+        const totalLiberado = data.reduce(
+          (acc, item) => acc + (item.valorLiberado || 0),
+          0,
+        );
+        const totalParcela = data.reduce(
+          (acc, item) => acc + (item.valorParcela || 0),
+          0,
+        );
+        const mediaParcela =
+          totalContratos > 0 ? totalParcela / totalContratos : 0;
 
-          summarySection.innerHTML = `
-            <div class="card-title">Resumo: ${company}</div>
-            <div class="summary-grid">
-              <div class="summary-card"><div class="info-label">Total Contratos</div><div class="summary-value">${data.length}</div></div>
-              <div class="summary-card"><div class="info-label">Total Liberado</div><div class="summary-value" style="color:var(--color-primary)">R$ ${totalReleased.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</div></div>
-            </div>
-            <div style="margin-top:20px">
-              <div class="info-label">Funcionários Listados:</div>
-              <ul class="employees-names" style="margin-top:10px">${Array.from(
-                employees,
-              )
-                .sort()
-                .map((n) => `<li>${n}</li>`)
-                .join("")}</ul>
-            </div>
-          `;
-        }
+        // Atualizar Dashboard (Tela)
+        document.getElementById("totalContratos").innerText = totalContratos;
+        document.getElementById("totalValor").innerText =
+          formatMoney(totalValor);
+        document.getElementById("mediaParcela").innerText =
+          formatMoney(mediaParcela);
 
-        document
-          .getElementById("download-btn")
-          .addEventListener("click", () => {
-            // Captura o HTML processado e os estilos, removendo botões e áreas de upload
-            const styles = document.head.innerHTML;
-            const reportHtml =
-              document.getElementById("report-section").innerHTML;
+        // Atualizar Resumo (Impressão)
+        document.getElementById("printTotalContratos").innerText =
+          totalContratos;
+        document.getElementById("printTotalValor").innerText =
+          formatMoney(totalValor);
+        document.getElementById("printTotalLiberado").innerText =
+          formatMoney(totalLiberado);
 
-            const finalOutput = `
-            <!DOCTYPE html>
-            <html>
-            <head>
-              <meta charset="UTF-8">
-              ${styles}
-              <style>
-                .btn, #download-btn { display: none !important; }
-                .sidebar { display: none !important; }
-                .main-content { padding: 0 !important; margin: auto; max-width: 1000px; }
-                body { background: #fff !important; display: block !important; padding: 20px; }
-              </style>
-            </head>
-            <body>
-              <div class="main-content">${reportHtml}</div>
-            </body>
-            </html>`;
+        renderScreenCards(data);
+        renderPrintReport(data);
+      }
 
-            const blob = new Blob([finalOutput], { type: "text/html" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "Relatorio_Contratos_Processado.html";
-            link.click();
-          });
-      });
+      function renderScreenCards(data) {
+        const container = document.getElementById("cardsArea");
+        container.innerHTML = "";
+
+        data.forEach((item) => {
+          const card = document.createElement("div");
+          card.className = "contrato-card";
+
+          card.innerHTML = `
+                    <div class="contrato-header">
+                        <span>${item.nomeTrabalhador}</span>
+                        <span>MAT: ${item.matricula}</span>
+                    </div>
+                    
+                    <div class="field">
+                        <label>Banco</label>
+                        <span>${item["ifConcessora.descricao"]}</span>
+                    </div>
+                    <div class="field">
+                        <label>Contrato</label>
+                        <span>${item.contrato}</span>
+                    </div>
+                    <div class="field">
+                        <label>CPF</label>
+                        <span>${item.cpf}</span>
+                    </div>
+                    <div class="field">
+                        <label>Admissão</label>
+                        <span>${item.dataAdmissao}</span>
+                    </div>
+
+                    <div class="field">
+                        <label>Valor Empréstimo</label>
+                        <span style="color:blue">${formatMoney(item.valorEmprestimo)}</span>
+                    </div>
+                    <div class="field">
+                        <label>Valor Parcela</label>
+                        <span style="color:red">${formatMoney(item.valorParcela)}</span>
+                    </div>
+                    <div class="field">
+                        <label>Parcelas</label>
+                        <span>${item.totalParcelas}</span>
+                    </div>
+                    <div class="field">
+                        <label>Início/Fim</label>
+                        <span style="font-size:0.8rem">${item.competenciaInicioDesconto} a ${item.competenciaFimDesconto}</span>
+                    </div>
+                `;
+          container.appendChild(card);
+        });
+      }
+
+      function renderPrintReport(data) {
+        const container = document.getElementById("printContractsList");
+        container.innerHTML = "";
+
+        data.forEach((item) => {
+          const block = document.createElement("div");
+          block.className = "contract-block";
+
+          block.innerHTML = `
+                    <div class="contract-block-header">
+                        <span>${item["ifConcessora.descricao"]} (Cód: ${item["ifConcessora.codigo"]})</span>
+                        <span>Contrato: ${item.contrato}</span>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Trabalhador</span>
+                            <span class="info-value">${item.nomeTrabalhador}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">CPF</span>
+                            <span class="info-value">${item.cpf}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Matrícula</span>
+                            <span class="info-value">${item.matricula}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Admissão</span>
+                            <span class="info-value">${item.dataAdmissao}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Valor Empréstimo</span>
+                            <span class="info-value money-val">${formatMoney(item.valorEmprestimo)}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Valor Liberado</span>
+                            <span class="info-value money-val">${formatMoney(item.valorLiberado)}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Valor Parcela</span>
+                            <span class="info-value money-val">${formatMoney(item.valorParcela)}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Total Parcelas</span>
+                            <span class="info-value">${item.totalParcelas}</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Início Contrato</span>
+                            <span class="info-value">${item.dataInicioContrato}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Fim Contrato</span>
+                            <span class="info-value">${item.dataFimContrato}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Comp. Início</span>
+                            <span class="info-value">${item.competenciaInicioDesconto}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Comp. Fim</span>
+                            <span class="info-value">${item.competenciaFimDesconto}</span>
+                        </div>
+                        
+                        <div class="info-item" style="grid-column: span 4; margin-top:5px; border-top:1px dashed #eee; padding-top:2px;">
+                            <span class="info-label">Categoria Trabalhador</span>
+                            <span class="info-value" style="font-size:9px;">${item["categoriaTrabalhador.descricao"]}</span>
+                        </div>
+                    </div>
+                `;
+          container.appendChild(block);
+        });
+      }
     </script>
   </body>
 </html>
