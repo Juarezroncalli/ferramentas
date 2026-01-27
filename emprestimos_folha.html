@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
@@ -17,15 +17,13 @@
 
     <style>
       :root {
-        --bg-body: #06b6d4; /* Ciano */
+        --bg-body: #06b6d4;
         --card-bg: #ffffff;
         --border-black: #000000;
-
-        --color-primary: #8b5cf6; /* Roxo */
-        --color-secondary: #f472b6; /* Rosa */
-        --color-accent: #facc15; /* Amarelo */
-        --color-success: #22c55e; /* Verde */
-
+        --color-primary: #8b5cf6;
+        --color-secondary: #f472b6;
+        --color-accent: #facc15;
+        --color-success: #22c55e;
         --shadow-dist: 6px;
         --border-width: 3px;
       }
@@ -39,16 +37,15 @@
       body {
         font-family: "Space Grotesk", sans-serif;
         background-color: var(--bg-body);
-        background-image: linear-gradient(#fff 2px, transparent 2px),
+        background-image:
+          linear-gradient(#fff 2px, transparent 2px),
           linear-gradient(90deg, #fff 2px, transparent 2px);
         background-size: 40px 40px;
         color: var(--border-black);
         min-height: 100vh;
         display: flex;
-        overflow: hidden;
       }
 
-      /* Sidebar */
       .sidebar {
         width: 280px;
         background: var(--color-accent);
@@ -67,8 +64,6 @@
         align-items: center;
         gap: 15px;
         margin-bottom: 3rem;
-        text-decoration: none;
-        color: var(--border-black);
         text-transform: uppercase;
       }
 
@@ -85,22 +80,12 @@
         align-items: center;
         gap: 12px;
         padding: 15px;
-        margin-bottom: 1rem;
         font-weight: 800;
-        color: #000;
         border: var(--border-width) solid var(--border-black);
         background: #fff;
         box-shadow: 4px 4px 0 0 black;
         text-transform: uppercase;
         font-size: 0.9rem;
-        text-decoration: none;
-      }
-
-      .nav-item.active {
-        background-color: var(--color-primary);
-        color: #fff;
-        transform: translate(-2px, -2px);
-        box-shadow: 6px 6px 0 0 black;
       }
 
       .main-content {
@@ -109,7 +94,6 @@
         overflow-y: auto;
       }
 
-      /* Neo Header */
       .neo-header {
         display: flex;
         justify-content: space-between;
@@ -120,21 +104,7 @@
         padding: 2rem;
         box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
       }
-      .header-title h1 {
-        font-weight: 900;
-        font-size: 2.2rem;
-        text-transform: uppercase;
-      }
-      #date-display {
-        font-family: "Space Mono", monospace;
-        background: var(--color-secondary);
-        color: #fff;
-        padding: 5px 15px;
-        border: 2px solid #000;
-        font-weight: 700;
-      }
 
-      /* Cards */
       .neo-card {
         background: #fff;
         border: var(--border-width) solid var(--border-black);
@@ -142,6 +112,7 @@
         box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
         margin-bottom: 2rem;
       }
+
       .card-title {
         font-weight: 900;
         font-size: 1.2rem;
@@ -154,14 +125,6 @@
         padding-bottom: 10px;
       }
 
-      .border-top-purple {
-        border-top: 8px solid var(--color-primary);
-      }
-      .border-top-pink {
-        border-top: 8px solid var(--color-secondary);
-      }
-
-      /* Upload Area */
       .upload-container {
         border: 4px dashed var(--border-black);
         padding: 3rem;
@@ -169,16 +132,8 @@
         background: #f3f4f6;
         cursor: pointer;
         margin-bottom: 1.5rem;
-        transition: 0.2s;
-      }
-      .upload-container:hover {
-        background: #fff;
-        border-style: solid;
-        transform: translate(-2px, -2px);
-        box-shadow: 6px 6px 0 0 black;
       }
 
-      /* Buttons */
       .btn {
         padding: 1rem 2rem;
         font-weight: 900;
@@ -189,48 +144,35 @@
         display: inline-flex;
         align-items: center;
         gap: 10px;
-        text-decoration: none;
-      }
-      .btn:active {
-        transform: translate(4px, 4px);
-        box-shadow: 0 0 0 0 black;
-      }
-      .btn-primary {
         background: var(--color-primary);
         color: #fff;
       }
+
       .btn-accent {
         background: var(--color-success);
         color: #000;
       }
 
-      /* Summary Grid */
       .summary-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1.5rem;
         margin-bottom: 1.5rem;
       }
+
       .summary-card {
         background: #fff;
         border: 2px solid #000;
         padding: 1.5rem;
         box-shadow: 4px 4px 0 0 black;
       }
-      .summary-label {
-        font-size: 0.75rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        color: #666;
-        margin-bottom: 5px;
-      }
+
       .summary-value {
         font-size: 1.5rem;
         font-weight: 900;
         font-family: "Space Mono", monospace;
       }
 
-      /* Contract Card */
       .contract-card {
         background: #fff;
         border: var(--border-width) solid #000;
@@ -238,6 +180,7 @@
         margin-bottom: 2rem;
         box-shadow: 6px 6px 0 0 black;
       }
+
       .contract-header {
         display: flex;
         justify-content: space-between;
@@ -245,24 +188,7 @@
         padding-bottom: 1rem;
         margin-bottom: 1.5rem;
       }
-      .contract-title {
-        font-weight: 900;
-        font-size: 1.3rem;
-        text-transform: uppercase;
-      }
-      .contract-number {
-        background: var(--color-accent);
-        padding: 2px 10px;
-        border: 2px solid #000;
-        font-weight: 800;
-        font-size: 0.9rem;
-      }
 
-      .contract-info {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1.5rem;
-      }
       .info-label {
         font-size: 0.7rem;
         font-weight: 900;
@@ -272,29 +198,6 @@
       .info-value {
         font-family: "Space Mono", monospace;
         font-weight: 700;
-        font-size: 0.95rem;
-      }
-
-      /* Pagination */
-      .pagination {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        margin: 2rem 0;
-      }
-      .page-btn {
-        background: #fff;
-        border: var(--border-width) solid #000;
-        padding: 8px 15px;
-        font-weight: 900;
-        cursor: pointer;
-        box-shadow: 4px 4px 0 0 black;
-      }
-      .page-btn.active {
-        background: var(--color-primary);
-        color: #fff;
-        transform: translate(2px, 2px);
-        box-shadow: 0 0 0 0 black;
       }
 
       .employees-names li {
@@ -304,107 +207,62 @@
         padding: 10px 15px;
         font-weight: 700;
         list-style: none;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .employees-names li::before {
-        content: "";
-        width: 10px;
-        height: 10px;
-        background: var(--color-secondary);
-        border: 1px solid #000;
       }
 
-      .loader-container {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(6, 182, 212, 0.8);
-        z-index: 1000;
-        align-items: center;
-        justify-content: center;
-      }
-      .loader {
-        width: 60px;
-        height: 60px;
-        border: 8px solid #000;
-        border-top: 8px solid var(--color-primary);
-        animation: spin 1s linear infinite;
-      }
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
+      @media print {
+        .sidebar,
+        #upload-section,
+        .btn,
+        .pagination {
+          display: none !important;
         }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-
-      #error-message {
-        background: var(--color-danger);
-        color: white;
-        padding: 1rem;
-        border: 3px solid #000;
-        margin-top: 1rem;
-        font-weight: 900;
-        display: none;
-      }
-
-      @media (max-width: 768px) {
         body {
-          flex-direction: column;
-        }
-        .sidebar {
-          width: 100%;
-          flex-direction: row;
-          border-right: none;
-          border-bottom: 3px solid #000;
-          padding: 1rem;
+          background: white !important;
         }
         .main-content {
-          padding: 1rem;
+          padding: 0 !important;
         }
       }
     </style>
   </head>
   <body>
-    <div class="loader-container"><div class="loader"></div></div>
-
     <aside class="sidebar">
       <div class="logo">
         <i class="fas fa-file-contract"></i>
         <span>Relatórios</span>
       </div>
-      <nav>
-        <div class="nav-item active">
-          <i class="fas fa-upload"></i> Importação
-        </div>
-      </nav>
+      <nav><div class="nav-item">IMPORTAÇÃO</div></nav>
     </aside>
 
     <main class="main-content">
       <header class="neo-header">
-        <div class="header-title">
-          <h1>Relatório de Contratos 📁</h1>
-          <span>Processamento de Arquivos JSON</span>
-        </div>
-        <div id="date-display"></div>
+        <h1>Relatório de Contratos 📁</h1>
+        <div
+          id="date-display"
+          style="
+            font-family: &quot;Space Mono&quot;;
+            background: var(--color-secondary);
+            padding: 5px 15px;
+            border: 2px solid #000;
+            color: #fff;
+            font-weight: 700;
+          "
+        ></div>
       </header>
 
-      <section class="neo-card border-top-purple">
+      <section class="neo-card" id="upload-section">
         <div class="card-title">
           <i class="fas fa-file-import"></i> 1. Carregar Dados
         </div>
-        <div class="upload-container" id="upload-area">
+        <div
+          class="upload-container"
+          onclick="document.getElementById('file-input').click()"
+        >
           <i
             class="fas fa-cloud-upload-alt"
             style="font-size: 3rem; margin-bottom: 1rem"
           ></i>
-          <div class="upload-text">Arraste o JSON ou clique aqui</div>
+          <div>Clique para selecionar o arquivo JSON</div>
           <input
             type="file"
             id="file-input"
@@ -412,364 +270,125 @@
             style="display: none"
           />
         </div>
-        <div id="error-message"></div>
-        <div style="text-align: center">
-          <button class="btn btn-primary" id="upload-btn">
-            Selecionar Arquivo
-          </button>
-        </div>
       </section>
 
-      <section class="report-section" id="report-section" style="display: none">
+      <section id="report-section" style="display: none">
         <div class="neo-header">
-          <h2 class="header-title" style="font-size: 1.5rem">
-            Visualização do Relatório
-          </h2>
+          <h2>Relatório Gerado</h2>
           <button class="btn btn-accent" id="download-btn">
-            <i class="fas fa-download"></i> Baixar Relatório
+            <i class="fas fa-download"></i> Baixar HTML Final
           </button>
         </div>
 
-        <div class="neo-card border-top-pink" id="summary-section">
-          <div class="card-title">
-            <i class="fas fa-chart-bar"></i> Resumo Geral
-          </div>
-          <div class="summary-grid">
-            <div class="summary-card">
-              <div class="summary-label">Total Contratos</div>
-              <div class="summary-value" id="total-contracts">0</div>
-            </div>
-            <div class="summary-card">
-              <div class="summary-label">Total Empréstimos</div>
-              <div class="summary-value" id="total-loan-amount">R$ 0,00</div>
-            </div>
-            <div class="summary-card">
-              <div class="summary-label">Total Liberado</div>
-              <div
-                class="summary-value"
-                id="total-released-amount"
-                style="color: var(--color-primary)"
-              >
-                R$ 0,00
-              </div>
-            </div>
-          </div>
+        <div class="neo-card" id="summary-section"></div>
 
-          <div class="summary-grid">
-            <div class="summary-card">
-              <div class="summary-label">Empresa</div>
-              <div
-                class="summary-value"
-                id="company-name"
-                style="font-size: 1.1rem"
-              >
-                -
-              </div>
-            </div>
-            <div class="summary-card">
-              <div class="summary-label">Gerado em</div>
-              <div
-                class="summary-value"
-                id="report-datetime"
-                style="font-size: 1.1rem"
-              >
-                -
-              </div>
-            </div>
-          </div>
-
-          <div
-            class="employees-list"
-            id="employees-list"
-            style="margin-top: 1.5rem"
-          >
-            <h4
-              class="card-title"
-              style="font-size: 1rem; border: none; margin-bottom: 0.5rem"
-            >
-              Lista de Funcionários
-            </h4>
-            <ul class="employees-names" id="employees-names"></ul>
-          </div>
-        </div>
-
-        <div class="pagination" id="pagination"></div>
         <div id="report-content"></div>
-        <div class="pagination" id="pagination-bottom"></div>
       </section>
     </main>
 
     <script>
-      // MANTÉM TODA A LÓGICA JAVASCRIPT ORIGINAL DO USUÁRIO
       document.addEventListener("DOMContentLoaded", function () {
-        const uploadArea = document.getElementById("upload-area");
         const fileInput = document.getElementById("file-input");
-        const uploadBtn = document.getElementById("upload-btn");
         const reportSection = document.getElementById("report-section");
         const reportContent = document.getElementById("report-content");
-        const pagination = document.getElementById("pagination");
-        const paginationBottom = document.getElementById("pagination-bottom");
-        const downloadBtn = document.getElementById("download-btn");
+        const summarySection = document.getElementById("summary-section");
         const dateDisplay = document.getElementById("date-display");
-        const loaderContainer = document.querySelector(".loader-container");
-        const errorMessage = document.getElementById("error-message");
-        const totalContractsEl = document.getElementById("total-contracts");
-        const totalLoanAmountEl = document.getElementById("total-loan-amount");
-        const totalReleasedAmountEl = document.getElementById(
-          "total-released-amount"
-        );
-        const reportDatetimeEl = document.getElementById("report-datetime");
 
-        const contractsPerPage = 3;
-        let jsonData = [];
-        let currentPage = 1;
+        dateDisplay.textContent = new Date().toLocaleDateString("pt-BR");
 
-        const currentDate = new Date();
-        dateDisplay.textContent = currentDate.toLocaleDateString("pt-BR");
-
-        uploadArea.addEventListener("click", () => fileInput.click());
-        uploadBtn.addEventListener("click", () => fileInput.click());
-
-        fileInput.addEventListener("change", () => {
-          if (fileInput.files.length) handleFile(fileInput.files[0]);
+        fileInput.addEventListener("change", (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+              const data = JSON.parse(event.target.result);
+              processData(data);
+              reportSection.style.display = "block";
+              document.getElementById("upload-section").style.display = "none";
+            };
+            reader.readAsText(file);
+          }
         });
 
-        function handleFile(file) {
-          if (
-            file.type !== "application/json" &&
-            !file.name.endsWith(".json")
-          ) {
-            showError("Por favor, selecione um arquivo JSON válido.");
-            return;
-          }
-          showLoader();
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            try {
-              jsonData = JSON.parse(e.target.result);
-              generateReport(jsonData);
-              hideLoader();
-            } catch (error) {
-              hideLoader();
-              showError("Erro ao processar o arquivo JSON.");
-            }
-          };
-          reader.readAsText(file);
-        }
-
-        function generateReport(data) {
-          if (!Array.isArray(data) || data.length === 0) {
-            showError("JSON sem dados válidos.");
-            return;
-          }
-          reportContent.innerHTML = "";
-          pagination.innerHTML = "";
-          paginationBottom.innerHTML = "";
-          updateSummary(data);
-
-          const now = new Date();
-          reportDatetimeEl.textContent = `${now.toLocaleDateString(
-            "pt-BR"
-          )} às ${now.toLocaleTimeString("pt-BR")}`;
-
-          const totalPagesWeb = Math.ceil(data.length / contractsPerPage);
-          for (let i = 0; i < totalPagesWeb; i++) {
-            const pageIndex = i + 1;
-            const startIndex = i * contractsPerPage;
-            const endIndex = Math.min(
-              startIndex + contractsPerPage,
-              data.length
-            );
-            const pageData = data.slice(startIndex, endIndex);
-
-            const pageDiv = document.createElement("div");
-            pageDiv.className = `report-page ${
-              pageIndex === 1 ? "active" : ""
-            }`;
-            pageDiv.id = `page-${pageIndex}`;
-            pageData.forEach((contract) =>
-              pageDiv.appendChild(createContractCard(contract))
-            );
-            reportContent.appendChild(pageDiv);
-          }
-          createPaginationControls(totalPagesWeb);
-          reportSection.style.display = "block";
-          reportSection.scrollIntoView({ behavior: "smooth" });
-        }
-
-        function createContractCard(contract) {
-          const card = document.createElement("div");
-          card.className = "contract-card";
-          const formatCurrency = (valStr) => {
-            const num = Number(valStr);
-            return isNaN(num)
-              ? "N/A"
-              : `R$ ${num.toLocaleString("pt-BR", {
-                  minimumFractionDigits: 2,
-                })}`;
-          };
-          const createInfoGroupHTML = (label, rawValue, formatter) => {
-            const valStr = rawValue == null ? null : String(rawValue);
-            const displayValue =
-              valStr != null && valStr.trim() !== ""
-                ? formatter
-                  ? formatter(valStr)
-                  : valStr
-                : "N/A";
-            return `<div class="info-group"><div class="info-label">${label}</div><div class="info-value">${displayValue}</div></div>`;
-          };
-
-          card.innerHTML = `
-                    <div class="contract-header">
-                        <div class="contract-title">${
-                          contract["ifConcessora.descricao"] || "IF"
-                        }</div>
-                        <div class="contract-number">CONTRATO: ${
-                          contract.contrato || "N/A"
-                        }</div>
-                    </div>
-                    <div class="contract-info">
-                        ${createInfoGroupHTML(
-                          "Trabalhador",
-                          contract.nomeTrabalhador
-                        )}
-                        ${createInfoGroupHTML("CPF", contract.cpf, formatCpf)}
-                        ${createInfoGroupHTML("Matrícula", contract.matricula)}
-                        ${createInfoGroupHTML(
-                          "Empregador",
-                          contract.nomeEmpregador
-                        )}
-                        ${createInfoGroupHTML(
-                          "CNPJ Empregador",
-                          contract.numeroInscricaoEmpregador,
-                          formatCnpj
-                        )}
-                        ${createInfoGroupHTML(
-                          "Valor Liberado",
-                          contract.valorLiberado,
-                          formatCurrency
-                        )}
-                    </div>
-                `;
-          return card;
-        }
-
-        function createPaginationControls(totalPages) {
-          const createButtons = (container) => {
-            const prevBtn = document.createElement("button");
-            prevBtn.className = "page-btn";
-            prevBtn.textContent = "←";
-            prevBtn.disabled = true;
-            prevBtn.addEventListener("click", () => {
-              if (currentPage > 1) changePage(currentPage - 1);
-            });
-            container.appendChild(prevBtn);
-
-            for (let i = 1; i <= totalPages; i++) {
-              const pageBtn = document.createElement("button");
-              pageBtn.className = `page-btn ${i === 1 ? "active" : ""}`;
-              pageBtn.textContent = i;
-              pageBtn.addEventListener("click", () => changePage(i));
-              container.appendChild(pageBtn);
-            }
-            const nextBtn = document.createElement("button");
-            nextBtn.className = "page-btn";
-            nextBtn.textContent = "→";
-            nextBtn.disabled = totalPages <= 1;
-            nextBtn.addEventListener("click", () => {
-              if (currentPage < totalPages) changePage(currentPage + 1);
-            });
-            container.appendChild(nextBtn);
-            return { prevBtn, nextBtn };
-          };
-          const topP = createButtons(pagination);
-          const bottomP = createButtons(paginationBottom);
-
-          window.changePage = (pageNum) => {
-            currentPage = pageNum;
-            document
-              .querySelectorAll(".report-page")
-              .forEach((p) => p.classList.remove("active"));
-            document.getElementById(`page-${pageNum}`).classList.add("active");
-            document.querySelectorAll(".page-btn").forEach((btn) => {
-              if (!btn.textContent.match(/[←→]/))
-                btn.classList.toggle(
-                  "active",
-                  parseInt(btn.textContent) === pageNum
-                );
-            });
-            topP.prevBtn.disabled = bottomP.prevBtn.disabled = pageNum === 1;
-            topP.nextBtn.disabled = bottomP.nextBtn.disabled =
-              pageNum === totalPages;
-            reportContent.scrollIntoView({ behavior: "smooth" });
-          };
-        }
-
-        function updateSummary(data) {
+        function processData(data) {
           let totalLoan = 0,
             totalReleased = 0;
-          const employeeNames = new Set();
-          let companyName = "";
-          data.forEach((c) => {
-            totalLoan += Number(c.valorEmprestimo) || 0;
-            totalReleased += Number(c.valorLiberado) || 0;
-            if (c.nomeTrabalhador) employeeNames.add(c.nomeTrabalhador);
-            if (!companyName && c.nomeEmpregador)
-              companyName = c.nomeEmpregador;
+          const employees = new Set();
+          let company = data[0]?.nomeEmpregador || "Empresa Não Identificada";
+
+          reportContent.innerHTML = "";
+
+          data.forEach((item) => {
+            totalLoan += Number(item.valorEmprestimo) || 0;
+            totalReleased += Number(item.valorLiberado) || 0;
+            if (item.nomeTrabalhador) employees.add(item.nomeTrabalhador);
+
+            const card = document.createElement("div");
+            card.className = "contract-card";
+            card.innerHTML = `
+              <div class="contract-header">
+                <div style="font-weight:900; text-transform:uppercase">${item["ifConcessora.descricao"] || "BANCO"}</div>
+                <div style="background:var(--color-accent); padding:2px 10px; border:2px solid #000; font-weight:800">CONTRATO: ${item.contrato}</div>
+              </div>
+              <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px">
+                <div><div class="info-label">Trabalhador</div><div class="info-value">${item.nomeTrabalhador}</div></div>
+                <div><div class="info-label">CPF</div><div class="info-value">${item.cpf}</div></div>
+                <div><div class="info-label">Valor Liberado</div><div class="info-value">R$ ${Number(item.valorLiberado).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</div></div>
+              </div>
+            `;
+            reportContent.appendChild(card);
           });
-          totalContractsEl.textContent = data.length;
-          totalLoanAmountEl.textContent = `R$ ${totalLoan.toLocaleString(
-            "pt-BR",
-            { minimumFractionDigits: 2 }
-          )}`;
-          totalReleasedAmountEl.textContent = `R$ ${totalReleased.toLocaleString(
-            "pt-BR",
-            { minimumFractionDigits: 2 }
-          )}`;
-          document.getElementById("company-name").textContent =
-            companyName || "-";
-          const employeesNamesEl = document.getElementById("employees-names");
-          employeesNamesEl.innerHTML = "";
-          Array.from(employeeNames)
-            .sort()
-            .forEach((name) => {
-              const li = document.createElement("li");
-              li.textContent = name;
-              employeesNamesEl.appendChild(li);
-            });
+
+          summarySection.innerHTML = `
+            <div class="card-title">Resumo: ${company}</div>
+            <div class="summary-grid">
+              <div class="summary-card"><div class="info-label">Total Contratos</div><div class="summary-value">${data.length}</div></div>
+              <div class="summary-card"><div class="info-label">Total Liberado</div><div class="summary-value" style="color:var(--color-primary)">R$ ${totalReleased.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</div></div>
+            </div>
+            <div style="margin-top:20px">
+              <div class="info-label">Funcionários Listados:</div>
+              <ul class="employees-names" style="margin-top:10px">${Array.from(
+                employees,
+              )
+                .sort()
+                .map((n) => `<li>${n}</li>`)
+                .join("")}</ul>
+            </div>
+          `;
         }
 
-        downloadBtn.addEventListener("click", () => {
-          const printClone = document.documentElement.cloneNode(true);
-          const blob = new Blob([printClone.outerHTML], { type: "text/html" });
-          const link = document.createElement("a");
-          link.href = URL.createObjectURL(blob);
-          link.download = `Relatorio_Contratos.html`;
-          link.click();
-        });
+        document
+          .getElementById("download-btn")
+          .addEventListener("click", () => {
+            // Captura o HTML processado e os estilos, removendo botões e áreas de upload
+            const styles = document.head.innerHTML;
+            const reportHtml =
+              document.getElementById("report-section").innerHTML;
 
-        function formatCpf(cpfStr) {
-          return cpfStr.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
-        }
-        function formatCnpj(cnpjStr) {
-          return cnpjStr.replace(
-            /^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,
-            "$1.$2.$3/$4-$5"
-          );
-        }
-        function showLoader() {
-          loaderContainer.style.display = "flex";
-        }
-        function hideLoader() {
-          loaderContainer.style.display = "none";
-        }
-        function showError(msg) {
-          errorMessage.textContent = msg;
-          errorMessage.style.display = "block";
-          setTimeout(() => {
-            errorMessage.style.display = "none";
-          }, 5000);
-        }
+            const finalOutput = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="UTF-8">
+              ${styles}
+              <style>
+                .btn, #download-btn { display: none !important; }
+                .sidebar { display: none !important; }
+                .main-content { padding: 0 !important; margin: auto; max-width: 1000px; }
+                body { background: #fff !important; display: block !important; padding: 20px; }
+              </style>
+            </head>
+            <body>
+              <div class="main-content">${reportHtml}</div>
+            </body>
+            </html>`;
+
+            const blob = new Blob([finalOutput], { type: "text/html" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "Relatorio_Contratos_Processado.html";
+            link.click();
+          });
       });
     </script>
   </body>
