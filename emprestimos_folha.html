@@ -183,7 +183,7 @@
         font-weight: 700;
       }
 
-      /* SEARCH BAR (ESTILO NEO BRUTAL) */
+      /* SEARCH BAR */
       .search-container {
         margin-bottom: 1.5rem;
         position: relative;
@@ -263,6 +263,8 @@
         flex-direction: column;
         overflow: hidden;
         transition: 0.2s;
+        /* Permitir que o card cresça para acomodar todos os campos */
+        height: auto;
       }
       .contract-card:hover {
         transform: translateY(-3px);
@@ -330,14 +332,26 @@
         border: 1px solid #000;
       }
 
-      /* --- ESTILO DE IMPRESSÃO (CORREÇÃO DE MARGEM) --- */
+      /* SEÇÃO DE EMPREGADOR (Estilo interno) */
+      .employer-section {
+        background: #fdfce5;
+        border: 1px dashed #000;
+        padding: 8px;
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+      }
+
+      /* --- ESTILO DE IMPRESSÃO --- */
       @media print {
         @page {
           size: A4;
-          margin: 10mm; /* Margem da folha */
+          margin: 5mm;
         }
 
-        /* Reset total da página para impressão */
         html,
         body {
           background: #fff;
@@ -349,7 +363,6 @@
           display: block !important;
         }
 
-        /* Oculta interface da tela */
         .sidebar,
         .main-content,
         #lgpdModal,
@@ -361,10 +374,9 @@
           display: none !important;
         }
 
-        /* Exibe e posiciona área de impressão */
         #printArea {
           display: block !important;
-          position: absolute; /* FORÇA O INÍCIO NO TOPO */
+          position: absolute;
           top: 0;
           left: 0;
           width: 100%;
@@ -417,7 +429,7 @@
 
         .p-contract {
           border: 1px solid #ccc;
-          margin-bottom: 8px;
+          margin-bottom: 10px;
           break-inside: avoid;
           page-break-inside: avoid;
         }
@@ -431,10 +443,11 @@
           justify-content: space-between;
           -webkit-print-color-adjust: exact;
         }
+        /* Grid de 6 colunas para caber tudo na impressão */
         .p-body {
           padding: 6px 8px;
           display: grid;
-          grid-template-columns: repeat(4, 1fr);
+          grid-template-columns: repeat(6, 1fr);
           gap: 6px;
           font-size: 9px;
         }
@@ -451,9 +464,30 @@
         .p-val {
           color: #000;
         }
+
+        /* Utilitários de grid impressão */
+        .span-2 {
+          grid-column: span 2;
+        }
+        .span-3 {
+          grid-column: span 3;
+        }
+        .span-6 {
+          grid-column: span 6;
+        }
+
+        .p-group {
+          grid-column: span 6;
+          border-top: 1px dashed #ccc;
+          margin-top: 2px;
+          padding-top: 2px;
+          display: grid;
+          grid-template-columns: repeat(6, 1fr);
+          gap: 6px;
+          background: #fafafa;
+        }
       }
 
-      /* Esconde área de impressão na tela */
       #printArea {
         display: none;
       }
@@ -491,11 +525,10 @@
             font-weight: 900;
           "
         >
-          Contratos Seguro
+          Dados Completos
         </h2>
         <p style="margin-bottom: 1rem">
-          Processamento 100% local. Seus dados financeiros não saem deste
-          computador.
+          O sistema carregará 100% dos campos do arquivo JSON.
         </p>
         <button
           onclick="document.getElementById('lgpdModal').style.display = 'none'"
@@ -510,7 +543,7 @@
             text-transform: uppercase;
           "
         >
-          Acessar Sistema
+          Iniciar
         </button>
       </div>
     </div>
@@ -530,7 +563,7 @@
               opacity: 0.8;
             "
           >
-            FINANCEIRO PRO
+            FULL DATA
           </div>
         </div>
       </div>
@@ -558,7 +591,7 @@
           color: rgba(255, 255, 255, 0.8);
         "
       >
-        STATUS: AGUARDANDO ARQUIVO
+        MODO: DADOS COMPLETOS
       </div>
     </aside>
 
@@ -567,7 +600,7 @@
         <header class="neo-header">
           <div>
             <h1>Painel de Empréstimos</h1>
-            <span class="badge">Consignado</span>
+            <span class="badge">Detalhado</span>
           </div>
           <div
             style="
@@ -633,7 +666,7 @@
               margin-top: 5px;
             "
           >
-            Arraste e solte ou clique aqui
+            Mapeamento Completo de Campos
           </div>
         </div>
 
@@ -643,7 +676,7 @@
 
     <div id="printArea">
       <div class="report-header">
-        <div class="report-title">Relatório Analítico de Empréstimos</div>
+        <div class="report-title">Relatório Analítico Completo (Full Data)</div>
         <div class="report-meta">
           <span>EMPRESA: USILIDER USINAGEM DE METAIS LTDA</span>
           <span>CNPJ: 05.159.982/0001-82</span>
@@ -653,7 +686,7 @@
 
       <div class="report-summary">
         <div class="sum-item">
-          <span class="sum-label">Contratos (Filtrados)</span>
+          <span class="sum-label">Contratos</span>
           <span class="sum-val" id="printQtd">0</span>
         </div>
         <div class="sum-item">
@@ -670,10 +703,7 @@
     </div>
 
     <script>
-      // Variável Global para armazenar todos os dados
       let globalData = [];
-
-      // Configura data atual
       const now = new Date();
       document.getElementById("displayDate").innerText =
         now.toLocaleDateString("pt-BR");
@@ -694,16 +724,12 @@
         reader.onload = function (e) {
           try {
             const data = JSON.parse(e.target.result);
-            globalData = data; // Salva na global
-
-            // Esconde upload e mostra busca
+            globalData = data;
             document.getElementById("dropZone").style.display = "none";
             document.getElementById("searchArea").style.display = "block";
-
-            // Processa tudo
             processFilteredData(globalData);
           } catch (err) {
-            alert("Erro ao ler JSON. Verifique o formato.");
+            alert("Erro ao ler JSON.");
           }
         };
         reader.readAsText(file);
@@ -711,19 +737,16 @@
 
       function handleSearch() {
         const term = document.getElementById("searchInput").value.toLowerCase();
-
         const filtered = globalData.filter((item) => {
           const nome = item.nomeTrabalhador
             ? item.nomeTrabalhador.toLowerCase()
             : "";
           return nome.includes(term);
         });
-
         processFilteredData(filtered);
       }
 
       function processFilteredData(data) {
-        // Cálculos Totais do Filtro
         const totalContratos = data.length;
         const totalValor = data.reduce(
           (acc, item) => acc + (item.valorEmprestimo || 0),
@@ -740,14 +763,12 @@
         const mediaParcela =
           totalContratos > 0 ? totalParcela / totalContratos : 0;
 
-        // Atualizar Dashboard
         document.getElementById("dashQtd").innerText = totalContratos;
         document.getElementById("dashTotal").innerText =
           formatMoney(totalValor);
         document.getElementById("dashMedia").innerText =
           formatMoney(mediaParcela);
 
-        // Atualizar Cabeçalho Impressão
         document.getElementById("printQtd").innerText = totalContratos;
         document.getElementById("printTotal").innerText =
           formatMoney(totalValor);
@@ -764,7 +785,7 @@
 
         if (data.length === 0) {
           container.innerHTML =
-            '<div style="grid-column:1/-1; text-align:center; font-weight:bold; padding:20px;">Nenhum funcionário encontrado.</div>';
+            '<div style="grid-column:1/-1; text-align:center;">Nenhum contrato encontrado.</div>';
           return;
         }
 
@@ -774,7 +795,7 @@
 
           card.innerHTML = `
                 <div class="cc-header">
-                    <div class="cc-bank"><i class="fas fa-university"></i> ${item["ifConcessora.descricao"]}</div>
+                    <div class="cc-bank" title="Cód: ${item["ifConcessora.codigo"]}"><i class="fas fa-university"></i> ${item["ifConcessora.descricao"]}</div>
                     <div class="cc-contract-num">#${item.contrato}</div>
                 </div>
                 <div class="cc-body">
@@ -784,58 +805,32 @@
                             ${item.nomeTrabalhador}
                         </div>
                     </div>
+                    <div><span class="cc-label">CPF</span><div class="cc-value">${item.cpf}</div></div>
+                    <div><span class="cc-label">Matrícula</span><div class="cc-value">${item.matricula}</div></div>
+                    <div><span class="cc-label">Admissão</span><div class="cc-value">${item.dataAdmissao}</div></div>
+                    <div><span class="cc-label">Categoria (${item["categoriaTrabalhador.codigo"]})</span><div class="cc-value" style="font-size:0.7rem">${item["categoriaTrabalhador.descricao"]}</div></div>
+
+                    <div class="employer-section">
+                        <div class="cc-row-full"><span class="cc-label">Empregador</span><div class="cc-value" style="font-size:0.8rem">${item.nomeEmpregador}</div></div>
+                        <div><span class="cc-label">Inscr. Empregador (${item["inscricaoEmpregador.descricao"]})</span><div class="cc-value">${item.numeroInscricaoEmpregador}</div></div>
+                        <div><span class="cc-label">Inscr. Estabelec. (${item["inscricaoEstabelecimento.descricao"]})</span><div class="cc-value">${item.numeroInscricaoEstabelecimento}</div></div>
+                        <div><span class="cc-label">Cód. Estab</span><div class="cc-value">${item["inscricaoEstabelecimento.codigo"]}</div></div>
+                        <div><span class="cc-label">Cód. Emp</span><div class="cc-value">${item["inscricaoEmpregador.codigo"]}</div></div>
+                    </div>
+
+                    <div class="cc-highlight"><span class="cc-label">Valor Empréstimo</span><div class="cc-value cc-money">${formatMoney(item.valorEmprestimo)}</div></div>
+                    <div class="cc-highlight"><span class="cc-label">Valor Liberado</span><div class="cc-value cc-money">${formatMoney(item.valorLiberado)}</div></div>
+                    <div><span class="cc-label">Parcela</span><div class="cc-value" style="color:#ff4d4d; font-weight:bold;">${formatMoney(item.valorParcela)}</div></div>
+                    <div><span class="cc-label">Total Parc.</span><div class="cc-value">${item.totalParcelas}x</div></div>
+
+                    <div><span class="cc-label">Qtd. Pagamentos</span><div class="cc-value">${item.qtdPagamentos}</div></div>
+                    <div><span class="cc-label">Qtd. Escriturações</span><div class="cc-value">${item.qtdEscrituracoes}</div></div>
+                    <div><span class="cc-label">Comp. Contrato</span><div class="cc-value">${item.competencia}</div></div>
                     
-                    <div>
-                        <span class="cc-label">CPF</span>
-                        <div class="cc-value">${item.cpf}</div>
-                    </div>
-                    <div>
-                        <span class="cc-label">Matrícula</span>
-                        <div class="cc-value">${item.matricula}</div>
-                    </div>
-
-                    <div class="cc-highlight">
-                        <span class="cc-label">Valor Empréstimo</span>
-                        <div class="cc-value cc-money">${formatMoney(item.valorEmprestimo)}</div>
-                    </div>
-                    <div class="cc-highlight">
-                        <span class="cc-label">Valor Liberado</span>
-                        <div class="cc-value cc-money">${formatMoney(item.valorLiberado)}</div>
-                    </div>
-
-                    <div>
-                        <span class="cc-label">Parcela</span>
-                        <div class="cc-value" style="color:#ff4d4d; font-weight:bold;">${formatMoney(item.valorParcela)}</div>
-                    </div>
-                    <div>
-                        <span class="cc-label">Qtd. Parcelas</span>
-                        <div class="cc-value">${item.totalParcelas}x</div>
-                    </div>
-
-                    <div>
-                        <span class="cc-label">Início Contrato</span>
-                        <div class="cc-value">${item.dataInicioContrato}</div>
-                    </div>
-                    <div>
-                        <span class="cc-label">Fim Contrato</span>
-                        <div class="cc-value">${item.dataFimContrato}</div>
-                    </div>
-
-                    <div>
-                        <span class="cc-label">Comp. Início</span>
-                        <div class="cc-value">${item.competenciaInicioDesconto}</div>
-                    </div>
-                    <div>
-                        <span class="cc-label">Comp. Fim</span>
-                        <div class="cc-value">${item.competenciaFimDesconto}</div>
-                    </div>
-
-                    <div class="cc-row-full" style="margin-top:5px; border-top:1px dashed #ccc; padding-top:5px;">
-                        <span class="cc-label">Categoria</span>
-                        <div class="cc-value" style="font-size:0.75rem; font-weight:400;">
-                            ${item["categoriaTrabalhador.descricao"]}
-                        </div>
-                    </div>
+                    <div><span class="cc-label">Início Contrato</span><div class="cc-value">${item.dataInicioContrato}</div></div>
+                    <div><span class="cc-label">Fim Contrato</span><div class="cc-value">${item.dataFimContrato}</div></div>
+                    <div><span class="cc-label">Comp. Início</span><div class="cc-value">${item.competenciaInicioDesconto}</div></div>
+                    <div><span class="cc-label">Comp. Fim</span><div class="cc-value">${item.competenciaFimDesconto}</div></div>
                 </div>
             `;
           container.appendChild(card);
@@ -855,55 +850,31 @@
                     <span>CONTRATO: ${item.contrato}</span>
                 </div>
                 <div class="p-body">
-                    <div class="p-item" style="grid-column: span 2">
-                        <span class="p-lbl">Trabalhador</span>
-                        <span class="p-val" style="font-weight:bold">${item.nomeTrabalhador}</span>
-                    </div>
-                    <div class="p-item">
-                        <span class="p-lbl">CPF</span>
-                        <span class="p-val">${item.cpf}</span>
-                    </div>
-                    <div class="p-item">
-                        <span class="p-lbl">Matrícula</span>
-                        <span class="p-val">${item.matricula}</span>
-                    </div>
+                    <div class="p-item span-2"><span class="p-lbl">Trabalhador</span><span class="p-val" style="font-weight:bold">${item.nomeTrabalhador}</span></div>
+                    <div class="p-item"><span class="p-lbl">CPF</span><span class="p-val">${item.cpf}</span></div>
+                    <div class="p-item"><span class="p-lbl">Matrícula</span><span class="p-val">${item.matricula}</span></div>
+                    <div class="p-item"><span class="p-lbl">Admissão</span><span class="p-val">${item.dataAdmissao}</span></div>
+                    <div class="p-item"><span class="p-lbl">Comp. Contrato</span><span class="p-val">${item.competencia}</span></div>
 
-                    <div class="p-item">
-                        <span class="p-lbl">Vlr. Empréstimo</span>
-                        <span class="p-val">${formatMoney(item.valorEmprestimo)}</span>
-                    </div>
-                    <div class="p-item">
-                        <span class="p-lbl">Vlr. Liberado</span>
-                        <span class="p-val">${formatMoney(item.valorLiberado)}</span>
-                    </div>
-                    <div class="p-item">
-                        <span class="p-lbl">Parcela</span>
-                        <span class="p-val">${formatMoney(item.valorParcela)}</span>
-                    </div>
-                    <div class="p-item">
-                        <span class="p-lbl">Qtd. Parc.</span>
-                        <span class="p-val">${item.totalParcelas}</span>
-                    </div>
+                    <div class="p-item"><span class="p-lbl">Vlr. Empréstimo</span><span class="p-val">${formatMoney(item.valorEmprestimo)}</span></div>
+                    <div class="p-item"><span class="p-lbl">Vlr. Liberado</span><span class="p-val">${formatMoney(item.valorLiberado)}</span></div>
+                    <div class="p-item"><span class="p-lbl">Parcela</span><span class="p-val">${formatMoney(item.valorParcela)}</span></div>
+                    <div class="p-item"><span class="p-lbl">Total Parc.</span><span class="p-val">${item.totalParcelas}</span></div>
+                    <div class="p-item"><span class="p-lbl">Qtd. Pag.</span><span class="p-val">${item.qtdPagamentos}</span></div>
+                    <div class="p-item"><span class="p-lbl">Qtd. Escr.</span><span class="p-val">${item.qtdEscrituracoes}</span></div>
 
-                    <div class="p-item">
-                        <span class="p-lbl">Início Cont.</span>
-                        <span class="p-val">${item.dataInicioContrato}</span>
-                    </div>
-                    <div class="p-item">
-                        <span class="p-lbl">Fim Cont.</span>
-                        <span class="p-val">${item.dataFimContrato}</span>
-                    </div>
-                    <div class="p-item">
-                        <span class="p-lbl">Comp. Início</span>
-                        <span class="p-val">${item.competenciaInicioDesconto}</span>
-                    </div>
-                    <div class="p-item">
-                        <span class="p-lbl">Comp. Fim</span>
-                        <span class="p-val">${item.competenciaFimDesconto}</span>
-                    </div>
-                     <div class="p-item" style="grid-column: span 4">
-                        <span class="p-lbl">Categoria</span>
-                        <span class="p-val">${item["categoriaTrabalhador.descricao"]}</span>
+                    <div class="p-item"><span class="p-lbl">Início Cont.</span><span class="p-val">${item.dataInicioContrato}</span></div>
+                    <div class="p-item"><span class="p-lbl">Fim Cont.</span><span class="p-val">${item.dataFimContrato}</span></div>
+                    <div class="p-item"><span class="p-lbl">Comp. Início</span><span class="p-val">${item.competenciaInicioDesconto}</span></div>
+                    <div class="p-item"><span class="p-lbl">Comp. Fim</span><span class="p-val">${item.competenciaFimDesconto}</span></div>
+                    <div class="p-item span-2"><span class="p-lbl">Categoria (${item["categoriaTrabalhador.codigo"]})</span><span class="p-val" style="font-size:7px;">${item["categoriaTrabalhador.descricao"]}</span></div>
+                    
+                    <div class="p-group">
+                        <div class="p-item span-2"><span class="p-lbl">Empregador</span><span class="p-val">${item.nomeEmpregador}</span></div>
+                        <div class="p-item"><span class="p-lbl">Inscr. Emp (${item["inscricaoEmpregador.descricao"]})</span><span class="p-val">${item.numeroInscricaoEmpregador}</span></div>
+                         <div class="p-item"><span class="p-lbl">Cód Emp</span><span class="p-val">${item["inscricaoEmpregador.codigo"]}</span></div>
+                        <div class="p-item"><span class="p-lbl">Inscr. Estab (${item["inscricaoEstabelecimento.descricao"]})</span><span class="p-val">${item.numeroInscricaoEstabelecimento}</span></div>
+                        <div class="p-item"><span class="p-lbl">Cód Estab</span><span class="p-val">${item["inscricaoEstabelecimento.codigo"]}</span></div>
                     </div>
                 </div>
             `;
