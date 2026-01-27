@@ -263,7 +263,6 @@
         flex-direction: column;
         overflow: hidden;
         transition: 0.2s;
-        /* Permitir que o card cresça para acomodar todos os campos */
         height: auto;
       }
       .contract-card:hover {
@@ -443,7 +442,7 @@
           justify-content: space-between;
           -webkit-print-color-adjust: exact;
         }
-        /* Grid de 6 colunas para caber tudo na impressão */
+
         .p-body {
           padding: 6px 8px;
           display: grid;
@@ -465,7 +464,6 @@
           color: #000;
         }
 
-        /* Utilitários de grid impressão */
         .span-2 {
           grid-column: span 2;
         }
@@ -609,7 +607,12 @@
               font-size: 0.8rem;
             "
           >
-            DATA: <span id="displayDate">--/--/----</span>
+            COMPETÊNCIA:
+            <span
+              id="displayCompetencia"
+              style="font-weight: bold; color: var(--c-blue)"
+              >--/----</span
+            >
           </div>
         </header>
 
@@ -680,7 +683,7 @@
         <div class="report-meta">
           <span>EMPRESA: USILIDER USINAGEM DE METAIS LTDA</span>
           <span>CNPJ: 05.159.982/0001-82</span>
-          <span>COMPETÊNCIA: 01/2026</span>
+          <span>COMPETÊNCIA: <span id="printCompetencia">--/----</span></span>
         </div>
       </div>
 
@@ -705,8 +708,8 @@
     <script>
       let globalData = [];
       const now = new Date();
-      document.getElementById("displayDate").innerText =
-        now.toLocaleDateString("pt-BR");
+      // Data de hoje apenas como fallback visual ou log
+      console.log("Sistema iniciado em: " + now.toLocaleDateString("pt-BR"));
 
       function formatMoney(value) {
         if (!value && value !== 0) return "R$ 0,00";
@@ -727,6 +730,18 @@
             globalData = data;
             document.getElementById("dropZone").style.display = "none";
             document.getElementById("searchArea").style.display = "block";
+
+            // Tenta pegar a competência do primeiro registro para exibir no cabeçalho
+            let compGlobal = "--/----";
+            if (data.length > 0 && data[0].competencia) {
+              compGlobal = data[0].competencia;
+            }
+
+            // Atualiza os cabeçalhos fixos (Tela e PDF)
+            document.getElementById("displayCompetencia").innerText =
+              compGlobal;
+            document.getElementById("printCompetencia").innerText = compGlobal;
+
             processFilteredData(globalData);
           } catch (err) {
             alert("Erro ao ler JSON.");
@@ -888,6 +903,8 @@
         document.getElementById("dashQtd").innerText = "0";
         document.getElementById("dashTotal").innerText = "0,00";
         document.getElementById("dashMedia").innerText = "0,00";
+        document.getElementById("displayCompetencia").innerText = "--/----";
+        document.getElementById("printCompetencia").innerText = "--/----";
 
         document.getElementById("dropZone").style.display = "flex";
         document.getElementById("searchArea").style.display = "none";
