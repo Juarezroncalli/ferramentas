@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Editor SPED Fiscal - Uso e Consumo</title>
+    <link rel="icon" href="icone.ico" type="image/x-icon" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <style>
+      :root {
+        --bg-body: #ffde00;
+        --card-bg: #ffffff;
+        --border-black: #000000;
+        --c-purple: #8b5cf6;
+        --c-pink: #ff90e8;
+        --c-blue: #06b6d4;
+        --c-green: #22c55e;
+        --border-width: 3px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Space Grotesk", sans-serif;
+        background-color: var(--bg-body);
+        background-image: radial-gradient(#000 1px, transparent 1px);
+        background-size: 20px 20px;
+        color: var(--border-black);
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+      }
+
+      /* SIDEBAR */
+      .sidebar {
+        width: 240px;
+        background: var(--c-purple);
+        border-right: var(--border-width) solid var(--border-black);
+        padding: 1.5rem 1rem;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        color: #fff;
+      }
+
+      .logo {
+        font-size: 1.4rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        margin-bottom: 2rem;
+        text-shadow: 2px 2px 0 #000;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .nav-item {
+        background: #fff;
+        color: #000;
+        padding: 0.6rem 0.8rem;
+        margin-bottom: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        border: var(--border-width) solid #000;
+        box-shadow: 3px 3px 0 0 #000;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: 0.1s;
+        font-size: 0.85rem;
+      }
+
+      .nav-item:hover {
+        transform: translate(-1px, -1px);
+        box-shadow: 4px 4px 0 0 #000;
+        background: var(--c-blue);
+      }
+
+      /* MAIN CONTENT */
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .scroll-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem;
+      }
+
+      .neo-header {
+        background: #fff;
+        border: var(--border-width) solid #000;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 5px 5px 0 0 #000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .neo-header h1 {
+        font-weight: 900;
+        font-size: 1.6rem;
+        text-transform: uppercase;
+      }
+
+      /* CONFIG CARD */
+      .config-card {
+        background: #fff;
+        border: var(--border-width) solid #000;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 4px 4px 0 0 #000;
+      }
+
+      .input-group {
+        margin-bottom: 1rem;
+      }
+
+      .input-group label {
+        display: block;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+      }
+
+      .input-neo {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #000;
+        font-family: "Space Mono", monospace;
+        font-size: 1rem;
+        background: #fff;
+        box-shadow: 2px 2px 0 0 #000;
+      }
+
+      .input-neo:focus {
+        outline: none;
+        background: #f0f0f0;
+      }
+
+      /* UPLOAD AREA */
+      .upload-area {
+        background: var(--c-pink);
+        border: 3px dashed #000;
+        padding: 2rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        cursor: pointer;
+        position: relative;
+        transition: 0.2s;
+      }
+
+      .upload-area:hover {
+        background: #ffbdf2;
+      }
+
+      .upload-label {
+        font-weight: 800;
+        font-size: 1rem;
+        text-transform: uppercase;
+      }
+
+      #txtInput {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      /* TABELA */
+      .table-container {
+        overflow-x: auto;
+        border: var(--border-width) solid #000;
+        box-shadow: 4px 4px 0 0 #000;
+        background: #fff;
+        margin-bottom: 1rem;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: "Space Mono";
+        font-size: 0.75rem;
+      }
+
+      th {
+        background: #000;
+        color: #fff;
+        padding: 10px;
+        text-align: left;
+        text-transform: uppercase;
+      }
+
+      td {
+        padding: 8px 10px;
+        border-bottom: 1px solid #000;
+        border-right: 1px solid #eee;
+      }
+
+      .btn-neo {
+        background: #fff;
+        border: 2px solid #000;
+        padding: 6px 12px;
+        font-family: "Space Grotesk";
+        font-weight: 800;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        box-shadow: 2px 2px 0 0 #000;
+        transition: 0.1s;
+      }
+
+      .btn-neo:hover {
+        transform: translate(-1px, -1px);
+        box-shadow: 3px 3px 0 0 #000;
+        background: var(--c-green);
+      }
+
+      .btn-neo.purple {
+        background: var(--c-purple);
+        color: #fff;
+        border-color: #000;
+      }
+
+      .status-badge {
+        padding: 2px 6px;
+        border: 1px solid #000;
+        font-weight: bold;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        background: var(--c-green);
+      }
+
+      .footer-controls {
+        background: #fff;
+        border-top: var(--border-width) solid #000;
+        padding: 10px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 100;
+      }
+
+      .info-text {
+        font-family: "Space Mono";
+        font-weight: bold;
+        font-size: 0.8rem;
+      }
+    </style>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="logo">
+        <i class="fas fa-edit"></i>
+        <span>SPED Editor</span>
+      </div>
+      <nav>
+        <div class="nav-item" onclick="location.reload()">
+          <i class="fas fa-rotate"></i> Resetar
+        </div>
+        <div
+          class="nav-item"
+          onclick="document.getElementById('btnDownload').click()"
+        >
+          <i class="fas fa-file-download"></i> Baixar Novo Arquivo
+        </div>
+      </nav>
+      <div
+        style="
+          margin-top: auto;
+          font-size: 0.65rem;
+          font-family: &quot;Space Mono&quot;;
+          color: #eee;
+          opacity: 0.8;
+        "
+      >
+        Processamento 100% Local
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="scroll-content">
+        <header class="neo-header">
+          <div>
+            <h1>Editor de SPED Fiscal</h1>
+          </div>
+          <div id="stats" class="info-text">Aguardando arquivo...</div>
+        </header>
+
+        <div class="config-card">
+          <div class="input-group">
+            <label for="expenseCode">Código do Novo Item</label>
+            <input
+              type="text"
+              id="expenseCode"
+              class="input-neo"
+              placeholder="Digite o código (ex: 9999)"
+            />
+          </div>
+          <div class="input-group">
+            <label for="expenseDesc">Descrição do Item</label>
+            <input
+              type="text"
+              id="expenseDesc"
+              class="input-neo"
+              value="USO E CONSUMO"
+              placeholder="Ex: USO E CONSUMO"
+            />
+          </div>
+          <div class="input-group">
+            <label for="expenseUnid">Unidade de Medida</label>
+            <input
+              type="text"
+              id="expenseUnid"
+              class="input-neo"
+              value="UN"
+              placeholder="Ex: UN, PC, KG"
+              style="text-transform: uppercase"
+            />
+          </div>
+          <p style="font-size: 0.8rem; margin-top: 5px">
+            Estes dados substituirão o item para CFOPs de Uso e Consumo (1556,
+            1407, 2556, 2407). Registro 0200 será ajustado automaticamente.
+          </p>
+        </div>
+
+        <div class="upload-area">
+          <input
+            type="file"
+            id="txtInput"
+            accept=".txt"
+            onchange="processSped(this.files[0])"
+          />
+          <div class="upload-label">
+            <i class="fas fa-file-alt fa-2x" style="margin-bottom: 10px"></i
+            ><br />
+            Arraste ou clique para carregar o arquivo .TXT do SPED
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table id="logTable">
+            <thead>
+              <tr>
+                <th>Linha</th>
+                <th>Registro</th>
+                <th>Ação</th>
+                <th>Detalhes</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="footer-controls">
+        <div class="info-text" id="statusMsg">Pronto para iniciar</div>
+        <button id="btnDownload" class="btn-neo purple" style="display: none">
+          <i class="fas fa-download"></i> Baixar Arquivo Modificado
+        </button>
+      </div>
+    </main>
+
+    <script>
+      async function processSped(file) {
+        if (!file) return;
+
+        const expenseCode = document.getElementById("expenseCode").value.trim();
+        const expenseDesc = document.getElementById("expenseDesc").value.trim();
+        const expenseUnid = document
+          .getElementById("expenseUnid")
+          .value.trim()
+          .toUpperCase();
+
+        if (!expenseCode || !expenseDesc || !expenseUnid) {
+          alert(
+            "Por favor, preencha todos os campos (Código, Descrição e Unidade).",
+          );
+          document.getElementById("txtInput").value = "";
+          return;
+        }
+
+        const tbody = document.querySelector("#logTable tbody");
+        const statusMsg = document.getElementById("statusMsg");
+        const statsDisplay = document.getElementById("stats");
+
+        tbody.innerHTML = "";
+        statusMsg.innerText = "Lendo arquivo...";
+
+        let originalFileName = file.name.replace(".txt", "_MODIFICADO.txt");
+
+        try {
+          // Correção de Encoding: Ler como ISO-8859-1 (ANSI) para preservar acentos
+          const buffer = await file.arrayBuffer();
+          const decoder = new TextDecoder("iso-8859-1");
+          const text = decoder.decode(buffer);
+
+          const lines = text.split(/\r?\n/);
+
+          let processedLines = [];
+          let replacedCodes = new Set();
+          let replacementsCount = 0;
+          const targetCFOPs = ["1556", "1407", "2556", "2407"];
+
+          // ======================================================
+          // ETAPA 1: Substituir C170 e rastrear itens substituídos
+          // ======================================================
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            if (!line.trim()) {
+              processedLines.push(line);
+              continue;
+            }
+
+            const fields = line.split("|");
+
+            // campos[1] é o REG
+            // |C170|NUM|COD|DESCR|QTD|UNID|...
+            // Indices (se fields[0] for vazio):
+            // 3: COD_ITEM, 4: DESCR, 6: UNID, 11: CFOP
+            if (fields[1] === "C170") {
+              const cfop = fields[11];
+              if (targetCFOPs.includes(cfop)) {
+                // Salva código antigo para remover do 0200
+                replacedCodes.add(fields[3]);
+
+                // Atualiza com novos dados
+                fields[3] = expenseCode; // Codigo
+                fields[4] = expenseDesc; // Descrição
+                fields[6] = expenseUnid; // Unidade
+
+                processedLines.push(fields.join("|"));
+                replacementsCount++;
+
+                if (replacementsCount <= 50) {
+                  addLog(
+                    i + 1,
+                    "C170",
+                    `CFOP ${cfop}: Substituído para ${expenseCode}`,
+                    "Alterado",
+                  );
+                }
+                continue;
+              }
+            }
+            processedLines.push(line);
+          }
+
+          // ===================================
+          // ETAPA 2: Filtrar Registros 0200
+          // ===================================
+          let finalLines = [];
+          let removed0200Count = 0;
+          let last0200IndexFinal = -1;
+
+          for (let i = 0; i < processedLines.length; i++) {
+            const line = processedLines[i];
+            if (!line.trim()) {
+              finalLines.push(line);
+              continue;
+            }
+
+            const fields = line.split("|");
+
+            if (fields[1] === "0200") {
+              const code = fields[2];
+              // Se o código foi substituído E não é o código novo
+              if (replacedCodes.has(code) && code !== expenseCode) {
+                removed0200Count++;
+                addLog("N/A", "0200", `Item ${code} removido`, "Excluído");
+                continue;
+              }
+              last0200IndexFinal = finalLines.length;
+            }
+
+            finalLines.push(line);
+          }
+
+          // ========================================
+          // ETAPA 3: Inserir novo Registro 0200
+          // ========================================
+          // Formato: |0200|COD|DESC|...|UNID|...
+          const reg0200Line = `|0200|${expenseCode}|${expenseDesc}|||${expenseUnid}|07|00000000||||||`;
+          let added0200Count = 1;
+
+          if (last0200IndexFinal !== -1) {
+            finalLines.splice(last0200IndexFinal + 1, 0, reg0200Line);
+          } else {
+            const firstC = finalLines.findIndex(
+              (l) => l.startsWith("|C") || l.startsWith("|0990"),
+            );
+            if (firstC !== -1) finalLines.splice(firstC, 0, reg0200Line);
+            else finalLines.push(reg0200Line);
+          }
+          addLog("N/A", "0200", `Item ${expenseCode} incluído`, "Criado");
+
+          // ========================================
+          // ETAPA 4: Atualizar Contadores
+          // ========================================
+          const delta = added0200Count - removed0200Count;
+
+          if (delta !== 0) {
+            for (let k = 0; k < finalLines.length; k++) {
+              let parts = finalLines[k].split("|");
+              if (parts.length < 2) continue;
+
+              const r = parts[1];
+              let changed = false;
+
+              if (r === "0990") {
+                let qtd = parseInt(parts[2]);
+                if (!isNaN(qtd)) {
+                  parts[2] = qtd + delta;
+                  changed = true;
+                }
+              } else if (r === "9900" && parts[2] === "0200") {
+                let qtd = parseInt(parts[3]);
+                if (!isNaN(qtd)) {
+                  parts[3] = qtd + delta;
+                  changed = true;
+                }
+              } else if (r === "9999") {
+                let qtd = parseInt(parts[2]);
+                if (!isNaN(qtd)) {
+                  parts[2] = qtd + delta;
+                  changed = true;
+                }
+              }
+
+              if (changed) {
+                finalLines[k] = parts.join("|");
+              }
+            }
+          }
+
+          const modifiedContent = finalLines.join("\r\n");
+
+          const msg = `Lidas: ${lines.length} | Alt: ${replacementsCount} | Delta 0200: ${delta}`;
+          statsDisplay.innerText = msg;
+          statusMsg.innerText = "Processamento concluído com sucesso!";
+
+          const btn = document.getElementById("btnDownload");
+          btn.style.display = "flex";
+          btn.onclick = function () {
+            const blob = new Blob([modifiedContent], {
+              type: "text/plain;charset=iso-8859-1",
+            });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = originalFileName;
+            a.click();
+          };
+
+          if (replacementsCount > 50) {
+            addLog(
+              "...",
+              "Info",
+              `Listagem truncada (${replacementsCount - 50} itens ocultos)`,
+              "...",
+            );
+          }
+        } catch (e) {
+          console.error(e);
+          statusMsg.innerText = "Erro Fatal.";
+          alert("Erro: " + e.message);
+        }
+      }
+
+      function addLog(line, reg, details, action) {
+        const tbody = document.querySelector("#logTable tbody");
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+          <td>${line}</td>
+          <td><span style="font-weight:bold">${reg}<span></td>
+          <td><span class="status-badge">${action}</span></td>
+          <td font-family="Space Mono">${details}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+    </script>
+  </body>
+</html>
