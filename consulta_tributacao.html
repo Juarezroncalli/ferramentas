@@ -1,0 +1,1251 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auditor Fiscal Completo (ICMS/PIS/COF)</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        /* --- LIGHT MODE --- */
+        --bg-app: #f4f5f8;
+        --bg-surface: #ffffff;
+        --bg-panel: #fcfcfd;
+        --bg-sidebar: #15171a;
+        --bg-input: #ffffff;
+        --bg-hover: #f9fafb;
+        --bg-tooltip: #1a1d21;
+
+        --text-primary: #1a1d21;
+        --text-secondary: #5f6b7c;
+        --text-tertiary: #8d96a0;
+        --text-inverse: #ffffff;
+
+        --border-subtle: #e6e8eb;
+        --border-focus: #5e6ad2;
+        --border-dashed: #cfd6e0;
+
+        --accent-primary: #2e3338;
+        --accent-glow: rgba(94, 106, 210, 0.15);
+
+        /* Cores de Dados */
+        --data-purple: #625bf6;
+        --data-green: #2eb88a;
+        --data-blue: #0091ff;
+        --data-orange: #f58e08;
+        --data-red: #e5484d;
+
+        /* Badges Backgrounds */
+        --badge-green-bg: rgba(46, 184, 138, 0.1);
+        --badge-purple-bg: rgba(98, 91, 246, 0.1);
+        --badge-blue-bg: rgba(0, 145, 255, 0.1);
+        --badge-red-bg: rgba(229, 72, 77, 0.1);
+        --badge-orange-bg: rgba(245, 142, 8, 0.1);
+        --badge-neutral-bg: #f0f2f5;
+
+        --radius-sm: 6px;
+        --radius-md: 8px;
+
+        --shadow-card:
+          0px 1px 2px rgba(0, 0, 0, 0.04), 0px 4px 8px rgba(0, 0, 0, 0.02);
+        --upload-pattern: radial-gradient(#e5e7eb 1px, transparent 1px);
+
+        --font-ui: "Inter", -apple-system, sans-serif;
+        --font-code: "JetBrains Mono", monospace;
+      }
+
+      /* --- DARK MODE --- */
+      [data-theme="dark"] {
+        --bg-app: #09090b;
+        --bg-surface: #18181b;
+        --bg-panel: #18181b;
+        --bg-sidebar: #000000;
+        --bg-input: #09090b;
+        --bg-hover: #27272a;
+        --bg-tooltip: #27272a;
+
+        --text-primary: #f4f4f5;
+        --text-secondary: #a1a1aa;
+        --text-tertiary: #52525b;
+
+        --border-subtle: #27272a;
+        --border-focus: #818cf8;
+        --border-dashed: #3f3f46;
+
+        --accent-primary: #f4f4f5;
+        --accent-glow: rgba(129, 140, 248, 0.2);
+
+        --data-purple: #818cf8;
+        --data-green: #34d399;
+        --data-blue: #38bdf8;
+        --data-orange: #fbbf24;
+        --data-red: #f87171;
+
+        --badge-green-bg: rgba(52, 211, 153, 0.15);
+        --badge-purple-bg: rgba(129, 140, 248, 0.15);
+        --badge-blue-bg: rgba(56, 189, 248, 0.15);
+        --badge-red-bg: rgba(248, 113, 113, 0.15);
+        --badge-orange-bg: rgba(251, 191, 36, 0.15);
+        --badge-neutral-bg: #27272a;
+
+        --shadow-card: 0 0 0 1px #27272a;
+        --upload-pattern: radial-gradient(#27272a 1px, transparent 1px);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        outline: none;
+      }
+      body {
+        font-family: var(--font-ui);
+        background-color: var(--bg-app);
+        color: var(--text-primary);
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        font-size: 13px;
+        transition:
+          background-color 0.3s,
+          color 0.3s;
+      }
+
+      /* SIDEBAR */
+      .sidebar {
+        width: 200px;
+        background: var(--bg-sidebar);
+        border-right: 1px solid var(--border-subtle);
+        padding: 1.5rem 0.8rem;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        color: #fff;
+        z-index: 20;
+      }
+      .logo {
+        font-size: 13px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 2.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-left: 0.2rem;
+        opacity: 0.9;
+      }
+      .nav-item {
+        background: transparent;
+        color: #9ca3af;
+        padding: 0.5rem 0.6rem;
+        margin-bottom: 0.25rem;
+        font-weight: 500;
+        border: none;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.2s;
+        font-size: 12px;
+      }
+      .nav-item:hover,
+      .nav-item.active {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #fff;
+      }
+
+      /* MAIN */
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+        background: var(--bg-app);
+      }
+      .scroll-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem 2rem;
+        padding-bottom: 60px;
+      }
+
+      /* HEADER */
+      .neo-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+      .neo-header h1 {
+        font-weight: 600;
+        font-size: 18px;
+        color: var(--text-primary);
+      }
+      .theme-toggle {
+        background: transparent;
+        border: 1px solid var(--data-purple);
+        color: var(--data-purple);
+        padding: 0 14px;
+        height: 32px;
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 11px;
+        transition: all 0.2s;
+      }
+      .theme-toggle:hover {
+        background: var(--data-purple);
+        color: #fff;
+      }
+
+      /* METRICS */
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .metric-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        padding: 1rem;
+        box-shadow: var(--shadow-card);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+      }
+      .metric-card::after {
+        content: "";
+        position: absolute;
+        top: -1px;
+        left: -1px;
+        right: -1px;
+        height: 2px;
+        border-radius: var(--radius-md) var(--radius-md) 0 0;
+      }
+      .metric-card.purple::after {
+        background: var(--data-purple);
+      }
+      .metric-card.blue::after {
+        background: var(--data-blue);
+      }
+      .metric-card.green::after {
+        background: var(--data-green);
+      }
+      .metric-card.orange::after {
+        background: var(--data-orange);
+      }
+
+      .metric-title {
+        font-size: 10px;
+        color: var(--text-secondary);
+        margin-bottom: 0.4rem;
+        font-weight: 500;
+      }
+      .metric-value {
+        font-family: var(--font-ui);
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      /* UPLOAD */
+      .upload-area {
+        background: var(--bg-panel);
+        border: 1px dashed var(--border-dashed);
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        cursor: pointer;
+        background-image: var(--upload-pattern);
+        background-size: 20px 20px;
+        position: relative;
+      }
+      .upload-area:hover {
+        border-color: var(--data-blue);
+        background-color: var(--bg-hover);
+      }
+      #xmlInput {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      /* FILTERS */
+      .filters-container {
+        margin-bottom: 1rem;
+      }
+      .filters-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: flex-end;
+      }
+      .form-group {
+        flex: 1;
+        min-width: 120px;
+      }
+      .form-group label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 4px;
+        font-size: 10px;
+        color: var(--text-secondary);
+      }
+      .neo-input {
+        width: 100%;
+        padding: 6px 10px;
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-sm);
+        background: var(--bg-input);
+        color: var(--text-primary);
+        font-size: 12px;
+      }
+      .neo-input:focus {
+        border-color: var(--border-focus);
+      }
+      .btn-filter {
+        background: var(--accent-primary);
+        color: var(--bg-surface);
+        border: none;
+        padding: 0 16px;
+        border-radius: var(--radius-sm);
+        font-size: 12px;
+        height: 32px;
+        cursor: pointer;
+        font-weight: 500;
+      }
+
+      /* TABLE */
+      .table-container {
+        width: 100%;
+        overflow-x: auto;
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        background: var(--bg-surface);
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-card);
+      }
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-family: var(--font-ui);
+        font-size: 11px;
+        white-space: nowrap;
+      }
+
+      thead tr {
+        background: var(--bg-panel);
+      }
+      th {
+        color: var(--text-tertiary);
+        padding: 8px 6px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 9px;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border-subtle);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: var(--bg-panel);
+      }
+      /* Separação visual das colunas de impostos */
+      th.sep-left,
+      td.sep-left {
+        border-left: 2px solid var(--border-subtle);
+      }
+
+      td {
+        padding: 6px 6px;
+        border-bottom: 1px solid var(--border-subtle);
+        color: var(--text-primary);
+        vertical-align: middle;
+      }
+      tr:hover td {
+        background: var(--bg-hover);
+      }
+
+      .money {
+        text-align: right;
+        font-family: var(--font-code);
+        color: var(--text-secondary);
+      }
+      .center {
+        text-align: center;
+      }
+      .filled-val {
+        color: var(--text-primary);
+        font-weight: 600;
+      }
+
+      /* Column Styling */
+      .col-prod {
+        max-width: 180px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: pointer;
+        font-weight: 500;
+      }
+      .col-prod:hover {
+        color: var(--data-blue);
+        text-decoration: underline;
+      }
+
+      .tag-cst {
+        padding: 1px 4px;
+        border-radius: 4px;
+        font-family: var(--font-code);
+        font-size: 9px;
+        font-weight: 700;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+      }
+      
+      /* Mapeamento de cores únicas para cada CST */
+      .cst-00 {
+        background: rgba(46, 184, 138, 0.1);
+        color: #2eb88a;
+        border-color: rgba(46, 184, 138, 0.3);
+      }
+      .cst-10 {
+        background: rgba(0, 145, 255, 0.1);
+        color: #0091ff;
+        border-color: rgba(0, 145, 255, 0.3);
+      }
+      .cst-20 {
+        background: rgba(98, 91, 246, 0.1);
+        color: #625bf6;
+        border-color: rgba(98, 91, 246, 0.3);
+      }
+      .cst-30 {
+        background: rgba(245, 142, 8, 0.1);
+        color: #f58e08;
+        border-color: rgba(245, 142, 8, 0.3);
+      }
+      .cst-40 {
+        background: rgba(229, 72, 77, 0.1);
+        color: #e5484d;
+        border-color: rgba(229, 72, 77, 0.3);
+      }
+      .cst-41 {
+        background: rgba(245, 82, 82, 0.1);
+        color: #f55252;
+        border-color: rgba(245, 82, 82, 0.3);
+      }
+      .cst-50 {
+        background: rgba(138, 43, 226, 0.1);
+        color: #8a2be2;
+        border-color: rgba(138, 43, 226, 0.3);
+      }
+      .cst-60 {
+        background: rgba(13, 148, 136, 0.1);
+        color: #0d9488;
+        border-color: rgba(13, 148, 136, 0.3);
+      }
+      .cst-70 {
+        background: rgba(139, 92, 246, 0.1);
+        color: #8b5cf6;
+        border-color: rgba(139, 92, 246, 0.3);
+      }
+      .cst-90 {
+        background: rgba(249, 115, 22, 0.1);
+        color: #f97316;
+        border-color: rgba(249, 115, 22, 0.3);
+      }
+      /* CSTs Simples Nacional */
+      .cst-101 {
+        background: rgba(34, 197, 94, 0.1);
+        color: #22c55e;
+        border-color: rgba(34, 197, 94, 0.3);
+      }
+      .cst-102 {
+        background: rgba(34, 197, 94, 0.15);
+        color: #16a34a;
+        border-color: rgba(34, 197, 94, 0.3);
+      }
+      .cst-103 {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+        border-color: rgba(59, 130, 246, 0.3);
+      }
+      .cst-201 {
+        background: rgba(168, 85, 247, 0.1);
+        color: #a855f7;
+        border-color: rgba(168, 85, 247, 0.3);
+      }
+      .cst-202 {
+        background: rgba(168, 85, 247, 0.15);
+        color: #9333ea;
+        border-color: rgba(168, 85, 247, 0.3);
+      }
+      .cst-203 {
+        background: rgba(236, 72, 153, 0.1);
+        color: #ec4899;
+        border-color: rgba(236, 72, 153, 0.3);
+      }
+      .cst-default {
+        background: rgba(107, 114, 128, 0.1);
+        color: #6b7280;
+        border-color: rgba(107, 114, 128, 0.3);
+      }
+
+      /* FOOTER */
+      .footer-controls {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(12px);
+        border-top: 1px solid var(--border-subtle);
+        padding: 6px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: fixed;
+        bottom: 0;
+        left: 200px;
+        right: 0;
+        z-index: 100;
+        height: 36px;
+      }
+      [data-theme="dark"] .footer-controls {
+        background: rgba(9, 9, 11, 0.9);
+      }
+
+      .btn-page {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-primary);
+        width: 22px;
+        height: 22px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .btn-page:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* TOOLTIP */
+      #floatingTooltip {
+        background: var(--bg-tooltip);
+        color: #fff;
+        border: 1px solid var(--border-subtle);
+        border-radius: 6px;
+        padding: 12px;
+        position: fixed;
+        display: none;
+        z-index: 9999;
+        font-size: 11px;
+        max-width: 300px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+      .break-text {
+        font-family: var(--font-code);
+        background: #000;
+        padding: 4px;
+        display: block;
+        margin-top: 5px;
+        border-radius: 4px;
+        color: var(--data-green);
+      }
+
+      @media (max-width: 768px) {
+        body {
+          flex-direction: column;
+          overflow: auto;
+        }
+        .sidebar {
+          width: 100%;
+          height: auto;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          padding: 10px;
+        }
+        .footer-controls {
+          left: 0;
+          position: fixed;
+          width: 100%;
+          bottom: 0;
+        }
+        .dashboard-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .table-container {
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="floatingTooltip"></div>
+
+    <aside class="sidebar">
+      <div class="logo">
+        <i class="fas fa-coins" style="color: var(--data-green)"></i>
+        <span>AUDITOR XML <small style="opacity: 0.6">PRO</small></span>
+      </div>
+      <nav>
+        <div class="nav-item active">
+          <i class="fas fa-table"></i> Análise Geral
+        </div>
+        <div class="nav-item" onclick="exportToCSV()">
+          <i class="fas fa-file-csv"></i> Exportar CSV
+        </div>
+        <div class="nav-item" onclick="limparTudo()">
+          <i class="fas fa-trash"></i> Limpar Tudo
+        </div>
+      </nav>
+      <div style="margin-top: auto; font-size: 10px; opacity: 0.5">
+        Versão 5.0 (ICMS+PIS+COF)
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="scroll-content">
+        <header class="neo-header">
+          <h1>Análise Fiscal Detalhada</h1>
+          <button id="themeToggle" class="theme-toggle">
+            <i class="fas fa-moon"></i> <span>Tema</span>
+          </button>
+        </header>
+
+        <div class="dashboard-grid">
+          <div class="metric-card purple">
+            <div class="metric-title">Itens Analisados</div>
+            <div class="metric-value" id="totalItens">0</div>
+          </div>
+          <div class="metric-card blue">
+            <div class="metric-title">Total ICMS (R$)</div>
+            <div class="metric-value" id="totalIcms">0,00</div>
+          </div>
+          <div class="metric-card orange">
+            <div class="metric-title">Total PIS (R$)</div>
+            <div class="metric-value" id="totalPis">0,00</div>
+          </div>
+          <div class="metric-card green">
+            <div class="metric-title">Total COFINS (R$)</div>
+            <div class="metric-value" id="totalCofins">0,00</div>
+          </div>
+        </div>
+
+        <div class="upload-area">
+          <input
+            type="file"
+            id="xmlInput"
+            multiple
+            accept=".xml, .zip"
+            onchange="handleFiles(this.files)"
+          />
+          <div style="pointer-events: none">
+            <i
+              class="fas fa-cloud-upload-alt"
+              style="
+                font-size: 24px;
+                color: var(--text-tertiary);
+                margin-bottom: 8px;
+              "
+            ></i
+            ><br />
+            <span style="font-weight: 600">Arraste XMLs ou ZIPs aqui</span
+            ><br />
+            <span style="font-size: 11px; color: var(--text-secondary)"
+              >Processamento 100% local e seguro</span
+            >
+          </div>
+        </div>
+
+        <div class="filters-container">
+          <div class="filters-grid">
+            <div class="form-group" style="flex: 2">
+              <label>Filtrar Produto</label>
+              <input
+                type="text"
+                id="filtroProd"
+                class="neo-input"
+                placeholder="Ex: Cimento..."
+                onkeyup="debounceFiltro()"
+              />
+            </div>
+            <div class="form-group">
+              <label>NCM</label>
+              <input
+                type="text"
+                id="filtroNcm"
+                class="neo-input"
+                placeholder="NCM"
+                onkeyup="debounceFiltro()"
+              />
+            </div>
+            <div class="form-group">
+              <label>CFOP</label>
+              <input
+                type="text"
+                id="filtroCfop"
+                class="neo-input"
+                placeholder="CFOP"
+                onkeyup="debounceFiltro()"
+              />
+            </div>
+            <div class="form-group">
+              <label>CST ICMS</label>
+              <input
+                type="text"
+                id="filtroCstIcms"
+                class="neo-input"
+                placeholder="CST ICMS"
+                onkeyup="debounceFiltro()"
+              />
+            </div>
+            <div class="form-group">
+              <label>CST PIS/COF</label>
+              <input
+                type="text"
+                id="filtroCstPisCof"
+                class="neo-input"
+                placeholder="CST PIS/COF"
+                onkeyup="debounceFiltro()"
+              />
+            </div>
+            <button class="btn-filter" onclick="aplicarFiltros()">
+              FILTRAR
+            </button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table id="tabelaDados">
+            <thead>
+              <tr>
+                <th>Nota</th>
+                <th>Emitente</th>
+                <th>Produto</th>
+                <th>NCM/CFOP</th>
+                <th>V.Item</th>
+
+                <th class="sep-left" style="color: var(--data-blue)">
+                  CST ICMS
+                </th>
+                <th class="money">BC ICMS</th>
+                <th class="money">% Aliq</th>
+                <th class="center">% Red</th>
+                <th class="money">R$ ICMS</th>
+
+                <th class="sep-left" style="color: var(--data-purple)">
+                  CST P/C
+                </th>
+                <th class="money">BC PIS</th>
+                <th class="money">% PIS</th>
+                <th class="money">R$ PIS</th>
+                <th class="money">BC COF</th>
+                <th class="money">% COF</th>
+                <th class="money">R$ COF</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="footer-controls">
+        <div
+          style="font-size: 10px; color: var(--text-secondary)"
+          id="statusMsg"
+        >
+          Pronto.
+        </div>
+        <div
+          class="pagination"
+          style="display: flex; gap: 8px; align-items: center"
+        >
+          <button id="btnPrev" class="btn-page" onclick="mudarPagina(-1)">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <span id="pageInfo" style="font-size: 10px">1/1</span>
+          <button id="btnNext" class="btn-page" onclick="mudarPagina(1)">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // --- THEME LOGIC ---
+      const themeBtn = document.getElementById("themeToggle");
+      function setTheme(theme) {
+        if (theme === "dark") {
+          document.body.setAttribute("data-theme", "dark");
+          themeBtn.querySelector("i").className = "fas fa-sun";
+          localStorage.setItem("theme", "dark");
+        } else {
+          document.body.removeAttribute("data-theme");
+          themeBtn.querySelector("i").className = "fas fa-moon";
+          localStorage.setItem("theme", "light");
+        }
+      }
+      const savedTheme = localStorage.getItem("theme") || "dark"; // Default Dark
+      setTheme(savedTheme);
+      themeBtn.addEventListener("click", () => {
+        const current = document.body.getAttribute("data-theme");
+        setTheme(current === "dark" ? "light" : "dark");
+      });
+
+      // --- APP LOGIC ---
+      let allItems = [];
+      let filteredItems = [];
+      let currentPage = 1;
+      const itemsPerPage = 50;
+      let debounceTimer;
+      let currentKeyToCopy = "";
+
+      const tooltip = document.getElementById("floatingTooltip");
+
+      // Função para obter classe CSS baseada no CST e no tipo (ICMS / PIS / COFINS)
+      const __generatedCSTStyles = new Set();
+      function ensureCSTStyle(type, cst) {
+        // Unifica PIS e COFINS em um mesmo grupo para compartilhar cores
+        const group = (type || "").toString().toUpperCase();
+        const groupKey = group === "PIS" || group === "COFINS" ? "PISCOF" : group;
+        const key = `${groupKey}-${cst}`;
+        if (__generatedCSTStyles.has(key)) return;
+        __generatedCSTStyles.add(key);
+
+        // Paleta de cores distintas (hex) — garante diversidade e previsibilidade
+        const palette = [
+          "#ef4444","#f97316","#f59e0b","#eab308","#84cc16","#22c55e",
+          "#06b6d4","#0ea5e9","#3b82f6","#6366f1","#8b5cf6","#a78bfa",
+          "#ec4899","#f472b6","#fb7185","#ef8576","#fb923c","#f43f5e",
+          "#10b981","#06b6d4","#0891b2","#7c3aed","#6366f1","#2563eb",
+          "#0ea5a4","#14b8a6","#22c55e","#84cc16","#a3e635","#60a5fa"
+        ];
+
+        // simples hash para distribuir o CST na paleta
+        let h = 0;
+        const seed = `${groupKey}-${cst}`;
+        for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+        const idx = h % palette.length;
+        const color = palette[idx];
+        const bg = colorToRgba(color, 0.12);
+        const border = colorToRgba(color, 0.28);
+
+        const clsName = groupKey.toLowerCase();
+        const cls = `.${clsName}-cst-${cst}`;
+        let styleEl = document.getElementById("dynamic-cst-styles");
+        if (!styleEl) {
+          styleEl = document.createElement("style");
+          styleEl.id = "dynamic-cst-styles";
+          document.head.appendChild(styleEl);
+        }
+        styleEl.appendChild(
+          document.createTextNode(`${cls} { background: ${bg}; color: ${color}; border-color: ${border}; }`)
+        );
+      }
+
+      // Converte hex para rgba string
+      function colorToRgba(hex, alpha) {
+        const h = hex.replace('#','');
+        const bigint = parseInt(h.length === 3 ? h.split('').map(c=>c+c).join('') : h, 16);
+        const r = (bigint >> 16) & 255;
+        const g = (bigint >> 8) & 255;
+        const b = bigint & 255;
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+      }
+
+      // Retorna a classe CSS apropriada. Para ICMS mantém o comportamento
+      // existente (usa classes estáticas .cst-XX). Para PIS/COFINS gera
+      // classes dinâmicas únicas por tipo (ex: .pis-cst-01, .cofins-cst-01).
+      function getCSTClass(cst, type = "ICMS") {
+        if (!cst) return "cst-default";
+        const cstNorm = String(cst).trim();
+        if (!cstNorm.match(/^\d{2,3}$/)) return "cst-default";
+        const up = (type || "").toUpperCase();
+        if (up === "ICMS") {
+          return `cst-${cstNorm}`;
+        }
+        // Para PIS/COFINS usamos o grupo PISCOF para que o mesmo CST tenha a mesma cor
+        const groupKey = up === "PIS" || up === "COFINS" ? "PISCOF" : up;
+        const t = groupKey.toLowerCase();
+        ensureCSTStyle(groupKey, cstNorm);
+        return `${t}-cst-${cstNorm}`;
+      }
+
+      function formatMoney(v) {
+        return v.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
+      }
+      function formatDec(v) {
+        return v.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+      }
+
+      function getTagValue(parent, tagName) {
+        const els = parent.getElementsByTagName(tagName);
+        return els.length > 0 ? els[0].textContent : "";
+      }
+      function getTagValueFloat(parent, tagName) {
+        const val = getTagValue(parent, tagName);
+        return val ? parseFloat(val) : 0;
+      }
+
+      // Função Universal para extrair ICMS de qualquer grupo (ICMS00, ICMS20, ICMSSN102...)
+      function extractICMS(det) {
+        const imposto = det.getElementsByTagName("imposto")[0];
+        if (!imposto) return { cst: "", vBC: 0, pICMS: 0, pRedBC: 0, vICMS: 0 };
+
+        const icmsGroup = imposto.getElementsByTagName("ICMS")[0];
+        if (!icmsGroup || icmsGroup.children.length === 0)
+          return { cst: "", vBC: 0, pICMS: 0, pRedBC: 0, vICMS: 0 };
+
+        // O filho direto geralmente é ICMS00, ICMS20, etc.
+        const tagICMS = icmsGroup.children[0];
+
+        let cst = getTagValue(tagICMS, "CST");
+        let csosn = getTagValue(tagICMS, "CSOSN"); // Simples Nacional
+        let finalCst = cst || csosn || "";
+
+        let vBC = getTagValueFloat(tagICMS, "vBC");
+        let pICMS = getTagValueFloat(tagICMS, "pICMS");
+        let vICMS = getTagValueFloat(tagICMS, "vICMS");
+        let pRedBC = getTagValueFloat(tagICMS, "pRedBC");
+
+        // Se tiver ICMSST, as vezes o usuário quer ver, mas vamos focar no ICMS próprio primeiro
+        // Se quiser expandir, adicione aqui.
+
+        return { cst: finalCst, vBC, pICMS, pRedBC, vICMS };
+      }
+
+      function extractPISCOFINS(det, type) {
+        // type = 'PIS' ou 'COFINS'
+        let cst = "";
+        let vBC = 0;
+        let pAliq = 0;
+        let vVal = 0;
+
+        const group = det.getElementsByTagName(type)[0];
+        if (group && group.children.length > 0) {
+          const child = group.children[0]; // PISAliq, PISNT...
+          cst = getTagValue(child, "CST");
+
+          // Tenta pegar valor BC
+          vBC = getTagValueFloat(child, "vBC");
+
+          // Se não tiver vBC, tenta ver se é quantidade (qBCProd * vAliqProd) - caso raro mas existe
+          if (vBC === 0) {
+            // Lógica simplificada: foca em alíquota ad valorem
+          }
+
+          let aliqTag = type === "PIS" ? "pPIS" : "pCOFINS";
+          pAliq = getTagValueFloat(child, aliqTag);
+
+          let valTag = type === "PIS" ? "vPIS" : "vCOFINS";
+          vVal = getTagValueFloat(child, valTag);
+        }
+        return { cst, vBC, pAliq, vVal };
+      }
+
+      async function handleFiles(files) {
+        const status = document.getElementById("statusMsg");
+        status.innerText = `Processando ${files.length} arquivos...`;
+
+        const xmlTextList = [];
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          if (file.name.toLowerCase().endsWith(".xml")) {
+            xmlTextList.push(await file.text());
+          } else if (file.name.toLowerCase().endsWith(".zip")) {
+            const zip = await JSZip.loadAsync(file);
+            const promises = [];
+            zip.forEach((path, entry) => {
+              if (!entry.dir && entry.name.toLowerCase().endsWith(".xml")) {
+                promises.push(entry.async("string"));
+              }
+            });
+            const extracted = await Promise.all(promises);
+            extracted.forEach((t) => xmlTextList.push(t));
+          }
+        }
+
+        const parser = new DOMParser();
+
+        // Loop de parseamento
+        for (const xmlText of xmlTextList) {
+          try {
+            const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+
+            // Dados da Capa
+            const emit = xmlDoc.getElementsByTagName("emit")[0];
+            const emitNome = emit
+              ? getTagValue(emit, "xNome") || "Desconhecido"
+              : "---";
+            const emitCNPJ = emit ? getTagValue(emit, "CNPJ") : "";
+
+            let chNFe = "---";
+            const infNFe = xmlDoc.getElementsByTagName("infNFe")[0];
+            if (infNFe)
+              chNFe = infNFe.getAttribute("Id")?.replace("NFe", "") || "---";
+
+            const ide = xmlDoc.getElementsByTagName("ide")[0];
+            const nNF = ide ? getTagValue(ide, "nNF") : "???";
+
+            // Itens
+            const dets = xmlDoc.getElementsByTagName("det");
+            for (let k = 0; k < dets.length; k++) {
+              const det = dets[k];
+              const prod = det.getElementsByTagName("prod")[0];
+              if (!prod) continue;
+
+              const xProd = getTagValue(prod, "xProd");
+              const ncm = getTagValue(prod, "NCM");
+              const cfop = getTagValue(prod, "CFOP");
+              const vProd = getTagValueFloat(prod, "vProd");
+
+              // Extração Impostos
+              const icmsData = extractICMS(det);
+              const pisData = extractPISCOFINS(det, "PIS");
+              const cofData = extractPISCOFINS(det, "COFINS");
+
+              allItems.push({
+                chNFe,
+                nNF,
+                emitNome,
+                emitCNPJ,
+                xProd,
+                ncm,
+                cfop,
+                vProd,
+                // ICMS
+                cstIcms: icmsData.cst,
+                vBcIcms: icmsData.vBC,
+                pIcms: icmsData.pICMS,
+                pRedIcms: icmsData.pRedBC,
+                vIcms: icmsData.vICMS,
+                // PIS
+                cstPis: pisData.cst,
+                vBcPis: pisData.vBC,
+                pPis: pisData.pAliq,
+                vPis: pisData.vVal,
+                // COFINS
+                cstCof: cofData.cst,
+                vBcCof: cofData.vBC,
+                pCof: cofData.pAliq,
+                vCof: cofData.vVal,
+              });
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }
+
+        status.innerText = `${allItems.length} itens carregados.`;
+        aplicarFiltros();
+      }
+
+      function aplicarFiltros() {
+        const fProd = document.getElementById("filtroProd").value.toLowerCase();
+        const fNcm = document.getElementById("filtroNcm").value.toLowerCase();
+        const fCfop = document.getElementById("filtroCfop").value.toLowerCase();
+        const fCstIcms = document.getElementById("filtroCstIcms").value.toLowerCase();
+        const fCstPisCof = document.getElementById("filtroCstPisCof").value.toLowerCase();
+
+        filteredItems = allItems.filter((item) => {
+          return (
+            item.xProd.toLowerCase().includes(fProd) &&
+            item.ncm.includes(fNcm) &&
+            item.cfop.includes(fCfop) &&
+            item.cstIcms.toLowerCase().includes(fCstIcms) &&
+            (item.cstPis.toLowerCase().includes(fCstPisCof) || item.cstCof.toLowerCase().includes(fCstPisCof))
+          );
+        });
+
+        atualizarTotais();
+        currentPage = 1;
+        renderizarTabela();
+      }
+
+      function atualizarTotais() {
+        let tIcms = 0,
+          tPis = 0,
+          tCof = 0;
+        filteredItems.forEach((i) => {
+          tIcms += i.vIcms;
+          tPis += i.vPis;
+          tCof += i.vCof;
+        });
+        document.getElementById("totalItens").innerText = filteredItems.length;
+        document.getElementById("totalIcms").innerText = formatMoney(tIcms);
+        document.getElementById("totalPis").innerText = formatMoney(tPis);
+        document.getElementById("totalCofins").innerText = formatMoney(tCof);
+      }
+
+      function renderizarTabela() {
+        const tbody = document.querySelector("#tabelaDados tbody");
+        tbody.innerHTML = "";
+
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const pageItems = filteredItems.slice(start, end);
+
+        const frag = document.createDocumentFragment();
+
+        pageItems.forEach((item, idx) => {
+          const tr = document.createElement("tr");
+
+          // Obter classes CSS únicas para cada CST
+          const cstIcmsClass = getCSTClass(item.cstIcms, 'ICMS');
+          const cstPisClass = getCSTClass(item.cstPis, 'PIS');
+          const cstCofClass = getCSTClass(item.cstCof, 'COFINS');
+
+          const valIcmsClass = item.vIcms > 0 ? "filled-val" : "";
+          const valPisClass = item.vPis > 0 ? "filled-val" : "";
+          const valCofClass = item.vCof > 0 ? "filled-val" : "";
+
+          tr.innerHTML = `
+            <td style="font-weight:600">${item.nNF}</td>
+            <td><span style="display:block; max-width:120px; overflow:hidden; text-overflow:ellipsis" title="${item.emitNome}">${item.emitNome}</span></td>
+            <td>
+              <span class="col-prod" 
+                    onmouseover="showTooltip(event, ${start + idx})" 
+                    onmousemove="moveTooltip(event)" 
+                    onmouseout="hideTooltip()"
+                    onclick="copiarChave('${item.chNFe}')">
+                ${item.xProd}
+              </span>
+            </td>
+            <td>${item.ncm}<br><small style="color:var(--text-tertiary)">${item.cfop}</small></td>
+            <td>${formatMoney(item.vProd)}</td>
+            
+            <td class="sep-left center"><span class="tag-cst ${cstIcmsClass}">${item.cstIcms}</span></td>
+            <td class="money">${formatMoney(item.vBcIcms)}</td>
+            <td class="money">${formatDec(item.pIcms)}%</td>
+            <td class="center" style="font-size:10px">${item.pRedIcms > 0 ? item.pRedIcms + "%" : "-"}</td>
+            <td class="money ${valIcmsClass}">${formatMoney(item.vIcms)}</td>
+
+            <td class="sep-left center"><span class="tag-cst ${cstPisClass}">${item.cstPis}</span><span class="tag-cst ${cstCofClass}">${item.cstCof}</span></td>
+            <td class="money">${formatMoney(item.vBcPis)}</td>
+            <td class="money">${formatDec(item.pPis)}%</td>
+            <td class="money ${valPisClass}">${formatMoney(item.vPis)}</td>
+            <td class="money">${formatMoney(item.vBcCof)}</td>
+            <td class="money">${formatDec(item.pCof)}%</td>
+            <td class="money ${valCofClass}">${formatMoney(item.vCof)}</td>
+          `;
+          frag.appendChild(tr);
+        });
+        tbody.appendChild(frag);
+        atualizarPaginacao();
+      }
+
+      function atualizarPaginacao() {
+        const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
+        document.getElementById("pageInfo").innerText =
+          `${currentPage} / ${totalPages}`;
+        document.getElementById("btnPrev").disabled = currentPage === 1;
+        document.getElementById("btnNext").disabled =
+          currentPage === totalPages;
+      }
+
+      function mudarPagina(d) {
+        const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
+        const n = currentPage + d;
+        if (n >= 1 && n <= totalPages) {
+          currentPage = n;
+          renderizarTabela();
+          document.querySelector(".scroll-content").scrollTop = 0;
+        }
+      }
+
+      function showTooltip(e, idx) {
+        currentKeyToCopy = filteredItems[idx].chNFe;
+        const item = filteredItems[idx];
+        tooltip.innerHTML = `
+          <div style="font-weight:700; border-bottom:1px solid #333; margin-bottom:5px; padding-bottom:5px">DETALHES</div>
+          <div>Emitente: ${item.emitNome}</div>
+          <div>CNPJ: ${item.emitCNPJ}</div>
+          <div style="margin-top:5px; font-size:10px; color:#888">CHAVE:</div>
+          <div class="break-text">${item.chNFe}</div>
+          <div style="margin-top:5px; font-size:9px">Clique no nome do produto para copiar a chave</div>
+        `;
+        tooltip.style.display = "block";
+        moveTooltip(e);
+      }
+      function moveTooltip(e) {
+        let x = e.clientX + 15,
+          y = e.clientY + 15;
+        if (x + 280 > window.innerWidth) x -= 290;
+        if (y + 150 > window.innerHeight) y -= 160;
+        tooltip.style.left = x + "px";
+        tooltip.style.top = y + "px";
+      }
+      function hideTooltip() {
+        tooltip.style.display = "none";
+      }
+
+      function copiarChave(chave) {
+        navigator.clipboard.writeText(chave);
+        const st = document.getElementById("statusMsg");
+        st.innerText = "Chave Copiada!";
+        st.style.color = "var(--data-green)";
+        setTimeout(() => {
+          st.innerText = "Pronto.";
+          st.style.color = "var(--text-secondary)";
+        }, 2000);
+      }
+
+      function debounceFiltro() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(aplicarFiltros, 300);
+      }
+
+      function limparTudo() {
+        allItems = [];
+        filteredItems = [];
+        document.getElementById("xmlInput").value = "";
+        document.getElementById("filtroProd").value = "";
+        document.getElementById("filtroNcm").value = "";
+        document.getElementById("filtroCfop").value = "";
+        document.getElementById("filtroCstIcms").value = "";
+        document.getElementById("filtroCstPisCof").value = "";
+        aplicarFiltros();
+      }
+
+      function exportToCSV() {
+        if (!filteredItems.length) return alert("Sem dados");
+        let csv =
+          "Nota,Emitente,Chave,Produto,NCM,CFOP,VProd,CST_ICMS,BC_ICMS,ALIQ_ICMS,RED_ICMS,VAL_ICMS,CST_PIS,BC_PIS,ALIQ_PIS,VAL_PIS,CST_COF,BC_COF,ALIQ_COF,VAL_COF\n";
+        filteredItems.forEach((i) => {
+          csv += `${i.nNF},"${i.emitNome}",'${i.chNFe},"${i.xProd}",${i.ncm},${i.cfop},${i.vProd.toFixed(2).replace(".", ",")},${i.cstIcms},${i.vBcIcms.toFixed(2).replace(".", ",")},${i.pIcms.toFixed(2).replace(".", ",")},${i.pRedIcms.toFixed(2).replace(".", ",")},${i.vIcms.toFixed(2).replace(".", ",")},${i.cstPis},${i.vBcPis.toFixed(2).replace(".", ",")},${i.pPis.toFixed(2).replace(".", ",")},${i.vPis.toFixed(2).replace(".", ",")},${i.cstCof},${i.vBcCof.toFixed(2).replace(".", ",")},${i.pCof.toFixed(2).replace(".", ",")},${i.vCof.toFixed(2).replace(".", ",")}\n`;
+        });
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "auditoria_impostos.csv";
+        link.click();
+      }
+    </script>
+  </body>
+</html>
