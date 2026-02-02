@@ -336,6 +336,35 @@
         font-weight: 500;
       }
 
+      /* TOGGLES */
+      .crt-toggles {
+        display: flex;
+        background: var(--border-subtle);
+        padding: 2px;
+        border-radius: var(--radius-sm);
+        height: 32px;
+      }
+      .btn-toggle {
+        flex: 1;
+        background: transparent;
+        border: none;
+        font-family: var(--font-ui);
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-toggle:hover {
+        color: var(--text-primary);
+      }
+      .btn-toggle.active {
+        background: var(--bg-surface);
+        color: var(--text-primary);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
       /* TABLE */
       .table-container {
         width: 100%;
@@ -400,6 +429,32 @@
         font-weight: 600;
       }
 
+      /* BADGES CRT */
+      .badge-crt {
+        padding: 2px 5px;
+        border-radius: 4px;
+        font-size: 8px;
+        font-weight: 600;
+        border: 1px solid transparent;
+        text-transform: uppercase;
+        display: inline-block;
+      }
+      .crt-simples {
+        background: var(--badge-green-bg);
+        color: var(--data-green);
+        border-color: rgba(46, 184, 138, 0.2);
+      }
+      .crt-normal {
+        background: var(--badge-purple-bg);
+        color: var(--data-purple);
+        border-color: rgba(98, 91, 246, 0.2);
+      }
+      .crt-outros {
+        background: var(--badge-neutral-bg);
+        color: var(--text-secondary);
+        border-color: var(--border-subtle);
+      }
+
       /* Column Styling */
       .col-prod {
         max-width: 180px;
@@ -421,7 +476,7 @@
         font-weight: 700;
         border: 1px solid rgba(0, 0, 0, 0.1);
       }
-      
+
       /* Mapeamento de cores únicas para cada CST */
       .cst-00 {
         background: rgba(46, 184, 138, 0.1);
@@ -709,6 +764,33 @@
                 onkeyup="debounceFiltro()"
               />
             </div>
+
+            <div class="form-group" style="min-width: 180px">
+              <label>Regime Tributário</label>
+              <div class="crt-toggles">
+                <button
+                  class="btn-toggle active"
+                  id="btnCrtAll"
+                  onclick="setRegimeFilter('all')"
+                >
+                  Todos
+                </button>
+                <button
+                  class="btn-toggle"
+                  id="btnCrtSimples"
+                  onclick="setRegimeFilter('SIMPLES')"
+                >
+                  Simples
+                </button>
+                <button
+                  class="btn-toggle"
+                  id="btnCrtNormal"
+                  onclick="setRegimeFilter('NORMAL')"
+                >
+                  Normal
+                </button>
+              </div>
+            </div>
             <div class="form-group">
               <label>CST ICMS</label>
               <input
@@ -741,6 +823,7 @@
               <tr>
                 <th>Nota</th>
                 <th>Emitente</th>
+                <th>Regime</th>
                 <th>Produto</th>
                 <th>NCM/CFOP</th>
                 <th>V.Item</th>
@@ -816,9 +899,10 @@
       let allItems = [];
       let filteredItems = [];
       let currentPage = 1;
-      const itemsPerPage = 50;
+      const itemsPerPage = 200;
       let debounceTimer;
       let currentKeyToCopy = "";
+      let filterRegime = "all";
 
       const tooltip = document.getElementById("floatingTooltip");
 
@@ -827,24 +911,51 @@
       function ensureCSTStyle(type, cst) {
         // Unifica PIS e COFINS em um mesmo grupo para compartilhar cores
         const group = (type || "").toString().toUpperCase();
-        const groupKey = group === "PIS" || group === "COFINS" ? "PISCOF" : group;
+        const groupKey =
+          group === "PIS" || group === "COFINS" ? "PISCOF" : group;
         const key = `${groupKey}-${cst}`;
         if (__generatedCSTStyles.has(key)) return;
         __generatedCSTStyles.add(key);
 
         // Paleta de cores distintas (hex) — garante diversidade e previsibilidade
         const palette = [
-          "#ef4444","#f97316","#f59e0b","#eab308","#84cc16","#22c55e",
-          "#06b6d4","#0ea5e9","#3b82f6","#6366f1","#8b5cf6","#a78bfa",
-          "#ec4899","#f472b6","#fb7185","#ef8576","#fb923c","#f43f5e",
-          "#10b981","#06b6d4","#0891b2","#7c3aed","#6366f1","#2563eb",
-          "#0ea5a4","#14b8a6","#22c55e","#84cc16","#a3e635","#60a5fa"
+          "#ef4444",
+          "#f97316",
+          "#f59e0b",
+          "#eab308",
+          "#84cc16",
+          "#22c55e",
+          "#06b6d4",
+          "#0ea5e9",
+          "#3b82f6",
+          "#6366f1",
+          "#8b5cf6",
+          "#a78bfa",
+          "#ec4899",
+          "#f472b6",
+          "#fb7185",
+          "#ef8576",
+          "#fb923c",
+          "#f43f5e",
+          "#10b981",
+          "#06b6d4",
+          "#0891b2",
+          "#7c3aed",
+          "#6366f1",
+          "#2563eb",
+          "#0ea5a4",
+          "#14b8a6",
+          "#22c55e",
+          "#84cc16",
+          "#a3e635",
+          "#60a5fa",
         ];
 
         // simples hash para distribuir o CST na paleta
         let h = 0;
         const seed = `${groupKey}-${cst}`;
-        for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+        for (let i = 0; i < seed.length; i++)
+          h = (h * 31 + seed.charCodeAt(i)) >>> 0;
         const idx = h % palette.length;
         const color = palette[idx];
         const bg = colorToRgba(color, 0.12);
@@ -859,14 +970,24 @@
           document.head.appendChild(styleEl);
         }
         styleEl.appendChild(
-          document.createTextNode(`${cls} { background: ${bg}; color: ${color}; border-color: ${border}; }`)
+          document.createTextNode(
+            `${cls} { background: ${bg}; color: ${color}; border-color: ${border}; }`,
+          ),
         );
       }
 
       // Converte hex para rgba string
       function colorToRgba(hex, alpha) {
-        const h = hex.replace('#','');
-        const bigint = parseInt(h.length === 3 ? h.split('').map(c=>c+c).join('') : h, 16);
+        const h = hex.replace("#", "");
+        const bigint = parseInt(
+          h.length === 3
+            ? h
+                .split("")
+                .map((c) => c + c)
+                .join("")
+            : h,
+          16,
+        );
         const r = (bigint >> 16) & 255;
         const g = (bigint >> 8) & 255;
         const b = bigint & 255;
@@ -1005,6 +1126,15 @@
               : "---";
             const emitCNPJ = emit ? getTagValue(emit, "CNPJ") : "";
 
+            // Extração de Regime (CRT)
+            const crtCode = emit ? getTagValue(emit, "CRT") : "";
+            let regimeDesc = "OUTROS";
+            if (crtCode === "1" || crtCode === "2") {
+              regimeDesc = "SIMPLES";
+            } else if (crtCode === "3") {
+              regimeDesc = "NORMAL";
+            }
+
             let chNFe = "---";
             const infNFe = xmlDoc.getElementsByTagName("infNFe")[0];
             if (infNFe)
@@ -1035,6 +1165,7 @@
                 nNF,
                 emitNome,
                 emitCNPJ,
+                regimeDesc,
                 xProd,
                 ncm,
                 cfop,
@@ -1070,8 +1201,12 @@
         const fProd = document.getElementById("filtroProd").value.toLowerCase();
         const fNcm = document.getElementById("filtroNcm").value.toLowerCase();
         const fCfop = document.getElementById("filtroCfop").value.toLowerCase();
-        const fCstIcms = document.getElementById("filtroCstIcms").value.toLowerCase();
-        const fCstPisCof = document.getElementById("filtroCstPisCof").value.toLowerCase();
+        const fCstIcms = document
+          .getElementById("filtroCstIcms")
+          .value.toLowerCase();
+        const fCstPisCof = document
+          .getElementById("filtroCstPisCof")
+          .value.toLowerCase();
 
         filteredItems = allItems.filter((item) => {
           return (
@@ -1079,7 +1214,9 @@
             item.ncm.includes(fNcm) &&
             item.cfop.includes(fCfop) &&
             item.cstIcms.toLowerCase().includes(fCstIcms) &&
-            (item.cstPis.toLowerCase().includes(fCstPisCof) || item.cstCof.toLowerCase().includes(fCstPisCof))
+            (item.cstPis.toLowerCase().includes(fCstPisCof) ||
+              item.cstCof.toLowerCase().includes(fCstPisCof)) &&
+            (filterRegime === "all" || item.regimeDesc === filterRegime)
           );
         });
 
@@ -1117,9 +1254,9 @@
           const tr = document.createElement("tr");
 
           // Obter classes CSS únicas para cada CST
-          const cstIcmsClass = getCSTClass(item.cstIcms, 'ICMS');
-          const cstPisClass = getCSTClass(item.cstPis, 'PIS');
-          const cstCofClass = getCSTClass(item.cstCof, 'COFINS');
+          const cstIcmsClass = getCSTClass(item.cstIcms, "ICMS");
+          const cstPisClass = getCSTClass(item.cstPis, "PIS");
+          const cstCofClass = getCSTClass(item.cstCof, "COFINS");
 
           const valIcmsClass = item.vIcms > 0 ? "filled-val" : "";
           const valPisClass = item.vPis > 0 ? "filled-val" : "";
@@ -1128,6 +1265,17 @@
           tr.innerHTML = `
             <td style="font-weight:600">${item.nNF}</td>
             <td><span style="display:block; max-width:120px; overflow:hidden; text-overflow:ellipsis" title="${item.emitNome}">${item.emitNome}</span></td>
+            <td>
+              <span class="badge-crt ${
+                item.regimeDesc === "SIMPLES"
+                  ? "crt-simples"
+                  : item.regimeDesc === "NORMAL"
+                    ? "crt-normal"
+                    : "crt-outros"
+              }">
+                ${item.regimeDesc}
+              </span>
+            </td>
             <td>
               <span class="col-prod" 
                     onmouseover="showTooltip(event, ${start + idx})" 
@@ -1186,6 +1334,7 @@
           <div style="font-weight:700; border-bottom:1px solid #333; margin-bottom:5px; padding-bottom:5px">DETALHES</div>
           <div>Emitente: ${item.emitNome}</div>
           <div>CNPJ: ${item.emitCNPJ}</div>
+          <div>Regime: ${item.regimeDesc}</div>
           <div style="margin-top:5px; font-size:10px; color:#888">CHAVE:</div>
           <div class="break-text">${item.chNFe}</div>
           <div style="margin-top:5px; font-size:9px">Clique no nome do produto para copiar a chave</div>
@@ -1230,15 +1379,32 @@
         document.getElementById("filtroCfop").value = "";
         document.getElementById("filtroCstIcms").value = "";
         document.getElementById("filtroCstPisCof").value = "";
+        setRegimeFilter("all");
+        aplicarFiltros();
+      }
+
+      function setRegimeFilter(type) {
+        filterRegime = type;
+        document.getElementById("btnCrtAll").classList.remove("active");
+        document.getElementById("btnCrtSimples").classList.remove("active");
+        document.getElementById("btnCrtNormal").classList.remove("active");
+
+        if (type === "all")
+          document.getElementById("btnCrtAll").classList.add("active");
+        if (type === "SIMPLES")
+          document.getElementById("btnCrtSimples").classList.add("active");
+        if (type === "NORMAL")
+          document.getElementById("btnCrtNormal").classList.add("active");
+
         aplicarFiltros();
       }
 
       function exportToCSV() {
         if (!filteredItems.length) return alert("Sem dados");
         let csv =
-          "Nota,Emitente,Chave,Produto,NCM,CFOP,VProd,CST_ICMS,BC_ICMS,ALIQ_ICMS,RED_ICMS,VAL_ICMS,CST_PIS,BC_PIS,ALIQ_PIS,VAL_PIS,CST_COF,BC_COF,ALIQ_COF,VAL_COF\n";
+          "Nota,Emitente,Regime,Chave,Produto,NCM,CFOP,VProd,CST_ICMS,BC_ICMS,ALIQ_ICMS,RED_ICMS,VAL_ICMS,CST_PIS,BC_PIS,ALIQ_PIS,VAL_PIS,CST_COF,BC_COF,ALIQ_COF,VAL_COF\\n";
         filteredItems.forEach((i) => {
-          csv += `${i.nNF},"${i.emitNome}",'${i.chNFe},"${i.xProd}",${i.ncm},${i.cfop},${i.vProd.toFixed(2).replace(".", ",")},${i.cstIcms},${i.vBcIcms.toFixed(2).replace(".", ",")},${i.pIcms.toFixed(2).replace(".", ",")},${i.pRedIcms.toFixed(2).replace(".", ",")},${i.vIcms.toFixed(2).replace(".", ",")},${i.cstPis},${i.vBcPis.toFixed(2).replace(".", ",")},${i.pPis.toFixed(2).replace(".", ",")},${i.vPis.toFixed(2).replace(".", ",")},${i.cstCof},${i.vBcCof.toFixed(2).replace(".", ",")},${i.pCof.toFixed(2).replace(".", ",")},${i.vCof.toFixed(2).replace(".", ",")}\n`;
+          csv += `${i.nNF},"${i.emitNome}","${i.regimeDesc}",'${i.chNFe},"${i.xProd}",${i.ncm},${i.cfop},${i.vProd.toFixed(2).replace(".", ",")},${i.cstIcms},${i.vBcIcms.toFixed(2).replace(".", ",")},${i.pIcms.toFixed(2).replace(".", ",")},${i.pRedIcms.toFixed(2).replace(".", ",")},${i.vIcms.toFixed(2).replace(".", ",")},${i.cstPis},${i.vBcPis.toFixed(2).replace(".", ",")},${i.pPis.toFixed(2).replace(".", ",")},${i.vPis.toFixed(2).replace(".", ",")},${i.cstCof},${i.vBcCof.toFixed(2).replace(".", ",")},${i.pCof.toFixed(2).replace(".", ",")},${i.vCof.toFixed(2).replace(".", ",")}\\n`;
         });
         const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
         const link = document.createElement("a");
