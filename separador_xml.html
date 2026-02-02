@@ -1,7 +1,41 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      // Desabilita o clique direito
+      document.addEventListener("contextmenu", (event) =>
+        event.preventDefault(),
+      );
+
+      // Desabilita atalhos de teclado comuns para desenvolvedores
+      document.onkeydown = function (e) {
+        // F12
+        if (e.keyCode == 123) {
+          return false;
+        }
+        // Ctrl+Shift+I (Inspecionar)
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 73) {
+          return false;
+        }
+        // Ctrl+Shift+J (Console)
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 74) {
+          return false;
+        }
+        // Ctrl+Shift+C (Inspecionar Elemento)
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 67) {
+          return false;
+        }
+        // Ctrl+U (Ver Código Fonte)
+        if (e.ctrlKey && e.keyCode == 85) {
+          return false;
+        }
+        // Ctrl+S (Salvar) - Opcional, para dificultar o download direto
+        if (e.ctrlKey && e.keyCode == 83) {
+          return false;
+        }
+      };
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Splitter NFSe Nacional</title>
     <link rel="icon" href="icone.ico" type="image/x-icon" />
@@ -254,7 +288,7 @@
         style="
           margin-top: auto;
           font-size: 0.65rem;
-          font-family: 'Space Mono';
+          font-family: &quot;Space Mono&quot;;
           color: #eee;
           opacity: 0.8;
         "

@@ -1,6 +1,40 @@
 <!doctype html>
 <html lang="pt-BR">
   <head>
+    <script>
+      // Desabilita o clique direito
+      document.addEventListener("contextmenu", (event) =>
+        event.preventDefault(),
+      );
+
+      // Desabilita atalhos de teclado comuns para desenvolvedores
+      document.onkeydown = function (e) {
+        // F12
+        if (e.keyCode == 123) {
+          return false;
+        }
+        // Ctrl+Shift+I (Inspecionar)
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 73) {
+          return false;
+        }
+        // Ctrl+Shift+J (Console)
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 74) {
+          return false;
+        }
+        // Ctrl+Shift+C (Inspecionar Elemento)
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 67) {
+          return false;
+        }
+        // Ctrl+U (Ver Código Fonte)
+        if (e.ctrlKey && e.keyCode == 85) {
+          return false;
+        }
+        // Ctrl+S (Salvar) - Opcional, para dificultar o download direto
+        if (e.ctrlKey && e.keyCode == 83) {
+          return false;
+        }
+      };
+    </script>
     <script
       async
       src="https://www.googletagmanager.com/gtag/js?id=G-6XKND47T4H"
