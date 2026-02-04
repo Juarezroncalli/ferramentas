@@ -1435,12 +1435,29 @@
 
       function exportToCSV() {
         if (!filteredItems.length) return alert("Sem dados");
+        // Usando ponto e vírgula para melhor compatibilidade com Excel PT-BR (onde decimal é vírgula)
         let csv =
-          "Nota,Emitente,Regime,Chave,Produto,NCM,CFOP,VProd,CST_ICMS,BC_ICMS,ALIQ_ICMS,RED_ICMS,VAL_ICMS,CST_PIS,BC_PIS,ALIQ_PIS,VAL_PIS,CST_COF,BC_COF,ALIQ_COF,VAL_COF\\n";
+          "Nota;Emitente;Regime;Chave;Produto;NCM;CFOP;V.Prod;CST ICMS;BC ICMS;% Alíq;% Red;R$ ICMS;CST PIS;BC PIS;% PIS;R$ PIS;CST COF;BC COF;% COF;R$ COF\n";
+
         filteredItems.forEach((i) => {
-          csv += `${i.nNF},"${i.emitNome}","${i.regimeDesc}",'${i.chNFe},"${i.xProd}",${i.ncm},${i.cfop},${i.vProd.toFixed(2).replace(".", ",")},${i.cstIcms},${i.vBcIcms.toFixed(2).replace(".", ",")},${i.pIcms.toFixed(2).replace(".", ",")},${i.pRedIcms.toFixed(2).replace(".", ",")},${i.vIcms.toFixed(2).replace(".", ",")},${i.cstPis},${i.vBcPis.toFixed(2).replace(".", ",")},${i.pPis.toFixed(2).replace(".", ",")},${i.vPis.toFixed(2).replace(".", ",")},${i.cstCof},${i.vBcCof.toFixed(2).replace(".", ",")},${i.pCof.toFixed(2).replace(".", ",")},${i.vCof.toFixed(2).replace(".", ",")}\\n`;
+          // Helper para tratar campos de texto (remove quebras de linha internas e aspas duplas)
+          const clean = (txt) => {
+            if (!txt) return "";
+            return String(txt)
+              .replace(/"/g, '""')
+              .replace(/(\r\n|\n|\r)/g, " ");
+          };
+
+          // Helper para formatar números
+          const fmt = (num) => num.toFixed(2).replace(".", ",");
+
+          csv += `"${clean(i.nNF)}";"${clean(i.emitNome)}";"${clean(i.regimeDesc)}";"${clean(i.chNFe)}";"${clean(i.xProd)}";"${clean(i.ncm)}";"${clean(i.cfop)}";"${fmt(i.vProd)}";"${clean(i.cstIcms)}";"${fmt(i.vBcIcms)}";"${fmt(i.pIcms)}";"${fmt(i.pRedIcms)}";"${fmt(i.vIcms)}";"${clean(i.cstPis)}";"${fmt(i.vBcPis)}";"${fmt(i.pPis)}";"${fmt(i.vPis)}";"${clean(i.cstCof)}";"${fmt(i.vBcCof)}";"${fmt(i.pCof)}";"${fmt(i.vCof)}"\n`;
         });
-        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+
+        // Adiciona BOM para garantir leitura correta de acentos no Excel
+        const blob = new Blob(["\uFEFF" + csv], {
+          type: "text/csv;charset=utf-8;",
+        });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = "auditoria_impostos.csv";
