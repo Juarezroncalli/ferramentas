@@ -1,0 +1,1312 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Livro de Entradas (ICMS) - J.RONCALLI</title>
+    <link rel="icon" href="icone.ico" type="image/x-icon" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        /* --- LIGHT MODE --- */
+        --bg-app: #f4f5f8;
+        --bg-surface: #ffffff;
+        --bg-panel: #fcfcfd;
+        --bg-sidebar: #15171a;
+        --bg-input: #ffffff;
+        --bg-hover: #f9fafb;
+
+        --text-primary: #1a1d21;
+        --text-secondary: #5f6b7c;
+        --text-tertiary: #8d96a0;
+
+        --border-subtle: #e6e8eb;
+        --border-focus: #5e6ad2;
+        --border-dashed: #cfd6e0;
+
+        /* Cores */
+        --data-purple: #625bf6;
+        --data-green: #2eb88a;
+        --data-blue: #0091ff;
+        --data-orange: #f58e08;
+        --data-red: #e5484d;
+
+        --radius-md: 8px;
+        --radius-sm: 6px;
+
+        /* Badges */
+        --badge-green-bg: rgba(46, 184, 138, 0.1);
+        --badge-purple-bg: rgba(98, 91, 246, 0.1);
+
+        --shadow-card:
+          0px 1px 2px rgba(0, 0, 0, 0.04), 0px 4px 8px rgba(0, 0, 0, 0.02);
+        --font-ui: "Inter", -apple-system, sans-serif;
+        --font-code: "JetBrains Mono", monospace;
+      }
+
+      /* --- DARK MODE --- */
+      [data-theme="dark"] {
+        --bg-app: #09090b;
+        --bg-surface: #18181b;
+        --bg-panel: #18181b;
+        --bg-sidebar: #000000;
+        --bg-input: #09090b;
+        --bg-hover: #27272a;
+
+        --text-primary: #f4f4f5;
+        --text-secondary: #a1a1aa;
+        --text-tertiary: #52525b;
+
+        --border-subtle: #27272a;
+        --border-focus: #818cf8;
+        --border-dashed: #3f3f46;
+
+        --data-purple: #818cf8;
+        --data-green: #34d399;
+        --data-blue: #38bdf8;
+        --data-orange: #fbbf24;
+        --data-red: #f87171;
+
+        --badge-green-bg: rgba(52, 211, 153, 0.15);
+        --badge-purple-bg: rgba(129, 140, 248, 0.15);
+
+        --shadow-card: 0 0 0 1px #27272a;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        outline: none;
+      }
+
+      body {
+        font-family: var(--font-ui);
+        background-color: var(--bg-app);
+        color: var(--text-primary);
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        font-size: 16px;
+      }
+
+      /* SIDEBAR */
+      .sidebar {
+        width: 180px;
+        background: var(--bg-sidebar);
+        border-right: 1px solid #2e3338;
+        padding: 1.5rem 0.8rem;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        color: #fff;
+        z-index: 20;
+      }
+
+      .logo {
+        font-size: 16px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 2.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-left: 0.2rem;
+      }
+      .logo i {
+        color: var(--data-green);
+      }
+
+      .nav-item {
+        color: #9ca3af;
+        padding: 0.5rem 0.6rem;
+        margin-bottom: 0.25rem;
+        font-weight: 500;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.2s ease;
+        font-size: 12px;
+      }
+      .nav-item:hover,
+      .nav-item.active {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #fff;
+      }
+
+      /* MAIN */
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+        background: var(--bg-app);
+      }
+
+      .scroll-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem 2rem;
+        padding-bottom: 60px;
+      }
+
+      /* HEADER */
+      .neo-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+      .neo-header h1 {
+        font-weight: 600;
+        font-size: 18px;
+        color: var(--text-primary);
+      }
+
+      .header-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .btn-action {
+        background: transparent;
+        border: 1px solid var(--border-subtle);
+        color: var(--text-primary);
+        padding: 0 14px;
+        height: 32px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 11px;
+        transition: all 0.2s;
+      }
+      .btn-action:hover {
+        border-color: var(--data-purple);
+        color: var(--data-purple);
+      }
+
+      .theme-toggle {
+        border: 1px solid var(--data-purple);
+        color: var(--data-purple);
+      }
+      .theme-toggle:hover {
+        background: var(--data-purple);
+        color: #fff;
+      }
+
+      /* KPI CARDS */
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .metric-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: 8px;
+        padding: 1rem;
+        box-shadow: var(--shadow-card);
+        position: relative;
+      }
+      .metric-card::after {
+        content: "";
+        position: absolute;
+        top: -1px;
+        left: -1px;
+        right: -1px;
+        height: 2px;
+        border-radius: 8px 8px 0 0;
+      }
+      .metric-card.purple::after {
+        background: var(--data-purple);
+      }
+      .metric-card.green::after {
+        background: var(--data-green);
+      }
+      .metric-card.blue::after {
+        background: var(--data-blue);
+      }
+      .metric-card.orange::after {
+        background: var(--data-orange);
+      }
+
+      .metric-title {
+        font-size: 10px;
+        color: var(--text-secondary);
+        margin-bottom: 0.4rem;
+        font-weight: 500;
+      }
+      .metric-value {
+        font-family: var(--font-ui);
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--text-primary);
+        letter-spacing: -0.03em;
+      }
+
+      /* FILTERS */
+      .filters-container {
+        margin-bottom: 1rem;
+        display: flex;
+        gap: 15px;
+        align-items: flex-end;
+        flex-wrap: wrap;
+      }
+      .form-group label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 4px;
+        font-size: 10px;
+        color: var(--text-secondary);
+      }
+      .crt-toggles {
+        display: flex;
+        background: var(--border-subtle);
+        padding: 2px;
+        border-radius: var(--radius-sm);
+        height: 32px;
+      }
+      .btn-toggle {
+        padding: 0 16px;
+        background: transparent;
+        border: none;
+        font-family: var(--font-ui);
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-toggle:hover {
+        color: var(--text-primary);
+      }
+      .btn-toggle.active {
+        background: var(--bg-surface);
+        color: var(--text-primary);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      /* UPLOAD */
+      .upload-area {
+        background: var(--bg-panel);
+        border: 1px dashed var(--border-dashed);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+      }
+      .upload-area:hover {
+        border-color: var(--data-blue);
+        background-color: var(--bg-hover);
+      }
+      #xmlInput {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      /* TABLE - LIVRO FISCAL STYLE */
+      .table-container {
+        border: 1px solid var(--border-subtle);
+        border-radius: 8px;
+        background: var(--bg-surface);
+        box-shadow: var(--shadow-card);
+        overflow: hidden;
+        margin-bottom: 50px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: var(--font-ui);
+        font-size: 11px;
+        table-layout: fixed;
+      }
+
+      thead th {
+        background: var(--bg-panel);
+        color: var(--text-tertiary);
+        padding: 10px 12px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 9px;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+
+      /* Linha MESTRE (Nota Fiscal) */
+      .row-master td {
+        background: var(--bg-surface);
+        padding: 12px;
+        border-bottom: 1px solid var(--border-subtle);
+        color: var(--text-primary);
+        font-weight: 500;
+        vertical-align: middle;
+        font-size: 16px;
+      }
+      .row-master:hover td {
+        background: var(--bg-hover);
+      }
+
+      /* Linha DETALHE (Itens) */
+      .row-detail td {
+        padding: 0;
+        border-bottom: 1px solid var(--border-subtle);
+        background: var(--bg-panel);
+      }
+
+      /* Tabela Interna de Produtos */
+      .sub-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: transparent;
+      }
+      .sub-table th {
+        font-size: 8px;
+        color: var(--text-tertiary);
+        padding: 6px 12px;
+        border-bottom: 1px solid var(--border-dashed);
+        background: rgba(0, 0, 0, 0.02);
+        text-transform: uppercase;
+      }
+      .sub-table td {
+        padding: 6px 12px;
+        font-size: 10px;
+        border-bottom: 1px solid var(--border-dashed);
+        color: var(--text-secondary);
+      }
+      .sub-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      /* Helpers */
+      .money {
+        text-align: right;
+        font-family: var(--font-code);
+      }
+      .text-right {
+        text-align: right;
+      }
+      .font-code {
+        font-family: var(--font-code);
+      }
+
+      .badge-crt {
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 9px;
+        font-weight: 600;
+        border: 1px solid transparent;
+        display: inline-block;
+      }
+      .crt-simples {
+        background: var(--badge-green-bg);
+        color: var(--data-green);
+        border-color: rgba(46, 184, 138, 0.2);
+      }
+      .crt-normal {
+        background: var(--badge-purple-bg);
+        color: var(--data-purple);
+        border-color: rgba(98, 91, 246, 0.2);
+      }
+
+      .highlight-neon {
+        color: #fff;
+        background-color: #ff00ff; /* Magenta Neon */
+        box-shadow:
+          0 0 5px #ff00ff,
+          0 0 10px #ff00ff;
+        border-radius: 2px;
+        padding: 0 2px;
+        font-weight: bold;
+      }
+
+      /* PAGINATION */
+      .pagination-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 1rem;
+        gap: 15px;
+      }
+      .btn-page {
+        background: var(--bg-panel);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-primary);
+        padding: 6px 14px;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        font-family: var(--font-ui);
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+      }
+      .btn-page:hover:not(:disabled) {
+        background: var(--bg-hover);
+        border-color: var(--border-focus);
+      }
+      .btn-page:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .page-info {
+        font-size: 11px;
+        color: var(--text-secondary);
+        font-family: var(--font-code);
+      }
+
+      /* PRINT */
+      @media print {
+        .sidebar,
+        .upload-area,
+        .header-actions,
+        .filters-container,
+        #lgpdModal {
+          display: none !important;
+        }
+        body,
+        .main-content,
+        .scroll-content {
+          height: auto;
+          overflow: visible;
+          background: #fff;
+          color: #000;
+          display: block;
+        }
+        .scroll-content {
+          padding: 0;
+        }
+        .dashboard-grid {
+          grid-template-columns: repeat(4, 1fr);
+          gap: 10px;
+          margin-bottom: 20px;
+        }
+        .metric-card {
+          border: 1px solid #ccc;
+          box-shadow: none;
+          break-inside: avoid;
+        }
+        .metric-card::after {
+          display: none;
+        }
+
+        .table-container {
+          border: none;
+          box-shadow: none;
+        }
+        table {
+          font-size: 9px;
+          width: 100%;
+          table-layout: auto;
+        }
+        .row-master td {
+          border-bottom: 1px solid #000;
+          background: #eee !important;
+          color: #000;
+          font-weight: bold;
+        }
+        .row-detail td {
+          background: #fff !important;
+        }
+        .sub-table th {
+          color: #000;
+          border-bottom: 1px solid #ccc;
+        }
+        .sub-table td {
+          color: #000;
+          border-bottom: 1px solid #eee;
+        }
+
+        .badge-crt {
+          border: 1px solid #000;
+          color: #000;
+          background: transparent;
+        }
+
+        .neo-header {
+          display: block;
+          margin-bottom: 10px;
+          border-bottom: 1px solid #000;
+          padding-bottom: 10px;
+        }
+        .neo-header h1::after {
+          content: " - Relatório de Conferência Fiscal";
+          font-size: 14px;
+          font-weight: 400;
+        }
+      }
+    </style>
+  </head>
+  <body data-theme="dark">
+    <div
+      id="lgpdModal"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+      "
+    >
+      <div
+        style="
+          background: var(--bg-surface);
+          padding: 2rem;
+          border-radius: 12px;
+          border: 1px solid var(--border-subtle);
+          max-width: 400px;
+          text-align: center;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        "
+      >
+        <h2 style="margin-bottom: 1rem; color: var(--text-primary)">
+          Aviso de Privacidade
+        </h2>
+        <p
+          style="
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+          "
+        >
+          Processamento 100% local (Client-Side). Seus arquivos XML não são
+          enviados para nenhum servidor.
+        </p>
+        <button
+          onclick="document.getElementById('lgpdModal').style.display = 'none'"
+          style="
+            background: var(--data-green);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+          "
+        >
+          ACESSAR SISTEMA
+        </button>
+      </div>
+    </div>
+
+    <aside class="sidebar">
+      <div class="logo">
+        <i class="fas fa-layer-group"></i>
+        <div class="logo-text">
+          <span>J.RONCALLI <small style="opacity: 0.5">FISCAL</small></span>
+        </div>
+      </div>
+      <nav>
+        <div class="nav-item active">
+          <i class="fas fa-file-invoice-dollar"></i>
+          <span>Registro Entradas</span>
+        </div>
+        <div class="nav-item" onclick="window.print()">
+          <i class="fas fa-print"></i> <span>Imprimir</span>
+        </div>
+        <div class="nav-item" onclick="limparTudo()">
+          <i class="fas fa-eraser"></i> <span>Limpar Dados</span>
+        </div>
+      </nav>
+      <div
+        style="
+          margin-top: auto;
+          font-size: 10px;
+          color: #444;
+          font-family: monospace;
+        "
+      >
+        BUILD v2.1.0-ICMS
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="scroll-content">
+        <header class="neo-header">
+          <h1>Painel de Conferência ICMS</h1>
+          <div class="header-actions">
+            <button class="btn-action" onclick="window.print()">
+              <i class="fas fa-print"></i> Imprimir Relatório
+            </button>
+            <button id="themeToggle" class="theme-toggle btn-action">
+              <i class="fas fa-sun"></i> Alternar Tema
+            </button>
+          </div>
+        </header>
+
+        <div class="dashboard-grid">
+          <div class="metric-card purple">
+            <div class="metric-title">Notas Processadas</div>
+            <div class="metric-value" id="totalQtd">0</div>
+          </div>
+          <div class="metric-card blue">
+            <div class="metric-title">Valor Contábil Total</div>
+            <div class="metric-value" id="totalVnf">R$ 0,00</div>
+          </div>
+          <div class="metric-card orange">
+            <div class="metric-title">Base de Cálculo Total</div>
+            <div class="metric-value" id="totalVbc">R$ 0,00</div>
+          </div>
+          <div class="metric-card green">
+            <div class="metric-title">Valor ICMS Total</div>
+            <div class="metric-value" id="totalVicms">R$ 0,00</div>
+          </div>
+        </div>
+
+        <div class="filters-container">
+          <div class="form-group" style="flex: 1; min-width: 250px">
+            <label>Busca Inteligente</label>
+            <input
+              type="text"
+              placeholder="Pesquise por Nº Nota, Fornecedor, Produto, CFOP..."
+              oninput="handleSearchInput(this.value)"
+              style="
+                width: 100%;
+                height: 32px;
+                padding: 0 10px;
+                border-radius: var(--radius-sm);
+                border: 1px solid var(--border-subtle);
+                background: var(--bg-surface);
+                color: var(--text-primary);
+                font-family: var(--font-ui);
+                font-size: 13px;
+                outline: none;
+              "
+            />
+          </div>
+          <div class="form-group" style="min-width: 180px">
+            <label>Regime Tributário</label>
+            <div class="crt-toggles">
+              <button
+                class="btn-toggle active"
+                id="btnCrtAll"
+                onclick="setRegimeFilter('all')"
+              >
+                Todos
+              </button>
+              <button
+                class="btn-toggle"
+                id="btnCrtSimples"
+                onclick="setRegimeFilter('SIMPLES')"
+              >
+                Simples
+              </button>
+              <button
+                class="btn-toggle"
+                id="btnCrtNormal"
+                onclick="setRegimeFilter('NORMAL')"
+              >
+                Normal
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group" style="min-width: 180px">
+            <label>Possui Destaque ICMS?</label>
+            <div class="crt-toggles">
+              <button
+                class="btn-toggle active"
+                id="btnIcmsAll"
+                onclick="setIcmsFilter('all')"
+              >
+                Todos
+              </button>
+              <button
+                class="btn-toggle"
+                id="btnIcmsYes"
+                onclick="setIcmsFilter('yes')"
+              >
+                Sim
+              </button>
+              <button
+                class="btn-toggle"
+                id="btnIcmsNo"
+                onclick="setIcmsFilter('no')"
+              >
+                Não
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="upload-area">
+          <input
+            type="file"
+            id="xmlInput"
+            multiple
+            accept=".xml, .zip"
+            onchange="handleFiles(this.files)"
+          />
+          <div style="pointer-events: none">
+            <i
+              class="fas fa-cloud-upload-alt"
+              style="
+                font-size: 24px;
+                color: var(--text-tertiary);
+                margin-bottom: 10px;
+              "
+            ></i
+            ><br />
+            <span style="font-weight: 600; color: var(--text-primary)"
+              >Arraste XMLs ou ZIPs aqui</span
+            ><br />
+            <span style="font-size: 11px; color: var(--text-secondary)"
+              >Estrutura Mestre-Detalhe (Capa + Itens)</span
+            >
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 30px"></th>
+                <th style="width: 120px">Data</th>
+                <th style="width: 80px">Nº Nota</th>
+                <th style="width: 80px">Regime</th>
+                <th>Fornecedor</th>
+                <th style="width: 110px" class="text-right">Total Nota</th>
+                <th style="width: 110px" class="text-right">Total Base</th>
+                <th style="width: 110px" class="text-right">Total ICMS</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaDados"></tbody>
+          </table>
+        </div>
+
+        <div
+          class="pagination-container"
+          id="paginationControls"
+          style="display: none"
+        >
+          <button class="btn-page" id="btnPrev" onclick="prevPage()">
+            <i class="fas fa-chevron-left"></i> Anterior
+          </button>
+          <span class="page-info">
+            Página <span id="curPage">1</span> de <span id="totPage">1</span>
+          </span>
+          <button class="btn-page" id="btnNext" onclick="nextPage()">
+            Próxima <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+
+        <div
+          style="
+            margin-top: 10px;
+            text-align: right;
+            font-size: 10px;
+            color: var(--text-tertiary);
+          "
+        >
+          * Linha principal exibe totais da NF (ICMSTot). Linhas internas exibem
+          valores por item.
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // --- 1. THEME LOGIC ---
+      const themeBtn = document.getElementById("themeToggle");
+      function toggleTheme() {
+        const body = document.body;
+        const current = body.getAttribute("data-theme");
+        const next = current === "dark" ? "light" : "dark";
+        body.setAttribute("data-theme", next);
+        const icon = themeBtn.querySelector("i");
+        icon.className = next === "dark" ? "fas fa-sun" : "fas fa-moon";
+      }
+      themeBtn.addEventListener("click", toggleTheme);
+
+      // --- 2. DATA LOGIC ---
+      let allInvoices = []; // Array de Objetos { header, items: [] }
+      let filterRegime = "all";
+      let filterIcms = "all";
+      let filterSearch = "";
+      let debounceTimer = null;
+
+      // Pagination state
+      let currentPage = 1;
+      const itemsPerPage = 30;
+
+      function debounce(func, delay) {
+        return function (...args) {
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(() => func.apply(this, args), delay);
+        };
+      }
+
+      function highlightText(text, term) {
+        if (!text) return "";
+        const strText = String(text);
+        if (!term || term.length < 2) return strText; // Only highlight if term has 2+ chars
+
+        const regex = new RegExp(`(${term})`, "gi");
+        return strText.replace(regex, `<span class="highlight-neon">$1</span>`);
+      }
+
+      function handleSearchInput(val) {
+        debounce(() => {
+          filterSearch = val;
+          currentPage = 1; // Reset page on search
+          renderTable();
+        }, 300)();
+      }
+
+      function formatMoney(val) {
+        return val.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
+      }
+      function formatDate(dateStr) {
+        if (!dateStr) return "-";
+        const parts = dateStr.split("T")[0].split("-");
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+      function getTag(parent, tagName) {
+        const el = parent.getElementsByTagName(tagName);
+        return el.length > 0 ? el[0].textContent : "";
+      }
+      function getFloat(parent, tagName) {
+        const val = getTag(parent, tagName);
+        return val ? parseFloat(val) : 0.0;
+      }
+
+      // Filtro Regime
+      function setRegimeFilter(type) {
+        filterRegime = type;
+        document.getElementById("btnCrtAll").classList.remove("active");
+        document.getElementById("btnCrtSimples").classList.remove("active");
+        document.getElementById("btnCrtNormal").classList.remove("active");
+
+        if (type === "all")
+          document.getElementById("btnCrtAll").classList.add("active");
+        if (type === "SIMPLES")
+          document.getElementById("btnCrtSimples").classList.add("active");
+        if (type === "NORMAL")
+          document.getElementById("btnCrtNormal").classList.add("active");
+
+        currentPage = 1; // Reset page on filter
+        renderTable();
+      }
+
+      // Filtro ICMS (Novo)
+      function setIcmsFilter(type) {
+        filterIcms = type;
+        document.getElementById("btnIcmsAll").classList.remove("active");
+        document.getElementById("btnIcmsYes").classList.remove("active");
+        document.getElementById("btnIcmsNo").classList.remove("active");
+
+        if (type === "all")
+          document.getElementById("btnIcmsAll").classList.add("active");
+        if (type === "yes")
+          document.getElementById("btnIcmsYes").classList.add("active");
+        if (type === "no")
+          document.getElementById("btnIcmsNo").classList.add("active");
+
+        currentPage = 1; // Reset page on filter
+        renderTable();
+      }
+
+      // Filtro Texto
+      function setSearchFilter(val) {
+        filterSearch = val;
+        renderTable();
+      }
+
+      async function handleFiles(files) {
+        const btnUpload = document.querySelector(".upload-area span");
+        btnUpload.innerText = "Processando...";
+
+        allInvoices = [];
+        const parser = new DOMParser();
+
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          if (file.name.toLowerCase().endsWith(".xml")) {
+            const text = await file.text();
+            parseNFe(parser, text);
+          } else if (file.name.toLowerCase().endsWith(".zip")) {
+            try {
+              const zip = await JSZip.loadAsync(file);
+              const promises = [];
+              zip.forEach((path, entry) => {
+                if (!entry.dir && entry.name.toLowerCase().endsWith(".xml")) {
+                  promises.push(entry.async("string"));
+                }
+              });
+              const xmls = await Promise.all(promises);
+              xmls.forEach((t) => parseNFe(parser, t));
+            } catch (e) {
+              console.error("Erro Zip", e);
+            }
+          }
+        }
+        currentPage = 1;
+        renderTable();
+        btnUpload.innerText = "Arraste XMLs ou ZIPs aqui";
+        document.getElementById("xmlInput").value = "";
+      }
+
+      function parseNFe(parser, xmlText) {
+        try {
+          const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+
+          const ide = xmlDoc.getElementsByTagName("ide")[0];
+          const emit = xmlDoc.getElementsByTagName("emit")[0];
+          const total = xmlDoc.getElementsByTagName("ICMSTot")[0];
+
+          if (!ide || !emit) return;
+
+          // --- CAPA DA NOTA ---
+          const nNF = getTag(ide, "nNF");
+          const dhEmi = getTag(ide, "dhEmi") || getTag(ide, "dEmi");
+          const xNome = getTag(emit, "xNome");
+
+          // Regime (CRT)
+          const crt = getTag(emit, "CRT");
+          let regime = "OUTROS";
+          if (crt === "1" || crt === "2") regime = "SIMPLES";
+          if (crt === "3") regime = "NORMAL";
+
+          // Totais da Nota (Header)
+          let vNF = 0,
+            vBCTot = 0,
+            vICMSTot = 0;
+          if (total) {
+            vNF = getFloat(total, "vNF");
+            vBCTot = getFloat(total, "vBC");
+            vICMSTot = getFloat(total, "vICMS");
+          }
+
+          // --- ITENS DA NOTA ---
+          const items = [];
+          const dets = xmlDoc.getElementsByTagName("det");
+          for (let k = 0; k < dets.length; k++) {
+            const det = dets[k];
+            const prod = det.getElementsByTagName("prod")[0];
+            if (!prod) continue;
+
+            const xProd = getTag(prod, "xProd");
+            const cfop = getTag(prod, "CFOP");
+
+            let vBCItem = 0;
+            let vICMSItem = 0;
+
+            const icmsTag = det.getElementsByTagName("ICMS")[0];
+            if (icmsTag) {
+              const vBCList = icmsTag.getElementsByTagName("vBC");
+              const vICMSList = icmsTag.getElementsByTagName("vICMS");
+              if (vBCList.length > 0)
+                vBCItem = parseFloat(vBCList[0].textContent);
+              if (vICMSList.length > 0)
+                vICMSItem = parseFloat(vICMSList[0].textContent);
+            }
+
+            items.push({
+              produto: xProd,
+              cfop: cfop,
+              vBC: vBCItem,
+              vICMS: vICMSItem,
+            });
+          }
+
+          allInvoices.push({
+            header: {
+              data: dhEmi,
+              numero: nNF,
+              fornecedor: xNome,
+              regime: regime,
+              vNF: vNF,
+              vBC: vBCTot,
+              vICMS: vICMSTot,
+            },
+            items: items,
+          });
+        } catch (err) {
+          console.error("Erro XML", err);
+        }
+      }
+
+      function renderTable() {
+        const tbody = document.getElementById("tabelaDados");
+        tbody.innerHTML = "";
+        const fragment = document.createDocumentFragment();
+
+        // 1. Filtrar por Regime
+        let filtered = allInvoices;
+        if (filterRegime !== "all") {
+          filtered = filtered.filter(
+            (inv) => inv.header.regime === filterRegime,
+          );
+        }
+
+        // 2. Filtrar por Destaque de ICMS (Novo)
+        if (filterIcms === "yes") {
+          filtered = filtered.filter((inv) => inv.header.vICMS > 0);
+        } else if (filterIcms === "no") {
+          filtered = filtered.filter((inv) => inv.header.vICMS === 0);
+        }
+
+        // 3. Filtro de Texto Global (Novo)
+        if (filterSearch) {
+          const term = filterSearch.toLowerCase();
+          filtered = filtered.filter((inv) => {
+            const h = inv.header;
+            // Busca no Cabeçalho
+            const matchHeader =
+              (h.numero && h.numero.toLowerCase().includes(term)) ||
+              (h.fornecedor && h.fornecedor.toLowerCase().includes(term)) ||
+              (h.regime && h.regime.toLowerCase().includes(term)) ||
+              formatDate(h.data).includes(term);
+
+            // Busca nos Itens
+            const matchItems = inv.items.some(
+              (item) =>
+                (item.produto && item.produto.toLowerCase().includes(term)) ||
+                (item.cfop && item.cfop.toLowerCase().includes(term)),
+            );
+
+            return matchHeader || matchItems;
+          });
+        }
+
+        // 3. Ordenar por data
+        filtered.sort((a, b) => (a.header.data > b.header.data ? 1 : -1));
+
+        // 4. KPIs Calculation (Total Filtered)
+        let grandTotalNF = 0,
+          grandTotalBC = 0,
+          grandTotalICMS = 0;
+
+        filtered.forEach((inv) => {
+          grandTotalNF += inv.header.vNF;
+          grandTotalBC += inv.header.vBC;
+          grandTotalICMS += inv.header.vICMS;
+        });
+
+        // 5. Pagination Logic
+        const totalItems = filtered.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+
+        // Slice for display
+        const displayData = filtered.slice(startIndex, endIndex);
+
+        displayData.forEach((inv, index) => {
+          // Adjust index for toggle ID uniqueness across pages?
+          // Actually toggle IDs (detail-index) depend on the loop index.
+          // If we use 'index', it will restart from 0 on each page.
+          // Let's use 'startIndex + index' to keep IDs unique conceptually or just 'index' is fine
+          // because we rebuild the DOM. Just need to make sure IDs don't collide.
+          // Since we clear tbody, simple index is fine for DOM, but for logic we might want to reference the right item?
+          // The toggle logic relies on `detail-${index}`. Since we only render one page, IDs 0..29 are fine.
+
+          const h = inv.header;
+          const uniqueId = `page${currentPage}-${index}`; // Unique ID for this render
+
+          // Badge Regime
+          let badge = `<span class="badge-crt" style="border:1px solid #666; color:#666">OUTROS</span>`;
+          if (h.regime === "SIMPLES")
+            badge = `<span class="badge-crt crt-simples">SIMPLES</span>`;
+          if (h.regime === "NORMAL")
+            badge = `<span class="badge-crt crt-normal">NORMAL</span>`;
+
+          // --- Linha MESTRE (Capa) ---
+          const trMaster = document.createElement("tr");
+          trMaster.className = "row-master";
+          trMaster.onclick = () => toggleDetail(uniqueId);
+          trMaster.style.cursor = "pointer";
+
+          trMaster.innerHTML = `
+                    <td style="text-align:center; color:var(--text-tertiary)"><i class="fas fa-chevron-down" id="icon-${uniqueId}" style="font-size:10px; transition:transform 0.2s"></i></td>
+                    <td class="font-code">${highlightText(formatDate(h.data), filterSearch)}</td>
+                    <td class="font-code">${highlightText(h.numero, filterSearch)}</td>
+                    <td>${badge}</td>
+                    <td title="${h.fornecedor}" style="font-weight:600">${highlightText(h.fornecedor, filterSearch)}</td>
+                    <td class="money" style="color:var(--text-primary);">${formatMoney(h.vNF)}</td>
+                    <td class="money">${formatMoney(h.vBC)}</td>
+                    <td class="money" style="color:${h.vICMS > 0 ? "var(--text-primary)" : "inherit"}">${formatMoney(h.vICMS)}</td>
+                `;
+          // tbody.appendChild(trMaster) -> Moved to fragment
+
+          // --- Linha DETALHE (Itens) ---
+          const trDetail = document.createElement("tr");
+          trDetail.className = "row-detail";
+          trDetail.id = `detail-${uniqueId}`;
+          // Visível por padrão como pedido "logo abaixo", mas pode fechar
+
+          // Montar tabela interna
+          let rowsItems = "";
+          inv.items.forEach((item) => {
+            const destaqueIcms =
+              item.vICMS > 0
+                ? "color:var(--text-primary); font-weight:600"
+                : "";
+            rowsItems += `
+                        <tr>
+                            <td>${highlightText(item.produto, filterSearch)}</td>
+                            <td class="font-code" style="text-align:center; width:60px;">${highlightText(item.cfop, filterSearch)}</td>
+                            <td class="money" style="width:100px;">${formatMoney(item.vBC)}</td>
+                            <td class="money" style="width:100px; ${destaqueIcms}">${formatMoney(item.vICMS)}</td>
+                        </tr>
+                    `;
+          });
+
+          trDetail.innerHTML = `
+                    <td colspan="8" style="padding:0 0 15px 40px;">
+                        <div style="background:rgba(100,100,100,0.05); border-left:2px solid var(--border-focus); border-radius:0 0 8px 0;">
+                            <table class="sub-table">
+                                <thead>
+                                    <tr>
+                                        <th>Produto</th>
+                                        <th style="text-align:center;">CFOP</th>
+                                        <th style="text-align:right;">Base ICMS</th>
+                                        <th style="text-align:right;">Valor ICMS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${rowsItems}
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                `;
+          fragment.appendChild(trMaster);
+          fragment.appendChild(trDetail);
+        });
+
+        tbody.appendChild(fragment);
+
+        // Atualizar KPIs
+        document.getElementById("totalQtd").innerText = filtered.length;
+        document.getElementById("totalVnf").innerText =
+          formatMoney(grandTotalNF);
+        document.getElementById("totalVbc").innerText =
+          formatMoney(grandTotalBC);
+        document.getElementById("totalVicms").innerText =
+          formatMoney(grandTotalICMS);
+
+        // Update Pagination Controls
+        const paginationDiv = document.getElementById("paginationControls");
+        if (totalItems > 0) {
+          paginationDiv.style.display = "flex";
+          document.getElementById("curPage").innerText = currentPage;
+          document.getElementById("totPage").innerText = totalPages;
+
+          document.getElementById("btnPrev").disabled = currentPage === 1;
+          document.getElementById("btnNext").disabled =
+            currentPage === totalPages;
+        } else {
+          paginationDiv.style.display = "none";
+        }
+      }
+
+      function prevPage() {
+        if (currentPage > 1) {
+          currentPage--;
+          renderTable();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }
+
+      function nextPage() {
+        // Recalculate total pages based on current filters to ensure correct boundary check
+        let filtered = allInvoices;
+        if (filterRegime !== "all") {
+          filtered = filtered.filter(
+            (inv) => inv.header.regime === filterRegime,
+          );
+        }
+        if (filterIcms === "yes") {
+          filtered = filtered.filter((inv) => inv.header.vICMS > 0);
+        } else if (filterIcms === "no") {
+          filtered = filtered.filter((inv) => inv.header.vICMS === 0);
+        }
+        if (filterSearch) {
+          const term = filterSearch.toLowerCase();
+          filtered = filtered.filter((inv) => {
+            const h = inv.header;
+            const matchHeader =
+              (h.numero && h.numero.toLowerCase().includes(term)) ||
+              (h.fornecedor && h.fornecedor.toLowerCase().includes(term)) ||
+              (h.regime && h.regime.toLowerCase().includes(term)) ||
+              formatDate(h.data).includes(term);
+            const matchItems = inv.items.some(
+              (item) =>
+                (item.produto && item.produto.toLowerCase().includes(term)) ||
+                (item.cfop && item.cfop.toLowerCase().includes(term)),
+            );
+            return matchHeader || matchItems;
+          });
+        }
+        const totalItems = filtered.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+
+        if (currentPage < totalPages) {
+          currentPage++;
+          renderTable();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }
+
+      function toggleDetail(uniqueId) {
+        const row = document.getElementById(`detail-${uniqueId}`);
+        const icon = document.getElementById(`icon-${uniqueId}`);
+        if (row.style.display === "none") {
+          row.style.display = "table-row";
+          icon.style.transform = "rotate(0deg)";
+        } else {
+          row.style.display = "none";
+          icon.style.transform = "rotate(-90deg)";
+        }
+      }
+
+      function limparTudo() {
+        allInvoices = [];
+        setRegimeFilter("all");
+        setIcmsFilter("all");
+      }
+    </script>
+  </body>
+</html>
