@@ -1024,6 +1024,7 @@
 
             const xProd = getTag(prod, "xProd");
             const cfop = getTag(prod, "CFOP");
+            const ncm = getTag(prod, "NCM");
 
             let vBCItem = 0;
             let vICMSItem = 0;
@@ -1041,6 +1042,7 @@
             items.push({
               produto: xProd,
               cfop: cfop,
+              ncm: ncm,
               vBC: vBCItem,
               vICMS: vICMSItem,
             });
@@ -1099,7 +1101,8 @@
             const matchItems = inv.items.some(
               (item) =>
                 (item.produto && item.produto.toLowerCase().includes(term)) ||
-                (item.cfop && item.cfop.toLowerCase().includes(term)),
+                (item.cfop && item.cfop.toLowerCase().includes(term)) ||
+                (item.ncm && item.ncm.toLowerCase().includes(term)),
             );
 
             return matchHeader || matchItems;
@@ -1183,9 +1186,11 @@
               item.vICMS > 0
                 ? "color:var(--text-primary); font-weight:600"
                 : "";
+
             rowsItems += `
                         <tr>
                             <td>${highlightText(item.produto, filterSearch)}</td>
+                            <td class="font-code" style="text-align:center; width:80px;">${highlightText(item.ncm || "", filterSearch)}</td>
                             <td class="font-code" style="text-align:center; width:60px;">${highlightText(item.cfop, filterSearch)}</td>
                             <td class="money" style="width:100px;">${formatMoney(item.vBC)}</td>
                             <td class="money" style="width:100px; ${destaqueIcms}">${formatMoney(item.vICMS)}</td>
@@ -1200,6 +1205,7 @@
                                 <thead>
                                     <tr>
                                         <th>Produto</th>
+                                        <th style="text-align:center; width:80px;">NCM</th>
                                         <th style="text-align:center;">CFOP</th>
                                         <th style="text-align:right;">Base ICMS</th>
                                         <th style="text-align:right;">Valor ICMS</th>
@@ -1275,7 +1281,8 @@
             const matchItems = inv.items.some(
               (item) =>
                 (item.produto && item.produto.toLowerCase().includes(term)) ||
-                (item.cfop && item.cfop.toLowerCase().includes(term)),
+                (item.cfop && item.cfop.toLowerCase().includes(term)) ||
+                (item.ncm && item.ncm.toLowerCase().includes(term)),
             );
             return matchHeader || matchItems;
           });
