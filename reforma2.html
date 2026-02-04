@@ -1868,8 +1868,8 @@
 
           const tr = document.createElement("tr");
           tr.innerHTML = `
-                <td style="font-weight:600; font-size:11px">${item.nNF}</td>
-                <td><span class="col-emit" title="${item.emitNome}">${item.emitNome}</span></td>
+                <td style="font-weight:600; font-size:11px">${item.nNF}<br><small style="color:var(--text-tertiary); font-weight:400">${item.data}</small></td>
+                <td><span class="col-emit" title="${item.emitNome}">${item.emitNome}</span><small style="color:var(--text-tertiary)">${item.emitCNPJ}</small></td>
                 <td>${regimeBadge}</td>
                 <td>
                   <span class="col-prod" 
