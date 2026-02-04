@@ -1,0 +1,1824 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <script>
+      // Segurança e bloqueios
+      document.addEventListener("contextmenu", (event) =>
+        event.preventDefault(),
+      );
+      document.onkeydown = function (e) {
+        if (
+          e.keyCode == 123 ||
+          (e.ctrlKey &&
+            e.shiftKey &&
+            (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) ||
+          (e.ctrlKey && (e.keyCode == 85 || e.keyCode == 83))
+        ) {
+          return false;
+        }
+      };
+    </script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-6XKND47T4H"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-6XKND47T4H", {
+        anonymize_ip: true,
+        allow_google_signals: false,
+        allow_ad_personalization_signals: false,
+      });
+    </script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel Fiscal Master [Completo]</title>
+    <link rel="icon" href="icone.ico" type="image/x-icon" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg-app: #f4f5f8;
+        --bg-surface: #ffffff;
+        --bg-panel: #fcfcfd;
+        --bg-sidebar: #15171a;
+        --bg-input: #ffffff;
+        --bg-hover: #f9fafb;
+        --bg-tooltip: #1a1d21;
+        --text-primary: #1a1d21;
+        --text-secondary: #5f6b7c;
+        --text-tertiary: #8d96a0;
+        --text-inverse: #ffffff;
+        --border-subtle: #e6e8eb;
+        --border-focus: #5e6ad2;
+        --border-dashed: #cfd6e0;
+        --accent-primary: #2e3338;
+        --accent-glow: rgba(94, 106, 210, 0.15);
+        --data-purple: #625bf6;
+        --data-green: #2eb88a;
+        --data-blue: #0091ff;
+        --data-orange: #f58e08;
+        --data-red: #e5484d;
+        --badge-green-bg: rgba(46, 184, 138, 0.1);
+        --badge-purple-bg: rgba(98, 91, 246, 0.1);
+        --badge-blue-bg: rgba(0, 145, 255, 0.1);
+        --badge-red-bg: rgba(229, 72, 77, 0.1);
+        --badge-orange-bg: rgba(245, 142, 8, 0.1);
+        --badge-neutral-bg: #f0f2f5;
+        --radius-sm: 6px;
+        --radius-md: 8px;
+        --shadow-card:
+          0px 1px 2px rgba(0, 0, 0, 0.04), 0px 4px 8px rgba(0, 0, 0, 0.02);
+        --upload-pattern: radial-gradient(#e5e7eb 1px, transparent 1px);
+        --font-ui: "Inter", sans-serif;
+        --font-code: "JetBrains Mono", monospace;
+      }
+
+      [data-theme="dark"] {
+        --bg-app: #09090b;
+        --bg-surface: #18181b;
+        --bg-panel: #18181b;
+        --bg-sidebar: #000000;
+        --bg-input: #09090b;
+        --bg-hover: #27272a;
+        --bg-tooltip: #27272a;
+        --text-primary: #f4f4f5;
+        --text-secondary: #a1a1aa;
+        --text-tertiary: #52525b;
+        --text-inverse: #ffffff;
+        --border-subtle: #27272a;
+        --border-focus: #818cf8;
+        --border-dashed: #3f3f46;
+        --accent-primary: #f4f4f5;
+        --accent-glow: rgba(129, 140, 248, 0.2);
+        --data-purple: #818cf8;
+        --data-green: #34d399;
+        --data-blue: #38bdf8;
+        --data-orange: #fbbf24;
+        --data-red: #f87171;
+        --badge-green-bg: rgba(52, 211, 153, 0.15);
+        --badge-purple-bg: rgba(129, 140, 248, 0.15);
+        --badge-blue-bg: rgba(56, 189, 248, 0.15);
+        --badge-red-bg: rgba(248, 113, 113, 0.15);
+        --badge-orange-bg: rgba(251, 191, 36, 0.15);
+        --badge-neutral-bg: #27272a;
+        --shadow-card: 0 0 0 1px #27272a;
+        --upload-pattern: radial-gradient(#27272a 1px, transparent 1px);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        outline: none;
+      }
+      body {
+        font-family: var(--font-ui);
+        background-color: var(--bg-app);
+        color: var(--text-primary);
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        font-size: 13px;
+        transition: background 0.3s;
+      }
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #d1d5db;
+        border-radius: 3px;
+      }
+      [data-theme="dark"] ::-webkit-scrollbar-thumb {
+        background: #3f3f46;
+      }
+
+      .sidebar {
+        width: 180px;
+        background: var(--bg-sidebar);
+        border-right: 1px solid var(--border-subtle);
+        padding: 1.5rem 0.8rem;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        color: #fff;
+        z-index: 20;
+      }
+      .logo {
+        font-size: 13px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 2.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-left: 0.2rem;
+        opacity: 0.9;
+      }
+      .logo i {
+        color: var(--data-green);
+      }
+      .logo-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.1;
+      }
+      .logo-subtitle {
+        font-size: 8px;
+        font-weight: 300;
+        letter-spacing: 0.5em;
+        opacity: 0.6;
+        font-family: var(--font-ui);
+      }
+      .nav-item {
+        background: transparent;
+        color: #9ca3af;
+        padding: 0.5rem 0.6rem;
+        margin-bottom: 0.25rem;
+        font-weight: 500;
+        border: none;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: 0.2s;
+        font-size: 12px;
+      }
+      .nav-item:hover,
+      .nav-item.active {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #fff;
+      }
+
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+        background: var(--bg-app);
+        background-image: linear-gradient(
+          to bottom,
+          var(--bg-surface) 0%,
+          var(--bg-app) 100%
+        );
+        background-size: 100% 400px;
+        background-repeat: no-repeat;
+      }
+      [data-theme="dark"] .main-content {
+        background-image: none;
+      }
+      .scroll-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem 2rem;
+        padding-bottom: 60px;
+      }
+
+      .neo-header {
+        background: transparent;
+        border: none;
+        padding: 0;
+        margin-bottom: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .neo-header h1 {
+        font-weight: 600;
+        font-size: 18px;
+        color: var(--text-primary);
+      }
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .theme-toggle {
+        background: transparent;
+        border: 1px solid var(--data-purple);
+        color: var(--data-purple);
+        padding: 0 14px;
+        height: 32px;
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 11px;
+        transition: 0.2s;
+      }
+      .theme-toggle:hover {
+        background: var(--data-purple);
+        color: #fff;
+      }
+
+      /* DASHBOARD */
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .metric-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        padding: 1rem;
+        box-shadow: var(--shadow-card);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .metric-card::after {
+        content: "";
+        position: absolute;
+        top: -1px;
+        left: -1px;
+        right: -1px;
+        height: 2px;
+        border-radius: var(--radius-md) var(--radius-md) 0 0;
+        opacity: 0.8;
+      }
+      .metric-card.purple::after {
+        background: var(--data-purple);
+      }
+      .metric-card.green::after {
+        background: var(--data-green);
+      }
+      .metric-card.blue::after {
+        background: var(--data-blue);
+      }
+      .metric-card.orange::after {
+        background: var(--data-orange);
+      }
+      .metric-title {
+        font-weight: 500;
+        font-size: 10px;
+        color: var(--text-secondary);
+        margin-bottom: 0.4rem;
+      }
+      .metric-value {
+        font-family: var(--font-ui);
+        font-size: 26px;
+        font-weight: 600;
+        color: var(--text-primary);
+        letter-spacing: -0.03em;
+      }
+
+      /* UPLOAD */
+      .upload-area {
+        background: var(--bg-panel);
+        border: 1px dashed var(--border-dashed);
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        cursor: pointer;
+        position: relative;
+        background-image: var(--upload-pattern);
+        background-size: 20px 20px;
+        transition: 0.2s;
+      }
+      .upload-area:hover {
+        border-color: var(--data-blue);
+        background-color: var(--bg-hover);
+      }
+      #xmlInput {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+      }
+      .upload-label {
+        font-weight: 500;
+        font-size: 12px;
+        color: var(--text-primary);
+      }
+      .upload-label i {
+        color: var(--text-tertiary);
+        margin-bottom: 0.5rem;
+        font-size: 20px;
+      }
+
+      /* FILTERS */
+      .filters-container {
+        margin-bottom: 1rem;
+      }
+      .filters-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: flex-end;
+      }
+      .form-group {
+        flex: 1;
+        min-width: 120px;
+      }
+      .form-group label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 4px;
+        font-size: 10px;
+        color: var(--text-secondary);
+      }
+      .neo-input {
+        width: 100%;
+        padding: 6px 10px;
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-sm);
+        background: var(--bg-input);
+        font-size: 12px;
+        color: var(--text-primary);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+      }
+      [data-theme="dark"] .neo-input {
+        box-shadow: none;
+      }
+      .neo-input:focus {
+        border-color: var(--border-focus);
+        box-shadow: 0 0 0 3px var(--accent-glow);
+      }
+      .crt-toggles {
+        display: flex;
+        background: var(--border-subtle);
+        padding: 2px;
+        border-radius: var(--radius-sm);
+        height: 32px;
+      }
+      .btn-toggle {
+        flex: 1;
+        background: transparent;
+        border: none;
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        border-radius: 4px;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .btn-toggle:hover {
+        color: var(--text-primary);
+      }
+      .btn-toggle.active {
+        background: var(--bg-surface);
+        color: var(--text-primary);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+      .btn-filter {
+        background: var(--accent-primary);
+        color: var(--bg-surface);
+        border: none;
+        padding: 0 16px;
+        font-weight: 500;
+        border-radius: var(--radius-sm);
+        font-size: 12px;
+        cursor: pointer;
+        height: 32px;
+      }
+
+      /* TABLE - CORREÇÕES APLICADAS AQUI */
+      .table-container {
+        width: 100%;
+        overflow-x: auto; /* Permite rolagem lateral */
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        background: var(--bg-surface);
+        box-shadow: var(--shadow-card);
+        margin-bottom: 2rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-family: var(--font-ui);
+        font-size: 11px;
+        white-space: nowrap;
+      }
+      thead tr {
+        background: var(--bg-panel);
+      }
+
+      /* Células e cabeçalhos mais compactos */
+      th {
+        color: var(--text-tertiary);
+        padding: 2px 2px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        border-bottom: 1px solid var(--border-subtle);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: var(--bg-panel);
+      }
+
+      /* NEON HEADERS */
+      .group-header {
+        text-align: center;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        padding: 6px 0;
+        border-bottom: 2px solid transparent;
+        text-transform: uppercase;
+      }
+      .neon-blue {
+        color: var(--data-blue);
+        border-bottom-color: var(--data-blue);
+        text-shadow: 0 0 10px rgba(0, 145, 255, 0.5);
+        background: rgba(0, 145, 255, 0.05);
+      }
+      .neon-purple {
+        color: var(--data-purple);
+        border-bottom-color: var(--data-purple);
+        text-shadow: 0 0 10px rgba(98, 91, 246, 0.5);
+        background: rgba(98, 91, 246, 0.05);
+      }
+      .neon-green {
+        color: var(--data-green);
+        border-bottom-color: var(--data-green);
+        text-shadow: 0 0 10px rgba(46, 184, 138, 0.5);
+        background: rgba(46, 184, 138, 0.05);
+      }
+
+      th.sep-left,
+      td.sep-left {
+        border-left: 2px solid var(--border-subtle);
+      }
+
+      /* Células de dados compactas */
+      td {
+        padding: 2px 2px;
+        border-bottom: 1px solid var(--border-subtle);
+        vertical-align: middle;
+        color: var(--text-primary);
+        font-size: 9px;
+      }
+
+      tr:hover td {
+        background: var(--bg-hover);
+      }
+      .money {
+        text-align: right;
+        font-family: var(--font-ui);
+        font-variant-numeric: tabular-nums;
+        color: var(--text-secondary);
+      }
+      .filled-val {
+        color: var(--text-primary);
+        font-weight: 500;
+      }
+      .center {
+        text-align: center;
+      }
+
+      /* Larguras limitadas para evitar estouro */
+      .col-prod {
+        font-weight: 500;
+        color: var(--text-primary);
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: pointer;
+        display: block;
+        white-space: nowrap;
+      }
+      .col-prod:hover {
+        color: var(--data-blue);
+        text-decoration: underline;
+      }
+      .col-emit {
+        font-size: 9px;
+        color: var(--text-secondary);
+        max-width: 70px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        white-space: nowrap;
+      }
+
+      /* BADGES & CST STYLES */
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2px 6px;
+        border-radius: 99px;
+        font-weight: 600;
+        font-size: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        min-width: 50px;
+      }
+      .st-ok {
+        background: var(--badge-blue-bg);
+        color: var(--data-blue);
+        text-shadow: 0 0 5px rgba(0, 145, 255, 0.3);
+      }
+      .st-red {
+        background: var(--badge-red-bg);
+        color: var(--data-red);
+        text-shadow: 0 0 5px rgba(229, 72, 77, 0.3);
+      }
+      .st-zero {
+        background: var(--badge-orange-bg);
+        color: var(--data-orange);
+        text-shadow: 0 0 5px rgba(245, 142, 8, 0.3);
+      }
+      .st-none {
+        background: var(--badge-neutral-bg);
+        color: var(--text-tertiary);
+      }
+
+      .badge-crt {
+        padding: 2px 5px;
+        border-radius: 4px;
+        font-size: 8px;
+        font-weight: 600;
+        border: 1px solid transparent;
+      }
+      .crt-simples {
+        background: var(--badge-green-bg);
+        color: var(--data-green);
+        border-color: rgba(46, 184, 138, 0.2);
+      }
+      .crt-normal {
+        background: var(--badge-purple-bg);
+        color: var(--data-purple);
+        border-color: rgba(98, 91, 246, 0.2);
+      }
+      .crt-outros {
+        background: var(--badge-neutral-bg);
+        color: var(--text-secondary);
+        border-color: var(--border-subtle);
+      }
+      [data-theme="dark"] .badge-crt {
+        border-color: transparent;
+      }
+
+      /* REFORMA CST SYNC COLORS */
+      .tag-sync-blue {
+        color: var(--data-blue);
+        border: 1px solid rgba(0, 145, 255, 0.3);
+        background: rgba(0, 145, 255, 0.1);
+        text-shadow: 0 0 5px rgba(0, 145, 255, 0.2);
+      }
+      .tag-sync-red {
+        color: var(--data-red);
+        border: 1px solid rgba(229, 72, 77, 0.3);
+        background: rgba(229, 72, 77, 0.1);
+        text-shadow: 0 0 5px rgba(229, 72, 77, 0.2);
+      }
+      .tag-sync-orange {
+        color: var(--data-orange);
+        border: 1px solid rgba(245, 142, 8, 0.3);
+        background: rgba(245, 142, 8, 0.1);
+        text-shadow: 0 0 5px rgba(245, 142, 8, 0.2);
+      }
+      .tag-sync-gray {
+        color: var(--text-tertiary);
+        border: 1px solid var(--border-subtle);
+        background: var(--bg-panel);
+      }
+
+      /* LEGACY CST STYLES (ICMS/PIS/COF) */
+      .tag-cst {
+        padding: 2px 7px;
+        border-radius: 99px;
+        font-family: var(--font-code);
+        font-size: 9px;
+        font-weight: 700;
+        display: inline-block;
+      }
+
+      /* FOOTER */
+      .footer-controls {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(12px);
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 6px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: fixed;
+        bottom: 0;
+        left: 180px;
+        right: 0;
+        z-index: 100;
+        height: 36px;
+      }
+      [data-theme="dark"] .footer-controls {
+        background: rgba(9, 9, 11, 0.9);
+        border-top: 1px solid var(--border-subtle);
+      }
+      .pagination {
+        display: flex !important;
+        gap: 8px;
+        align-items: center;
+      }
+      .btn-page {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-primary);
+        width: 22px;
+        height: 22px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+      }
+      .btn-page:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      /* TOOLTIP & MODAL */
+      #floatingTooltip {
+        background: var(--bg-tooltip);
+        color: #fff;
+        border: 1px solid var(--border-subtle);
+        border-radius: 6px;
+        padding: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        max-width: 300px;
+        display: none;
+        position: fixed;
+        z-index: 9999;
+      }
+      .tooltip-header {
+        border-bottom: 1px solid #333;
+        margin-bottom: 8px;
+        padding-bottom: 6px;
+        font-size: 11px;
+        color: #9ca3af;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+      #floatingTooltip .break-text {
+        background: #000;
+        color: var(--data-green);
+        padding: 6px;
+        border-radius: 4px;
+        font-family: var(--font-code);
+        font-size: 10px;
+        border: 1px solid #333;
+        margin-top: 10px;
+        word-break: break-all;
+      }
+      #lgpdModal > div {
+        background: var(--bg-surface) !important;
+        color: var(--text-primary) !important;
+        border: 1px solid var(--border-subtle) !important;
+        border-radius: 16px !important;
+        padding: 3rem !important;
+        text-align: center;
+      }
+      [data-theme="dark"] #lgpdModal h2 {
+        color: var(--text-primary) !important;
+      }
+      [data-theme="dark"] #lgpdModal p {
+        color: var(--text-secondary) !important;
+      }
+      [data-theme="dark"] #lgpdModal ul {
+        background: var(--bg-panel) !important;
+        color: var(--text-secondary) !important;
+      }
+      [data-theme="dark"] #lgpdModal button {
+        background: var(--data-green) !important;
+        color: #000 !important;
+        border: none !important;
+      }
+
+      @media (max-width: 768px) {
+        body {
+          flex-direction: column;
+          overflow: auto;
+        }
+        .sidebar {
+          width: 100%;
+          height: auto;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0.8rem 1rem;
+        }
+        .logo {
+          margin: 0;
+        }
+        .sidebar nav {
+          display: flex;
+          gap: 10px;
+        }
+        .sidebar div:not(.logo):not(nav) {
+          display: none;
+        }
+        .footer-controls {
+          left: 0;
+          padding: 10px;
+        }
+        .dashboard-grid {
+          grid-template-columns: 1fr;
+        }
+        .table-container {
+          overflow-x: auto;
+        }
+      }
+      @keyframes statusPulse {
+        0% {
+          opacity: 1;
+          color: var(--data-green);
+          text-shadow: 0 0 5px rgba(46, 184, 138, 0.2);
+        }
+        50% {
+          opacity: 0.7;
+          color: var(--data-green);
+          text-shadow: 0 0 10px rgba(46, 184, 138, 0.5);
+        }
+        100% {
+          opacity: 1;
+          color: var(--data-green);
+          text-shadow: 0 0 5px rgba(46, 184, 138, 0.2);
+        }
+      }
+      .status-safe-pulse {
+        animation: statusPulse 2.5s ease-in-out infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="lgpdModal"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      "
+    >
+      <div
+        style="
+          background: #fff;
+          padding: 2rem;
+          border: 4px solid #000;
+          box-shadow: 10px 10px 0 #2eb88a;
+          max-width: 450px;
+          font-family: &quot;Inter&quot;, sans-serif;
+        "
+      >
+        <h2
+          style="
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            font-weight: 900;
+            color: #1a1d21;
+          "
+        >
+          Aviso de Privacidade
+        </h2>
+        <p style="font-size: 0.9rem; margin-bottom: 1.5rem; color: #555">
+          Para garantir sua segurança, este sistema opera com processamento 100%
+          local.
+        </p>
+        <ul
+          style="
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+            list-style: none;
+            text-align: left;
+            background: #f9f9f9;
+            padding: 1rem;
+            border-radius: 8px;
+            color: #444;
+          "
+        >
+          <li style="margin-bottom: 8px">✅ Dados processados no navegador</li>
+          <li style="margin-bottom: 8px">✅ Sem upload para nuvem</li>
+          <li>✅ Métricas anônimas</li>
+        </ul>
+        <button
+          onclick="document.getElementById('lgpdModal').style.display = 'none'"
+          style="
+            background: #22c55e;
+            color: #000;
+            border: 3px solid #000;
+            padding: 12px 20px;
+            font-weight: 900;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+          "
+        >
+          Acessar Sistema
+        </button>
+      </div>
+    </div>
+
+    <div id="floatingTooltip" onclick="copiarChaveAtual()"></div>
+
+    <aside class="sidebar">
+      <div class="logo">
+        <i class="fas fa-layer-group" style="font-size: 1.2rem"></i>
+        <div class="logo-text">
+          <span
+            >J.RONCALLI
+            <span style="opacity: 0.5; font-weight: 400">PRO</span></span
+          >
+          <span class="logo-subtitle">think different</span>
+        </div>
+      </div>
+      <nav>
+        <div class="nav-item active">
+          <i class="fas fa-bolt"></i> <span>Análise Geral</span>
+        </div>
+        <div class="nav-item" onclick="exportToCSV()">
+          <i class="fas fa-file-csv"></i> <span>Exportar Tudo</span>
+        </div>
+        <div class="nav-item" onclick="limparTudo()">
+          <i class="fas fa-eraser"></i> <span>Limpar Sessão</span>
+        </div>
+      </nav>
+      <div
+        style="
+          margin-top: 2rem;
+          padding: 10px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 6px;
+          font-size: 10px;
+          color: #888;
+          line-height: 1.4;
+        "
+      >
+        <strong
+          class="status-safe-pulse"
+          style="display: block; margin-bottom: 4px"
+          >STATUS: SEGURO</strong
+        >Execução isolada no cliente.
+      </div>
+      <div
+        style="
+          margin-top: auto;
+          font-size: 10px;
+          color: #444;
+          font-family: monospace;
+        "
+      >
+        BUILD v5.0-MASTER
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="scroll-content">
+        <header class="neo-header">
+          <div><h1>Painel Fiscal Unificado</h1></div>
+          <div class="header-actions">
+            <button id="themeToggle" class="theme-toggle" title="Alternar Tema">
+              <i class="fas fa-moon"></i> <span>Tema</span>
+            </button>
+          </div>
+        </header>
+
+        <div class="dashboard-grid">
+          <div class="metric-card purple">
+            <div class="metric-title">Itens Processados</div>
+            <div class="metric-value" id="totalItens">0</div>
+          </div>
+          <div class="metric-card orange">
+            <div class="metric-title">Benefício Reforma (Redução)</div>
+            <div class="metric-value" id="totalReducao">0</div>
+          </div>
+          <div class="metric-card blue">
+            <div class="metric-title">CBS Acumulado (R$)</div>
+            <div class="metric-value" id="totalCbs">0,00</div>
+          </div>
+          <div class="metric-card green">
+            <div class="metric-title">IBS Acumulado (R$)</div>
+            <div class="metric-value" id="totalIbs">0,00</div>
+          </div>
+          <div class="metric-card blue">
+            <div class="metric-title">Total ICMS (R$)</div>
+            <div class="metric-value" id="totalIcms">0,00</div>
+          </div>
+          <div class="metric-card orange">
+            <div class="metric-title">Total PIS (R$)</div>
+            <div class="metric-value" id="totalPis">0,00</div>
+          </div>
+          <div class="metric-card green">
+            <div class="metric-title">Total COFINS (R$)</div>
+            <div class="metric-value" id="totalCofins">0,00</div>
+          </div>
+          <div class="metric-card purple">
+            <div class="metric-title">Conformidade (Tags)</div>
+            <div class="metric-value" id="percTagsNormal">0%</div>
+          </div>
+        </div>
+
+        <div class="upload-area">
+          <input
+            type="file"
+            id="xmlInput"
+            multiple
+            accept=".xml, .zip"
+            onchange="handleFiles(this.files)"
+          />
+          <div class="upload-label">
+            <i class="fas fa-cloud-upload"></i><br /><span
+              style="color: var(--text-primary); font-weight: 600"
+              >Arraste seus arquivos XML ou ZIP</span
+            ><br /><span style="color: var(--text-tertiary); font-size: 11px"
+              >Análise simultânea: ICMS/PIS/COF + IBS/CBS</span
+            >
+          </div>
+        </div>
+
+        <div class="filters-container">
+          <div class="filters-grid">
+            <div class="form-group" style="flex: 2">
+              <label>Busca Produto</label
+              ><input
+                type="text"
+                id="filtroProd"
+                class="neo-input"
+                placeholder="Digite para filtrar..."
+                onkeyup="debounceFiltro()"
+              />
+            </div>
+            <div class="form-group">
+              <label>NCM</label
+              ><input
+                type="text"
+                id="filtroNcm"
+                class="neo-input"
+                placeholder="0000.00.00"
+                onkeyup="debounceFiltro()"
+              />
+            </div>
+            <div class="form-group">
+              <label>CFOP</label
+              ><input
+                type="text"
+                id="filtroCfop"
+                class="neo-input"
+                placeholder="5102"
+                onkeyup="debounceFiltro()"
+              />
+            </div>
+            <div class="form-group">
+              <label>CST ICMS/PIS/COF</label
+              ><input
+                type="text"
+                id="filtroCst"
+                class="neo-input"
+                placeholder="Ex: 00, 101, 01..."
+                onkeyup="debounceFiltro()"
+              />
+            </div>
+            <div class="form-group" style="min-width: 180px">
+              <label>Regime Tributário</label>
+              <div class="crt-toggles">
+                <button
+                  class="btn-toggle active"
+                  id="btnCrtAll"
+                  onclick="setRegimeFilter('all')"
+                >
+                  Todos</button
+                ><button
+                  class="btn-toggle"
+                  id="btnCrtSimples"
+                  onclick="setRegimeFilter('SIMPLES')"
+                >
+                  Simples</button
+                ><button
+                  class="btn-toggle"
+                  id="btnCrtNormal"
+                  onclick="setRegimeFilter('NORMAL')"
+                >
+                  Normal
+                </button>
+              </div>
+            </div>
+            <div class="form-group" style="min-width: 180px">
+              <label>Tags Reforma</label>
+              <div class="crt-toggles">
+                <button
+                  class="btn-toggle active"
+                  id="btnTagsAll"
+                  onclick="setTagsFilter('all')"
+                >
+                  Todas</button
+                ><button
+                  class="btn-toggle"
+                  id="btnTagsYes"
+                  onclick="setTagsFilter('yes')"
+                >
+                  Com Tags</button
+                ><button
+                  class="btn-toggle"
+                  id="btnTagsNo"
+                  onclick="setTagsFilter('no')"
+                >
+                  Sem Tags
+                </button>
+              </div>
+            </div>
+            <button class="btn-filter" onclick="aplicarFiltros()">
+              FILTRAR
+            </button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table id="tabelaDados">
+            <thead>
+              <tr class="header-groups">
+                <th
+                  colspan="6"
+                  style="border: none; background: transparent"
+                ></th>
+                <th colspan="5" class="group-header neon-blue">ICMS</th>
+                <th colspan="7" class="group-header neon-purple">PIS/COFINS</th>
+                <th colspan="9" class="group-header neon-green">
+                  REFORMA TRIBUTÁRIA
+                </th>
+              </tr>
+              <tr>
+                <th>Nota</th>
+                <th>Emitente</th>
+                <th>Regime</th>
+                <th>Produto</th>
+                <th>NCM/CFOP</th>
+                <th>V.Prod</th>
+
+                <th class="sep-left" style="color: var(--data-blue)">
+                  CST ICMS
+                </th>
+                <th class="money">BC ICMS</th>
+                <th class="money">% Aliq</th>
+                <th class="center">% Red</th>
+                <th class="money">R$ ICMS</th>
+
+                <th class="sep-left" style="color: var(--data-purple)">
+                  CST P/C
+                </th>
+                <th class="money">BC PIS</th>
+                <th class="money">% PIS</th>
+                <th class="money">R$ PIS</th>
+                <th class="money">BC COF</th>
+                <th class="money">% COF</th>
+                <th class="money">R$ COF</th>
+
+                <th class="sep-left" style="color: var(--data-green)">
+                  CST/Class
+                </th>
+                <th class="money">V.BC</th>
+                <th class="money">% CBS</th>
+                <th class="center">Red%</th>
+                <th class="money">R$ CBS</th>
+                <th class="money">% IBS</th>
+                <th class="center">Red%</th>
+                <th class="money">R$ IBS</th>
+                <th class="center">Status</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="footer-controls">
+        <div class="status-bar" id="statusMsg">
+          <span style="color: var(--data-green)">●</span> Pronto.
+        </div>
+        <div class="pagination">
+          <button id="btnPrev" class="btn-page" onclick="mudarPagina(-1)">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <span
+            id="pageInfo"
+            class="page-info"
+            style="font-size: 10px; font-weight: 500; margin: 0 8px"
+            >1 / 1</span
+          >
+          <button id="btnNext" class="btn-page" onclick="mudarPagina(1)">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // --- THEME ---
+      const themeToggleBtn = document.getElementById("themeToggle");
+      const themeIcon = themeToggleBtn.querySelector("i");
+      function setTheme(theme) {
+        if (theme === "dark") {
+          document.body.setAttribute("data-theme", "dark");
+          themeIcon.className = "fas fa-sun";
+          localStorage.setItem("theme", "dark");
+        } else {
+          document.body.removeAttribute("data-theme");
+          themeIcon.className = "fas fa-moon";
+          localStorage.setItem("theme", "light");
+        }
+      }
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light") setTheme("light");
+      else setTheme("dark");
+      themeToggleBtn.addEventListener("click", () => {
+        const currentTheme = document.body.getAttribute("data-theme");
+        setTheme(currentTheme === "dark" ? "light" : "dark");
+      });
+
+      // --- LEGACY CST STYLE (ICMS/PIS/COF) ---
+      // Mesma lógica de cores para CST ICMS e CST PIS/COFINS
+      const __generatedCSTStyles = new Set();
+      function ensureCSTStyle(type, cst) {
+        const group = (type || "").toString().toUpperCase();
+        const groupKey =
+          group === "PIS" || group === "COFINS" ? "PISCOF" : group;
+        const key = `${groupKey}-${cst}`;
+        if (__generatedCSTStyles.has(key)) return;
+        __generatedCSTStyles.add(key);
+
+        const c = cst.toString();
+        let colorHex = "#5f6b7c";
+        const blueSet = [
+          "00",
+          "01",
+          "02",
+          "03",
+          "10",
+          "51",
+          "52",
+          "101",
+          "201",
+          "900",
+        ];
+        const redSet = ["20", "70"];
+        const orangeSet = [
+          "30",
+          "40",
+          "41",
+          "50",
+          "60",
+          "99",
+          "102",
+          "103",
+          "202",
+          "203",
+          "300",
+          "400",
+          "401",
+          "500",
+          "04",
+          "05",
+          "06",
+          "07",
+          "08",
+          "09",
+          "49",
+        ];
+
+        if (blueSet.includes(c)) colorHex = "#0091ff";
+        else if (redSet.includes(c)) colorHex = "#e5484d";
+        else if (orangeSet.includes(c)) colorHex = "#f58e08";
+
+        const bg = `rgba(${parseInt(colorHex.slice(1, 3), 16)}, ${parseInt(colorHex.slice(3, 5), 16)}, ${parseInt(colorHex.slice(5, 7), 16)}, 0.12)`;
+        const border = `rgba(${parseInt(colorHex.slice(1, 3), 16)}, ${parseInt(colorHex.slice(3, 5), 16)}, ${parseInt(colorHex.slice(5, 7), 16)}, 0.3)`;
+
+        const cls = `.${groupKey.toLowerCase()}-cst-${cst}`;
+        let styleEl = document.getElementById("dynamic-cst-styles");
+        if (!styleEl) {
+          styleEl = document.createElement("style");
+          styleEl.id = "dynamic-cst-styles";
+          document.head.appendChild(styleEl);
+        }
+        styleEl.appendChild(
+          document.createTextNode(
+            `${cls} { background: ${bg}; color: ${colorHex}; border-color: ${border}; text-shadow: 0 0 5px ${bg}; }`,
+          ),
+        );
+      }
+
+      function getCSTClass(cst, type = "ICMS") {
+        if (!cst) return "";
+        const cstNorm = String(cst).trim();
+        if (!cstNorm.match(/^\d{2,3}$/)) return "";
+        const up = (type || "").toUpperCase();
+        const groupKey = up === "PIS" || up === "COFINS" ? "PISCOF" : up;
+        ensureCSTStyle(groupKey, cstNorm);
+        return `${groupKey.toLowerCase()}-cst-${cstNorm}`;
+      }
+
+      // --- LOGIC ---
+      let allItems = [];
+      let filteredItems = [];
+      let currentPage = 1;
+      const itemsPerPage = 200;
+      let debounceTimer;
+      let currentKeyToCopy = "";
+      let filterRegime = "all";
+      let filterTags = "all";
+      const tooltip = document.getElementById("floatingTooltip");
+
+      function formatMoney(value) {
+        return parseFloat(value).toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
+      }
+      function formatPercent(value) {
+        return (
+          parseFloat(value).toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+          }) + "%"
+        );
+      }
+      function getTagValue(parent, tagName) {
+        const els = parent.getElementsByTagName(tagName);
+        return els.length > 0 ? els[0].textContent : "";
+      }
+      function getTagValueFloat(parent, tagName) {
+        const val = getTagValue(parent, tagName);
+        return val ? parseFloat(val) : 0;
+      }
+
+      function extractICMS(det) {
+        const imposto = det.getElementsByTagName("imposto")[0];
+        if (!imposto) return { cst: "", vBC: 0, pICMS: 0, pRedBC: 0, vICMS: 0 };
+        const icmsGroup = imposto.getElementsByTagName("ICMS")[0];
+        if (!icmsGroup || icmsGroup.children.length === 0)
+          return { cst: "", vBC: 0, pICMS: 0, pRedBC: 0, vICMS: 0 };
+        const tagICMS = icmsGroup.children[0];
+        let cst =
+          getTagValue(tagICMS, "CST") || getTagValue(tagICMS, "CSOSN") || "";
+        return {
+          cst: cst,
+          vBC: getTagValueFloat(tagICMS, "vBC"),
+          pICMS: getTagValueFloat(tagICMS, "pICMS"),
+          pRedBC: getTagValueFloat(tagICMS, "pRedBC"),
+          vICMS: getTagValueFloat(tagICMS, "vICMS"),
+        };
+      }
+      function extractPISCOFINS(det, type) {
+        const group = det.getElementsByTagName(type)[0];
+        if (group && group.children.length > 0) {
+          const child = group.children[0];
+          return {
+            cst: getTagValue(child, "CST"),
+            vBC: getTagValueFloat(child, "vBC"),
+            pAliq: getTagValueFloat(child, type === "PIS" ? "pPIS" : "pCOFINS"),
+            vVal: getTagValueFloat(child, type === "PIS" ? "vPIS" : "vCOFINS"),
+          };
+        }
+        return { cst: "", vBC: 0, pAliq: 0, vVal: 0 };
+      }
+
+      async function handleFiles(files) {
+        const status = document.getElementById("statusMsg");
+        status.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processando ${files.length} arquivos...`;
+
+        const xmlTextList = [];
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          if (file.name.toLowerCase().endsWith(".xml")) {
+            xmlTextList.push(await file.text());
+          } else if (file.name.toLowerCase().endsWith(".zip")) {
+            try {
+              const zip = await JSZip.loadAsync(file);
+              const promises = [];
+              zip.forEach((path, entry) => {
+                if (!entry.dir && entry.name.toLowerCase().endsWith(".xml"))
+                  promises.push(entry.async("string"));
+              });
+              (await Promise.all(promises)).forEach((t) => xmlTextList.push(t));
+            } catch (e) {
+              console.error(e);
+            }
+          }
+        }
+
+        status.innerHTML = `<i class="fas fa-cog fa-spin"></i> Lendo ${xmlTextList.length} XMLs...`;
+        await new Promise((r) => setTimeout(r, 50));
+
+        const parser = new DOMParser();
+        const BATCH_SIZE = 100;
+
+        for (let i = 0; i < xmlTextList.length; i += BATCH_SIZE) {
+          const batch = xmlTextList.slice(i, i + BATCH_SIZE);
+          batch.forEach((xmlText) => {
+            try {
+              const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+              const emitList = xmlDoc.getElementsByTagName("emit");
+              const emit = emitList.length > 0 ? emitList[0] : null;
+
+              let emitNome = emit
+                ? getTagValue(emit, "xNome") || "Desc. no XML"
+                : "---";
+              let emitCNPJ = emit ? getTagValue(emit, "CNPJ") : "---";
+              const crtCode = emit ? getTagValue(emit, "CRT") : "";
+              let regimeDesc =
+                crtCode === "1" || crtCode === "2"
+                  ? "SIMPLES"
+                  : crtCode === "3"
+                    ? "NORMAL"
+                    : "OUTROS";
+
+              let chNFe = "---";
+              const infList = xmlDoc.getElementsByTagName("infNFe");
+              if (infList.length > 0 && infList[0].getAttribute("Id"))
+                chNFe = infList[0].getAttribute("Id").replace("NFe", "");
+
+              const ideList = xmlDoc.getElementsByTagName("ide");
+              let nNF =
+                ideList.length > 0
+                  ? getTagValue(ideList[0], "nNF") || "???"
+                  : "???";
+
+              const dets = xmlDoc.getElementsByTagName("det");
+              for (let k = 0; k < dets.length; k++) {
+                const det = dets[k];
+                const prod = det.getElementsByTagName("prod")[0];
+                if (!prod) continue;
+
+                const ncm = getTagValue(prod, "NCM");
+                const cfop = getTagValue(prod, "CFOP");
+                const xProd = getTagValue(prod, "xProd");
+                let vProd = getTagValueFloat(prod, "vProd");
+
+                // Extraction
+                const icmsData = extractICMS(det);
+                const pisData = extractPISCOFINS(det, "PIS");
+                const cofData = extractPISCOFINS(det, "COFINS");
+
+                // Reforma
+                let vCBS = 0,
+                  pCBS = 0,
+                  pRedCBS = 0;
+                let vIBS = 0,
+                  pIBS = 0,
+                  pRedIBS = 0;
+                let cstRef = "",
+                  cClassTrib = "";
+                let hasNewTags = false;
+
+                const ibsCbsList = det.getElementsByTagName("IBSCBS");
+                if (ibsCbsList.length > 0) {
+                  const nodeIbsCbs = ibsCbsList[0];
+                  hasNewTags = true;
+                  cstRef = getTagValue(nodeIbsCbs, "CST");
+                  cClassTrib = getTagValue(nodeIbsCbs, "cClassTrib");
+
+                  const vBcTags = nodeIbsCbs.getElementsByTagName("vBC");
+                  if (vBcTags.length > 0) {
+                    const foundVal = parseFloat(vBcTags[0].textContent);
+                    if (!isNaN(foundVal) && foundVal > 0) vProd = foundVal;
+                  }
+
+                  const gCBSList = nodeIbsCbs.getElementsByTagName("gCBS");
+                  if (gCBSList.length > 0) {
+                    const gCBS = gCBSList[0];
+                    vCBS = getTagValueFloat(gCBS, "vCBS");
+                    pCBS = getTagValueFloat(gCBS, "pCBS");
+                    const gRedList = gCBS.getElementsByTagName("gRed");
+                    if (gRedList.length > 0)
+                      pRedCBS = getTagValueFloat(gRedList[0], "pRedAliq");
+                  }
+
+                  const gIBSUFList = nodeIbsCbs.getElementsByTagName("gIBSUF");
+                  if (gIBSUFList.length > 0) {
+                    const gIBSUF = gIBSUFList[0];
+                    pIBS = getTagValueFloat(gIBSUF, "pIBSUF");
+                    let vIbsUf = getTagValueFloat(gIBSUF, "vIBSUF");
+                    const gRedUFList = gIBSUF.getElementsByTagName("gRed");
+                    if (gRedUFList.length > 0)
+                      pRedIBS = getTagValueFloat(gRedUFList[0], "pRedAliq");
+                    const vIBSTotal = getTagValueFloat(nodeIbsCbs, "vIBS");
+                    vIBS = vIBSTotal > 0 ? vIBSTotal : vIbsUf;
+                  } else {
+                    vIBS = getTagValueFloat(nodeIbsCbs, "vIBS");
+                  }
+                }
+
+                allItems.push({
+                  emitNome,
+                  emitCNPJ,
+                  regimeDesc,
+                  chNFe,
+                  nNF,
+                  ncm,
+                  cfop,
+                  xProd,
+                  vProd,
+                  cstIcms: icmsData.cst,
+                  vBcIcms: icmsData.vBC,
+                  pIcms: icmsData.pICMS,
+                  pRedIcms: icmsData.pRedBC,
+                  vIcms: icmsData.vICMS,
+                  cstPis: pisData.cst,
+                  vBcPis: pisData.vBC,
+                  pPis: pisData.pAliq,
+                  vPis: pisData.vVal,
+                  cstCof: cofData.cst,
+                  vBcCof: cofData.vBC,
+                  pCof: cofData.pAliq,
+                  vCof: cofData.vVal,
+                  hasTags: hasNewTags,
+                  cstRef,
+                  cClassTrib,
+                  vCBS,
+                  pCBS,
+                  pRedCBS,
+                  vIBS,
+                  pIBS,
+                  pRedIBS,
+                });
+              }
+            } catch (err) {
+              console.error(err);
+            }
+          });
+          if (i + BATCH_SIZE < xmlTextList.length)
+            await new Promise((r) => setTimeout(r, 0));
+        }
+
+        status.innerHTML = `<span style='color:var(--data-green)'>✔</span> ${allItems.length} itens unificados.`;
+        aplicarFiltros();
+      }
+
+      function aplicarFiltros() {
+        const fNcm = document.getElementById("filtroNcm").value.toLowerCase();
+        const fCfop = document.getElementById("filtroCfop").value.toLowerCase();
+        const fProd = document.getElementById("filtroProd").value.toLowerCase();
+        const fCst = document.getElementById("filtroCst").value.toLowerCase();
+
+        filteredItems = allItems.filter((item) => {
+          const matchText =
+            item.ncm.includes(fNcm) &&
+            item.cfop.includes(fCfop) &&
+            item.xProd.toLowerCase().includes(fProd);
+          let matchRegime =
+            filterRegime === "all" || item.regimeDesc === filterRegime;
+          let matchTags =
+            filterTags === "all" ||
+            (filterTags === "yes" && item.hasTags) ||
+            (filterTags === "no" && !item.hasTags);
+          let matchCst = true;
+          if (fCst) {
+            matchCst =
+              item.cstIcms.toLowerCase().includes(fCst) ||
+              item.cstPis.toLowerCase().includes(fCst) ||
+              item.cstCof.toLowerCase().includes(fCst) ||
+              item.cstRef.toLowerCase().includes(fCst);
+          }
+          return matchText && matchRegime && matchTags && matchCst;
+        });
+        atualizarTotais();
+        currentPage = 1;
+        renderizarTabela();
+      }
+
+      function atualizarTotais() {
+        let tIbs = 0,
+          tCbs = 0,
+          tRed = 0,
+          tIcms = 0,
+          tPis = 0,
+          tCof = 0;
+        const notasNormal = new Set(),
+          notasNormalComTags = new Set();
+
+        filteredItems.forEach((item) => {
+          tIbs += item.vIBS;
+          tCbs += item.vCBS;
+          tIcms += item.vIcms;
+          tPis += item.vPis;
+          tCof += item.vCof;
+          if (item.hasTags && (item.pRedCBS > 0 || item.pRedIBS > 0)) tRed++;
+          if (item.regimeDesc === "NORMAL") {
+            notasNormal.add(item.chNFe);
+            if (item.hasTags) notasNormalComTags.add(item.chNFe);
+          }
+        });
+
+        const percentual =
+          notasNormal.size > 0
+            ? (notasNormalComTags.size / notasNormal.size) * 100
+            : 0;
+        document.getElementById("totalItens").innerText = filteredItems.length;
+        document.getElementById("totalReducao").innerText = tRed;
+        document.getElementById("totalCbs").innerText = formatMoney(tCbs);
+        document.getElementById("totalIbs").innerText = formatMoney(tIbs);
+        document.getElementById("totalIcms").innerText = formatMoney(tIcms);
+        document.getElementById("totalPis").innerText = formatMoney(tPis);
+        document.getElementById("totalCofins").innerText = formatMoney(tCof);
+        document.getElementById("percTagsNormal").innerText =
+          percentual.toFixed(1) + "%";
+      }
+
+      function renderizarTabela() {
+        const tbody = document.querySelector("#tabelaDados tbody");
+        tbody.innerHTML = "";
+        const start = (currentPage - 1) * itemsPerPage;
+        const itemsToRender = filteredItems.slice(start, start + itemsPerPage);
+        const fragment = document.createDocumentFragment();
+
+        itemsToRender.forEach((item, index) => {
+          let statusHtml = "";
+          let tagClass = "tag-sync-gray";
+
+          if (!item.hasTags) {
+            statusHtml = `<span class="status-badge st-none">SEM INFORMAÇÕES</span>`;
+            tagClass = "tag-sync-gray";
+          } else if (item.pRedCBS > 0 || item.pRedIBS > 0) {
+            const maiorRed = Math.max(item.pRedCBS, item.pRedIBS);
+            statusHtml = `<span class="status-badge st-red">REDUÇÃO ${maiorRed}%</span>`;
+            tagClass = "tag-sync-red";
+          } else if (item.vCBS > 0 || item.vIBS > 0) {
+            statusHtml = `<span class="status-badge st-ok">TRIBUTADO</span>`;
+            tagClass = "tag-sync-blue";
+          } else {
+            statusHtml = `<span class="status-badge st-zero">ZERADO</span>`;
+            tagClass = "tag-sync-orange";
+          }
+
+          let regimeBadge = `<span class="badge-crt crt-outros">${item.regimeDesc}</span>`;
+          if (item.regimeDesc === "SIMPLES")
+            regimeBadge = `<span class="badge-crt crt-simples">SIMPLES</span>`;
+          if (item.regimeDesc === "NORMAL")
+            regimeBadge = `<span class="badge-crt crt-normal">NORMAL</span>`;
+
+          const cstIcmsClass = getCSTClass(item.cstIcms, "ICMS");
+          const cstPisClass = getCSTClass(item.cstPis, "PIS");
+          const cstCofClass = getCSTClass(item.cstCof, "COFINS");
+
+          const cbsClass = item.vCBS > 0 ? "filled-val" : "";
+          const ibsClass = item.vIBS > 0 ? "filled-val" : "";
+          const icmsClass = item.vIcms > 0 ? "filled-val" : "";
+
+          // Reforma CST Sync
+          const displayCstRef = item.cstRef
+            ? `<span class="tag-cst ${tagClass}">${item.cstRef}</span>`
+            : "-";
+          const displayClassTrib = item.cClassTrib
+            ? `<span class="tag-cst ${tagClass}" style="margin-top:2px">${item.cClassTrib}</span>`
+            : "";
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td style="font-weight:600; font-size:11px">${item.nNF}</td>
+            <td><span class="col-emit" title="${item.emitNome}">${item.emitNome}</span></td>
+            <td>${regimeBadge}</td>
+            <td><span class="col-prod" onclick="copyFromProduct(${index})" onmouseover="showTooltip(event, ${index})" onmousemove="moveTooltip(event)" onmouseout="hideTooltip()">${item.xProd}</span></td>
+            <td><span style="font-family:var(--font-code);font-size:10px">${item.ncm}</span><br><small style="color:var(--text-tertiary)">${item.cfop}</small></td>
+            <td>${formatMoney(item.vProd)}</td>
+
+            <td class="sep-left center"><span class="tag-cst ${cstIcmsClass}">${item.cstIcms}</span></td>
+            <td class="money">${formatMoney(item.vBcIcms)}</td>
+            <td class="money">${formatPercent(item.pIcms)}</td>
+            <td class="center" style="font-size:10px">${item.pRedIcms > 0 ? item.pRedIcms + "%" : "-"}</td>
+            <td class="money ${icmsClass}">${formatMoney(item.vIcms)}</td>
+
+            <td class="sep-left center"><span class="tag-cst ${cstPisClass}">${item.cstPis}</span></td>
+            <td class="money">${formatMoney(item.vBcPis)}</td>
+            <td class="money">${formatPercent(item.pPis)}</td>
+            <td class="money">${formatMoney(item.vPis)}</td>
+            <td class="money">${formatMoney(item.vBcCof)}</td>
+            <td class="money">${formatPercent(item.pCof)}</td>
+            <td class="money">${formatMoney(item.vCof)}</td>
+
+            <td class="sep-left center">${displayCstRef}<br>${displayClassTrib}</td>
+            <td class="money">${item.hasTags ? formatMoney(item.vProd) : "-"}</td>
+            <td class="money">${formatPercent(item.pCBS)}</td>
+            <td class="center">${item.pRedCBS > 0 ? item.pRedCBS + "%" : "-"}</td>
+            <td class="money ${cbsClass}">${formatMoney(item.vCBS)}</td>
+            <td class="money">${formatPercent(item.pIBS)}</td>
+            <td class="center">${item.pRedIBS > 0 ? item.pRedIBS + "%" : "-"}</td>
+            <td class="money ${ibsClass}">${formatMoney(item.vIBS)}</td>
+            <td class="center">${statusHtml}</td>
+          `;
+          fragment.appendChild(tr);
+        });
+        tbody.appendChild(fragment);
+        atualizarControlesPaginacao();
+      }
+
+      function atualizarControlesPaginacao() {
+        const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
+        document.getElementById("pageInfo").innerText =
+          `${currentPage} / ${totalPages}`;
+        document.getElementById("btnPrev").disabled = currentPage === 1;
+        document.getElementById("btnNext").disabled =
+          currentPage === totalPages;
+      }
+      function mudarPagina(delta) {
+        const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
+        const newPage = currentPage + delta;
+        if (newPage >= 1 && newPage <= totalPages) {
+          currentPage = newPage;
+          renderizarTabela();
+          document.querySelector(".scroll-content").scrollTop = 0;
+        }
+      }
+
+      function showTooltip(e, idx) {
+        const start = (currentPage - 1) * itemsPerPage;
+        const item = filteredItems[start + idx];
+        if (!item) return;
+        currentKeyToCopy = item.chNFe;
+        tooltip.innerHTML = `
+          <div class="tooltip-header">Detalhes Fiscais</div>
+          <div style="margin-bottom:4px"><strong>Emitente:</strong> ${item.emitNome}</div>
+          <div style="margin-bottom:4px"><strong>CNPJ:</strong> ${item.emitCNPJ}</div>
+          <div style="margin-bottom:4px"><strong>Regime:</strong> ${item.regimeDesc}</div>
+          <div style="margin-bottom:4px"><strong>ICMS:</strong> ${formatMoney(item.vIcms)}</div>
+          <div style="margin-bottom:4px"><strong>IBS/CBS:</strong> ${formatMoney(item.vIBS + item.vCBS)}</div>
+          <div style="margin-top:10px; margin-bottom: 8px; font-size:10px; color:#666">CHAVE DE ACESSO:</div>
+          <span class="break-text">${item.chNFe}</span>
+          <div style="color: #6b7280; font-size: 10px; margin-top: 8px; background: transparent;"><i class="fas fa-clone"></i> Clique para copiar</div>
+        `;
+        moveTooltip(e);
+        tooltip.style.display = "block";
+      }
+      function moveTooltip(e) {
+        let x = e.clientX + 15,
+          y = e.clientY + 15;
+        if (x + 300 > window.innerWidth) x = e.clientX - 310;
+        if (y + 200 > window.innerHeight) y = e.clientY - 210;
+        tooltip.style.left = x + "px";
+        tooltip.style.top = y + "px";
+      }
+      function hideTooltip() {
+        tooltip.style.display = "none";
+      }
+      function copiarChaveAtual() {
+        if (!currentKeyToCopy || currentKeyToCopy === "---") return;
+        navigator.clipboard.writeText(currentKeyToCopy).then(() => {
+          tooltip.style.background = "#22c55e";
+          tooltip.style.borderColor = "#22c55e";
+          document.getElementById("statusMsg").innerHTML =
+            "<span style='color:var(--data-green)'>✓</span> Chave copiada.";
+          setTimeout(() => {
+            tooltip.style.background = "";
+            tooltip.style.borderColor = "";
+            hideTooltip();
+          }, 300);
+          setTimeout(() => {
+            document.getElementById("statusMsg").innerHTML = "Pronto.";
+          }, 2000);
+        });
+      }
+      function copyFromProduct(idx) {
+        const start = (currentPage - 1) * itemsPerPage;
+        currentKeyToCopy = filteredItems[start + idx].chNFe;
+        copiarChaveAtual();
+      }
+      function debounceFiltro() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          aplicarFiltros();
+        }, 300);
+      }
+      function setRegimeFilter(type) {
+        filterRegime = type;
+        document.getElementById("btnCrtAll").classList.remove("active");
+        document.getElementById("btnCrtSimples").classList.remove("active");
+        document.getElementById("btnCrtNormal").classList.remove("active");
+        if (type === "all")
+          document.getElementById("btnCrtAll").classList.add("active");
+        if (type === "SIMPLES")
+          document.getElementById("btnCrtSimples").classList.add("active");
+        if (type === "NORMAL")
+          document.getElementById("btnCrtNormal").classList.add("active");
+        aplicarFiltros();
+      }
+      function setTagsFilter(type) {
+        filterTags = type;
+        document.getElementById("btnTagsAll").classList.remove("active");
+        document.getElementById("btnTagsYes").classList.remove("active");
+        document.getElementById("btnTagsNo").classList.remove("active");
+        if (type === "all")
+          document.getElementById("btnTagsAll").classList.add("active");
+        if (type === "yes")
+          document.getElementById("btnTagsYes").classList.add("active");
+        if (type === "no")
+          document.getElementById("btnTagsNo").classList.add("active");
+        aplicarFiltros();
+      }
+      function limparTudo() {
+        allItems = [];
+        filteredItems = [];
+        document.getElementById("xmlInput").value = "";
+        document.getElementById("filtroNcm").value = "";
+        document.getElementById("filtroCfop").value = "";
+        document.getElementById("filtroProd").value = "";
+        document.getElementById("filtroCst").value = "";
+        setRegimeFilter("all");
+        setTagsFilter("all");
+        aplicarFiltros();
+        document.getElementById("statusMsg").innerText = "Sessão limpa.";
+      }
+      function exportToCSV() {
+        if (filteredItems.length === 0) {
+          alert("Sem dados para exportar.");
+          return;
+        }
+        let csv =
+          "data:text/csv;charset=utf-8,Emitente,Regime,Chave,Nota,Produto,NCM,CFOP,VProd,CST_ICMS,BC_ICMS,ALIQ_ICMS,RED_ICMS,VAL_ICMS,CST_PIS,BC_PIS,ALIQ_PIS,VAL_PIS,CST_COF,BC_COF,ALIQ_COF,VAL_COF,CST_REF,CLASSTRIB,BC_REF,CBS_ALIQ,CBS_VAL,IBS_ALIQ,IBS_VAL,Status\n";
+        filteredItems.forEach((r) => {
+          let status = r.hasTags
+            ? r.pRedCBS > 0 || r.pRedIBS > 0
+              ? "REDUCAO"
+              : r.vCBS == 0
+                ? "ZERADO"
+                : "OK"
+            : "LEGADO";
+          const prodClean = r.xProd.replace(/,/g, " ");
+          const emitClean = r.emitNome.replace(/,/g, " ");
+          csv += `${emitClean},${r.regimeDesc},'${r.chNFe},${r.nNF},${prodClean},${r.ncm},${r.cfop},${r.vProd.toFixed(2)},${r.cstIcms},${r.vBcIcms.toFixed(2)},${r.pIcms.toFixed(2)},${r.pRedIcms.toFixed(2)},${r.vIcms.toFixed(2)},${r.cstPis},${r.vBcPis.toFixed(2)},${r.pPis.toFixed(2)},${r.vPis.toFixed(2)},${r.cstCof},${r.vBcCof.toFixed(2)},${r.pCof.toFixed(2)},${r.vCof.toFixed(2)},${r.cstRef},${r.cClassTrib},${r.hasTags ? r.vProd.toFixed(2) : 0},${r.pCBS.toFixed(2)},${r.vCBS.toFixed(2)},${r.pIBS.toFixed(2)},${r.vIBS.toFixed(2)},${status}\n`;
+        });
+        const link = document.createElement("a");
+        link.href = encodeURI(csv);
+        link.download = "auditoria_unificada_completa.csv";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    </script>
+  </body>
+</html>
