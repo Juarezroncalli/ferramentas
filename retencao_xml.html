@@ -1,174 +1,528 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Analisador de NFSe</title>
-    <link rel="icon" href="icone.ico" type="image/x-icon" />
+    <title>Auditor de Retenções XML</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
     />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
       :root {
-        --bg-yellow: #ffde00;
-        --c-purple: #8b5cf6;
-        --c-blue: #06b6d4;
-        --c-pink: #ff90e8;
-        --c-green: #22c55e;
-        --border-black: #000000;
-        --border-width: 3px;
+        /* --- LIGHT MODE --- */
+        --bg-app: #f4f5f8;
+        --bg-surface: #ffffff;
+        --bg-panel: #fcfcfd;
+        --bg-sidebar: #15171a;
+        --bg-input: #ffffff;
+        --bg-hover: #f9fafb;
+        --bg-tooltip: #1a1d21;
+
+        --text-primary: #1a1d21;
+        --text-secondary: #5f6b7c;
+        --text-tertiary: #8d96a0;
+        --text-inverse: #ffffff;
+
+        --border-subtle: #e6e8eb;
+        --border-focus: #5e6ad2;
+        --border-dashed: #cfd6e0;
+
+        --accent-primary: #2e3338;
+        --accent-glow: rgba(94, 106, 210, 0.15);
+
+        --neon-pink: #ff10f0;
+
+        /* Cores de Dados */
+        --data-purple: #625bf6;
+        --data-green: #2eb88a;
+        --data-blue: #0091ff;
+        --data-orange: #f58e08;
+        --data-red: #e5484d;
+
+        --radius-sm: 6px;
+        --radius-md: 8px;
+
+        --shadow-card:
+          0px 1px 2px rgba(0, 0, 0, 0.04), 0px 4px 8px rgba(0, 0, 0, 0.02);
+        --upload-pattern: radial-gradient(#e5e7eb 1px, transparent 1px);
+
+        --font-ui: "Inter", -apple-system, sans-serif;
+        --font-code: "JetBrains Mono", monospace;
       }
 
-      body {
-        font-family: "Space Grotesk", sans-serif;
-        background-color: var(--bg-yellow);
-        background-image: radial-gradient(#000 1px, transparent 1px);
-        background-size: 20px 20px;
-        color: var(--border-black);
-        padding: 2rem;
+      /* --- DARK MODE --- */
+      [data-theme="dark"] {
+        --bg-app: #09090b;
+        --bg-surface: #18181b;
+        --bg-panel: #18181b;
+        --bg-sidebar: #000000;
+        --bg-input: #09090b;
+        --bg-hover: #27272a;
+        --bg-tooltip: #27272a;
+
+        --text-primary: #f4f4f5;
+        --text-secondary: #a1a1aa;
+        --text-tertiary: #52525b;
+
+        --border-subtle: #27272a;
+        --border-focus: #818cf8;
+        --border-dashed: #3f3f46;
+
+        --accent-primary: #f4f4f5;
+        --accent-glow: rgba(129, 140, 248, 0.2);
+
+        --neon-pink: #ff40f5;
+
+        --data-purple: #818cf8;
+        --data-green: #34d399;
+        --data-blue: #38bdf8;
+        --data-orange: #fbbf24;
+        --data-red: #f87171;
+
+        --shadow-card: 0 0 0 1px #27272a;
+        --upload-pattern: radial-gradient(#27272a 1px, transparent 1px);
+      }
+
+      * {
         margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        outline: none;
+      }
+      body {
+        font-family: var(--font-ui);
+        background-color: var(--bg-app);
+        color: var(--text-primary);
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        font-size: 13px;
+        transition:
+          background-color 0.3s,
+          color 0.3s;
       }
 
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
+      /* SIDEBAR */
+      .sidebar {
+        width: 200px;
+        background: var(--bg-sidebar);
+        border-right: 1px solid var(--border-subtle);
+        padding: 1.5rem 0.8rem;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        color: #fff;
+        z-index: 20;
+      }
+      .logo {
+        font-size: 13px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 2.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-left: 0.2rem;
+        opacity: 0.9;
+      }
+      .nav-item {
+        background: transparent;
+        color: #9ca3af;
+        padding: 0.5rem 0.6rem;
+        margin-bottom: 0.25rem;
+        font-weight: 500;
+        border: none;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.2s;
+        font-size: 12px;
+      }
+      .nav-item:hover,
+      .nav-item.active {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #fff;
       }
 
-      header {
-        background: #fff;
-        border: var(--border-width) solid #000;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-        box-shadow: 8px 8px 0 0 #000;
+      /* MAIN */
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+        background: var(--bg-app);
+      }
+      .scroll-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem 2rem;
+        padding-bottom: 60px;
+      }
+
+      /* HEADER */
+      .neo-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        margin-bottom: 1.5rem;
+      }
+      .neo-header h1 {
+        font-weight: 600;
+        font-size: 18px;
+        color: var(--text-primary);
+      }
+      .theme-toggle {
+        background: transparent;
+        border: 1px solid var(--data-purple);
+        color: var(--data-purple);
+        padding: 0 14px;
+        height: 32px;
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 11px;
+        transition: all 0.2s;
+      }
+      .theme-toggle:hover {
+        background: var(--data-purple);
+        color: #fff;
       }
 
-      .upload-section {
-        background: var(--c-pink);
-        border: var(--border-width) solid #000;
-        padding: 2rem;
-        text-align: center;
-        margin-bottom: 2rem;
-        box-shadow: 6px 6px 0 0 #000;
-        cursor: pointer;
+      /* METRICS */
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .metric-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        padding: 1rem;
+        box-shadow: var(--shadow-card);
+        display: flex;
+        flex-direction: column;
         position: relative;
       }
-
-      .upload-section input {
+      .metric-card::after {
+        content: "";
         position: absolute;
-        inset: 0;
+        top: -1px;
+        left: -1px;
+        right: -1px;
+        height: 2px;
+        border-radius: var(--radius-md) var(--radius-md) 0 0;
+      }
+      .metric-card.purple::after {
+        background: var(--data-purple);
+      }
+      .metric-card.blue::after {
+        background: var(--data-blue);
+      }
+      .metric-card.orange::after {
+        background: var(--data-orange);
+      }
+      .metric-card.neon::after {
+        background: var(--neon-pink);
+      }
+
+      .metric-title {
+        font-size: 10px;
+        color: var(--text-secondary);
+        margin-bottom: 0.4rem;
+        font-weight: 500;
+      }
+      .metric-value {
+        font-family: var(--font-ui);
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      /* UPLOAD */
+      .upload-area {
+        background: var(--bg-panel);
+        border: 1px dashed var(--border-dashed);
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        cursor: pointer;
+        background-image: var(--upload-pattern);
+        background-size: 20px 20px;
+        position: relative;
+      }
+      .upload-area:hover {
+        border-color: var(--data-blue);
+        background-color: var(--bg-hover);
+      }
+      #xmlInput {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
         opacity: 0;
         cursor: pointer;
       }
 
+      /* TABLE */
       .table-container {
-        background: #fff;
-        border: var(--border-width) solid #000;
-        box-shadow: 8px 8px 0 0 #000;
+        width: 100%;
         overflow-x: auto;
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        background: var(--bg-surface);
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-card);
       }
-
       table {
         width: 100%;
-        border-collapse: collapse;
-        font-family: "Space Mono", monospace;
-        font-size: 0.8rem;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-family: var(--font-ui);
+        font-size: 11px;
+        white-space: nowrap;
       }
-
+      thead tr {
+        background: var(--bg-panel);
+      }
       th {
-        background: #000;
-        color: #fff;
-        padding: 1rem;
+        color: var(--text-tertiary);
+        padding: 8px 12px;
         text-align: left;
+        font-weight: 600;
+        font-size: 9px;
         text-transform: uppercase;
+        border-bottom: 1px solid var(--border-subtle);
+        top: 0;
+        z-index: 10;
+        background: var(--bg-panel);
       }
-
       td {
-        padding: 0.8rem;
-        border-bottom: 2px solid #000;
-        border-right: 1px solid #000;
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--border-subtle);
+        color: var(--text-primary);
+        vertical-align: middle;
+      }
+      tr:hover td {
+        background: var(--bg-hover);
       }
 
-      /* REGRA: Linha Verde para Retenções */
-      .row-has-retention {
-        background-color: #dcfce7 !important; /* Verde claro Neo Brutalista */
+      /* ROW HIGHLIGHT (NEON PINK) */
+      .row-has-retention td {
+        background-color: rgba(255, 20, 240, 0.08) !important;
+        border-top: 1px solid rgba(255, 20, 240, 0.2);
+        border-bottom: 1px solid rgba(255, 20, 240, 0.2);
+        color: var(--neon-pink);
+        font-weight: 600;
+        text-shadow: 0 0 5px rgba(255, 20, 240, 0.2);
+      }
+      .row-has-retention td:first-child {
+        border-left: 3px solid var(--neon-pink);
       }
 
       .iss-highlight {
-        background: var(--c-blue);
+        color: var(--neon-pink);
         font-weight: 900;
         padding: 2px 6px;
-        border: 2px solid #000;
+        border: 1px solid var(--neon-pink);
+        border-radius: 4px;
+        box-shadow: 0 0 8px rgba(255, 20, 240, 0.3);
       }
 
-      .btn-clear {
-        background: #000;
-        color: #fff;
-        border: none;
-        padding: 0.8rem 1.5rem;
-        font-weight: 900;
+      .status-badge {
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 9px;
+        font-weight: 600;
         text-transform: uppercase;
-        cursor: pointer;
+      }
+      .status-sem {
+        background: var(--bg-panel);
+        color: var(--text-tertiary);
+        border: 1px solid var(--border-subtle);
+      }
+      .status-com {
+        background: var(--neon-pink);
+        color: #fff;
+        box-shadow: 0 0 10px var(--neon-pink);
+        border: none;
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <header>
-        <h1>Auditor de Retenções XML</h1>
-        <button class="btn-clear" onclick="window.location.reload()">
-          Limpar
-        </button>
-      </header>
-
-      <div class="upload-section">
-        <i class="fas fa-file-import" style="font-size: 2rem"></i>
-        <h3>SELECIONAR XMLS DE NFSe</h3>
-        <input
-          type="file"
-          id="xmlInput"
-          multiple
-          accept=".xml"
-          onchange="processFiles(this.files)"
-        />
+    <aside class="sidebar">
+      <div class="logo">
+        <i
+          class="fas fa-file-invoice-dollar"
+          style="color: var(--neon-pink)"
+        ></i>
+        <span>AUDITOR NFSe</span>
       </div>
+      <nav>
+        <div class="nav-item active">
+          <i class="fas fa-table"></i> Dashboard
+        </div>
+        <div class="nav-item" onclick="window.location.reload()">
+          <i class="fas fa-trash"></i> Limpar Tudo
+        </div>
+      </nav>
+    </aside>
 
-      <div class="table-container">
-        <table id="resultsTable">
-          <thead>
-            <tr>
-              <th>Nota</th>
-              <th>Emitente</th>
-              <th>vBC</th>
-              <th>vLiq</th>
-              <th>PIS/COF/IR/CS</th>
-              <th>ISS Retido</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+    <main class="main-content">
+      <div class="scroll-content">
+        <header class="neo-header">
+          <h1>Análise de Retenções</h1>
+          <button id="themeToggle" class="theme-toggle">
+            <i class="fas fa-moon"></i> <span>Tema</span>
+          </button>
+        </header>
+
+        <div class="dashboard-grid">
+          <div class="metric-card purple">
+            <div class="metric-title">Notas Analisadas</div>
+            <div class="metric-value" id="totalNotas">0</div>
+          </div>
+          <div class="metric-card blue">
+            <div class="metric-title">Volume Total (R$)</div>
+            <div class="metric-value" id="totalVolume">0,00</div>
+          </div>
+          <div class="metric-card orange">
+            <div class="metric-title">Outras Retenções (R$)</div>
+            <div class="metric-value" id="totalOutras">0,00</div>
+          </div>
+          <div class="metric-card neon">
+            <div class="metric-title">Total ISS Retido (R$)</div>
+            <div
+              class="metric-value"
+              id="totalISS"
+              style="color: var(--neon-pink)"
+            >
+              0,00
+            </div>
+          </div>
+        </div>
+
+        <div class="upload-area">
+          <input
+            type="file"
+            id="xmlInput"
+            multiple
+            accept=".xml, .zip"
+            onchange="processFiles(this.files)"
+          />
+          <div style="pointer-events: none">
+            <i
+              class="fas fa-cloud-upload-alt"
+              style="
+                font-size: 24px;
+                color: var(--text-tertiary);
+                margin-bottom: 8px;
+              "
+            ></i
+            ><br />
+            <span style="font-weight: 600">Arraste XMLs ou ZIPs aqui</span
+            ><br />
+            <span style="font-size: 11px; color: var(--text-secondary)"
+              >Processamento local</span
+            >
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table id="resultsTable">
+            <thead>
+              <tr>
+                <th>Nota</th>
+                <th>Emitente</th>
+                <th>Base Cálculo</th>
+                <th>Valor Líquido</th>
+                <th>PIS/COF/IR/CS</th>
+                <th>ISS Retido</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    </main>
 
     <script>
+      // Theme Toggle Logic
+      const themeToggle = document.getElementById("themeToggle");
+      const body = document.body;
+      const icon = themeToggle.querySelector("i");
+
+      // Check local storage
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme) {
+        body.setAttribute("data-theme", savedTheme);
+        updateIcon(savedTheme);
+      }
+
+      themeToggle.addEventListener("click", () => {
+        const currentTheme = body.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        body.setAttribute("data-theme", newTheme);
+        localStorage.setItem("theme", newTheme);
+        updateIcon(newTheme);
+      });
+
+      function updateIcon(theme) {
+        if (theme === "dark") {
+          icon.classList.remove("fa-moon");
+          icon.classList.add("fa-sun");
+        } else {
+          icon.classList.remove("fa-sun");
+          icon.classList.add("fa-moon");
+        }
+      }
+
+      // --- Processing Logic ---
+
+      // Global Counters
+      let countNotas = 0;
+      let sumVolume = 0;
+      let sumOutras = 0;
+      let sumISS = 0;
+
+      function updateDashboard() {
+        document.getElementById("totalNotas").innerText = countNotas;
+        document.getElementById("totalVolume").innerText = formatBRL(sumVolume);
+        document.getElementById("totalOutras").innerText = formatBRL(sumOutras);
+        document.getElementById("totalISS").innerText = formatBRL(sumISS);
+      }
+
       function getTagValue(parent, tagName) {
+        if (!parent) return "0";
         const el = parent.getElementsByTagName(tagName)[0];
         return el ? el.textContent : "0";
       }
 
-      // Busca valor mesmo em tags aninhadas (ex: tribFed/vRetIRRF)
       function findValue(xml, tagName) {
+        if (!xml) return 0;
         const el = xml.getElementsByTagName(tagName)[0];
-        return el ? parseFloat(el.textContent) : 0;
+        return el ? parseFloat(el.textContent.replace(",", ".")) : 0; // Ensure float parsing handles decimals if raw xml uses dot
       }
+
+      // Specialized for Brazil format if needed, but usually XML uses dot.
+      // Standardize parseFloat just in case.
 
       function formatBRL(val) {
         return val.toLocaleString("pt-BR", {
@@ -181,55 +535,95 @@
         const tbody = document.querySelector("#resultsTable tbody");
         const parser = new DOMParser();
 
+        // Reset counters if clean start desired or keep cumulative?
+        // Let's keep cumulative for multiple uploads unless refreshed.
+
         for (let file of files) {
-          const text = await file.text();
-          const xml = parser.parseFromString(text, "text/xml");
+          const fileName = file.name.toLowerCase();
 
-          const emit = xml.getElementsByTagName("emit")[0];
-          const xNome = getTagValue(emit, "xNome");
-          const nNFSe = getTagValue(xml, "nNFSe");
+          if (fileName.endsWith(".zip")) {
+            try {
+              const zip = new JSZip();
+              const zipContent = await zip.loadAsync(file);
 
-          // Valores Base
-          const vBC = findValue(xml, "vBC");
-          const vLiq = findValue(xml, "vLiq");
+              const fileNames = Object.keys(zipContent.files);
+              for (let name of fileNames) {
+                if (
+                  name.toLowerCase().endsWith(".xml") &&
+                  !zipContent.files[name].dir
+                ) {
+                  const text = await zipContent.files[name].async("text");
+                  processXMLContent(text, parser, tbody);
+                }
+              }
+            } catch (e) {
+              console.error("Erro ao processar ZIP:", e);
+              alert("Erro ao ler arquivo ZIP: " + fileName);
+            }
+          } else if (fileName.endsWith(".xml")) {
+            const text = await file.text();
+            processXMLContent(text, parser, tbody);
+          }
+        }
 
-          // Busca Retenções (Lógica robusta para diferentes tags de prefeitura)
-          let vPis = findValue(xml, "vPis") || findValue(xml, "vRetPIS");
-          let vCofins =
-            findValue(xml, "vCofins") || findValue(xml, "vRetCOFINS");
-          let vIR = findValue(xml, "vRetIRRF") || findValue(xml, "vIR");
-          let vCSLL = findValue(xml, "vRetCSLL") || findValue(xml, "vCSLL");
-          let vISS =
-            findValue(xml, "vRetISS") || findValue(xml, "vISSRetido") || 0;
+        updateDashboard();
+      }
 
-          // Lógica tpRetISS (se presente no XML como tpRetISSQN ou similar)
-          const tpRetISS =
-            getTagValue(xml, "tpRetISS") || getTagValue(xml, "tpRetISSQN");
-          const isIssRetidoImportante = tpRetISS === "2" || tpRetISS === "3";
+      function processXMLContent(text, parser, tbody) {
+        const xml = parser.parseFromString(text, "text/xml");
 
-          let somaOutrasRet = vPis + vCofins + vIR + vCSLL;
-          let totalRetencoes = somaOutrasRet + vISS;
+        // Basic checks
+        const emit = xml.getElementsByTagName("emit")[0];
+        if (!emit) return; // Not a valid NFSe xml structure we expect
 
-          const hasAnyRetention = totalRetencoes > 0 || vBC > vLiq;
-          const rowClass = hasAnyRetention ? "row-has-retention" : "";
+        const xNome = getTagValue(emit, "xNome");
+        const nNFSe = getTagValue(xml, "nNFSe");
 
-          const tr = document.createElement("tr");
-          tr.className = rowClass;
-          tr.innerHTML = `
-                <td><strong>${nNFSe}</strong></td>
+        // Valores Base
+        const vBC = findValue(xml, "vBC");
+        const vLiq = findValue(xml, "vLiq");
+
+        // Busca Retenções
+        let vPis = findValue(xml, "vPis") || findValue(xml, "vRetPIS");
+        let vCofins = findValue(xml, "vCofins") || findValue(xml, "vRetCOFINS");
+        let vIR = findValue(xml, "vRetIRRF") || findValue(xml, "vIR");
+        let vCSLL = findValue(xml, "vRetCSLL") || findValue(xml, "vCSLL");
+        let vISS =
+          findValue(xml, "vRetISS") || findValue(xml, "vISSRetido") || 0;
+
+        // Check if tpRetISS indicates retention even if value might be elsewhere or inferred
+        const tpRetISS =
+          getTagValue(xml, "tpRetISS") || getTagValue(xml, "tpRetISSQN");
+        const isIssRetidoImportante = tpRetISS === "2" || tpRetISS === "3";
+
+        let somaOutrasRet = vPis + vCofins + vIR + vCSLL;
+        let totalRetencoes = somaOutrasRet + vISS;
+
+        // Update Global Counters
+        countNotas++;
+        sumVolume += vBC;
+        sumOutras += somaOutrasRet;
+        sumISS += vISS;
+
+        const hasAnyRetention = totalRetencoes > 0 || (vBC > vLiq && vLiq > 0);
+        const rowClass = hasAnyRetention ? "row-has-retention" : "";
+
+        const statusBadge = hasAnyRetention
+          ? `<span class="status-badge status-com">RETENÇÃO</span>`
+          : `<span class="status-badge status-sem">NORMAL</span>`;
+
+        const tr = document.createElement("tr");
+        tr.className = rowClass;
+        tr.innerHTML = `
+                <td><strong style="font-family: var(--font-code)">${nNFSe}</strong></td>
                 <td>${xNome}</td>
                 <td>${formatBRL(vBC)}</td>
                 <td>${formatBRL(vLiq)}</td>
                 <td>${formatBRL(somaOutrasRet)}</td>
-                <td><span class="${
-                  isIssRetidoImportante ? "iss-highlight" : ""
-                }">${formatBRL(vISS)}</span></td>
-                <td>${
-                  hasAnyRetention ? "POSSUI RETENÇÕES" : "SEM RETENÇÃO"
-                }</td>
+                <td><span class="${isIssRetidoImportante || vISS > 0 ? "iss-highlight" : ""}">${formatBRL(vISS)}</span></td>
+                <td>${statusBadge}</td>
             `;
-          tbody.appendChild(tr);
-        }
+        tbody.appendChild(tr);
       }
     </script>
   </body>
