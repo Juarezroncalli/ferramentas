@@ -249,7 +249,7 @@
       /* METRICS */
       .dashboard-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(5, 1fr);
         gap: 1rem;
         margin-bottom: 1.5rem;
       }
@@ -283,6 +283,9 @@
       }
       .metric-card.orange::after {
         background: var(--data-orange);
+      }
+      .metric-card.red::after {
+        background: var(--data-red);
       }
 
       .metric-title {
@@ -725,6 +728,10 @@
           <div class="metric-card purple">
             <div class="metric-title">Itens Analisados</div>
             <div class="metric-value" id="totalItens">0</div>
+          </div>
+          <div class="metric-card red">
+            <div class="metric-title">Total Produtos (R$)</div>
+            <div class="metric-value" id="totalProd">0,00</div>
           </div>
           <div class="metric-card blue">
             <div class="metric-title">Total ICMS (R$)</div>
@@ -1262,13 +1269,16 @@
       function atualizarTotais() {
         let tIcms = 0,
           tPis = 0,
-          tCof = 0;
+          tCof = 0,
+          tProd = 0;
         filteredItems.forEach((i) => {
           tIcms += i.vIcms;
           tPis += i.vPis;
           tCof += i.vCof;
+          tProd += i.vProd;
         });
         document.getElementById("totalItens").innerText = filteredItems.length;
+        document.getElementById("totalProd").innerText = formatMoney(tProd);
         document.getElementById("totalIcms").innerText = formatMoney(tIcms);
         document.getElementById("totalPis").innerText = formatMoney(tPis);
         document.getElementById("totalCofins").innerText = formatMoney(tCof);
