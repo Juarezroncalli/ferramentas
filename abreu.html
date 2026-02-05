@@ -1,309 +1,358 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatório Compliance Tributário - 2026</title>
-    <style>
-        :root {
-            --primary: #1e293b; /* Azul Industrial Profundo */
-            --secondary: #334155;
-            --accent: #0284c7; /* Azul Posto */
-            --danger: #be123c;
-            --success: #15803d;
-            --warning: #a16207;
-            --bg: #f8fafc;
-            --border: #e2e8f0;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório Compliance Tributário - 2026</title>
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg);
-            color: var(--primary);
-            line-height: 1.6;
-            margin: 0;
-            padding: 40px 20px;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
+<style>
+:root {
+    --dark:#020617;
+    --panel:#0f172a;
+    --accent:#38bdf8;
+    --accent2:#22d3ee;
+    --bg:#e5e7eb;
+    --card:#ffffff;
+    --border:#dbe3ee;
+    --danger:#e11d48;
+    --warn:#f59e0b;
+    --ok:#16a34a;
+}
 
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--primary);
-            padding-bottom: 20px;
-            margin-bottom: 40px;
-        }
+* { box-sizing:border-box; }
 
-        .header-title h1 {
-            margin: 0;
-            font-size: 1.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+body {
+    margin:0;
+    font-family:Inter,Arial,sans-serif;
+    background:radial-gradient(circle at top,#cbd5f5,#e5e7eb 60%);
+    color:#0f172a;
+    padding:28px 16px;
+}
 
-        .header-title p {
-            margin: 5px 0 0 0;
-            color: var(--secondary);
-            font-weight: 500;
-        }
+.container {
+    max-width:1200px;
+    margin:0 auto;
+}
 
-        .meta-data {
-            text-align: right;
-            font-size: 0.9rem;
-        }
+header {
+    background:linear-gradient(120deg,var(--panel),#1e293b);
+    color:white;
+    border-radius:18px;
+    padding:34px;
+    box-shadow:0 20px 40px rgba(2,6,23,0.35);
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+}
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-bottom: 40px;
-        }
+.header-title h1 {
+    margin:0;
+    font-size:1.9rem;
+    letter-spacing:0.6px;
+}
 
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
+.header-title p {
+    margin:8px 0 0 0;
+    color:#cbd5f1;
+    font-weight:600;
+}
 
-        .stat-card span {
-            display: block;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            color: var(--secondary);
-            font-weight: 600;
-        }
+.meta-data {
+    font-size:0.95rem;
+    line-height:1.7;
+    color:#e2e8f0;
+    text-align:right;
+}
 
-        .stat-card strong {
-            font-size: 1.5rem;
-            color: var(--accent);
-        }
+.grid {
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:24px;
+    margin:30px 0;
+}
 
-        section {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-        }
+.stat-card {
+    background:linear-gradient(180deg,#ffffff,#f8fafc);
+    border-radius:18px;
+    padding:26px;
+    box-shadow:0 14px 28px rgba(15,23,42,0.12);
+    border:1px solid var(--border);
+    position:relative;
+    overflow:hidden;
+}
 
-        h2 {
-            font-size: 1.2rem;
-            border-left: 4px solid var(--accent);
-            padding-left: 15px;
-            margin-bottom: 25px;
-            text-transform: uppercase;
-        }
+.stat-card::after {
+    content:"";
+    position:absolute;
+    right:-40px;
+    top:-40px;
+    width:120px;
+    height:120px;
+    background:linear-gradient(120deg,var(--accent),var(--accent2));
+    opacity:0.15;
+    border-radius:50%;
+}
 
-        .table-container {
-            overflow-x: auto;
-        }
+.stat-card span {
+    font-size:0.75rem;
+    text-transform:uppercase;
+    font-weight:800;
+    letter-spacing:1px;
+    color:#64748b;
+}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 0.9rem;
-        }
+.stat-card strong {
+    display:block;
+    margin-top:10px;
+    font-size:1.5rem;
+}
 
-        th {
-            background: var(--bg);
-            text-align: left;
-            padding: 12px;
-            border-bottom: 2px solid var(--border);
-            color: var(--secondary);
-        }
+section {
+    background:var(--card);
+    border-radius:18px;
+    padding:30px;
+    margin-bottom:26px;
+    box-shadow:0 14px 30px rgba(15,23,42,0.10);
+    border:1px solid var(--border);
+    position:relative;
+}
 
-        td {
-            padding: 12px;
-            border-bottom: 1px solid var(--border);
-        }
+section::before {
+    content:"";
+    position:absolute;
+    left:0;
+    top:0;
+    width:8px;
+    height:100%;
+    border-radius:18px 0 0 18px;
+    background:linear-gradient(var(--accent),var(--accent2));
+}
 
-        .badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
+h2 {
+    margin:0 0 18px 0;
+    font-size:1.1rem;
+    letter-spacing:0.5px;
+}
 
-        .badge-red { background: #fee2e2; color: var(--danger); }
-        .badge-green { background: #dcfce7; color: var(--success); }
-        .badge-blue { background: #e0f2fe; color: var(--accent); }
+.table-container {
+    overflow:auto;
+    border-radius:14px;
+    border:1px solid var(--border);
+}
 
-        .legal-note {
-            background: #f1f5f9;
-            padding: 15px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            color: var(--secondary);
-            border-left: 4px solid var(--secondary);
-            margin-top: 15px;
-        }
+table {
+    width:100%;
+    border-collapse:collapse;
+    font-size:0.9rem;
+}
 
-        .conclusion {
-            background: var(--primary);
-            color: white;
-            padding: 30px;
-            border-radius: 8px;
-        }
+th {
+    background:#0f172a;
+    color:white;
+    padding:14px;
+    text-transform:uppercase;
+    font-size:0.75rem;
+    letter-spacing:1px;
+    position:sticky;
+    top:0;
+}
 
-        .conclusion h2 { border-color: white; color: white; }
+td {
+    padding:14px;
+    border-bottom:1px solid var(--border);
+}
 
-        footer {
-            text-align: center;
-            margin-top: 50px;
-            font-size: 0.8rem;
-            color: var(--secondary);
-        }
+tbody tr:nth-child(even) {
+    background:#f8fafc;
+}
 
-        @media print {
-            body { background: white; padding: 0; }
-            section { box-shadow: none; border: 1px solid #ccc; }
-        }
-    </style>
+tbody tr:hover {
+    background:#e0f2fe;
+}
+
+.badge {
+    padding:6px 12px;
+    border-radius:999px;
+    font-size:0.7rem;
+    font-weight:800;
+    letter-spacing:0.6px;
+}
+
+.badge-red { background:#ffe4e6; color:var(--danger); }
+.badge-blue { background:#e0f2fe; color:#0369a1; }
+
+.legal-note {
+    margin-top:18px;
+    background:#f1f5f9;
+    padding:18px;
+    border-radius:12px;
+    font-size:0.85rem;
+    border:1px dashed #cbd5e1;
+}
+
+.conclusion {
+    background:linear-gradient(120deg,#020617,#0f172a);
+    color:#e2e8f0;
+}
+
+.conclusion::before {
+    background:linear-gradient(#22c55e,#4ade80);
+}
+
+footer {
+    text-align:center;
+    margin-top:34px;
+    font-size:0.8rem;
+    color:#475569;
+}
+
+@media(max-width:900px){
+    .grid { grid-template-columns:1fr; }
+    header { flex-direction:column; }
+    .meta-data { text-align:left; }
+}
+</style>
 </head>
+
 <body>
-
 <div class="container">
-    <header>
-        <div class="header-title">
-            <h1>Relatório de Conferência de Tags</h1>
-            <p>Reforma Tributária • Arquivos XML</p>
-        </div>
-        <div class="meta-data">
-            <strong>Empresa:</strong> Auto Peças Abreu Teixeira Ltda<br>
-            <strong>Estabelecimento:</strong> Filial (Custo/Operacional)<br>
-            <strong>Competência:</strong> Janeiro / 2026
-        </div>
-    </header>
 
-    <div class="grid">
-        <div class="stat-card">
-            <span>Volume Processado</span>
-            <strong>3.860 Itens</strong>
-        </div>
-        <div class="stat-card">
-            <span>Status da Análise</span>
-            <strong style="color: var(--warning);">Inconsistências Identificadas</strong>
-        </div>
-        <div class="stat-card">
-            <span>Foco da Auditoria</span>
-            <strong>CST / NCM / Class Trib</strong>
-        </div>
-    </div>
-
-    <section>
-        <h2>1. Objetivo Estratégico</h2>
-        <p>Realizar a conferência técnica das tags relacionadas à Reforma Tributária nos arquivos XML emitidos e recebidos pela filial da empresa no período de janeiro de 2026. O procedimento visa identificar inconsistências de classificação fiscal e enquadramento tributário, mitigando riscos de autuações e prevenindo impactos financeiros no cálculo e recolhimento de tributos.</p>
-    </section>
-
-    <section>
-        <h2>2. Itens com Reenquadramento para Tributação Integral</h2>
-        <p>Identificamos itens classificados indevidamente com redução de 60%. Devem ser ajustados para <strong>Tributação Integral</strong>.</p>
-        
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Código / Descrição do Produto</th>
-                        <th>CST Correto</th>
-                        <th>Class Trib</th>
-                        <th>Status Sugerido</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>101898 - BATATA PALHA PACHA EXTRA FINA</td><td>000</td><td>000001</td><td><span class="badge badge-red">Ajustar Integral</span></td></tr>
-                    <tr><td>101450 - SNACK BATAT SENS ELMA CH 40GR</td><td>000</td><td>000001</td><td><span class="badge badge-red">Ajustar Integral</span></td></tr>
-                    <tr><td>101482 - SNACK BATATA ELMA CHIPS PALHA</td><td>000</td><td>000001</td><td><span class="badge badge-red">Ajustar Integral</span></td></tr>
-                    <tr><td>101719 - SNACK LAYS CLASSICAS 70G</td><td>000</td><td>000001</td><td><span class="badge badge-red">Ajustar Integral</span></td></tr>
-                    <tr><td>101717 - SNACK LAYS SOUR CREAM 70G</td><td>000</td><td>000001</td><td><span class="badge badge-red">Ajustar Integral</span></td></tr>
-                    <tr><td>101913 - SNACK RUFFLES CHURRASCO 68GR</td><td>000</td><td>000001</td><td><span class="badge badge-red">Ajustar Integral</span></td></tr>
-                    <tr><td>101479 - SNACK RUFFLES ORIGINAL 76GR</td><td>000</td><td>000001</td><td><span class="badge badge-red">Ajustar Integral</span></td></tr>
-                    <tr><td>101451 - SNACK SENSACOES PEITO PER 40GR</td><td>000</td><td>000001</td><td><span class="badge badge-red">Ajustar Integral</span></td></tr>
-                    <tr><td>6678 - SNACK VISCONTI BATATA PALHA 14</td><td>000</td><td>000001</td><td><span class="badge badge-red">Ajustar Integral</span></td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="legal-note">
-            <strong>Base Legal:</strong> Produtos hortícolas, mesmo misturados entre si, apenas pré-cozidos ou cozidos em água ou vapor, sem adição de sal. Visto que os itens acima possuem sal em sua formulação, tornam-se incompatíveis com o critério de redução das posições 20.04, 20.05 e código 2002.10.00 da NCM/SH.
-        </div>
-    </section>
-
-    <section>
-        <h2>3. Itens com Direito à Redução de 60%</h2>
-        <p>Produtos tributados integralmente nos arquivos originais, onde a conformidade legal permite a <strong>Redução de Base de Cálculo</strong>.</p>
-        
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Produto</th>
-                        <th>CST Correto</th>
-                        <th>Class Trib</th>
-                        <th>Referência Compra</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>4572 - ACHOC FAST ALPINO 280ML</td><td>200</td><td>200034</td><td>NF 2116583 (Nestlé)</td></tr>
-                    <tr><td>9860 - ACHOC FAST NESTON 280ML</td><td>200</td><td>200034</td><td>NF 2116583 (Nestlé)</td></tr>
-                    <tr><td>101939 - BEB LAC NESCAU EX CACAU 270ML</td><td>200</td><td>200034</td><td>NF 2116583 (Nestlé)</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="legal-note">
-            <strong>Base Legal:</strong> Leite fermentado, bebidas e compostos lácteos, conforme legislação específica, classificados nos códigos NCM 0403.20.00, 0403.90.00 e 2202.99.00.
-        </div>
-    </section>
-
-    <section>
-        <h2>4. Inconsistência Crítica: NCM e Enquadramento</h2>
-        <p>Divergência detectada na linha <strong>Água de Coco KeroCoco</strong> (1LT e 330ML) códigos 113 e 115.</p>
-        
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Campo</th>
-                        <th>Valor nos XMLs Analisados</th>
-                        <th>Valor Correto (Compliance)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>NCM</strong></td>
-                        <td style="color: var(--danger);">Incorreto</td>
-                        <td><span class="badge badge-blue">20098921</span> (Ref: NF 10451 Pepsico)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Tributação</strong></td>
-                        <td style="color: var(--danger);">Redução de Base</td>
-                        <td><span class="badge badge-blue">Integral (CST 000 / Class Trib 000001)</span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-    <section class="conclusion">
-        <h2>5. Parecer Conclusivo</h2>
-        <p>A auditoria dos XMLs de Janeiro/2026 cumpriu seu papel de validar o tratamento tributário da unidade. Foram identificadas oportunidades de correção que evitam tanto o recolhimento a menor quanto o pagamento indevido.</p>
-        <p><strong>Plano de Ação:</strong> O monitoramento será contínuo durante o exercício de 2026, visando a padronização total para a virada fiscal de 2027.</p>
-    </section>
-
-    <footer>
-        Relatório Gerencial • Gerado em conformidade com as diretrizes da Reforma Tributária
-    </footer>
+<header>
+<div class="header-title">
+<h1>Relatório de Conferência de Tags</h1>
+<p>Reforma Tributária • Arquivos XML</p>
 </div>
 
+<div class="meta-data">
+<strong>Empresa:</strong> Auto Peças Abreu Teixeira Ltda<br>
+<strong>Estabelecimento:</strong> Filial (Custo/Operacional)<br>
+<strong>Competência:</strong> Janeiro / 2026
+</div>
+</header>
+
+<div class="grid">
+<div class="stat-card">
+<span>Volume Processado</span>
+<strong>3.860 Itens</strong>
+</div>
+
+<div class="stat-card">
+<span>Status da Análise</span>
+<strong style="color:var(--warn)">Inconsistências Identificadas</strong>
+</div>
+
+<div class="stat-card">
+<span>Foco da Auditoria</span>
+<strong>CST / NCM / Class Trib</strong>
+</div>
+</div>
+
+<section>
+<h2>1. Objetivo Estratégico</h2>
+<p>Realizar a conferência técnica das tags relacionadas à Reforma Tributária nos arquivos XML emitidos e recebidos pela filial da empresa no período de janeiro de 2026. O procedimento visa identificar inconsistências de classificação fiscal e enquadramento tributário, mitigando riscos de autuações e prevenindo impactos financeiros no cálculo e recolhimento de tributos.</p>
+</section>
+
+<section>
+<h2>2. Itens com Reenquadramento para Tributação Integral</h2>
+<p>Identificamos itens classificados indevidamente com redução de 60%. Devem ser ajustados para <strong>Tributação Integral</strong>.</p>
+
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Código / Descrição do Produto</th>
+<th>CST Correto</th>
+<th>Class Trib</th>
+<th>Status Sugerido</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>101898 - BATATA PALHA PACHA EXTRA FINA</td><td>000</td><td>000001</td><td><span class="badge badge-red">Ajustar Integral</span></td></tr>
+<tr><td>101450 - SNACK BATAT SENS ELMA CH 40GR</td><td>000</td><td>000001</td><td><span class="badge badge-red">Ajustar Integral</span></td></tr>
+<tr><td>101482 - SNACK BATATA ELMA CHIPS PALHA</td><td>000</td><td>000001</td><td><span class="badge badge-red">Ajustar Integral</span></td></tr>
+<tr><td>101719 - SNACK LAYS CLASSICAS 70G</td><td>000</td><td>000001</td><td><span class="badge badge-red">Ajustar Integral</span></td></tr>
+<tr><td>101717 - SNACK LAYS SOUR CREAM 70G</td><td>000</td><td>000001</td><td><span class="badge badge-red">Ajustar Integral</span></td></tr>
+<tr><td>101913 - SNACK RUFFLES CHURRASCO 68GR</td><td>000</td><td>000001</td><td><span class="badge badge-red">Ajustar Integral</span></td></tr>
+<tr><td>101479 - SNACK RUFFLES ORIGINAL 76GR</td><td>000</td><td>000001</td><td><span class="badge badge-red">Ajustar Integral</span></td></tr>
+<tr><td>101451 - SNACK SENSACOES PEITO PER 40GR</td><td>000</td><td>000001</td><td><span class="badge badge-red">Ajustar Integral</span></td></tr>
+<tr><td>6678 - SNACK VISCONTI BATATA PALHA 14</td><td>000</td><td>000001</td><td><span class="badge badge-red">Ajustar Integral</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="legal-note">
+<strong>Base Legal:</strong> Produtos hortícolas, mesmo misturados entre si, apenas pré-cozidos ou cozidos em água ou vapor, sem adição de sal. Visto que os itens acima possuem sal em sua formulação, tornam-se incompatíveis com o critério de redução das posições 20.04, 20.05 e código 2002.10.00 da NCM/SH.
+</div>
+</section>
+
+<section>
+<h2>3. Itens com Direito à Redução de 60%</h2>
+<p>Produtos tributados integralmente nos arquivos originais, onde a conformidade legal permite a <strong>Redução de Base de Cálculo</strong>.</p>
+
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Produto</th>
+<th>CST Correto</th>
+<th>Class Trib</th>
+<th>Referência Compra</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>4572 - ACHOC FAST ALPINO 280ML</td><td>200</td><td>200034</td><td>NF 2116583 (Nestlé)</td></tr>
+<tr><td>9860 - ACHOC FAST NESTON 280ML</td><td>200</td><td>200034</td><td>NF 2116583 (Nestlé)</td></tr>
+<tr><td>101939 - BEB LAC NESCAU EX CACAU 270ML</td><td>200</td><td>200034</td><td>NF 2116583 (Nestlé)</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="legal-note">
+<strong>Base Legal:</strong> Leite fermentado, bebidas e compostos lácteos, conforme legislação específica, classificados nos códigos NCM 0403.20.00, 0403.90.00 e 2202.99.00.
+</div>
+</section>
+
+<section>
+<h2>4. Inconsistência Crítica: NCM e Enquadramento</h2>
+<p>Divergência detectada na linha <strong>Água de Coco KeroCoco</strong> (1LT e 330ML) códigos 113 e 115.</p>
+
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Valor nos XMLs Analisados</th>
+<th>Valor Correto (Compliance)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>NCM</strong></td>
+<td style="color:var(--danger)">Incorreto</td>
+<td><span class="badge badge-blue">20098921</span> (Ref: NF 10451 Pepsico)</td>
+</tr>
+<tr>
+<td><strong>Tributação</strong></td>
+<td style="color:var(--danger)">Redução de Base</td>
+<td><span class="badge badge-blue">Integral (CST 000 / Class Trib 000001)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section class="conclusion">
+<h2>5. Parecer Conclusivo</h2>
+<p>A auditoria dos XMLs de Janeiro/2026 cumpriu seu papel de validar o tratamento tributário da unidade. Foram identificadas oportunidades de correção que evitam tanto o recolhimento a menor quanto o pagamento indevido.</p>
+<p><strong>Plano de Ação:</strong> O monitoramento será contínuo durante o exercício de 2026, visando a padronização total para a virada fiscal de 2027.</p>
+</section>
+
+<footer>
+Relatório Gerencial • Gerado em conformidade com as diretrizes da Reforma Tributária
+</footer>
+
+</div>
 </body>
 </html>
