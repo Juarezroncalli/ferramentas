@@ -280,6 +280,41 @@
         cursor: pointer;
       }
 
+      /* FILTERS */
+      .filters-container {
+        margin-bottom: 1rem;
+      }
+      .filters-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: flex-end;
+      }
+      .form-group {
+        flex: 1;
+        min-width: 120px;
+      }
+      .form-group label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 4px;
+        font-size: 10px;
+        color: var(--text-secondary);
+      }
+      .neo-input {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-sm);
+        background: var(--bg-input);
+        color: var(--text-primary);
+        font-size: 12px;
+        transition: border-color 0.2s;
+      }
+      .neo-input:focus {
+        border-color: var(--border-focus);
+      }
+
       /* TABLE */
       .table-container {
         width: 100%;
@@ -444,6 +479,31 @@
           </div>
         </div>
 
+        <div class="filters-container">
+          <div class="filters-grid">
+            <div class="form-group">
+              <label>Buscar Nota</label>
+              <input
+                type="text"
+                id="searchNota"
+                class="neo-input"
+                placeholder="Digite o número..."
+                onkeyup="filterTable()"
+              />
+            </div>
+            <div class="form-group" style="flex: 2">
+              <label>Buscar Emitente</label>
+              <input
+                type="text"
+                id="searchEmitente"
+                class="neo-input"
+                placeholder="Digite o nome..."
+                onkeyup="filterTable()"
+              />
+            </div>
+          </div>
+        </div>
+
         <div class="table-container">
           <table id="resultsTable">
             <thead>
@@ -491,6 +551,36 @@
         } else {
           icon.classList.remove("fa-sun");
           icon.classList.add("fa-moon");
+        }
+      }
+
+      function filterTable() {
+        const inputNota = document
+          .getElementById("searchNota")
+          .value.toLowerCase();
+        const inputEmitente = document
+          .getElementById("searchEmitente")
+          .value.toLowerCase();
+        const table = document.getElementById("resultsTable");
+        const trs = table.getElementsByTagName("tr");
+
+        for (let i = 1; i < trs.length; i++) {
+          const tdNota = trs[i].getElementsByTagName("td")[0];
+          const tdEmitente = trs[i].getElementsByTagName("td")[1];
+
+          if (tdNota && tdEmitente) {
+            const txtNota = tdNota.textContent || tdNota.innerText;
+            const txtEmitente = tdEmitente.textContent || tdEmitente.innerText;
+
+            if (
+              txtNota.toLowerCase().indexOf(inputNota) > -1 &&
+              txtEmitente.toLowerCase().indexOf(inputEmitente) > -1
+            ) {
+              trs[i].style.display = "";
+            } else {
+              trs[i].style.display = "none";
+            }
+          }
         }
       }
 
