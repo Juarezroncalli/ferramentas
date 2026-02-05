@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
@@ -14,6 +14,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <style>
       :root {
@@ -183,6 +184,21 @@
         display: inline-block;
         padding: 8px 16px;
       }
+
+      .search-input {
+        font-family: "Space Grotesk", sans-serif;
+        padding: 14px;
+        border: var(--border-width) solid var(--border-black);
+        box-shadow: 4px 4px 0 0 var(--border-black);
+        font-size: 1rem;
+        flex: 1;
+        outline: none;
+        transition: 0.1s;
+      }
+      .search-input:focus {
+        box-shadow: 2px 2px 0 0 var(--border-black);
+        transform: translate(2px, 2px);
+      }
     </style>
   </head>
   <body>
@@ -208,16 +224,23 @@
           type="file"
           id="xmlInput"
           multiple
-          accept=".xml"
+          accept=".xml, .zip"
           onchange="processFiles(this.files)"
         />
         <div class="upload-label">
           <i class="fas fa-file-invoice fa-3x"></i><br /><br />
-          ARRASTE OU CLIQUE PARA SUBIR XMLS
+          ARRASTE OU CLIQUE PARA SUBIR XMLS OU ZIPS
         </div>
       </div>
 
       <div class="controls">
+        <input
+          type="text"
+          id="searchInput"
+          class="search-input"
+          placeholder="Digite para filtrar (Nota, Nome, CNPJ, Descrição)..."
+          onkeyup="filterData()"
+        />
         <button class="btn btn-export" onclick="downloadTXT()">
           <i class="fas fa-file-download"></i> EXPORTAR TXT
         </button>
@@ -253,9 +276,33 @@
 
         status.innerText = `Processando ${files.length} arquivos...`;
 
-        for (let file of files) {
+        const xmlTextList = [];
+
+        // 1. Extração de Conteúdo (XML direto ou dentro de ZIP)
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
           try {
-            const text = await file.text();
+            if (file.name.toLowerCase().endsWith(".xml")) {
+              xmlTextList.push(await file.text());
+            } else if (file.name.toLowerCase().endsWith(".zip")) {
+              const zip = await JSZip.loadAsync(file);
+              const promises = [];
+              zip.forEach((path, entry) => {
+                if (!entry.dir && entry.name.toLowerCase().endsWith(".xml")) {
+                  promises.push(entry.async("string"));
+                }
+              });
+              const extracted = await Promise.all(promises);
+              extracted.forEach((t) => xmlTextList.push(t));
+            }
+          } catch (e) {
+            console.error("Erro ao ler arquivo:", file.name, e);
+          }
+        }
+
+        // 2. Processamento dos XMLs extraídos
+        for (let text of xmlTextList) {
+          try {
             const xmlDoc = parser.parseFromString(text, "text/xml");
 
             // Extração das Tags
@@ -274,20 +321,50 @@
 
             const entry = { nNFSe, xNome, cnpj, xDescServ };
             extractedData.push(entry);
-
-            const row = tbody.insertRow();
-            row.innerHTML = `
-              <td class="col-nfse">${nNFSe}</td>
-              <td class="full-text"><strong>${xNome}</strong></td>
-              <td>${cnpj}</td>
-              <td class="full-text">${xDescServ}</td>
-            `;
           } catch (err) {
-            console.error("Erro no processamento:", file.name, err);
+            console.error("Erro no processamento:", err);
           }
         }
 
-        status.innerText = `${extractedData.length} registros prontos para exportação.`;
+        // Ordenação por Número da Nota (Crescente)
+        extractedData.sort((a, b) => {
+          const numA = parseInt(String(a.nNFSe).replace(/\D/g, "")) || 0;
+          const numB = parseInt(String(b.nNFSe).replace(/\D/g, "")) || 0;
+          return numA - numB;
+        });
+
+        renderTable(extractedData);
+      }
+
+      function renderTable(data) {
+        const tbody = document.querySelector("#resultTable tbody");
+        tbody.innerHTML = "";
+        const status = document.getElementById("statusMsg");
+
+        data.forEach((item) => {
+          const row = tbody.insertRow();
+          row.innerHTML = `
+              <td class="col-nfse">${item.nNFSe}</td>
+              <td class="full-text"><strong>${item.xNome}</strong></td>
+              <td>${item.cnpj}</td>
+              <td class="full-text">${item.xDescServ}</td>
+            `;
+        });
+
+        status.innerText = `${data.length} registros exibidos.`;
+      }
+
+      function filterData() {
+        const term = document.getElementById("searchInput").value.toLowerCase();
+        const filtered = extractedData.filter((item) => {
+          return (
+            String(item.nNFSe).toLowerCase().includes(term) ||
+            String(item.xNome).toLowerCase().includes(term) ||
+            String(item.cnpj).toLowerCase().includes(term) ||
+            String(item.xDescServ).toLowerCase().includes(term)
+          );
+        });
+        renderTable(filtered);
       }
 
       function downloadTXT() {
@@ -319,6 +396,7 @@
         extractedData = [];
         document.querySelector("#resultTable tbody").innerHTML = "";
         document.getElementById("xmlInput").value = "";
+        document.getElementById("searchInput").value = "";
         document.getElementById("statusMsg").innerText =
           "Aguardando novos arquivos.";
       }
