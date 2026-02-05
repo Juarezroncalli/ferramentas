@@ -1947,7 +1947,7 @@
             : "SEM_TAGS";
           const prodClean = r.xProd.replace(/,/g, " ");
           const emitClean = r.emitNome.replace(/,/g, " ");
-          csv += `${emitClean},${r.regimeDesc},'${r.chNFe},${r.nNF},${r.data},${prodClean},${r.ncm},${r.cfop},${r.cClassTrib},${r.cst},${r.vProd.toFixed(2)},${r.pCBS.toFixed(2)},${r.pRedCBS.toFixed(2)},${r.vCBS.toFixed(2)},${r.pIBS.toFixed(2)},${r.pRedIBS.toFixed(2)},${r.vIBS.toFixed(2)},${status}\n`;
+          csv += `${emitClean},${r.regimeDesc},'${r.chNFe},${r.nNF},${r.data},${prodClean},${r.ncm},${r.cfop},${r.cst},${r.cClassTrib},${r.vProd.toFixed(2)},${r.pCBS.toFixed(2)},${r.pRedCBS.toFixed(2)},${r.vCBS.toFixed(2)},${r.pIBS.toFixed(2)},${r.pRedIBS.toFixed(2)},${r.vIBS.toFixed(2)},${status}\n`;
         });
         const link = document.createElement("a");
         link.href = encodeURI(csv);
