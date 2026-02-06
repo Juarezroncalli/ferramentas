@@ -4,6 +4,40 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Extrator NFSe Turbo | V3</title>
+    <script>
+      // Desabilita o clique direito
+      document.addEventListener("contextmenu", (event) =>
+        event.preventDefault(),
+      );
+
+      // Desabilita atalhos de teclado comuns para desenvolvedores
+      document.onkeydown = function (e) {
+        // F12
+        if (e.keyCode == 123) {
+          return false;
+        }
+        // Ctrl+Shift+I (Inspecionar)
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 73) {
+          return false;
+        }
+        // Ctrl+Shift+J (Console)
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 74) {
+          return false;
+        }
+        // Ctrl+Shift+C (Inspecionar Elemento)
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 67) {
+          return false;
+        }
+        // Ctrl+U (Ver Código Fonte)
+        if (e.ctrlKey && e.keyCode == 85) {
+          return false;
+        }
+        // Ctrl+S (Salvar) - Opcional, para dificultar o download direto
+        if (e.ctrlKey && e.keyCode == 83) {
+          return false;
+        }
+      };
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -217,6 +251,18 @@
         >
           Dados Extraídos
         </div>
+        <div
+          id="totalDisplay"
+          class="status-bar"
+          style="
+            background: #fff;
+            color: #000;
+            border: 2px solid #000;
+            margin-top: 0;
+          "
+        >
+          TOTAL: R$ 0,00
+        </div>
       </header>
 
       <div class="upload-section">
@@ -256,6 +302,7 @@
               <th class="col-nfse">Nº NFSe</th>
               <th class="col-nome">Tomador (Nome Completo)</th>
               <th class="col-cnpj">CNPJ</th>
+              <th>Valor (R$)</th>
               <th>Descrição do Serviço</th>
             </tr>
           </thead>
@@ -319,7 +366,18 @@
               xmlDoc.getElementsByTagName("xDescServ")[0]?.textContent ||
               "Sem descrição";
 
-            const entry = { nNFSe, xNome, cnpj, xDescServ };
+            // Tentativa de extração de valor (vários padrões possíveis)
+            let valorRaw =
+              xmlDoc.getElementsByTagName("vtLiq")[0]?.textContent ||
+              xmlDoc.getElementsByTagName("vLiq")[0]?.textContent ||
+              xmlDoc.getElementsByTagName("vServ")[0]?.textContent ||
+              xmlDoc.getElementsByTagName("valor")[0]?.textContent ||
+              "0.00";
+
+            // Tratamento para converter string de valor para float
+            const valor = parseFloat(valorRaw.replace(",", ".")) || 0;
+
+            const entry = { nNFSe, xNome, cnpj, xDescServ, valor };
             extractedData.push(entry);
           } catch (err) {
             console.error("Erro no processamento:", err);
@@ -347,9 +405,14 @@
               <td class="col-nfse">${item.nNFSe}</td>
               <td class="full-text"><strong>${item.xNome}</strong></td>
               <td>${item.cnpj}</td>
+              <td>${item.valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</td>
               <td class="full-text">${item.xDescServ}</td>
             `;
         });
+
+        const total = data.reduce((acc, item) => acc + item.valor, 0);
+        document.getElementById("totalDisplay").innerText =
+          `TOTAL: ${total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}`;
 
         status.innerText = `${data.length} registros exibidos.`;
       }
@@ -381,6 +444,7 @@
           content += `Nº NOTA: ${item.nNFSe}\n`;
           content += `TOMADOR: ${item.xNome}\n`;
           content += `CNPJ:    ${item.cnpj}\n`;
+          content += `VALOR:   ${item.valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}\n`;
           content += `SERVIÇO: ${item.xDescServ}\n`;
           content += `----------------------------------------------------------------\n`;
         });
@@ -399,6 +463,7 @@
         document.getElementById("searchInput").value = "";
         document.getElementById("statusMsg").innerText =
           "Aguardando novos arquivos.";
+        document.getElementById("totalDisplay").innerText = "TOTAL: R$ 0,00";
       }
     </script>
   </body>
