@@ -379,7 +379,7 @@
                       Data: <span id="currentDate"></span> | Hora: <span id="currentTime"></span>
                     </p>
                     <p style="font-style: italic; font-size: 0.75rem; margin-top: 5px; background: #eee; padding: 5px; border: 1px solid #000;">
-                      Pauta Vigente: R$ 12,96 (Galão 20L)
+                      Pauta Vigente: R$ 13,35 (Galão 20L)
                     </p>
                 </div>
 
@@ -448,7 +448,7 @@
 
           // Cálculos (Lógica Original)
           const invoiceValueCents = toCents(invoiceValue);
-          const baseIcmsStCents = toCents(waterQuantity * 12.96);
+          const baseIcmsStCents = toCents(waterQuantity * 13.35);
           const reducedBaseIcmsStCents = Math.round(baseIcmsStCents * (1 - 0.6111));
           const icmsStCents = Math.round(reducedBaseIcmsStCents * 0.18);
           const reducedInvoiceValueCents = Math.round(invoiceValueCents * (1 - 0.6111));
