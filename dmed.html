@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Extrator NFSe - Juarez</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-body: #06b6d4;
+        --card-bg: #ffffff;
+        --border-black: #000000;
+        --color-primary: #8b5cf6;
+        --color-accent: #facc15;
+        --border-width: 3px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Space Grotesk", sans-serif;
+        background-color: var(--bg-body);
+        background-image:
+          linear-gradient(#fff 2px, transparent 2px),
+          linear-gradient(90deg, #fff 2px, transparent 2px);
+        background-size: 40px 40px;
+        color: var(--border-black);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      header {
+        background: var(--color-accent);
+        border: var(--border-width) solid var(--border-black);
+        padding: 20px;
+        box-shadow: 8px 8px 0 0 #000;
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-weight: 900;
+        font-size: 1.5rem;
+        text-transform: uppercase;
+      }
+
+      .upload-section {
+        background: var(--card-bg);
+        border: var(--border-width) solid var(--border-black);
+        padding: 30px;
+        box-shadow: 8px 8px 0 0 #000;
+        margin-bottom: 30px;
+        text-align: center;
+      }
+
+      input[type="file"] {
+        display: none;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 15px 25px;
+        background: var(--color-primary);
+        color: #fff;
+        border: var(--border-width) solid var(--border-black);
+        font-weight: bold;
+        text-transform: uppercase;
+        cursor: pointer;
+        box-shadow: 4px 4px 0 0 #000;
+        transition: 0.1s;
+        font-family: "Space Mono", monospace;
+      }
+
+      .btn:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 0 #000;
+      }
+      .btn:active {
+        transform: translate(2px, 2px);
+        box-shadow: 0 0 0 0 #000;
+      }
+      .btn-export {
+        background: #22c55e;
+        margin-top: 15px;
+        display: none;
+      }
+
+      .table-container {
+        background: #fff;
+        border: var(--border-width) solid var(--border-black);
+        box-shadow: 8px 8px 0 0 #000;
+        overflow-x: auto;
+        display: none;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: "Space Mono", monospace;
+      }
+
+      th {
+        background: var(--color-accent);
+        border-bottom: var(--border-width) solid var(--border-black);
+        padding: 15px;
+        text-align: left;
+        text-transform: uppercase;
+      }
+
+      td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      marquee {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        background: #000;
+        color: #fff;
+        padding: 5px;
+        font-family: "Space Mono", monospace;
+      }
+
+      .search-input {
+        padding: 10px;
+        width: 100%;
+        max-width: 400px;
+        border: var(--border-width) solid var(--border-black);
+        font-family: "Space Mono", monospace;
+        margin-top: 15px;
+        display: none; /* Initially hidden until data is loaded */
+        box-shadow: 4px 4px 0 0 #000;
+      }
+      .search-input:focus {
+        outline: none;
+        box-shadow: 6px 6px 0 0 #000;
+        transform: translate(-2px, -2px);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="logo"><i class="fas fa-file-invoice"></i> Extrator XML</div>
+        <div
+          class="slogan"
+          style="font-family: &quot;Space Mono&quot;; font-weight: 700"
+        >
+          Juarez, direto ao ponto.
+        </div>
+      </header>
+
+      <section class="upload-section">
+        <h2 style="margin-bottom: 20px">
+          Selecione o arquivo RPS/XML para extração
+        </h2>
+        <label for="xmlInput" class="btn"
+          ><i class="fas fa-upload"></i> Carregar XML</label
+        >
+        <input type="file" id="xmlInput" accept=".xml" />
+        <button id="exportBtn" class="btn btn-export">
+          <i class="fas fa-file-csv"></i> Exportar CSV
+        </button>
+        <br />
+        <input
+          type="text"
+          id="searchInput"
+          class="search-input"
+          placeholder="Filtrar resultados..."
+        />
+      </section>
+
+      <div class="table-container" id="tableContainer">
+        <table id="resultTable">
+          <thead>
+            <tr>
+              <th>Número</th>
+              <th>Emissão</th>
+              <th>Tomador (Razão Social)</th>
+              <th>Valor (R$)</th>
+              <th>Doc. Extraído (Discriminação)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <marquee>Feito por Juarez | Extração Automatizada de NFSe</marquee>
+
+    <script>
+      const xmlInput = document.getElementById("xmlInput");
+      const exportBtn = document.getElementById("exportBtn");
+      const tableContainer = document.getElementById("tableContainer");
+      const tbody = document.querySelector("#resultTable tbody");
+
+      xmlInput.addEventListener("change", function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const parser = new DOMParser();
+          const xmlDoc = parser.parseFromString(e.target.result, "text/xml");
+          processXML(xmlDoc);
+        };
+        reader.readAsText(file);
+      });
+
+      function processXML(xml) {
+        tbody.innerHTML = "";
+        // Ajustado para capturar tanto NFSe quanto RPS baseado no seu arquivo
+        const notas = xml.querySelectorAll("CompNfse, InfNfse");
+
+        notas.forEach((nota) => {
+          const numero = nota.querySelector("Numero")?.textContent || "N/A";
+          let dataRaw =
+            nota.querySelector("DataEmissao")?.textContent.split("T")[0] ||
+            "N/A";
+          let data = dataRaw;
+          if (dataRaw !== "N/A") {
+            data = dataRaw.split("-").reverse().join("/");
+          }
+          const razaoSocial =
+            nota.querySelector("TomadorServico RazaoSocial")?.textContent ||
+            "N/A";
+          const valor =
+            nota.querySelector("ValorServicos")?.textContent || "0.00";
+          const discriminacao =
+            nota.querySelector("Discriminacao")?.textContent || "";
+
+          // Mostrando a observação inteira (discriminação)
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+                    <td>${numero}</td>
+                    <td>${data}</td>
+                    <td>${razaoSocial}</td>
+                    <td>${valor}</td>
+                    <td style="color: var(--color-primary); font-weight: bold;">${discriminacao}</td>
+                `;
+          tbody.appendChild(tr);
+        });
+
+        tableContainer.style.display = "block";
+        exportBtn.style.display = "inline-block";
+
+        const searchInput = document.getElementById("searchInput");
+        searchInput.style.display = "inline-block";
+
+        searchInput.addEventListener("keyup", function () {
+          const filter = this.value.toLowerCase();
+          const rows = document.querySelectorAll("#resultTable tbody tr");
+
+          rows.forEach((row) => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(filter) ? "" : "none";
+          });
+        });
+      }
+
+      function extractInfo(text) {
+        // Regex para CPF (com ou sem pontos/traço) ou Data (DD/MM/AAAA ou DD/MM/AA)
+        const cpfRegex = /\b\?*(\d{3}\.?\d{3}\.?\d{3}-?\d{2})\b/;
+        const dataRegex = /\b(\d{2}\/\d{2}\/\d{2,4})\b/;
+
+        const cpfMatch = text.match(cpfRegex);
+        const dataMatch = text.match(dataRegex);
+
+        if (cpfMatch) return cpfMatch[1];
+        if (dataMatch) return dataMatch[1];
+        return "-";
+      }
+
+      exportBtn.addEventListener("click", function () {
+        let csv = "Numero;Emissao;RazaoSocial;Valor;Extraido\n";
+        const rows = document.querySelectorAll("#resultTable tr");
+
+        for (let i = 1; i < rows.length; i++) {
+          const cols = rows[i].querySelectorAll("td");
+          const rowData = Array.from(cols)
+            .map((c) => c.textContent)
+            .join(";");
+          csv += rowData + "\n";
+        }
+
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "extração_notas.csv");
+        link.style.visibility = "hidden";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+    </script>
+  </body>
+</html>

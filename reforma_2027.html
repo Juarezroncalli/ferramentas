@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auditoria Fiscal: Base Ajustada (PIS/COF/IPI)</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        /* --- LIGHT MODE --- */
+        --bg-app: #f4f5f8;
+        --bg-surface: #ffffff;
+        --border-subtle: #e6e8eb;
+        
+        --text-primary: #1a1d21;
+        --text-secondary: #5f6b7c;
+        
+        --tag-blue-bg: #e8f3ff;
+        --tag-blue-text: #0969da;
+        --tag-blue-border: #0969da;
+
+        --tag-purple-bg: #f0f0fe;
+        --tag-purple-text: #625bf6;
+        --tag-purple-border: #625bf6;
+        
+        --font-ui: "Inter", sans-serif;
+        --font-code: "JetBrains Mono", monospace;
+        
+        --row-hover: #f0f2f5;
+        --header-bg: #f9fafb;
+        --col-xml-bg: #f4f9ff;
+        --col-calc-bg: #f8f8ff;
+      }
+
+      /* --- DARK MODE --- */
+      [data-theme="dark"] {
+        --bg-app: #09090b;
+        --bg-surface: #18181b;
+        --border-subtle: #27272a;
+        --text-primary: #f4f4f5;
+        --text-secondary: #a1a1aa;
+        
+        --tag-blue-bg: rgba(9, 105, 218, 0.15);
+        --tag-blue-text: #38bdf8;
+        --tag-blue-border: #38bdf8;
+
+        --tag-purple-bg: rgba(98, 91, 246, 0.15);
+        --tag-purple-text: #818cf8;
+        --tag-purple-border: #818cf8;
+        
+        --row-hover: #27272a;
+        --header-bg: #18181b;
+        --col-xml-bg: rgba(9, 105, 218, 0.05);
+        --col-calc-bg: rgba(98, 91, 246, 0.05);
+      }
+
+      body {
+        font-family: var(--font-ui);
+        background: var(--bg-app);
+        margin: 0;
+        padding: 20px;
+        color: var(--text-primary);
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        transition: background 0.3s, color 0.3s;
+      }
+
+      .header {
+        display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+        background: var(--bg-surface); padding: 15px 20px; border-radius: 8px;
+        border: 1px solid var(--border-subtle); box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      }
+      .title h1 { font-size: 18px; font-weight: 700; margin: 0; }
+      .title p { font-size: 12px; color: var(--text-secondary); margin: 4px 0 0 0; }
+
+      .theme-btn {
+        background: transparent; border: 1px solid var(--border-subtle); color: var(--text-primary);
+        padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; margin-left: 15px;
+      }
+
+      .upload-container {
+        background: var(--bg-surface); border: 2px dashed var(--text-secondary); border-radius: 8px;
+        padding: 20px; text-align: center; margin-bottom: 20px; position: relative; cursor: pointer; transition: 0.2s; opacity: 0.8;
+      }
+      .upload-container:hover { border-color: var(--tag-purple-text); opacity: 1; }
+      .upload-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+
+      .table-wrapper {
+        flex: 1; overflow: auto; background: var(--bg-surface); border: 1px solid var(--border-subtle);
+        border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      }
+
+      table { width: 100%; border-collapse: collapse; font-size: 11px; min-width: 1400px; }
+      thead tr { background: var(--header-bg); }
+      th {
+        position: sticky; top: 0; z-index: 10; padding: 8px 10px; text-align: left; font-weight: 600;
+        border-bottom: 2px solid var(--border-subtle); color: var(--text-secondary); white-space: nowrap; background: var(--header-bg);
+      }
+      
+      th.group-prod { border-top: 3px solid var(--text-secondary); }
+      th.group-xml { background: var(--tag-blue-bg); color: var(--tag-blue-text); border-top: 3px solid var(--tag-blue-border); }
+      th.group-calc { background: var(--tag-purple-bg); color: var(--tag-purple-text); border-top: 3px solid var(--tag-purple-border); }
+
+      td { padding: 6px 10px; border-bottom: 1px solid var(--border-subtle); vertical-align: middle; color: var(--text-primary); }
+      tr:hover td { background: var(--row-hover); }
+
+      .mono { font-family: var(--font-code); font-size: 10px; }
+      .num { text-align: right; font-family: var(--font-code); }
+      .bold { font-weight: 700; }
+      
+      .val-blue { color: var(--tag-blue-text); font-weight: 600; }
+      .val-purple { color: var(--tag-purple-text); font-weight: 600; }
+      .val-zero { color: var(--text-secondary); opacity: 0.5; }
+
+      .badge-crt { display: inline-block; padding: 2px 4px; border-radius: 3px; font-size: 9px; font-weight: 700; }
+      .crt-3 { background: rgba(99, 102, 241, 0.2); color: #6366f1; border: 1px solid rgba(99, 102, 241, 0.4); }
+      .crt-1 { background: rgba(34, 197, 94, 0.2); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.4); }
+
+      ::-webkit-scrollbar { width: 8px; height: 8px; }
+      ::-webkit-scrollbar-track { background: var(--bg-app); }
+      ::-webkit-scrollbar-thumb { background: var(--text-secondary); border-radius: 4px; opacity: 0.5; }
+
+    </style>
+  </head>
+  <body>
+
+    <div class="header">
+      <div class="title">
+        <h1>Auditoria Fiscal XML <span style="font-weight:400; opacity:0.6">| Base Ajustada (Sem ICMS)</span></h1>
+        <p>A base de 2027 é obtida deduzindo PIS, COFINS e IPI do valor total do produto.</p>
+      </div>
+      <div style="display:flex; align-items:center">
+        <div style="text-align: right;">
+          <span style="font-size:10px; color:var(--text-secondary); display:block">CRÉDITO 2027</span>
+          <span id="totalProjected" style="font-size:20px; font-weight:700; color:var(--tag-purple-text); font-family:monospace">R$ 0,00</span>
+        </div>
+        <button class="theme-btn" id="themeToggle"><i class="fas fa-moon"></i></button>
+      </div>
+    </div>
+
+    <div class="upload-container">
+      <input type="file" class="upload-input" id="xmlInput" multiple accept=".xml, .zip" onchange="processarXMLs(this.files)">
+      <i class="fas fa-file-invoice-dollar" style="font-size: 24px; color: var(--text-secondary); margin-bottom: 10px;"></i>
+      <div style="font-weight: 600; color: var(--text-primary);">Carregar XMLs</div>
+      <div style="font-size: 11px; color: var(--text-secondary);">O sistema deduzirá PIS/COFINS/IPI da base de cálculo.</div>
+    </div>
+
+    <div class="table-wrapper">
+      <table id="auditTable">
+        <thead>
+          <tr>
+            <th colspan="3" class="group-prod" style="text-align:center">PRODUTO BRUTO</th>
+            <th colspan="4" class="group-xml" style="text-align:center">DEDUÇÕES (IMPOSTOS ATUAIS)</th>
+            <th colspan="4" class="group-calc" style="text-align:center">SIMULAÇÃO 2027 (BASE LÍQUIDA)</th>
+          </tr>
+          <tr>
+            <th>Fornecedor</th>
+            <th>Produto</th>
+            <th class="num">V.Prod<br>(Cheio)</th>
+            
+            <th class="num" style="background:var(--col-xml-bg)">Vl. PIS</th>
+            <th class="num" style="background:var(--col-xml-bg)">Vl. COF</th>
+            <th class="num" style="background:var(--col-xml-bg)">Vl. IPI</th>
+            <th class="num" style="background:var(--col-xml-bg); border-right:2px solid var(--tag-blue-border)">Total a<br>Deduzir</th>
+
+            <th class="num" style="background:var(--col-calc-bg)">Base Líq.<br><span style="font-size:9px">V.Prod - Ded.</span></th>
+            <th class="num" style="background:var(--col-calc-bg)">Aliq.<br>IVA</th>
+            <th class="num" style="background:var(--col-calc-bg)">Crédito<br>Projetado</th>
+            <th class="num" style="background:var(--col-calc-bg)">% Efet.<br><span style="font-size:9px">S/ Bruto</span></th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+
+    <script>
+      // THEME
+      const themeBtn = document.getElementById("themeToggle");
+      const savedTheme = localStorage.getItem("theme") || "light";
+      document.body.setAttribute("data-theme", savedTheme);
+      updateIcon(savedTheme);
+
+      themeBtn.addEventListener("click", () => {
+        const current = document.body.getAttribute("data-theme");
+        const newTheme = current === "dark" ? "light" : "dark";
+        document.body.setAttribute("data-theme", newTheme);
+        localStorage.setItem("theme", newTheme);
+        updateIcon(newTheme);
+      });
+
+      function updateIcon(theme) {
+        themeBtn.querySelector("i").className = theme === "dark" ? "fas fa-sun" : "fas fa-moon";
+      }
+
+      // UTILS
+      function formatMoney(val) { return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
+      function formatPercent(val) { return val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%'; }
+      function getTag(parent, name) { const el = parent.getElementsByTagName(name); return el.length ? el[0].textContent : null; }
+      function getFloat(parent, name) { const val = getTag(parent, name); return val ? parseFloat(val) : 0; }
+
+      // PROCESSAMENTO
+      async function processarXMLs(files) {
+        const tbody = document.querySelector("#auditTable tbody");
+        tbody.innerHTML = "<tr><td colspan='11' style='text-align:center; padding:20px; color:var(--text-secondary)'><i class='fas fa-spinner fa-spin'></i> Calculando bases...</td></tr>";
+
+        const rows = [];
+        let totalCredit = 0;
+        const parser = new DOMParser();
+
+        for (let i = 0; i < files.length; i++) {
+          let text = "";
+          try {
+            if (files[i].name.endsWith(".xml")) text = await files[i].text();
+            else if (files[i].name.endsWith(".zip")) {
+               const zip = await JSZip.loadAsync(files[i]);
+               const keys = Object.keys(zip.files);
+               for(const key of keys) { if(key.toLowerCase().endsWith(".xml")) text += await zip.files[key].async("string"); }
+            }
+          } catch(e) { console.error(e); continue; }
+
+          const matches = text.match(/<infNFe.*?<\/infNFe>/gs) || [];
+
+          matches.forEach(xmlStr => {
+            try {
+              const doc = parser.parseFromString("<nfeProc>" + xmlStr + "</nfeProc>", "text/xml");
+              
+              const emit = doc.getElementsByTagName("emit")[0];
+              if(!emit) return;
+              const xNome = getTag(emit, "xNome") || "Desconhecido";
+              const crt = getTag(emit, "CRT"); // 3=Normal
+
+              const dets = doc.getElementsByTagName("det");
+              
+              for(let k=0; k<dets.length; k++) {
+                const det = dets[k];
+                const prod = det.getElementsByTagName("prod")[0];
+                const imposto = det.getElementsByTagName("imposto")[0];
+
+                const xProd = getTag(prod, "xProd");
+                const vProd = getFloat(prod, "vProd");
+                
+                // 1. Extrair PIS/COFINS/IPI
+                let vPIS = 0, vCOFINS = 0, vIPI = 0;
+
+                const tagPIS = imposto.getElementsByTagName("PIS")[0];
+                if(tagPIS && tagPIS.children.length) vPIS = getFloat(tagPIS.children[0], "vPIS");
+                
+                const tagCOFINS = imposto.getElementsByTagName("COFINS")[0];
+                if(tagCOFINS && tagCOFINS.children.length) vCOFINS = getFloat(tagCOFINS.children[0], "vCOFINS");
+
+                const tagIPI = imposto.getElementsByTagName("IPI")[0];
+                if(tagIPI) {
+                    const ipiTrib = tagIPI.getElementsByTagName("IPITrib")[0];
+                    if(ipiTrib) vIPI = getFloat(ipiTrib, "vIPI");
+                }
+
+                // DEDUÇÃO APENAS DESTES 3
+                const totalDeduzir = vPIS + vCOFINS + vIPI;
+
+                // 2. Cálculo Base Líquida
+                let baseLiquida = 0;
+                let credito2027 = 0;
+                let aliqIVA = 26.5;
+
+                if (crt === "3") {
+                    // vProd - (PIS+COF+IPI)
+                    baseLiquida = Math.max(0, vProd - totalDeduzir);
+                    credito2027 = baseLiquida * (aliqIVA / 100);
+                }
+
+                totalCredit += credito2027;
+
+                // Efetiva
+                const efetiva = vProd > 0 ? (credito2027 / vProd) * 100 : 0;
+
+                rows.push({
+                    emit: xNome,
+                    crt: crt,
+                    prod: xProd,
+                    vProd: vProd,
+                    vPIS: vPIS,
+                    vCOFINS: vCOFINS,
+                    vIPI: vIPI,
+                    totalDeduzir: totalDeduzir,
+                    baseLiquida: baseLiquida,
+                    credito2027: credito2027,
+                    efetiva: efetiva
+                });
+              }
+            } catch(err) { console.error(err); }
+          });
+        }
+
+        renderTable(rows);
+        document.getElementById("totalProjected").innerText = formatMoney(totalCredit);
+      }
+
+      function renderTable(rows) {
+        const tbody = document.querySelector("#auditTable tbody");
+        tbody.innerHTML = "";
+        const limit = 300; 
+        
+        rows.slice(0, limit).forEach(r => {
+            const tr = document.createElement("tr");
+
+            const crtBadge = r.crt === "3" 
+                ? `<span class='badge-crt crt-3'>NORMAL</span>` 
+                : `<span class='badge-crt crt-1'>SIMPLES</span>`;
+
+            // Formatação
+            const showPIS = r.vPIS > 0 ? formatMoney(r.vPIS) : "<span class='val-zero'>-</span>";
+            const showCOF = r.vCOFINS > 0 ? formatMoney(r.vCOFINS) : "<span class='val-zero'>-</span>";
+            const showIPI = r.vIPI > 0 ? formatMoney(r.vIPI) : "<span class='val-zero'>-</span>";
+            
+            const classCredito = r.credito2027 > 0 ? "val-purple bold" : "val-zero";
+
+            tr.innerHTML = `
+                <td>
+                    <div style="font-weight:600; font-size:10px">${r.emit.substring(0,20)}</div>
+                    ${crtBadge}
+                </td>
+                <td title="${r.prod}">
+                    <div style="width:180px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${r.prod}</div>
+                </td>
+                <td class="num bold">${formatMoney(r.vProd)}</td>
+
+                <td class="num mono" style="background:var(--col-xml-bg)">${showPIS}</td>
+                <td class="num mono" style="background:var(--col-xml-bg)">${showCOF}</td>
+                <td class="num mono" style="background:var(--col-xml-bg)">${showIPI}</td>
+                <td class="num mono bold" style="background:var(--col-xml-bg); color:var(--tag-blue-text); border-right:2px solid var(--tag-blue-border)">
+                    -${formatMoney(r.totalDeduzir)}
+                </td>
+
+                <td class="num mono bold" style="background:var(--col-calc-bg)">${formatMoney(r.baseLiquida)}</td>
+                <td class="num mono" style="background:var(--col-calc-bg)">26,50%</td>
+                <td class="num ${classCredito}" style="background:var(--col-calc-bg)">${formatMoney(r.credito2027)}</td>
+                <td class="num mono" style="background:var(--col-calc-bg); font-size:9px; color:var(--text-secondary)">${formatPercent(r.efetiva)} ef.</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        if(rows.length > limit) tbody.insertAdjacentHTML('beforeend', `<tr><td colspan="11" style="text-align:center; padding:10px; font-style:italic">... mostrando ${limit} de ${rows.length} itens ...</td></tr>`);
+        if(rows.length === 0) tbody.innerHTML = "<tr><td colspan='11' style='text-align:center; padding:20px; color:var(--text-secondary)'>Aguardando arquivos XML...</td></tr>";
+      }
+    </script>
+  </body>
+</html>
