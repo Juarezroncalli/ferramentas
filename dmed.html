@@ -398,8 +398,12 @@
           const rows = document.querySelectorAll("#resultTable tbody tr");
 
           rows.forEach((row) => {
-            const text = row.textContent.toLowerCase();
-            row.style.display = text.includes(filter) ? "" : "none";
+            // Busca apenas na coluna Discriminação (índice 7)
+            const discriminacaoCell = row.querySelectorAll("td")[7];
+            if (discriminacaoCell) {
+              const text = discriminacaoCell.textContent.toLowerCase();
+              row.style.display = text.includes(filter) ? "" : "none";
+            }
           });
         });
       }
