@@ -20,6 +20,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
       :root {
@@ -751,9 +752,9 @@
           class="nav-item"
           id="btnExportSidebar"
           style="display: none"
-          onclick="exportToCSV()"
+          onclick="exportToExcel()"
         >
-          <i class="fas fa-file-csv"></i> <span>Exportar CSV</span>
+          <i class="fas fa-file-excel"></i> <span>Exportar Excel</span>
         </div>
         <div
           class="nav-item"
@@ -1244,40 +1245,82 @@
         document.body.classList.remove("print-marked-only");
       }
 
-      function exportToCSV() {
-        let csv =
-          "Marcado;Numero;Emissao;RazaoSocial;CPF/CNPJ;Tipo;Valor;Extraido\n";
+      function exportToExcel() {
+        // Função para normalizar texto: remove quebras de linha e caracteres estranhos
+        // Isso garante que a discriminação não quebre linhas ou colunas no Excel
+        const cleanText = (text) => {
+          if (!text) return "";
+          return text
+            .replace(/[\r\n]+/g, " ") // Troca quebras de linha por espaço
+            .replace(/\s+/g, " ") // Remove espaços múltiplos
+            .trim();
+        };
+
+        // Coleta dados
+        const data = [];
+        // Cabeçalho
+        data.push([
+          "Marcado",
+          "Número",
+          "Emissão",
+          "Razão Social",
+          "CPF/CNPJ",
+          "Tipo",
+          "Valor (R$)",
+          "Discriminação",
+        ]);
+
         const rows = document.querySelectorAll("#resultTable tbody tr");
 
         rows.forEach((row) => {
           if (row.style.display === "none") return;
 
-          const isMarked = row.classList.contains("marked-row") ? "Sim" : "Nao";
           const cols = row.querySelectorAll("td");
+          const isMarked = row.classList.contains("marked-row") ? "Sim" : "Não";
 
-          const rowData = [
+          const numero = cols[1].innerText.trim();
+          const emissao = cols[2].innerText.trim();
+          const razao = cols[3].innerText.trim();
+          const doc = cols[4].innerText.trim();
+          const tipo = cols[5].innerText.trim();
+          const valor = cols[6].innerText.trim();
+
+          // Aplica a limpeza na discriminação para evitar "cortes" ou quebras de linha
+          const discriminacao = cleanText(cols[7].textContent);
+
+          data.push([
             isMarked,
-            cols[1].textContent,
-            cols[2].textContent,
-            cols[3].textContent,
-            cols[4].textContent,
-            cols[5].textContent,
-            cols[6].textContent,
-            cols[7].textContent,
-          ].join(";");
-
-          csv += rowData + "\n";
+            numero,
+            emissao,
+            razao,
+            doc,
+            tipo,
+            valor,
+            discriminacao,
+          ]);
         });
 
-        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-        const link = document.createElement("a");
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute("download", "extração_notas.csv");
-        link.style.visibility = "hidden";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        // Cria Workbook e Worksheet
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(data);
+
+        // Ajusta largura das colunas
+        const wscols = [
+          { wch: 8 }, // Marcado
+          { wch: 10 }, // Numero
+          { wch: 12 }, // Emissao
+          { wch: 30 }, // Razao
+          { wch: 18 }, // Doc
+          { wch: 10 }, // Tipo
+          { wch: 15 }, // Valor
+          { wch: 50 }, // Discriminacao
+        ];
+        ws["!cols"] = wscols;
+
+        XLSX.utils.book_append_sheet(wb, ws, "Extração");
+
+        // Salva o arquivo
+        XLSX.writeFile(wb, "extracao_notas.xlsx");
       }
 
       function limparSessao() {
