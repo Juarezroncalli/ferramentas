@@ -1020,6 +1020,21 @@
           return "";
         };
 
+        // Ordenação das notas por DATA (Menor para Maior)
+        notas.sort((a, b) => {
+          let dateA =
+            getText(a, ["DataEmissao", "dCompet", "Data", "dhEmi"]) || "";
+          let dateB =
+            getText(b, ["DataEmissao", "dCompet", "Data", "dhEmi"]) || "";
+
+          // Normaliza formato ISO (YYYY-MM-DD) removendo hora se houver
+          if (dateA.includes("T")) dateA = dateA.split("T")[0];
+          if (dateB.includes("T")) dateB = dateB.split("T")[0];
+
+          // Comparação de string funciona bem para YYYY-MM-DD
+          return dateA.localeCompare(dateB);
+        });
+
         let totalNotasCount = 0;
         let totalValorSum = 0;
         let uniqueTomadores = new Set();
