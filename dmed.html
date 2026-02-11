@@ -301,13 +301,22 @@
             nota.querySelector("TomadorServico RazaoSocial")?.textContent ||
             "N/A";
 
-          const tomadorCpf =
-            nota.querySelector("TomadorServico Cpf")?.textContent;
-          const tomadorCnpj = nota.querySelector(
-            "TomadorServico Cnpj",
-          )?.textContent;
+          const cpfElement = nota.querySelector("TomadorServico Cpf");
+          const cnpjElement = nota.querySelector("TomadorServico Cnpj");
+
+          // Verifica se existe e remove espaços em branco (evita tags vazias com espaço)
+          const tomadorCpf = cpfElement ? cpfElement.textContent.trim() : "";
+          const tomadorCnpj = cnpjElement ? cnpjElement.textContent.trim() : "";
+
           const tomadorDoc = tomadorCpf || tomadorCnpj || "N/A";
-          const tipoDoc = tomadorCpf ? "CPF" : tomadorCnpj ? "CNPJ" : "OUTRO";
+
+          // Define tipo com prioridade correta
+          let tipoDoc = "OUTRO";
+          if (tomadorCpf.length > 0) {
+            tipoDoc = "CPF";
+          } else if (tomadorCnpj.length > 0) {
+            tipoDoc = "CNPJ";
+          }
 
           const valor =
             nota.querySelector("ValorServicos")?.textContent || "0.00";
