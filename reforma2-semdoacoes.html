@@ -1045,129 +1045,6 @@
       .status-safe-pulse {
         animation: statusPulse 2.5s ease-in-out infinite;
       }
-
-      /* --- NOVO ESTILO: BALÃO DE DOAÇÃO COM TEXTO (PÍLULA) --- */
-      .donation-float-btn {
-        position: fixed;
-        bottom: 50px; /* Acima do rodapé fixo */
-        right: 24px;
-        /* Alterado para largura automática e padding para caber o texto */
-        width: auto;
-        height: 40px;
-        padding: 0 16px;
-        border-radius: 30px; /* Pílula */
-        
-        background: var(--bg-surface);
-        border: 1px solid var(--border-focus); /* Roxo destaque */
-        box-shadow: var(--shadow-float);
-        
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px; /* Espaço entre icone e texto */
-        
-        cursor: pointer;
-        z-index: 1000;
-        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-        color: var(--data-purple);
-        
-        font-family: var(--font-ui);
-        font-weight: 600;
-        font-size: 12px;
-      }
-      
-      .donation-float-btn:hover {
-        transform: scale(1.05);
-        background: var(--data-purple);
-        color: #fff;
-      }
-      
-      /* Animação sutil no coração */
-      @keyframes heartBeat {
-        0% { transform: scale(1); }
-        14% { transform: scale(1.1); }
-        28% { transform: scale(1); }
-        42% { transform: scale(1.1); }
-        70% { transform: scale(1); }
-      }
-      
-      .donation-float-btn i.fa-heart {
-        animation: heartBeat 3s infinite;
-      }
-      .donation-float-btn:hover i.fa-heart {
-        animation: none; /* Para no hover */
-      }
-      
-      .donation-popover {
-        position: fixed;
-        bottom: 105px;
-        right: 24px;
-        width: 280px;
-        background: var(--bg-surface);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
-        box-shadow: var(--shadow-float);
-        padding: 16px;
-        z-index: 1000;
-        opacity: 0;
-        pointer-events: none;
-        transform: translateY(10px);
-        transition: all 0.2s ease;
-      }
-      .donation-popover.active {
-        opacity: 1;
-        pointer-events: auto;
-        transform: translateY(0);
-      }
-      .donation-popover h4 {
-        margin: 0 0 8px 0;
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--text-primary);
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-      .donation-popover p {
-        font-size: 11px;
-        color: var(--text-secondary);
-        margin-bottom: 12px;
-        line-height: 1.4;
-      }
-      .pix-key-display {
-        background: var(--bg-panel);
-        border: 1px dashed var(--border-dashed);
-        padding: 8px;
-        font-family: var(--font-code);
-        font-size: 10px;
-        color: var(--text-tertiary);
-        border-radius: var(--radius-sm);
-        margin-bottom: 12px;
-        word-break: break-all;
-        text-align: center;
-      }
-      .btn-donate-action {
-        width: 100%;
-        background: var(--data-purple);
-        color: #fff;
-        border: none;
-        border-radius: var(--radius-sm);
-        height: 30px;
-        font-size: 11px;
-        font-weight: 600;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        transition: background 0.2s;
-      }
-      .btn-donate-action:hover {
-        filter: brightness(1.1);
-      }
-      .btn-donate-action:active {
-        transform: scale(0.98);
-      }
     </style>
   </head>
   <body>
@@ -1520,23 +1397,7 @@
         </div>
       </div>
     </main>
-    
-    <div class="donation-popover" id="donationPopover">
-      <h4><i class="fas fa-mug-hot" style="color:var(--data-orange)"></i> Café do Desenvolvedor</h4>
-      <p>Este sistema é gratuito e seguro. Contribua via Pix para mantermos as atualizações.</p>
-      
-      <div class="pix-key-display" id="pixKeyContainer">
-        </div>
-      
-      <button class="btn-donate-action" onclick="copiarPixKey()">
-        <i class="fas fa-copy"></i> Copiar Chave Aleatória
-      </button>
-    </div>
 
-    <button class="donation-float-btn" onclick="toggleDonationWidget()">
-      <i class="fas fa-heart" id="iconDonate"></i>
-      <span>Doações</span>
-    </button>
     <script>
       // Theme Management Module
       const themeToggleBtn = document.getElementById("themeToggle");
@@ -2103,61 +1964,6 @@
         link.click();
         document.body.removeChild(link);
       }
-      
-      // ============================================
-      // WIDGET DOAÇÃO - SCRIPT
-      // ============================================
-      const MY_PIX_KEY = "553a7d69-3f85-4f42-a8b0-267a6f136fa1"; // SUBSTITUA PELA SUA CHAVE
-      
-      // Inicializar visualização da chave (truncada)
-      const containerPix = document.getElementById("pixKeyContainer");
-      if(containerPix) {
-        containerPix.innerText = MY_PIX_KEY.substring(0, 32) + "...";
-      }
-
-      function toggleDonationWidget() {
-        const popover = document.getElementById("donationPopover");
-        const icon = document.getElementById("iconDonate");
-        
-        if (popover.classList.contains("active")) {
-          popover.classList.remove("active");
-          icon.classList.remove("fa-times");
-          icon.classList.add("fa-heart");
-        } else {
-          popover.classList.add("active");
-          icon.classList.remove("fa-heart");
-          icon.classList.add("fa-times");
-        }
-      }
-
-      function copiarPixKey() {
-        navigator.clipboard.writeText(MY_PIX_KEY).then(() => {
-          const btn = document.querySelector(".btn-donate-action");
-          const originalHTML = btn.innerHTML;
-          
-          btn.style.background = "var(--data-green)";
-          btn.innerHTML = `<i class="fas fa-check"></i> Copiado!`;
-          
-          setTimeout(() => {
-            btn.style.background = ""; // Volta ao padrão
-            btn.innerHTML = originalHTML;
-            // Opcional: fechar após copiar
-            // toggleDonationWidget(); 
-          }, 2000);
-        });
-      }
-
-      // Fechar se clicar fora
-      document.addEventListener('click', function(event) {
-        const popover = document.getElementById("donationPopover");
-        const btn = document.querySelector(".donation-float-btn");
-        
-        if (!popover || !btn) return;
-        
-        if (!popover.contains(event.target) && !btn.contains(event.target) && popover.classList.contains("active")) {
-          toggleDonationWidget();
-        }
-      });
     </script>
   </body>
 </html>
