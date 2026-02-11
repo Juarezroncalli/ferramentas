@@ -162,6 +162,20 @@
         box-shadow: 6px 6px 0 0 #000;
         transform: translate(-2px, -2px);
       }
+
+      .filter-group {
+        margin-top: 15px;
+        display: none;
+      }
+      .filter-btn {
+        margin-right: 10px;
+        background: #fff;
+        color: var(--border-black);
+      }
+      .filter-btn.active {
+        background: var(--color-primary);
+        color: #fff;
+      }
     </style>
   </head>
   <body>
@@ -194,6 +208,11 @@
           class="search-input"
           placeholder="Filtrar resultados..."
         />
+        <div class="filter-group" id="filterGroup">
+          <button class="btn filter-btn active" data-filter="all">Todos</button>
+          <button class="btn filter-btn" data-filter="cpf">CPF</button>
+          <button class="btn filter-btn" data-filter="cnpj">CNPJ</button>
+        </div>
       </section>
 
       <div class="table-container" id="tableContainer">
@@ -203,6 +222,8 @@
               <th>Número</th>
               <th>Emissão</th>
               <th>Tomador (Razão Social)</th>
+              <th>CPF/CNPJ</th>
+              <th>Tipo</th>
               <th>Valor (R$)</th>
               <th>Doc. Extraído (Discriminação)</th>
             </tr>
@@ -250,6 +271,15 @@
           const razaoSocial =
             nota.querySelector("TomadorServico RazaoSocial")?.textContent ||
             "N/A";
+
+          const tomadorCpf =
+            nota.querySelector("TomadorServico Cpf")?.textContent;
+          const tomadorCnpj = nota.querySelector(
+            "TomadorServico Cnpj",
+          )?.textContent;
+          const tomadorDoc = tomadorCpf || tomadorCnpj || "N/A";
+          const tipoDoc = tomadorCpf ? "CPF" : tomadorCnpj ? "CNPJ" : "OUTRO";
+
           const valor =
             nota.querySelector("ValorServicos")?.textContent || "0.00";
           const discriminacao =
@@ -261,9 +291,12 @@
                     <td>${numero}</td>
                     <td>${data}</td>
                     <td>${razaoSocial}</td>
+                    <td>${tomadorDoc}</td>
+                    <td>${tipoDoc}</td>
                     <td>${valor}</td>
                     <td style="color: var(--color-primary); font-weight: bold;">${discriminacao}</td>
                 `;
+          tr.dataset.type = tipoDoc.toLowerCase(); // Store type for filtering
           tbody.appendChild(tr);
         });
 
@@ -272,6 +305,33 @@
 
         const searchInput = document.getElementById("searchInput");
         searchInput.style.display = "inline-block";
+
+        const filterGroup = document.getElementById("filterGroup");
+        filterGroup.style.display = "block";
+
+        // Setup filters
+        const filterBtns = document.querySelectorAll(".filter-btn");
+        filterBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            // Remove active class from all
+            filterBtns.forEach((b) => b.classList.remove("active"));
+            // Add to clicked
+            btn.classList.add("active");
+
+            const filter = btn.dataset.filter;
+            const rows = document.querySelectorAll("#resultTable tbody tr");
+
+            rows.forEach((row) => {
+              const rowType = row.dataset.type; // 'cpf', 'cnpj', or 'outro'
+              if (filter === "all") {
+                row.style.display = "";
+              } else {
+                // Strict check: if filter is 'cpf', verify rowType is 'cpf'
+                row.style.display = rowType === filter ? "" : "none";
+              }
+            });
+          });
+        });
 
         searchInput.addEventListener("keyup", function () {
           const filter = this.value.toLowerCase();
@@ -298,10 +358,11 @@
       }
 
       exportBtn.addEventListener("click", function () {
-        let csv = "Numero;Emissao;RazaoSocial;Valor;Extraido\n";
+        let csv = "Numero;Emissao;RazaoSocial;CPF/CNPJ;Tipo;Valor;Extraido\n";
         const rows = document.querySelectorAll("#resultTable tr");
 
         for (let i = 1; i < rows.length; i++) {
+          if (rows[i].style.display === "none") continue; // Export only visible rows
           const cols = rows[i].querySelectorAll("td");
           const rowData = Array.from(cols)
             .map((c) => c.textContent)
