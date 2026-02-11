@@ -176,6 +176,30 @@
         background: var(--color-primary);
         color: #fff;
       }
+
+      .marked-row {
+        background-color: #dbeafe !important; /* Azul claro suave */
+      }
+
+      .mark-btn {
+        background: #fff;
+        border: 2px solid var(--border-black);
+        border-radius: 4px;
+        cursor: pointer;
+        padding: 5px 8px;
+        transition: 0.2s;
+        box-shadow: 2px 2px 0 0 #000;
+      }
+
+      .mark-btn:hover {
+        transform: translate(-1px, -1px);
+        box-shadow: 3px 3px 0 0 #000;
+      }
+
+      .mark-btn.active {
+        background: #22c55e;
+        color: white;
+      }
     </style>
   </head>
   <body>
@@ -219,6 +243,7 @@
         <table id="resultTable">
           <thead>
             <tr>
+              <th><i class="fas fa-check-square"></i></th>
               <th>Número</th>
               <th>Emissão</th>
               <th>Tomador (Razão Social)</th>
@@ -257,7 +282,11 @@
       function processXML(xml) {
         tbody.innerHTML = "";
         // Ajustado para capturar tanto NFSe quanto RPS baseado no seu arquivo
-        const notas = xml.querySelectorAll("CompNfse, InfNfse");
+        // Ajustado para capturar tanto NFSe quanto RPS sem duplicidade
+        let notas = xml.querySelectorAll("InfNfse");
+        if (notas.length === 0) {
+          notas = xml.querySelectorAll("CompNfse");
+        }
 
         notas.forEach((nota) => {
           const numero = nota.querySelector("Numero")?.textContent || "N/A";
@@ -285,9 +314,21 @@
           const discriminacao =
             nota.querySelector("Discriminacao")?.textContent || "";
 
-          // Mostrando a observação inteira (discriminação)
+          // Identificador único para a nota (usando o número)
+          const rowId = `marked_nfse_${numero}`;
+          const isMarked = localStorage.getItem(rowId) === "true";
+
           const tr = document.createElement("tr");
+          if (isMarked) {
+            tr.classList.add("marked-row");
+          }
+
           tr.innerHTML = `
+                    <td>
+                        <button class="mark-btn ${isMarked ? "active" : ""}">
+                            <i class="fas fa-check"></i>
+                        </button>
+                    </td>
                     <td>${numero}</td>
                     <td>${data}</td>
                     <td>${razaoSocial}</td>
@@ -296,7 +337,26 @@
                     <td>${valor}</td>
                     <td style="color: var(--color-primary); font-weight: bold;">${discriminacao}</td>
                 `;
-          tr.dataset.type = tipoDoc.toLowerCase(); // Store type for filtering
+          tr.dataset.type = tipoDoc.toLowerCase();
+          tr.dataset.rowId = rowId; // Store ID for click handler
+
+          // Add event listener for the mark button
+          const markBtn = tr.querySelector(".mark-btn");
+          markBtn.addEventListener("click", function (e) {
+            e.stopPropagation(); // Prevent potentially other row clicks if added later
+            const isNowMarked = !tr.classList.contains("marked-row");
+
+            if (isNowMarked) {
+              tr.classList.add("marked-row");
+              this.classList.add("active");
+              localStorage.setItem(rowId, "true");
+            } else {
+              tr.classList.remove("marked-row");
+              this.classList.remove("active");
+              localStorage.removeItem(rowId);
+            }
+          });
+
           tbody.appendChild(tr);
         });
 
@@ -358,15 +418,31 @@
       }
 
       exportBtn.addEventListener("click", function () {
-        let csv = "Numero;Emissao;RazaoSocial;CPF/CNPJ;Tipo;Valor;Extraido\n";
+        let csv =
+          "Marcado;Numero;Emissao;RazaoSocial;CPF/CNPJ;Tipo;Valor;Extraido\n";
         const rows = document.querySelectorAll("#resultTable tr");
 
         for (let i = 1; i < rows.length; i++) {
           if (rows[i].style.display === "none") continue; // Export only visible rows
+
+          const isMarked = rows[i].classList.contains("marked-row")
+            ? "Sim"
+            : "Nao";
+          // Start from 2nd cell (skipping button cell) but include mark status manually
           const cols = rows[i].querySelectorAll("td");
-          const rowData = Array.from(cols)
-            .map((c) => c.textContent)
-            .join(";");
+          // cols[0] is button, cols[1] is Numero...
+
+          const rowData = [
+            isMarked,
+            cols[1].textContent,
+            cols[2].textContent,
+            cols[3].textContent,
+            cols[4].textContent,
+            cols[5].textContent,
+            cols[6].textContent,
+            cols[7].textContent,
+          ].join(";");
+
           csv += rowData + "\n";
         }
 
