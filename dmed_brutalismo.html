@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Extrator NFSe - J.Roncalli</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-body: #06b6d4;
+        --card-bg: #ffffff;
+        --border-black: #000000;
+        --color-primary: #8b5cf6;
+        --color-accent: #facc15;
+        --border-width: 3px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Space Grotesk", sans-serif;
+        background-color: var(--bg-body);
+        background-image:
+          linear-gradient(#fff 2px, transparent 2px),
+          linear-gradient(90deg, #fff 2px, transparent 2px);
+        background-size: 40px 40px;
+        color: var(--border-black);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      header {
+        background: var(--color-accent);
+        border: var(--border-width) solid var(--border-black);
+        padding: 20px;
+        box-shadow: 8px 8px 0 0 #000;
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-weight: 900;
+        font-size: 1.5rem;
+        text-transform: uppercase;
+      }
+
+      .upload-section {
+        background: var(--card-bg);
+        border: var(--border-width) solid var(--border-black);
+        padding: 30px;
+        box-shadow: 8px 8px 0 0 #000;
+        margin-bottom: 30px;
+        text-align: center;
+      }
+
+      input[type="file"] {
+        display: none;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 15px 25px;
+        background: var(--color-primary);
+        color: #fff;
+        border: var(--border-width) solid var(--border-black);
+        font-weight: bold;
+        text-transform: uppercase;
+        cursor: pointer;
+        box-shadow: 4px 4px 0 0 #000;
+        transition: 0.1s;
+        font-family: "Space Mono", monospace;
+      }
+
+      .btn:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 0 #000;
+      }
+      .btn:active {
+        transform: translate(2px, 2px);
+        box-shadow: 0 0 0 0 #000;
+      }
+      .btn-export {
+        background: #22c55e;
+        margin-top: 15px;
+        display: none;
+      }
+
+      .table-container {
+        background: #fff;
+        border: var(--border-width) solid var(--border-black);
+        box-shadow: 8px 8px 0 0 #000;
+        overflow-x: auto;
+        display: none;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: "Space Mono", monospace;
+      }
+
+      th {
+        background: var(--color-accent);
+        border-bottom: var(--border-width) solid var(--border-black);
+        padding: 15px;
+        text-align: left;
+        text-transform: uppercase;
+      }
+
+      td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      marquee {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        background: #000;
+        color: #fff;
+        padding: 5px;
+        font-family: "Space Mono", monospace;
+      }
+
+      .search-input {
+        padding: 10px;
+        width: 100%;
+        max-width: 400px;
+        border: var(--border-width) solid var(--border-black);
+        font-family: "Space Mono", monospace;
+        margin-top: 15px;
+        display: none; /* Initially hidden until data is loaded */
+        box-shadow: 4px 4px 0 0 #000;
+      }
+      .search-input:focus {
+        outline: none;
+        box-shadow: 6px 6px 0 0 #000;
+        transform: translate(-2px, -2px);
+      }
+
+      .filter-group {
+        margin-top: 15px;
+        display: none;
+      }
+      .filter-btn {
+        margin-right: 10px;
+        background: #fff;
+        color: var(--border-black);
+      }
+      .filter-btn.active {
+        background: var(--color-primary);
+        color: #fff;
+      }
+
+      .marked-row {
+        background-color: #dbeafe !important; /* Azul claro suave */
+      }
+
+      .mark-btn {
+        background: #fff;
+        border: 2px solid var(--border-black);
+        border-radius: 4px;
+        cursor: pointer;
+        padding: 5px 8px;
+        transition: 0.2s;
+        box-shadow: 2px 2px 0 0 #000;
+      }
+
+      .mark-btn:hover {
+        transform: translate(-1px, -1px);
+        box-shadow: 3px 3px 0 0 #000;
+      }
+
+      .mark-btn.active {
+        background: #22c55e;
+        color: white;
+      }
+
+      @media print {
+        .no-print,
+        .upload-section,
+        header,
+        marquee {
+          display: none !important;
+        }
+        .container {
+          width: 100%;
+          max-width: none;
+          padding: 0;
+          margin: 0;
+        }
+        table {
+          font-size: 10px;
+        }
+        /* Se a classe print-marked estiver no body, esconde as não marcadas */
+        body.print-marked-only tbody tr:not(.marked-row) {
+          display: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="logo"><i class="fas fa-file-invoice"></i> Extrator XML</div>
+        <div
+          class="slogan"
+          style="font-family: &quot;Space Mono&quot;; font-weight: 700"
+        >
+          J.Roncalli, direto ao ponto.
+        </div>
+      </header>
+
+      <section class="upload-section">
+        <h2 style="margin-bottom: 20px">
+          Selecione o arquivo RPS/XML para extração
+        </h2>
+        <label for="xmlInput" class="btn"
+          ><i class="fas fa-upload"></i> Carregar XML</label
+        >
+        <input type="file" id="xmlInput" accept=".xml" />
+        <button id="exportBtn" class="btn btn-export">
+          <i class="fas fa-file-csv"></i> Exportar CSV
+        </button>
+        <button
+          id="printMarkedBtn"
+          class="btn"
+          style="background: #e11d48; margin-left: 10px; display: none"
+        >
+          <i class="fas fa-print"></i> Imprimir Marcados
+        </button>
+        <br />
+        <input
+          type="text"
+          id="searchInput"
+          class="search-input"
+          placeholder="Filtrar resultados..."
+        />
+        <div class="filter-group" id="filterGroup">
+          <button class="btn filter-btn active" data-filter="all">Todos</button>
+          <button class="btn filter-btn" data-filter="cpf">CPF</button>
+          <button class="btn filter-btn" data-filter="cnpj">CNPJ</button>
+        </div>
+      </section>
+
+      <div class="table-container" id="tableContainer">
+        <table id="resultTable">
+          <thead>
+            <tr>
+              <th><i class="fas fa-check-square"></i></th>
+              <th>Número</th>
+              <th>Emissão</th>
+              <th>Tomador (Razão Social)</th>
+              <th>CPF/CNPJ</th>
+              <th>Tipo</th>
+              <th>Valor (R$)</th>
+              <th>Doc. Extraído (Discriminação)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <marquee>Feito por J.Roncalli | Extração Automatizada de NFSe</marquee>
+
+    <script>
+      const xmlInput = document.getElementById("xmlInput");
+      const exportBtn = document.getElementById("exportBtn");
+      const tableContainer = document.getElementById("tableContainer");
+      const tbody = document.querySelector("#resultTable tbody");
+
+      xmlInput.addEventListener("change", function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const parser = new DOMParser();
+          const xmlDoc = parser.parseFromString(e.target.result, "text/xml");
+          processXML(xmlDoc);
+        };
+        reader.readAsText(file);
+      });
+
+      function processXML(xml) {
+        tbody.innerHTML = "";
+        // Ajustado para capturar tanto NFSe quanto RPS baseado no seu arquivo
+        // Ajustado para capturar tanto NFSe quanto RPS sem duplicidade
+        let notas = xml.querySelectorAll("InfNfse");
+        if (notas.length === 0) {
+          notas = xml.querySelectorAll("CompNfse");
+        }
+
+        notas.forEach((nota) => {
+          const numero = nota.querySelector("Numero")?.textContent || "N/A";
+          let dataRaw =
+            nota.querySelector("DataEmissao")?.textContent.split("T")[0] ||
+            "N/A";
+          let data = dataRaw;
+          if (dataRaw !== "N/A") {
+            data = dataRaw.split("-").reverse().join("/");
+          }
+          const razaoSocial =
+            nota.querySelector("TomadorServico RazaoSocial")?.textContent ||
+            "N/A";
+
+          const cpfElement = nota.querySelector("TomadorServico Cpf");
+          const cnpjElement = nota.querySelector("TomadorServico Cnpj");
+
+          // Verifica se existe e remove espaços em branco (evita tags vazias com espaço)
+          const tomadorCpf = cpfElement ? cpfElement.textContent.trim() : "";
+          const tomadorCnpj = cnpjElement ? cnpjElement.textContent.trim() : "";
+
+          const tomadorDoc = tomadorCpf || tomadorCnpj || "N/A";
+
+          // Define tipo com prioridade correta
+          let tipoDoc = "OUTRO";
+          if (tomadorCpf.length > 0) {
+            tipoDoc = "CPF";
+          } else if (tomadorCnpj.length > 0) {
+            tipoDoc = "CNPJ";
+          }
+
+          const valor =
+            nota.querySelector("ValorServicos")?.textContent || "0.00";
+          const discriminacao =
+            nota.querySelector("Discriminacao")?.textContent || "";
+
+          // Identificador único para a nota (usando o número)
+          const rowId = `marked_nfse_${numero}`;
+          const isMarked = localStorage.getItem(rowId) === "true";
+
+          // Icone: Square vazio se não marcado, Check Square se marcado
+          const iconClass = isMarked ? "fas fa-check-square" : "far fa-square";
+
+          const tr = document.createElement("tr");
+          if (isMarked) {
+            tr.classList.add("marked-row");
+          }
+
+          tr.innerHTML = `
+                    <td>
+                        <button class="mark-btn ${isMarked ? "active" : ""}">
+                            <i class="${iconClass}"></i>
+                        </button>
+                    </td>
+                    <td>${numero}</td>
+                    <td>${data}</td>
+                    <td>${razaoSocial}</td>
+                    <td>${tomadorDoc}</td>
+                    <td>${tipoDoc}</td>
+                    <td>${valor}</td>
+                    <td style="color: var(--color-primary); font-weight: bold;">${discriminacao}</td>
+                `;
+          tr.dataset.type = tipoDoc.toLowerCase();
+          tr.dataset.rowId = rowId;
+
+          // Evento do botão de marcar
+          const markBtn = tr.querySelector(".mark-btn");
+          markBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            const isNowMarked = !tr.classList.contains("marked-row");
+            const icon = this.querySelector("i");
+
+            if (isNowMarked) {
+              tr.classList.add("marked-row");
+              this.classList.add("active");
+              icon.className = "fas fa-check-square";
+              localStorage.setItem(rowId, "true");
+            } else {
+              tr.classList.remove("marked-row");
+              this.classList.remove("active");
+              icon.className = "far fa-square";
+              localStorage.removeItem(rowId);
+            }
+          });
+
+          tbody.appendChild(tr);
+        });
+
+        tableContainer.style.display = "block";
+        exportBtn.style.display = "inline-block";
+
+        const printBtn = document.getElementById("printMarkedBtn");
+        printBtn.style.display = "inline-block";
+
+        const searchInput = document.getElementById("searchInput");
+        searchInput.style.display = "inline-block";
+
+        const filterGroup = document.getElementById("filterGroup");
+        filterGroup.style.display = "block";
+
+        // Reset filters visual state
+        applyFilters();
+
+        // Setup filters
+        const filterBtns = document.querySelectorAll(".filter-btn");
+        filterBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            filterBtns.forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            currentFilterType = btn.dataset.filter;
+            applyFilters();
+          });
+        });
+
+        searchInput.addEventListener("keyup", function () {
+          currentSearchTerm = this.value.toLowerCase();
+          applyFilters();
+        });
+      }
+
+      // Estado global dos filtros
+      let currentFilterType = "all";
+      let currentSearchTerm = "";
+
+      function applyFilters() {
+        const rows = document.querySelectorAll("#resultTable tbody tr");
+        rows.forEach((row) => {
+          const rowType = row.dataset.type; // 'cpf', 'cnpj', 'outro'
+
+          // 1. Checa Tipo
+          const matchType =
+            currentFilterType === "all" || rowType === currentFilterType;
+
+          // 2. Checa Busca (apenas na discriminação, coluna index 7)
+          let matchSearch = true;
+          if (currentSearchTerm) {
+            const discriminacaoCell = row.children[7];
+            const text = discriminacaoCell
+              ? discriminacaoCell.textContent.toLowerCase()
+              : "";
+            matchSearch = text.includes(currentSearchTerm);
+          }
+
+          if (matchType && matchSearch) {
+            row.style.display = "";
+          } else {
+            row.style.display = "none";
+          }
+        });
+      }
+
+      const printBtn = document.getElementById("printMarkedBtn");
+      printBtn.addEventListener("click", function () {
+        document.body.classList.add("print-marked-only");
+        window.print();
+        document.body.classList.remove("print-marked-only");
+      });
+
+      function extractInfo(text) {
+        // Regex para CPF (com ou sem pontos/traço) ou Data (DD/MM/AAAA ou DD/MM/AA)
+        const cpfRegex = /\b\?*(\d{3}\.?\d{3}\.?\d{3}-?\d{2})\b/;
+        const dataRegex = /\b(\d{2}\/\d{2}\/\d{2,4})\b/;
+
+        const cpfMatch = text.match(cpfRegex);
+        const dataMatch = text.match(dataRegex);
+
+        if (cpfMatch) return cpfMatch[1];
+        if (dataMatch) return dataMatch[1];
+        return "-";
+      }
+
+      exportBtn.addEventListener("click", function () {
+        let csv =
+          "Marcado;Numero;Emissao;RazaoSocial;CPF/CNPJ;Tipo;Valor;Extraido\n";
+        const rows = document.querySelectorAll("#resultTable tr");
+
+        for (let i = 1; i < rows.length; i++) {
+          if (rows[i].style.display === "none") continue; // Export only visible rows
+
+          const isMarked = rows[i].classList.contains("marked-row")
+            ? "Sim"
+            : "Nao";
+          // Start from 2nd cell (skipping button cell) but include mark status manually
+          const cols = rows[i].querySelectorAll("td");
+          // cols[0] is button, cols[1] is Numero...
+
+          const rowData = [
+            isMarked,
+            cols[1].textContent,
+            cols[2].textContent,
+            cols[3].textContent,
+            cols[4].textContent,
+            cols[5].textContent,
+            cols[6].textContent,
+            cols[7].textContent,
+          ].join(";");
+
+          csv += rowData + "\n";
+        }
+
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "extração_notas.csv");
+        link.style.visibility = "hidden";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+    </script>
+  </body>
+</html>

@@ -1,212 +1,705 @@
 <!doctype html>
 <html lang="pt-BR">
   <head>
+    <script>
+      // Desabilita o clique direito
+      document.addEventListener("contextmenu", (event) =>
+        event.preventDefault(),
+      );
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Extrator NFSe - J.Roncalli</title>
+    <title>Painel Extrator DMED/NFSe [Enterprise]</title>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
+
     <style>
       :root {
-        --bg-body: #06b6d4;
-        --card-bg: #ffffff;
-        --border-black: #000000;
-        --color-primary: #8b5cf6;
-        --color-accent: #facc15;
-        --border-width: 3px;
+        /* --- LIGHT MODE (DEFAULT) --- */
+        --bg-app: #f4f5f8;
+        --bg-surface: #ffffff;
+        --bg-panel: #fcfcfd;
+        --bg-sidebar: #15171a;
+        --bg-input: #ffffff;
+        --bg-hover: #f9fafb;
+        --bg-tooltip: #1a1d21;
+
+        --text-primary: #1a1d21;
+        --text-secondary: #5f6b7c;
+        --text-tertiary: #8d96a0;
+        --text-inverse: #ffffff;
+
+        --border-subtle: #e6e8eb;
+        --border-focus: #5e6ad2;
+        --border-dashed: #cfd6e0;
+
+        --accent-primary: #2e3338;
+        --accent-glow: rgba(94, 106, 210, 0.15);
+        --accent-surface-hover: rgba(0, 0, 0, 0.05);
+
+        /* Cores de Dados */
+        --data-purple: #625bf6;
+        --data-green: #2eb88a;
+        --data-blue: #0091ff;
+        --data-orange: #f58e08;
+        --data-red: #e5484d;
+
+        /* Badges Backgrounds */
+        --badge-green-bg: rgba(46, 184, 138, 0.1);
+        --badge-purple-bg: rgba(98, 91, 246, 0.1);
+        --badge-blue-bg: rgba(0, 145, 255, 0.1);
+        --badge-red-bg: rgba(229, 72, 77, 0.1);
+        --badge-orange-bg: rgba(245, 142, 8, 0.1);
+        --badge-neutral-bg: #f0f2f5;
+        --badge-mark-bg: #dbeafe; /* Azul claro suave para marcados light */
+
+        /* Design Tokens */
+        --radius-sm: 6px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+
+        --shadow-card:
+          0px 1px 2px rgba(0, 0, 0, 0.04), 0px 4px 8px rgba(0, 0, 0, 0.02);
+        --shadow-float: 0px 8px 24px rgba(0, 0, 0, 0.08);
+        --upload-pattern: radial-gradient(#e5e7eb 1px, transparent 1px);
+
+        --font-ui: "Inter", -apple-system, sans-serif;
+        --font-code: "JetBrains Mono", monospace;
+      }
+
+      /* --- DARK MODE OVERRIDES --- */
+      [data-theme="dark"] {
+        /* Base Dark Palette (Slate/Zinc blend) */
+        --bg-app: #09090b; /* Deepest background */
+        --bg-surface: #18181b; /* Cards/Surface */
+        --bg-panel: #18181b; /* Headers */
+        --bg-sidebar: #000000; /* Sidebar darker */
+        --bg-input: #09090b;
+        --bg-hover: #27272a;
+        --bg-tooltip: #27272a;
+
+        --text-primary: #f4f4f5; /* Zinc 100 */
+        --text-secondary: #a1a1aa; /* Zinc 400 */
+        --text-tertiary: #52525b; /* Zinc 600 */
+        --text-inverse: #ffffff;
+
+        --border-subtle: #27272a; /* Zinc 800 */
+        --border-focus: #818cf8;
+        --border-dashed: #3f3f46;
+
+        --accent-primary: #f4f4f5; /* Inverted for buttons */
+        --accent-glow: rgba(129, 140, 248, 0.2);
+        --accent-surface-hover: rgba(255, 255, 255, 0.08);
+
+        /* Data Colors - Adjusted for Dark Mode Readability (Pastel shift) */
+        --data-purple: #818cf8;
+        --data-green: #34d399;
+        --data-blue: #38bdf8;
+        --data-orange: #fbbf24;
+        --data-red: #f87171;
+
+        /* Badges - More transparent backgrounds */
+        --badge-green-bg: rgba(52, 211, 153, 0.15);
+        --badge-purple-bg: rgba(129, 140, 248, 0.15);
+        --badge-blue-bg: rgba(56, 189, 248, 0.15);
+        --badge-red-bg: rgba(248, 113, 113, 0.15);
+        --badge-orange-bg: rgba(251, 191, 36, 0.15);
+        --badge-neutral-bg: #27272a;
+        --badge-mark-bg: rgba(
+          56,
+          189,
+          248,
+          0.15
+        ); /* Azul escuro suave para marcados dark */
+
+        /* Shadows replaced by subtle borders in dark mode */
+        --shadow-card: 0 0 0 1px #27272a;
+        --shadow-float: 0 0 0 1px #3f3f46, 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+        --upload-pattern: radial-gradient(#27272a 1px, transparent 1px);
       }
 
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+        outline: none;
       }
 
       body {
-        font-family: "Space Grotesk", sans-serif;
-        background-color: var(--bg-body);
-        background-image:
-          linear-gradient(#fff 2px, transparent 2px),
-          linear-gradient(90deg, #fff 2px, transparent 2px);
-        background-size: 40px 40px;
-        color: var(--border-black);
-        min-height: 100vh;
+        font-family: var(--font-ui);
+        background-color: var(--bg-app);
+        color: var(--text-primary);
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        -webkit-font-smoothing: antialiased;
+        font-size: 13px;
+        transition:
+          background-color 0.3s ease,
+          color 0.3s ease;
+      }
+
+      /* Scrollbar Dark Mode Compatible */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #d1d5db;
+        border-radius: 3px;
+      }
+      [data-theme="dark"] ::-webkit-scrollbar-thumb {
+        background: #3f3f46;
+      }
+
+      /* SIDEBAR */
+      .sidebar {
+        width: 180px;
+        background: var(--bg-sidebar);
+        border-right: 1px solid #2e3338;
+        padding: 1.5rem 0.8rem;
         display: flex;
         flex-direction: column;
-        padding: 20px;
+        flex-shrink: 0;
+        color: #fff;
+        z-index: 20;
+        transition: background-color 0.3s ease;
       }
 
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        width: 100%;
+      [data-theme="dark"] .sidebar {
+        border-right: 1px solid var(--border-subtle);
       }
 
-      header {
-        background: var(--color-accent);
-        border: var(--border-width) solid var(--border-black);
-        padding: 20px;
-        box-shadow: 8px 8px 0 0 #000;
-        margin-bottom: 30px;
+      .logo {
+        font-size: 13px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 2.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-left: 0.2rem;
+        letter-spacing: 0.02em;
+        opacity: 0.9;
+      }
+
+      .logo-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.1;
+      }
+
+      .logo-subtitle {
+        font-size: 8px;
+        font-weight: 300;
+        letter-spacing: 0.5em;
+        opacity: 0.6;
+        font-family: var(--font-ui);
+      }
+
+      .logo i {
+        color: var(--data-green);
+      }
+
+      .nav-item {
+        background: transparent;
+        color: #9ca3af;
+        padding: 0.5rem 0.6rem;
+        margin-bottom: 0.25rem;
+        font-weight: 500;
+        border: none;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.2s ease;
+        font-size: 12px;
+      }
+
+      .nav-item:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: #fff;
+      }
+
+      .nav-item.active {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #fff;
+      }
+
+      /* MAIN CONTENT */
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+        background: var(--bg-app);
+        background-image: linear-gradient(
+          to bottom,
+          var(--bg-surface) 0%,
+          var(--bg-app) 100%
+        );
+        background-size: 100% 400px;
+        background-repeat: no-repeat;
+        transition: background 0.3s ease;
+      }
+
+      [data-theme="dark"] .main-content {
+        background-image: none;
+      }
+
+      .scroll-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem 2rem;
+        padding-bottom: 60px;
+      }
+
+      /* HEADER & THEME TOGGLE */
+      .neo-header {
+        background: transparent;
+        border: none;
+        padding: 0;
+        margin-bottom: 1.5rem;
+        box-shadow: none;
         display: flex;
         justify-content: space-between;
         align-items: center;
       }
-
-      .logo {
-        font-weight: 900;
-        font-size: 1.5rem;
-        text-transform: uppercase;
+      .neo-header h1 {
+        font-weight: 600;
+        font-size: 18px;
+        color: var(--text-primary);
+        letter-spacing: -0.01em;
       }
 
-      .upload-section {
-        background: var(--card-bg);
-        border: var(--border-width) solid var(--border-black);
-        padding: 30px;
-        box-shadow: 8px 8px 0 0 #000;
-        margin-bottom: 30px;
-        text-align: center;
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
       }
 
-      input[type="file"] {
-        display: none;
-      }
-
-      .btn {
-        display: inline-block;
-        padding: 15px 25px;
-        background: var(--color-primary);
-        color: #fff;
-        border: var(--border-width) solid var(--border-black);
-        font-weight: bold;
-        text-transform: uppercase;
+      .theme-toggle {
+        background: transparent;
+        border: 1px solid var(--data-purple);
+        color: var(--data-purple);
+        width: auto;
+        padding: 0 14px;
+        height: 32px;
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
         cursor: pointer;
-        box-shadow: 4px 4px 0 0 #000;
-        transition: 0.1s;
-        font-family: "Space Mono", monospace;
+        transition: all 0.2s;
+        font-weight: 600;
+        font-size: 11px;
+      }
+      .theme-toggle:hover {
+        background: var(--data-purple);
+        color: #ffffff;
+        box-shadow: 0 0 10px rgba(98, 91, 246, 0.4);
+      }
+      [data-theme="dark"] .theme-toggle {
+        border-color: var(--data-purple);
+        color: var(--data-purple);
+      }
+      [data-theme="dark"] .theme-toggle:hover {
+        background: var(--data-purple);
+        color: #fff;
       }
 
-      .btn:hover {
-        transform: translate(-2px, -2px);
-        box-shadow: 6px 6px 0 0 #000;
+      /* DASHBOARD */
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
       }
-      .btn:active {
-        transform: translate(2px, 2px);
-        box-shadow: 0 0 0 0 #000;
-      }
-      .btn-export {
-        background: #22c55e;
-        margin-top: 15px;
-        display: none;
+      .metric-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        padding: 1rem;
+        box-shadow: var(--shadow-card);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition:
+          background-color 0.3s,
+          border-color 0.3s;
       }
 
+      .metric-card::after {
+        content: "";
+        position: absolute;
+        top: -1px;
+        left: -1px;
+        right: -1px;
+        height: 2px;
+        border-radius: var(--radius-md) var(--radius-md) 0 0;
+        opacity: 0.8;
+      }
+      .metric-card.purple::after {
+        background: var(--data-purple);
+      }
+      .metric-card.green::after {
+        background: var(--data-green);
+      }
+      .metric-card.blue::after {
+        background: var(--data-blue);
+      }
+      .metric-card.orange::after {
+        background: var(--data-orange);
+      }
+
+      .metric-title {
+        font-weight: 500;
+        text-transform: none;
+        font-size: 10px;
+        color: var(--text-secondary);
+        margin-bottom: 0.4rem;
+      }
+      .metric-value {
+        font-family: var(--font-ui);
+        font-size: 26px;
+        font-weight: 600;
+        color: var(--text-primary);
+        letter-spacing: -0.03em;
+      }
+      .metric-card.purple,
+      .metric-card.green,
+      .metric-card.blue,
+      .metric-card.orange {
+        border-top: 1px solid var(--border-subtle);
+      }
+
+      /* UPLOAD */
+      .upload-area {
+        background: var(--bg-panel);
+        border: 1px dashed var(--border-dashed);
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+        background-image: var(--upload-pattern);
+        background-size: 20px 20px;
+      }
+      .upload-area:hover {
+        border-color: var(--data-blue);
+        background-color: var(--bg-hover);
+      }
+      .upload-label {
+        font-weight: 500;
+        font-size: 12px;
+        color: var(--text-primary);
+      }
+      .upload-label i {
+        color: var(--text-tertiary);
+        margin-bottom: 0.5rem;
+        font-size: 20px;
+        transition: color 0.2s;
+      }
+      .upload-area:hover .upload-label i {
+        color: var(--data-blue);
+      }
+      #xmlInput {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      /* FILTROS */
+      .filters-container {
+        margin-bottom: 1rem;
+      }
+      .filters-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: flex-end;
+      }
+
+      .form-group {
+        flex: 1;
+        min-width: 120px;
+      }
+
+      .form-group label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 4px;
+        font-size: 10px;
+        color: var(--text-secondary);
+      }
+
+      .neo-input {
+        width: 100%;
+        padding: 6px 10px;
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-sm);
+        background: var(--bg-input);
+        font-family: var(--font-ui);
+        font-size: 12px;
+        color: var(--text-primary);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        transition: all 0.2s;
+      }
+      [data-theme="dark"] .neo-input {
+        box-shadow: none;
+      }
+      .neo-input:focus {
+        border-color: var(--border-focus);
+        box-shadow: 0 0 0 3px var(--accent-glow);
+      }
+
+      /* TOGGLES */
+      .crt-toggles {
+        display: flex;
+        background: var(--border-subtle);
+        padding: 2px;
+        border-radius: var(--radius-sm);
+        height: 32px;
+      }
+      .btn-toggle {
+        flex: 1;
+        background: transparent;
+        border: none;
+        font-family: var(--font-ui);
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-toggle:hover {
+        color: var(--text-primary);
+      }
+      .btn-toggle.active {
+        background: var(--bg-surface);
+        color: var(--text-primary);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .btn-filter {
+        background: var(--accent-primary);
+        color: var(--bg-surface);
+        border: none;
+        padding: 0 16px;
+        font-family: var(--font-ui);
+        font-weight: 500;
+        border-radius: var(--radius-sm);
+        font-size: 12px;
+        cursor: pointer;
+        height: 32px;
+        transition: transform 0.1s;
+      }
+      [data-theme="dark"] .btn-filter {
+        background: var(--text-primary);
+        color: #000;
+      }
+      .btn-filter:active {
+        transform: scale(0.98);
+      }
+
+      .btn-print {
+        background-color: var(--data-red);
+        color: white;
+      }
+      [data-theme="dark"] .btn-print {
+        background-color: var(--data-red);
+        color: white;
+      }
+
+      /* TABELA */
       .table-container {
-        background: #fff;
-        border: var(--border-width) solid var(--border-black);
-        box-shadow: 8px 8px 0 0 #000;
-        overflow-x: auto;
-        display: none;
+        width: 100%;
+        overflow-x: hidden;
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        background: var(--bg-surface);
+        box-shadow: var(--shadow-card);
+        margin-bottom: 2rem;
+        transition:
+          background-color 0.3s,
+          border-color 0.3s;
       }
-
       table {
         width: 100%;
-        border-collapse: collapse;
-        font-family: "Space Mono", monospace;
+        table-layout: auto; /* Changed from fixed to auto to adapt content */
+        border-collapse: separate;
+        border-spacing: 0;
+        font-family: var(--font-ui);
+        font-size: 11px;
+      }
+
+      thead tr {
+        background: var(--bg-panel);
+        transition: background-color 0.3s;
       }
 
       th {
-        background: var(--color-accent);
-        border-bottom: var(--border-width) solid var(--border-black);
-        padding: 15px;
+        color: var(--text-tertiary);
+        padding: 8px 6px;
         text-align: left;
+        font-weight: 600;
+        font-size: 9px;
         text-transform: uppercase;
+        letter-spacing: 0.04em;
+        border-bottom: 1px solid var(--border-subtle);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: var(--bg-panel);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition:
+          background-color 0.3s,
+          border-color 0.3s;
       }
 
       td {
-        padding: 12px 15px;
-        border-bottom: 1px solid #ddd;
+        padding: 6px 6px;
+        border-bottom: 1px solid var(--border-subtle);
+        vertical-align: middle;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition: border-color 0.3s;
       }
 
+      /* Discriminação (last column) - Full View */
+      td:last-child {
+        white-space: pre-wrap; /* Preserves newlines and wraps */
+        word-break: break-word;
+        overflow: visible;
+        text-overflow: clip;
+        font-size: 13px; /* Larger for better readability */
+        line-height: 1.5;
+        max-width: 400px; /* Limit width if needed, or let it expand */
+      }
+
+      /* Neon Highlight Effect */
+      .neon-highlight {
+        color: #fff;
+        background-color: #f0f; /* Hot Pink Neon */
+        text-shadow: 0 0 2px #fff;
+        box-shadow:
+          0 0 5px #f0f,
+          0 0 10px #f0f;
+        border-radius: 2px;
+        padding: 0 2px;
+        font-weight: bold;
+      }
+      [data-theme="dark"] .neon-highlight {
+        background-color: #d946ef; /* Magenta in dark mode */
+        box-shadow:
+          0 0 5px #d946ef,
+          0 0 10px #d946ef;
+      }
       tr:last-child td {
         border-bottom: none;
       }
-
-      marquee {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        background: #000;
-        color: #fff;
-        padding: 5px;
-        font-family: "Space Mono", monospace;
+      tr:hover td {
+        background: var(--bg-hover);
       }
 
-      .search-input {
-        padding: 10px;
-        width: 100%;
-        max-width: 400px;
-        border: var(--border-width) solid var(--border-black);
-        font-family: "Space Mono", monospace;
-        margin-top: 15px;
-        display: none; /* Initially hidden until data is loaded */
-        box-shadow: 4px 4px 0 0 #000;
-      }
-      .search-input:focus {
-        outline: none;
-        box-shadow: 6px 6px 0 0 #000;
-        transform: translate(-2px, -2px);
-      }
-
-      .filter-group {
-        margin-top: 15px;
-        display: none;
-      }
-      .filter-btn {
-        margin-right: 10px;
-        background: #fff;
-        color: var(--border-black);
-      }
-      .filter-btn.active {
-        background: var(--color-primary);
-        color: #fff;
-      }
-
-      .marked-row {
-        background-color: #dbeafe !important; /* Azul claro suave */
+      .marked-row td {
+        background-color: var(--badge-mark-bg) !important;
       }
 
       .mark-btn {
-        background: #fff;
-        border: 2px solid var(--border-black);
-        border-radius: 4px;
+        background: transparent;
+        border: none;
         cursor: pointer;
-        padding: 5px 8px;
-        transition: 0.2s;
-        box-shadow: 2px 2px 0 0 #000;
+        color: var(--text-tertiary);
+        font-size: 14px;
+        transition: color 0.1s;
       }
-
       .mark-btn:hover {
-        transform: translate(-1px, -1px);
-        box-shadow: 3px 3px 0 0 #000;
+        color: var(--text-primary);
+      }
+      .mark-btn.active {
+        color: var(--data-green);
       }
 
-      .mark-btn.active {
-        background: #22c55e;
-        color: white;
+      /* FOOTER */
+      .footer-controls {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 6px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: fixed;
+        bottom: 0;
+        left: 180px;
+        right: 0;
+        z-index: 100;
+        height: 36px;
+        transition:
+          background-color 0.3s,
+          border-color 0.3s;
+      }
+      [data-theme="dark"] .footer-controls {
+        background: rgba(9, 9, 11, 0.9);
+        border-top: 1px solid var(--border-subtle);
+      }
+
+      .status-bar {
+        font-size: 10px;
+        color: var(--text-secondary);
+        font-family: var(--font-code);
+        display: flex;
+        align-items: center;
+        gap: 6px;
       }
 
       @media print {
         .no-print,
         .upload-section,
         header,
-        marquee {
+        marquee,
+        .sidebar,
+        .filters-container,
+        .dashboard-grid,
+        .footer-controls {
           display: none !important;
+        }
+        .main-content {
+          height: auto;
+          overflow: visible;
+          background: white;
+        }
+        .scroll-content {
+          padding: 0;
+          overflow: visible;
         }
         .container {
           width: 100%;
@@ -216,6 +709,11 @@
         }
         table {
           font-size: 10px;
+          color: black;
+        }
+        .marked-row td {
+          background-color: #f0f0f0 !important;
+          color: black !important;
         }
         /* Se a classe print-marked estiver no body, esconde as não marcadas */
         body.print-marked-only tbody tr:not(.marked-row) {
@@ -225,78 +723,237 @@
     </style>
   </head>
   <body>
-    <div class="container">
-      <header>
-        <div class="logo"><i class="fas fa-file-invoice"></i> Extrator XML</div>
-        <div
-          class="slogan"
-          style="font-family: &quot;Space Mono&quot;; font-weight: 700"
-        >
-          J.Roncalli, direto ao ponto.
+    <aside class="sidebar no-print">
+      <div class="logo">
+        <i
+          class="fas fa-file-invoice"
+          style="font-size: 1.2rem; color: var(--data-blue)"
+        ></i>
+        <div class="logo-text">
+          <span
+            >J.RONCALLI
+            <span style="opacity: 0.5; font-weight: 400">EXTRACT</span></span
+          >
+          <span class="logo-subtitle">NFSe & DMED</span>
         </div>
-      </header>
-
-      <section class="upload-section">
-        <h2 style="margin-bottom: 20px">
-          Selecione o arquivo RPS/XML para extração
-        </h2>
-        <label for="xmlInput" class="btn"
-          ><i class="fas fa-upload"></i> Carregar XML</label
-        >
-        <input type="file" id="xmlInput" accept=".xml" />
-        <button id="exportBtn" class="btn btn-export">
-          <i class="fas fa-file-csv"></i> Exportar CSV
-        </button>
-        <button
-          id="printMarkedBtn"
-          class="btn"
-          style="background: #e11d48; margin-left: 10px; display: none"
-        >
-          <i class="fas fa-print"></i> Imprimir Marcados
-        </button>
-        <br />
-        <input
-          type="text"
-          id="searchInput"
-          class="search-input"
-          placeholder="Filtrar resultados..."
-        />
-        <div class="filter-group" id="filterGroup">
-          <button class="btn filter-btn active" data-filter="all">Todos</button>
-          <button class="btn filter-btn" data-filter="cpf">CPF</button>
-          <button class="btn filter-btn" data-filter="cnpj">CNPJ</button>
-        </div>
-      </section>
-
-      <div class="table-container" id="tableContainer">
-        <table id="resultTable">
-          <thead>
-            <tr>
-              <th><i class="fas fa-check-square"></i></th>
-              <th>Número</th>
-              <th>Emissão</th>
-              <th>Tomador (Razão Social)</th>
-              <th>CPF/CNPJ</th>
-              <th>Tipo</th>
-              <th>Valor (R$)</th>
-              <th>Doc. Extraído (Discriminação)</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
       </div>
-    </div>
+      <nav>
+        <div class="nav-item active">
+          <i class="fas fa-bolt"></i> <span>Extração</span>
+        </div>
+        <div
+          class="nav-item"
+          onclick="document.getElementById('xmlInput').click()"
+        >
+          <i class="fas fa-upload"></i> <span>Carregar XML</span>
+        </div>
+        <div
+          class="nav-item"
+          id="btnExportSidebar"
+          style="display: none"
+          onclick="exportToCSV()"
+        >
+          <i class="fas fa-file-csv"></i> <span>Exportar CSV</span>
+        </div>
+        <div
+          class="nav-item"
+          id="btnPrintSidebar"
+          style="display: none"
+          onclick="printMarked()"
+        >
+          <i class="fas fa-print"></i> <span>Imprimir Marcados</span>
+        </div>
+        <div class="nav-item" onclick="limparSessao()">
+          <i class="fas fa-eraser"></i> <span>Limpar</span>
+        </div>
+      </nav>
 
-    <marquee>Feito por J.Roncalli | Extração Automatizada de NFSe</marquee>
+      <div
+        style="
+          margin-top: auto;
+          font-size: 10px;
+          color: #444;
+          font-family: monospace;
+        "
+      >
+        EXTRACTOR v2.0
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="scroll-content">
+        <header class="neo-header no-print">
+          <div>
+            <h1>Extrator DMED / NFSe</h1>
+          </div>
+          <div class="header-actions">
+            <button id="themeToggle" class="theme-toggle" title="Alternar Tema">
+              <i class="fas fa-moon"></i> <span>Alterar Tema</span>
+            </button>
+          </div>
+        </header>
+
+        <div class="dashboard-grid no-print">
+          <div class="metric-card purple">
+            <div class="metric-title">Notas Encontradas</div>
+            <div class="metric-value" id="totalNotas">0</div>
+          </div>
+          <div class="metric-card green">
+            <div class="metric-title">Valor Total (R$)</div>
+            <div class="metric-value" id="valorTotal">0,00</div>
+          </div>
+          <div class="metric-card blue">
+            <div class="metric-title">Tomadores Únicos</div>
+            <div class="metric-value" id="totalTomadores">0</div>
+          </div>
+          <div class="metric-card orange">
+            <div class="metric-title">Itens Marcados</div>
+            <div class="metric-value" id="totalMarcados">0</div>
+          </div>
+        </div>
+
+        <div class="upload-area no-print">
+          <input
+            type="file"
+            id="xmlInput"
+            accept=".xml"
+            onchange="handleFileSelect(event)"
+          />
+          <div class="upload-label">
+            <i class="fas fa-cloud-upload"></i><br />
+            <span style="color: var(--text-primary); font-weight: 600"
+              >Clique ou Arraste seu arquivo XML</span
+            >
+            <br /><span
+              style="
+                color: var(--text-tertiary);
+                font-size: 11px;
+                font-weight: 400;
+              "
+              >Suporta XML de NFSe e RPS</span
+            >
+          </div>
+        </div>
+
+        <div
+          class="filters-container no-print"
+          id="filtersContainer"
+          style="display: none"
+        >
+          <div class="filters-grid">
+            <div class="form-group" style="flex: 2">
+              <label>Busca na Discriminação</label>
+              <input
+                type="text"
+                id="searchInput"
+                class="neo-input"
+                placeholder="Digite para filtrar..."
+                onkeyup="applyFilters()"
+              />
+            </div>
+
+            <div class="form-group" style="min-width: 200px">
+              <label>Tipo de Documento</label>
+              <div class="crt-toggles">
+                <button
+                  class="btn-toggle active"
+                  id="btnTypeAll"
+                  onclick="setFilterType('all')"
+                >
+                  Todos
+                </button>
+                <button
+                  class="btn-toggle"
+                  id="btnTypeCPF"
+                  onclick="setFilterType('cpf')"
+                >
+                  CPF
+                </button>
+                <button
+                  class="btn-toggle"
+                  id="btnTypeCNPJ"
+                  onclick="setFilterType('cnpj')"
+                >
+                  CNPJ
+                </button>
+              </div>
+            </div>
+
+            <button
+              class="btn-filter"
+              style="background: var(--data-red); display: none"
+              id="btnPrintFilter"
+              onclick="printMarked()"
+            >
+              <i class="fas fa-print"></i> IMPRIMIR
+            </button>
+          </div>
+        </div>
+
+        <div class="table-container" id="tableContainer" style="display: none">
+          <table id="resultTable">
+            <thead>
+              <tr>
+                <th style="width: 5%; text-align: center">
+                  <i class="fas fa-check-square"></i>
+                </th>
+                <th style="width: 10%">Número</th>
+                <th style="width: 10%">Emissão</th>
+                <th style="width: 20%">Tomador</th>
+                <th style="width: 15%">CPF/CNPJ</th>
+                <th style="width: 8%">Tipo</th>
+                <th style="width: 12%">Valor (R$)</th>
+                <th>Discriminação</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="footer-controls no-print">
+        <div class="status-bar" id="statusMsg">
+          <span style="color: var(--text-tertiary)">●</span> Aguardando
+          arquivo...
+        </div>
+      </div>
+    </main>
 
     <script>
-      const xmlInput = document.getElementById("xmlInput");
-      const exportBtn = document.getElementById("exportBtn");
-      const tableContainer = document.getElementById("tableContainer");
-      const tbody = document.querySelector("#resultTable tbody");
+      // Theme Management
+      const themeToggleBtn = document.getElementById("themeToggle");
+      const themeIcon = themeToggleBtn.querySelector("i");
 
-      xmlInput.addEventListener("change", function (e) {
-        const file = e.target.files[0];
+      function setTheme(theme) {
+        if (theme === "dark") {
+          document.body.setAttribute("data-theme", "dark");
+          themeIcon.className = "fas fa-sun";
+          localStorage.setItem("theme", "dark");
+        } else {
+          document.body.removeAttribute("data-theme");
+          themeIcon.className = "fas fa-moon";
+          localStorage.setItem("theme", "light");
+        }
+      }
+
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light") {
+        setTheme("light");
+      } else {
+        setTheme("dark");
+      }
+
+      themeToggleBtn.addEventListener("click", () => {
+        const currentTheme = document.body.getAttribute("data-theme");
+        setTheme(currentTheme === "dark" ? "light" : "dark");
+      });
+
+      // Data Management
+      let currentFilterType = "all";
+      let currentSearchTerm = "";
+
+      function handleFileSelect(evt) {
+        const file = evt.target.files[0];
         if (!file) return;
 
         const reader = new FileReader();
@@ -304,20 +961,34 @@
           const parser = new DOMParser();
           const xmlDoc = parser.parseFromString(e.target.result, "text/xml");
           processXML(xmlDoc);
+
+          document.getElementById("filtersContainer").style.display = "block";
+          document.getElementById("tableContainer").style.display = "block";
+          document.getElementById("btnExportSidebar").style.display = "flex";
+          document.getElementById("btnPrintSidebar").style.display = "flex";
+          document.getElementById("btnPrintFilter").style.display =
+            "inline-block";
         };
         reader.readAsText(file);
-      });
+      }
 
       function processXML(xml) {
+        const tbody = document.querySelector("#resultTable tbody");
         tbody.innerHTML = "";
-        // Ajustado para capturar tanto NFSe quanto RPS baseado no seu arquivo
-        // Ajustado para capturar tanto NFSe quanto RPS sem duplicidade
+
         let notas = xml.querySelectorAll("InfNfse");
         if (notas.length === 0) {
           notas = xml.querySelectorAll("CompNfse");
         }
 
+        let totalNotasCount = 0;
+        let totalValorSum = 0;
+        let uniqueTomadores = new Set();
+        let marcardosCount = 0;
+
         notas.forEach((nota) => {
+          totalNotasCount++;
+
           const numero = nota.querySelector("Numero")?.textContent || "N/A";
           let dataRaw =
             nota.querySelector("DataEmissao")?.textContent.split("T")[0] ||
@@ -330,177 +1001,169 @@
             nota.querySelector("TomadorServico RazaoSocial")?.textContent ||
             "N/A";
 
+          if (razaoSocial !== "N/A") uniqueTomadores.add(razaoSocial);
+
           const cpfElement = nota.querySelector("TomadorServico Cpf");
           const cnpjElement = nota.querySelector("TomadorServico Cnpj");
-
-          // Verifica se existe e remove espaços em branco (evita tags vazias com espaço)
           const tomadorCpf = cpfElement ? cpfElement.textContent.trim() : "";
           const tomadorCnpj = cnpjElement ? cnpjElement.textContent.trim() : "";
-
           const tomadorDoc = tomadorCpf || tomadorCnpj || "N/A";
 
-          // Define tipo com prioridade correta
           let tipoDoc = "OUTRO";
-          if (tomadorCpf.length > 0) {
-            tipoDoc = "CPF";
-          } else if (tomadorCnpj.length > 0) {
-            tipoDoc = "CNPJ";
-          }
+          if (tomadorCpf.length > 0) tipoDoc = "CPF";
+          else if (tomadorCnpj.length > 0) tipoDoc = "CNPJ";
 
-          const valor =
+          const valorRaw =
             nota.querySelector("ValorServicos")?.textContent || "0.00";
+          const valor = parseFloat(valorRaw).toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+          });
+          totalValorSum += parseFloat(valorRaw);
+
           const discriminacao =
             nota.querySelector("Discriminacao")?.textContent || "";
 
-          // Identificador único para a nota (usando o número)
+          // Mark Logic
           const rowId = `marked_nfse_${numero}`;
           const isMarked = localStorage.getItem(rowId) === "true";
+          if (isMarked) marcardosCount++;
 
-          // Icone: Square vazio se não marcado, Check Square se marcado
           const iconClass = isMarked ? "fas fa-check-square" : "far fa-square";
-
           const tr = document.createElement("tr");
-          if (isMarked) {
-            tr.classList.add("marked-row");
-          }
+          if (isMarked) tr.classList.add("marked-row");
 
-          tr.innerHTML = `
-                    <td>
-                        <button class="mark-btn ${isMarked ? "active" : ""}">
-                            <i class="${iconClass}"></i>
-                        </button>
-                    </td>
-                    <td>${numero}</td>
-                    <td>${data}</td>
-                    <td>${razaoSocial}</td>
-                    <td>${tomadorDoc}</td>
-                    <td>${tipoDoc}</td>
-                    <td>${valor}</td>
-                    <td style="color: var(--color-primary); font-weight: bold;">${discriminacao}</td>
-                `;
           tr.dataset.type = tipoDoc.toLowerCase();
           tr.dataset.rowId = rowId;
 
-          // Evento do botão de marcar
-          const markBtn = tr.querySelector(".mark-btn");
-          markBtn.addEventListener("click", function (e) {
-            e.stopPropagation();
-            const isNowMarked = !tr.classList.contains("marked-row");
-            const icon = this.querySelector("i");
-
-            if (isNowMarked) {
-              tr.classList.add("marked-row");
-              this.classList.add("active");
-              icon.className = "fas fa-check-square";
-              localStorage.setItem(rowId, "true");
-            } else {
-              tr.classList.remove("marked-row");
-              this.classList.remove("active");
-              icon.className = "far fa-square";
-              localStorage.removeItem(rowId);
-            }
-          });
+          tr.innerHTML = `
+                <td class="center">
+                    <button class="mark-btn ${isMarked ? "active" : ""}" onclick="toggleMark(this, '${rowId}')">
+                        <i class="${iconClass}"></i>
+                    </button>
+                </td>
+                <td>${numero}</td>
+                <td>${data}</td>
+                <td>${razaoSocial}</td>
+                <td>${tomadorDoc}</td>
+                <td><span class="badge-crt ${tipoDoc === "CPF" ? "crt-simples" : tipoDoc === "CNPJ" ? "crt-normal" : ""}">${tipoDoc}</span></td>
+                <td>${valor}</td>
+                <td style="font-size: 10px; color: var(--text-secondary)">${discriminacao}</td>
+              `;
 
           tbody.appendChild(tr);
         });
 
-        tableContainer.style.display = "block";
-        exportBtn.style.display = "inline-block";
+        // Update Metrics
+        document.getElementById("totalNotas").textContent = totalNotasCount;
+        document.getElementById("valorTotal").textContent =
+          totalValorSum.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
+        document.getElementById("totalTomadores").textContent =
+          uniqueTomadores.size;
+        document.getElementById("totalMarcados").textContent = marcardosCount;
 
-        const printBtn = document.getElementById("printMarkedBtn");
-        printBtn.style.display = "inline-block";
-
-        const searchInput = document.getElementById("searchInput");
-        searchInput.style.display = "inline-block";
-
-        const filterGroup = document.getElementById("filterGroup");
-        filterGroup.style.display = "block";
-
-        // Reset filters visual state
-        applyFilters();
-
-        // Setup filters
-        const filterBtns = document.querySelectorAll(".filter-btn");
-        filterBtns.forEach((btn) => {
-          btn.addEventListener("click", () => {
-            filterBtns.forEach((b) => b.classList.remove("active"));
-            btn.classList.add("active");
-            currentFilterType = btn.dataset.filter;
-            applyFilters();
-          });
-        });
-
-        searchInput.addEventListener("keyup", function () {
-          currentSearchTerm = this.value.toLowerCase();
-          applyFilters();
-        });
+        document.getElementById("statusMsg").innerHTML =
+          `<span style="color: var(--data-green)">●</span> Processado com sucesso. ${totalNotasCount} notas encontradas.`;
       }
 
-      // Estado global dos filtros
-      let currentFilterType = "all";
-      let currentSearchTerm = "";
+      function toggleMark(btn, rowId) {
+        const tr = btn.closest("tr");
+        const isNowMarked = !tr.classList.contains("marked-row");
+        const icon = btn.querySelector("i");
+
+        if (isNowMarked) {
+          tr.classList.add("marked-row");
+          btn.classList.add("active");
+          icon.className = "fas fa-check-square";
+          localStorage.setItem(rowId, "true");
+        } else {
+          tr.classList.remove("marked-row");
+          btn.classList.remove("active");
+          icon.className = "far fa-square";
+          localStorage.removeItem(rowId);
+        }
+        updateMarkedCount();
+      }
+
+      function updateMarkedCount() {
+        const count = document.querySelectorAll(".marked-row").length;
+        document.getElementById("totalMarcados").textContent = count;
+      }
+
+      function setFilterType(type) {
+        currentFilterType = type;
+        document.getElementById("btnTypeAll").classList.remove("active");
+        document.getElementById("btnTypeCPF").classList.remove("active");
+        document.getElementById("btnTypeCNPJ").classList.remove("active");
+
+        if (type === "all")
+          document.getElementById("btnTypeAll").classList.add("active");
+        if (type === "cpf")
+          document.getElementById("btnTypeCPF").classList.add("active");
+        if (type === "cnpj")
+          document.getElementById("btnTypeCNPJ").classList.add("active");
+
+        applyFilters();
+      }
 
       function applyFilters() {
+        const term = document.getElementById("searchInput").value.toLowerCase();
         const rows = document.querySelectorAll("#resultTable tbody tr");
-        rows.forEach((row) => {
-          const rowType = row.dataset.type; // 'cpf', 'cnpj', 'outro'
 
-          // 1. Checa Tipo
+        // Escape regex special characters securely
+        const escapeRegExp = (string) => {
+          return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        };
+
+        rows.forEach((row) => {
+          const rowType = row.dataset.type;
+          // Discriminação is the last column (index 7)
+          const discCell = row.children[7];
+          // Use textContent to always get the raw text, clearing previous spans
+          const originalText = discCell.textContent;
+          const discText = originalText.toLowerCase();
+
           const matchType =
             currentFilterType === "all" || rowType === currentFilterType;
-
-          // 2. Checa Busca (apenas na discriminação, coluna index 7)
-          let matchSearch = true;
-          if (currentSearchTerm) {
-            const discriminacaoCell = row.children[7];
-            const text = discriminacaoCell
-              ? discriminacaoCell.textContent.toLowerCase()
-              : "";
-            matchSearch = text.includes(currentSearchTerm);
-          }
+          const matchSearch = discText.includes(term);
 
           if (matchType && matchSearch) {
             row.style.display = "";
+
+            // Logic for Highlighting
+            if (term !== "") {
+              const regex = new RegExp(`(${escapeRegExp(term)})`, "gi");
+              // Replace matching content with neon highlight span
+              // We rely on HTML replacement here since we want to inject spans
+              discCell.innerHTML = originalText.replace(
+                regex,
+                '<span class="neon-highlight">$1</span>',
+              );
+            } else {
+              // If search is cleared, ensure we show plain text
+              discCell.textContent = originalText;
+            }
           } else {
             row.style.display = "none";
           }
         });
       }
 
-      const printBtn = document.getElementById("printMarkedBtn");
-      printBtn.addEventListener("click", function () {
+      function printMarked() {
         document.body.classList.add("print-marked-only");
         window.print();
         document.body.classList.remove("print-marked-only");
-      });
-
-      function extractInfo(text) {
-        // Regex para CPF (com ou sem pontos/traço) ou Data (DD/MM/AAAA ou DD/MM/AA)
-        const cpfRegex = /\b\?*(\d{3}\.?\d{3}\.?\d{3}-?\d{2})\b/;
-        const dataRegex = /\b(\d{2}\/\d{2}\/\d{2,4})\b/;
-
-        const cpfMatch = text.match(cpfRegex);
-        const dataMatch = text.match(dataRegex);
-
-        if (cpfMatch) return cpfMatch[1];
-        if (dataMatch) return dataMatch[1];
-        return "-";
       }
 
-      exportBtn.addEventListener("click", function () {
+      function exportToCSV() {
         let csv =
           "Marcado;Numero;Emissao;RazaoSocial;CPF/CNPJ;Tipo;Valor;Extraido\n";
-        const rows = document.querySelectorAll("#resultTable tr");
+        const rows = document.querySelectorAll("#resultTable tbody tr");
 
-        for (let i = 1; i < rows.length; i++) {
-          if (rows[i].style.display === "none") continue; // Export only visible rows
+        rows.forEach((row) => {
+          if (row.style.display === "none") return;
 
-          const isMarked = rows[i].classList.contains("marked-row")
-            ? "Sim"
-            : "Nao";
-          // Start from 2nd cell (skipping button cell) but include mark status manually
-          const cols = rows[i].querySelectorAll("td");
-          // cols[0] is button, cols[1] is Numero...
+          const isMarked = row.classList.contains("marked-row") ? "Sim" : "Nao";
+          const cols = row.querySelectorAll("td");
 
           const rowData = [
             isMarked,
@@ -514,7 +1177,7 @@
           ].join(";");
 
           csv += rowData + "\n";
-        }
+        });
 
         const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
         const link = document.createElement("a");
@@ -525,7 +1188,19 @@
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-      });
+      }
+
+      function limparSessao() {
+        if (confirm("Deseja realmente limpar todas as marcações salvas?")) {
+          Object.keys(localStorage).forEach((key) => {
+            if (key.startsWith("marked_nfse_")) {
+              localStorage.removeItem(key);
+            }
+          });
+          // Reload
+          location.reload();
+        }
+      }
     </script>
   </body>
 </html>
