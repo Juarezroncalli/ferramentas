@@ -958,8 +958,17 @@
 
         const reader = new FileReader();
         reader.onload = function (e) {
+          let content = e.target.result;
+
+          // TRATAMENTO DE ARQUIVOS HÍBRIDOS (Múltiplos XMLs concatenados)
+          // 1. Remove declarações XML repetidas (<?xml ... ?>) para evitar erros de parser
+          content = content.replace(/<\?xml[^>]*\?>/g, "");
+
+          // 2. Envolve todo o conteúdo em uma raiz única fictícia para o parser aceitar múltiplos nós raiz
+          const wrappedContent = "<Root>" + content + "</Root>";
+
           const parser = new DOMParser();
-          const xmlDoc = parser.parseFromString(e.target.result, "text/xml");
+          const xmlDoc = parser.parseFromString(wrappedContent, "text/xml");
           processXML(xmlDoc);
 
           document.getElementById("filtersContainer").style.display = "block";
@@ -976,10 +985,39 @@
         const tbody = document.querySelector("#resultTable tbody");
         tbody.innerHTML = "";
 
-        let notas = xml.querySelectorAll("InfNfse");
+        // COLETA UNIVERSAL DE NOTAS (Suporta Padrão ABRASF e Padrão Nacional/SPED)
+        let notas = [];
+
+        // 1. Padrão ABRASF / Ginfes (XML inicial do arquivo)
+        xml.querySelectorAll("InfNfse").forEach((n) => notas.push(n));
+
+        // 2. Fallbacks de containers antigos
+        if (notas.length === 0)
+          xml.querySelectorAll("CompNfse").forEach((n) => notas.push(n));
+        if (notas.length === 0)
+          xml.querySelectorAll("Nfse").forEach((n) => notas.push(n));
+
+        // 3. Padrão Nacional / SPED (XMLs anexados no final do arquivo) - Tag <infNFSe>
+        xml.querySelectorAll("infNFSe").forEach((n) => notas.push(n));
+
+        // Fallback robusto antigo (mantido para segurança)
         if (notas.length === 0) {
-          notas = xml.querySelectorAll("CompNfse");
+          const nNFSeElements = xml.querySelectorAll("nNFSe");
+          if (nNFSeElements.length > 0) {
+            const parents = new Set();
+            nNFSeElements.forEach((el) => parents.add(el.parentElement));
+            notas = Array.from(parents);
+          }
         }
+
+        // Helper para pegar texto de múltiplos seletores (primeiro que encontrar)
+        const getText = (parent, selectors) => {
+          for (const sel of selectors) {
+            const el = parent.querySelector(sel);
+            if (el && el.textContent) return el.textContent.trim();
+          }
+          return "";
+        };
 
         let totalNotasCount = 0;
         let totalValorSum = 0;
@@ -987,41 +1025,93 @@
         let marcardosCount = 0;
 
         notas.forEach((nota) => {
+          // Apenas processa se tiver um número de nota válido para evitar nós vazios
+          const numero = getText(nota, ["Numero", "nNFSe", "NuNfse"]);
+          if (!numero) return;
+
           totalNotasCount++;
 
-          const numero = nota.querySelector("Numero")?.textContent || "N/A";
-          let dataRaw =
-            nota.querySelector("DataEmissao")?.textContent.split("T")[0] ||
-            "N/A";
-          let data = dataRaw;
-          if (dataRaw !== "N/A") {
-            data = dataRaw.split("-").reverse().join("/");
+          // 1. Data
+          // Old: DataEmissao | New (SPED): dhEmi | Other: Data
+          let dataRaw = getText(nota, [
+            "DataEmissao",
+            "dCompet",
+            "Data",
+            "dhEmi",
+          ]);
+          // Tratamento de Data
+          if (dataRaw.includes("T")) dataRaw = dataRaw.split("T")[0];
+
+          let data = "N/A";
+          if (dataRaw) {
+            if (dataRaw.includes("-")) {
+              data = dataRaw.split("-").reverse().join("/");
+            } else {
+              // Assume que já está DD/MM/AAAA ou limpo
+              data = dataRaw;
+            }
           }
+
+          // 2. Tomador
           const razaoSocial =
-            nota.querySelector("TomadorServico RazaoSocial")?.textContent ||
-            "N/A";
+            getText(nota, [
+              "TomadorServico RazaoSocial",
+              "toma xNome", // Genérico e SPED
+              "Tomador RazaoSocial",
+              "Tomador Servico RazaoSocial",
+              "DPS infDPS toma xNome", // Caminho explícito SPED
+            ]) || "N/A";
 
           if (razaoSocial !== "N/A") uniqueTomadores.add(razaoSocial);
 
-          const cpfElement = nota.querySelector("TomadorServico Cpf");
-          const cnpjElement = nota.querySelector("TomadorServico Cnpj");
-          const tomadorCpf = cpfElement ? cpfElement.textContent.trim() : "";
-          const tomadorCnpj = cnpjElement ? cnpjElement.textContent.trim() : "";
-          const tomadorDoc = tomadorCpf || tomadorCnpj || "N/A";
+          // 3. DOC (CPF/CNPJ)
+          const cpf = getText(nota, [
+            "TomadorServico Cpf",
+            "toma CPF", // SPED
+            "Tomador Cpf",
+            "Cpf",
+            "DPS infDPS toma CPF",
+          ]);
+          const cnpj = getText(nota, [
+            "TomadorServico Cnpj",
+            "toma CNPJ", // SPED
+            "Tomador Cnpj",
+            "Cnpj",
+            "DPS infDPS toma CNPJ",
+          ]);
 
+          let tomadorDoc = "N/A";
           let tipoDoc = "OUTRO";
-          if (tomadorCpf.length > 0) tipoDoc = "CPF";
-          else if (tomadorCnpj.length > 0) tipoDoc = "CNPJ";
 
+          if (cpf.length > 0) {
+            tomadorDoc = cpf;
+            tipoDoc = "CPF";
+          } else if (cnpj.length > 0) {
+            tomadorDoc = cnpj;
+            tipoDoc = "CNPJ";
+          }
+
+          // 4. Valor
           const valorRaw =
-            nota.querySelector("ValorServicos")?.textContent || "0.00";
-          const valor = parseFloat(valorRaw).toLocaleString("pt-BR", {
-            minimumFractionDigits: 2,
-          });
-          totalValorSum += parseFloat(valorRaw);
+            getText(nota, ["ValorServicos", "vServ", "ValorServico", "vLiq"]) ||
+            "0.00";
+          // Normaliza float (virgula para ponto se necessário, embora XML padrão use ponto)
+          const valorFloat = parseFloat(valorRaw.replace(",", "."));
+          const valor = isNaN(valorFloat)
+            ? "0,00"
+            : valorFloat.toLocaleString("pt-BR", {
+                minimumFractionDigits: 2,
+              });
+          if (!isNaN(valorFloat)) totalValorSum += valorFloat;
 
+          // 5. Discriminação
           const discriminacao =
-            nota.querySelector("Discriminacao")?.textContent || "";
+            getText(nota, [
+              "Discriminacao",
+              "xDescServ", // SPED
+              "DiscriminacaoServico",
+              "DPS infDPS serv cServ xDescServ",
+            ]) || "";
 
           // Mark Logic
           const rowId = `marked_nfse_${numero}`;
@@ -1047,7 +1137,7 @@
                 <td>${tomadorDoc}</td>
                 <td><span class="badge-crt ${tipoDoc === "CPF" ? "crt-simples" : tipoDoc === "CNPJ" ? "crt-normal" : ""}">${tipoDoc}</span></td>
                 <td>${valor}</td>
-                <td style="font-size: 10px; color: var(--text-secondary)">${discriminacao}</td>
+                <td style="color: var(--text-secondary)">${discriminacao}</td>
               `;
 
           tbody.appendChild(tr);
