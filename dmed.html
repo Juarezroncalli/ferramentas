@@ -200,6 +200,28 @@
         background: #22c55e;
         color: white;
       }
+
+      @media print {
+        .no-print,
+        .upload-section,
+        header,
+        marquee {
+          display: none !important;
+        }
+        .container {
+          width: 100%;
+          max-width: none;
+          padding: 0;
+          margin: 0;
+        }
+        table {
+          font-size: 10px;
+        }
+        /* Se a classe print-marked estiver no body, esconde as não marcadas */
+        body.print-marked-only tbody tr:not(.marked-row) {
+          display: none !important;
+        }
+      }
     </style>
   </head>
   <body>
@@ -224,6 +246,13 @@
         <input type="file" id="xmlInput" accept=".xml" />
         <button id="exportBtn" class="btn btn-export">
           <i class="fas fa-file-csv"></i> Exportar CSV
+        </button>
+        <button
+          id="printMarkedBtn"
+          class="btn"
+          style="background: #e11d48; margin-left: 10px; display: none"
+        >
+          <i class="fas fa-print"></i> Imprimir Marcados
         </button>
         <br />
         <input
@@ -327,6 +356,9 @@
           const rowId = `marked_nfse_${numero}`;
           const isMarked = localStorage.getItem(rowId) === "true";
 
+          // Icone: Square vazio se não marcado, Check Square se marcado
+          const iconClass = isMarked ? "fas fa-check-square" : "far fa-square";
+
           const tr = document.createElement("tr");
           if (isMarked) {
             tr.classList.add("marked-row");
@@ -335,7 +367,7 @@
           tr.innerHTML = `
                     <td>
                         <button class="mark-btn ${isMarked ? "active" : ""}">
-                            <i class="fas fa-check"></i>
+                            <i class="${iconClass}"></i>
                         </button>
                     </td>
                     <td>${numero}</td>
@@ -347,21 +379,24 @@
                     <td style="color: var(--color-primary); font-weight: bold;">${discriminacao}</td>
                 `;
           tr.dataset.type = tipoDoc.toLowerCase();
-          tr.dataset.rowId = rowId; // Store ID for click handler
+          tr.dataset.rowId = rowId;
 
-          // Add event listener for the mark button
+          // Evento do botão de marcar
           const markBtn = tr.querySelector(".mark-btn");
           markBtn.addEventListener("click", function (e) {
-            e.stopPropagation(); // Prevent potentially other row clicks if added later
+            e.stopPropagation();
             const isNowMarked = !tr.classList.contains("marked-row");
+            const icon = this.querySelector("i");
 
             if (isNowMarked) {
               tr.classList.add("marked-row");
               this.classList.add("active");
+              icon.className = "fas fa-check-square";
               localStorage.setItem(rowId, "true");
             } else {
               tr.classList.remove("marked-row");
               this.classList.remove("active");
+              icon.className = "far fa-square";
               localStorage.removeItem(rowId);
             }
           });
@@ -372,50 +407,72 @@
         tableContainer.style.display = "block";
         exportBtn.style.display = "inline-block";
 
+        const printBtn = document.getElementById("printMarkedBtn");
+        printBtn.style.display = "inline-block";
+
         const searchInput = document.getElementById("searchInput");
         searchInput.style.display = "inline-block";
 
         const filterGroup = document.getElementById("filterGroup");
         filterGroup.style.display = "block";
 
+        // Reset filters visual state
+        applyFilters();
+
         // Setup filters
         const filterBtns = document.querySelectorAll(".filter-btn");
         filterBtns.forEach((btn) => {
           btn.addEventListener("click", () => {
-            // Remove active class from all
             filterBtns.forEach((b) => b.classList.remove("active"));
-            // Add to clicked
             btn.classList.add("active");
-
-            const filter = btn.dataset.filter;
-            const rows = document.querySelectorAll("#resultTable tbody tr");
-
-            rows.forEach((row) => {
-              const rowType = row.dataset.type; // 'cpf', 'cnpj', or 'outro'
-              if (filter === "all") {
-                row.style.display = "";
-              } else {
-                // Strict check: if filter is 'cpf', verify rowType is 'cpf'
-                row.style.display = rowType === filter ? "" : "none";
-              }
-            });
+            currentFilterType = btn.dataset.filter;
+            applyFilters();
           });
         });
 
         searchInput.addEventListener("keyup", function () {
-          const filter = this.value.toLowerCase();
-          const rows = document.querySelectorAll("#resultTable tbody tr");
-
-          rows.forEach((row) => {
-            // Busca apenas na coluna Discriminação (índice 7)
-            const discriminacaoCell = row.querySelectorAll("td")[7];
-            if (discriminacaoCell) {
-              const text = discriminacaoCell.textContent.toLowerCase();
-              row.style.display = text.includes(filter) ? "" : "none";
-            }
-          });
+          currentSearchTerm = this.value.toLowerCase();
+          applyFilters();
         });
       }
+
+      // Estado global dos filtros
+      let currentFilterType = "all";
+      let currentSearchTerm = "";
+
+      function applyFilters() {
+        const rows = document.querySelectorAll("#resultTable tbody tr");
+        rows.forEach((row) => {
+          const rowType = row.dataset.type; // 'cpf', 'cnpj', 'outro'
+
+          // 1. Checa Tipo
+          const matchType =
+            currentFilterType === "all" || rowType === currentFilterType;
+
+          // 2. Checa Busca (apenas na discriminação, coluna index 7)
+          let matchSearch = true;
+          if (currentSearchTerm) {
+            const discriminacaoCell = row.children[7];
+            const text = discriminacaoCell
+              ? discriminacaoCell.textContent.toLowerCase()
+              : "";
+            matchSearch = text.includes(currentSearchTerm);
+          }
+
+          if (matchType && matchSearch) {
+            row.style.display = "";
+          } else {
+            row.style.display = "none";
+          }
+        });
+      }
+
+      const printBtn = document.getElementById("printMarkedBtn");
+      printBtn.addEventListener("click", function () {
+        document.body.classList.add("print-marked-only");
+        window.print();
+        document.body.classList.remove("print-marked-only");
+      });
 
       function extractInfo(text) {
         // Regex para CPF (com ou sem pontos/traço) ou Data (DD/MM/AAAA ou DD/MM/AA)
