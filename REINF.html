@@ -398,6 +398,56 @@
         <div id="companyNameDisplay" class="hidden"></div>
         <div id="status">Aguardando processamento...</div>
 
+        <!-- Section for Unmatched Rows Alert -->
+        <div
+          id="unmatchedAlert"
+          class="hidden"
+          style="
+            border: 3px solid var(--c-red);
+            background: #fff0f0;
+            padding: 1rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+          "
+        >
+          <h3
+            style="
+              color: var(--c-red);
+              text-transform: uppercase;
+              display: flex;
+              align-items: center;
+              gap: 10px;
+            "
+          >
+            <i class="fa-solid fa-triangle-exclamation"></i> Atenção: Linhas Não
+            Identificadas
+          </h3>
+          <p
+            style="
+              margin: 0.5rem 0;
+              font-family: &quot;Space Mono&quot;;
+              font-size: 0.85rem;
+            "
+          >
+            As seguintes descrições não foram encontradas no mapeamento.
+            Adicione-as na seção "1. Mapeamento Nome x CPF" e processe
+            novamente.
+          </p>
+          <ul
+            id="unmatchedList"
+            style="
+              list-style: none;
+              max-height: 200px;
+              overflow-y: auto;
+              font-family: &quot;Space Mono&quot;;
+              font-size: 0.8rem;
+              border: 1px solid #000;
+              padding: 0.5rem;
+              background: #fff;
+            "
+          ></ul>
+        </div>
+
         <div id="cpfTotalsSection" class="hidden">
           <h3
             style="
@@ -450,11 +500,16 @@
         document.getElementById("companyNameDisplay");
       const fileInfo = document.getElementById("file-info");
       const fileName = document.getElementById("file-name");
+
       const fileSize = document.getElementById("file-size");
+
+      const unmatchedAlert = document.getElementById("unmatchedAlert");
+      const unmatchedList = document.getElementById("unmatchedList");
 
       let mappings = {};
       let processedDataByQuarter = {};
-      let notFoundRows = [];
+      let unmatchedRows = [];
+
       let excelData = [];
       let cpfTotals = {};
 
@@ -546,6 +601,7 @@
       function processExcelData() {
         processedDataByQuarter = {};
         cpfTotals = {};
+        unmatchedRows = [];
         let totalLines = 0;
 
         // Mapeamento de colunas flexível
@@ -578,8 +634,11 @@
             formattedDate = String(dt).trim();
           }
 
+          let rowMatched = false;
+
           for (let name in mappings) {
             if (hist.includes(normalizeString(name))) {
+              rowMatched = true;
               const cpf = mappings[name];
               const quarter = "Geral"; // Simplificado para o exemplo
               if (!processedDataByQuarter[quarter])
@@ -593,6 +652,10 @@
               totalLines++;
             }
           }
+
+          if (!rowMatched) {
+            unmatchedRows.push(hist);
+          }
         });
 
         if (totalLines > 0) {
@@ -603,21 +666,61 @@
         } else {
           updateStatus("Nenhum registro correspondente encontrado.", "error");
         }
+
+        if (unmatchedRows.length > 0) {
+          displayUnmatchedRows();
+        } else {
+          unmatchedAlert.classList.add("hidden");
+        }
       }
 
       function displayCpfTotalsTable() {
         cpfTotalsTableBody.innerHTML = "";
+        let grandTotal = 0;
         for (let cpf in cpfTotals) {
+          const val = cpfTotals[cpf];
+          grandTotal += val;
           const row = document.createElement("tr");
-          row.innerHTML = `<td>${formatCPF(cpf)}</td><td>${cpfTotals[
-            cpf
-          ].toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          })}</td>`;
+          row.innerHTML = `<td>${formatCPF(cpf)}</td><td>${val.toLocaleString(
+            "pt-BR",
+            {
+              style: "currency",
+              currency: "BRL",
+            },
+          )}</td>`;
           cpfTotalsTableBody.appendChild(row);
         }
+
+        // Add Total Row
+        const totalRow = document.createElement("tr");
+        totalRow.style.backgroundColor = "#f0f0f0";
+        totalRow.style.fontWeight = "bold";
+        totalRow.style.borderTop = "3px solid #000";
+        totalRow.innerHTML = `
+          <td>TOTAL GERAL</td>
+          <td>${grandTotal.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          })}</td>
+        `;
+        cpfTotalsTableBody.appendChild(totalRow);
+
         cpfTotalsSectionDiv.classList.remove("hidden");
+      }
+
+      function displayUnmatchedRows() {
+        unmatchedList.innerHTML = "";
+        // Unique unmatched rows only
+        const uniqueUnmatched = [...new Set(unmatchedRows)];
+
+        uniqueUnmatched.forEach((hist) => {
+          const li = document.createElement("li");
+          li.textContent = hist;
+          li.style.borderBottom = "1px solid #eee";
+          li.style.padding = "5px";
+          unmatchedList.appendChild(li);
+        });
+        unmatchedAlert.classList.remove("hidden");
       }
 
       function updateStatus(msg, type) {
