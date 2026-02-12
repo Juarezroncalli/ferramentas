@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
   <head>
     <script
@@ -283,7 +283,11 @@
         <span>REINF 2026</span>
       </div>
       <div
-        style="font-family: 'Space Mono'; font-size: 0.7rem; line-height: 1.5"
+        style="
+          font-family: &quot;Space Mono&quot;;
+          font-size: 0.7rem;
+          line-height: 1.5;
+        "
       >
         <p>
           Utilize esta ferramenta para processar extratos bancários e gerar o
@@ -295,7 +299,7 @@
     <main class="main-content">
       <header class="neo-header">
         <h1>Processador REINF</h1>
-        <p style="font-family: 'Space Mono'; font-weight: bold">
+        <p style="font-family: &quot;Space Mono&quot;; font-weight: bold">
           Mapeamento de CPFs e Geração de TXT
         </p>
       </header>
@@ -367,7 +371,7 @@
           class="hidden"
           style="
             margin: 1rem 0;
-            font-family: 'Space Mono';
+            font-family: &quot;Space Mono&quot;;
             padding: 10px;
             border: 2px solid #000;
             background: #fff;
@@ -509,6 +513,8 @@
         return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
       }
 
+      addMappingBtn.addEventListener("click", addMapping);
+
       excelFileInput.addEventListener("change", (e) => {
         if (e.target.files.length > 0) {
           const file = e.target.files[0];
@@ -528,7 +534,7 @@
           const data = new Uint8Array(e.target.result);
           const workbook = XLSX.read(data, { type: "array", cellDates: true });
           excelData = XLSX.utils.sheet_to_json(
-            workbook.Sheets[workbook.SheetNames[0]]
+            workbook.Sheets[workbook.SheetNames[0]],
           );
 
           // Lógica de processamento (Resumida para o exemplo funcional)
@@ -558,9 +564,19 @@
           const val = parseFloat(
             String(row[hVal])
               .replace(",", ".")
-              .replace(/[^\d.-]/g, "")
+              .replace(/[^\d.-]/g, ""),
           );
           const dt = row[hData];
+
+          let formattedDate = "01/01/2026";
+          if (dt instanceof Date) {
+            const day = String(dt.getDate()).padStart(2, "0");
+            const month = String(dt.getMonth() + 1).padStart(2, "0");
+            const year = dt.getFullYear();
+            formattedDate = `${day}/${month}/${year}`;
+          } else if (dt) {
+            formattedDate = String(dt).trim();
+          }
 
           for (let name in mappings) {
             if (hist.includes(normalizeString(name))) {
@@ -569,9 +585,9 @@
               if (!processedDataByQuarter[quarter])
                 processedDataByQuarter[quarter] = [];
               processedDataByQuarter[quarter].push(
-                `01/01/2026;${cpf};BRASIL;12001;${val.toFixed(
-                  2
-                )};01/01/2026;;;;;;;;;;;;;`
+                `01/01/2026;${cpf};BRASIL;12001;${val
+                  .toFixed(2)
+                  .replace(".", ",")};${formattedDate};;;;;;;;;;;;;`,
               );
               cpfTotals[cpf] = (cpfTotals[cpf] || 0) + val;
               totalLines++;
