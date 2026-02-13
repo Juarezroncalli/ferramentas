@@ -644,25 +644,28 @@
         text-align: center;
       } /* Checkbox */
       th:nth-child(2) {
-        width: 10%;
+        width: 8%;
       } /* Número */
       th:nth-child(3) {
-        width: 10%;
+        width: 8%;
       } /* Emissão */
       th:nth-child(4) {
+        width: 15%;
+      } /* Prestador */
+      th:nth-child(5) {
         width: 20%;
       } /* Tomador */
-      th:nth-child(5) {
-        width: 15%;
-      } /* CPF/CNPJ */
       th:nth-child(6) {
-        width: 8%;
-      } /* Tipo */
-      th:nth-child(7) {
         width: 12%;
+      } /* CPF/CNPJ */
+      th:nth-child(7) {
+        width: 6%;
+      } /* Tipo */
+      th:nth-child(8) {
+        width: 10%;
         text-align: right;
       } /* Valor */
-      th:nth-child(8) {
+      th:nth-child(9) {
         width: auto;
       } /* Discriminação */
 
@@ -988,12 +991,13 @@
                 <th style="width: 5%; text-align: center">
                   <i class="fas fa-check-square"></i>
                 </th>
-                <th style="width: 10%">Número</th>
-                <th style="width: 10%">Emissão</th>
+                <th style="width: 8%">Número</th>
+                <th style="width: 8%">Emissão</th>
+                <th style="width: 15%">Prestador</th>
                 <th style="width: 20%">Tomador</th>
-                <th style="width: 15%">CPF/CNPJ</th>
-                <th style="width: 8%">Tipo</th>
-                <th style="width: 12%">Valor (R$)</th>
+                <th style="width: 12%">CPF/CNPJ</th>
+                <th style="width: 6%">Tipo</th>
+                <th style="width: 10%">Valor (R$)</th>
                 <th>Discriminação</th>
               </tr>
             </thead>
@@ -1158,6 +1162,15 @@
             }
           }
 
+          // 1.5 Prestador (Razão Social)
+          const prestadorRazao =
+            getText(nota, [
+              "PrestadorServico RazaoSocial",
+              "prestadorservico RazaoSocial", // Lowercase tag
+              "emit xNome",
+              "Prestador RazaoSocial",
+            ]) || "N/A";
+
           // 2. Tomador
           const razaoSocial =
             getText(nota, [
@@ -1239,6 +1252,7 @@
                 </td>
                 <td>${numero}</td>
                 <td>${data}</td>
+                <td>${prestadorRazao}</td>
                 <td>${razaoSocial}</td>
                 <td>${tomadorDoc}</td>
                 <td><span class="badge-crt ${tipoDoc === "CPF" ? "crt-simples" : tipoDoc === "CNPJ" ? "crt-normal" : ""}">${tipoDoc}</span></td>
@@ -1312,8 +1326,8 @@
 
         rows.forEach((row) => {
           const rowType = row.dataset.type;
-          // Discriminação is the last column (index 7)
-          const discCell = row.children[7];
+          // Discriminação is the last column (index 8)
+          const discCell = row.children[8];
           // Use textContent to always get the raw text, clearing previous spans
           const originalText = discCell.textContent;
           const discText = originalText.toLowerCase();
@@ -1368,6 +1382,7 @@
           "Marcado",
           "Número",
           "Emissão",
+          "Prestador",
           "Razão Social",
           "CPF/CNPJ",
           "Tipo",
@@ -1385,18 +1400,20 @@
 
           const numero = cols[1].innerText.trim();
           const emissao = cols[2].innerText.trim();
-          const razao = cols[3].innerText.trim();
-          const doc = cols[4].innerText.trim();
-          const tipo = cols[5].innerText.trim();
-          const valor = cols[6].innerText.trim();
+          const prestador = cols[3].innerText.trim();
+          const razao = cols[4].innerText.trim();
+          const doc = cols[5].innerText.trim();
+          const tipo = cols[6].innerText.trim();
+          const valor = cols[7].innerText.trim();
 
           // Aplica a limpeza na discriminação para evitar "cortes" ou quebras de linha
-          const discriminacao = cleanText(cols[7].textContent);
+          const discriminacao = cleanText(cols[8].textContent);
 
           data.push([
             isMarked,
             numero,
             emissao,
+            prestador,
             razao,
             doc,
             tipo,
@@ -1414,6 +1431,7 @@
           { wch: 8 }, // Marcado
           { wch: 10 }, // Numero
           { wch: 12 }, // Emissao
+          { wch: 25 }, // Prestador
           { wch: 30 }, // Razao
           { wch: 18 }, // Doc
           { wch: 10 }, // Tipo
