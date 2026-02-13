@@ -123,7 +123,9 @@
         --shadow-float: 0px 8px 30px rgba(0, 0, 0, 0.12);
         --upload-pattern: radial-gradient(#e4e9f2 1px, transparent 1px);
 
-        --font-ui: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        --font-ui:
+          "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
         --font-code: "JetBrains Mono", monospace;
       }
 
@@ -426,7 +428,7 @@
       .metric-card::after {
         display: none; /* Remove colored top border */
       }
-      
+
       /* New icon style for metrics instead of top border */
       .metric-icon-bg {
         width: 40px;
@@ -453,10 +455,18 @@
         color: var(--text-primary);
         letter-spacing: -0.02em;
       }
-      .metric-card.purple .metric-value { color: var(--data-purple); }
-      .metric-card.green .metric-value { color: var(--data-green); }
-      .metric-card.blue .metric-value { color: var(--data-blue); }
-      .metric-card.orange .metric-value { color: var(--data-orange); } /* Adjusted visibility */
+      .metric-card.purple .metric-value {
+        color: var(--data-purple);
+      }
+      .metric-card.green .metric-value {
+        color: var(--data-green);
+      }
+      .metric-card.blue .metric-value {
+        color: var(--data-blue);
+      }
+      .metric-card.orange .metric-value {
+        color: var(--data-orange);
+      } /* Adjusted visibility */
 
       /* UPLOAD */
       .upload-area {
@@ -527,7 +537,7 @@
         font-family: var(--font-ui);
         font-size: 13px;
         color: var(--text-primary);
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02); /* Soft shadow */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02); /* Soft shadow */
         transition: all 0.2s ease;
       }
       .neo-input:hover {
@@ -562,7 +572,7 @@
       }
       .btn-toggle:hover {
         color: var(--text-primary);
-        background: rgba(0,0,0,0.03);
+        background: rgba(0, 0, 0, 0.03);
       }
       .btn-toggle.active {
         background: var(--bg-surface);
@@ -731,7 +741,7 @@
         text-overflow: ellipsis;
         white-space: nowrap;
         /* Fix for highlight glow clipping */
-        padding: 4px 2px; 
+        padding: 4px 2px;
         margin: -4px -2px;
         line-height: normal;
       }
@@ -814,15 +824,15 @@
       }
 
       .highlight-neon {
-        color: #ff00cc;
-        background-color: rgba(255, 0, 204, 0.1);
-        font-weight: 700;
-        /* The glow effect user liked in NCM */
-        box-shadow: 0 0 10px rgba(255, 0, 204, 0.6);
-        /* The requested underline (grifo) */
-        border-bottom: 2px solid #ff00cc;
+        color: #fff;
+        background-color: var(--data-purple);
+        text-shadow: 0 0 2px #fff;
+        box-shadow:
+          0 0 5px var(--accent-primary),
+          0 0 10px var(--accent-primary);
         border-radius: 2px;
         padding: 0 2px;
+        font-weight: bold;
       }
 
       /* FOOTER */
@@ -840,7 +850,7 @@
         right: 0;
         z-index: 100;
         height: 60px; /* Taller footer */
-        box-shadow: 0 -4px 20px rgba(0,0,0,0.02);
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.02);
         transition: all 0.3s ease;
       }
       [data-theme="dark"] .footer-controls {
@@ -1069,48 +1079,58 @@
         height: 40px;
         padding: 0 16px;
         border-radius: 30px; /* Pílula */
-        
+
         background: var(--bg-surface);
         border: 1px solid var(--border-focus); /* Roxo destaque */
         box-shadow: var(--shadow-float);
-        
+
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 8px; /* Espaço entre icone e texto */
-        
+
         cursor: pointer;
         z-index: 1000;
         transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
         color: var(--data-purple);
-        
+
         font-family: var(--font-ui);
         font-weight: 600;
         font-size: 12px;
       }
-      
+
       .donation-float-btn:hover {
         transform: scale(1.05);
         background: var(--data-purple);
         color: #fff;
       }
-      
+
       /* Animação sutil no coração */
       @keyframes heartBeat {
-        0% { transform: scale(1); }
-        14% { transform: scale(1.1); }
-        28% { transform: scale(1); }
-        42% { transform: scale(1.1); }
-        70% { transform: scale(1); }
+        0% {
+          transform: scale(1);
+        }
+        14% {
+          transform: scale(1.1);
+        }
+        28% {
+          transform: scale(1);
+        }
+        42% {
+          transform: scale(1.1);
+        }
+        70% {
+          transform: scale(1);
+        }
       }
-      
+
       .donation-float-btn i.fa-heart {
         animation: heartBeat 3s infinite;
       }
       .donation-float-btn:hover i.fa-heart {
         animation: none; /* Para no hover */
       }
-      
+
       .donation-popover {
         position: fixed;
         bottom: 135px; /* donation-float-btn bottom (80) + height (40) + gap (15) */
@@ -1352,8 +1372,14 @@
 
         <div class="dashboard-grid">
           <div class="metric-card purple">
-            <div class="metric-icon-bg" style="background: var(--badge-purple-bg); color: var(--data-purple)">
-               <i class="fas fa-cube"></i>
+            <div
+              class="metric-icon-bg"
+              style="
+                background: var(--badge-purple-bg);
+                color: var(--data-purple);
+              "
+            >
+              <i class="fas fa-cube"></i>
             </div>
             <div>
               <div class="metric-title">Itens Processados</div>
@@ -1361,8 +1387,14 @@
             </div>
           </div>
           <div class="metric-card orange">
-             <div class="metric-icon-bg" style="background: var(--badge-orange-bg); color: var(--data-orange)">
-               <i class="fas fa-piggy-bank"></i>
+            <div
+              class="metric-icon-bg"
+              style="
+                background: var(--badge-orange-bg);
+                color: var(--data-orange);
+              "
+            >
+              <i class="fas fa-piggy-bank"></i>
             </div>
             <div>
               <div class="metric-title">Benefício Fiscal</div>
@@ -1370,8 +1402,11 @@
             </div>
           </div>
           <div class="metric-card blue">
-             <div class="metric-icon-bg" style="background: var(--badge-blue-bg); color: var(--data-blue)">
-               <i class="fas fa-file-invoice-dollar"></i>
+            <div
+              class="metric-icon-bg"
+              style="background: var(--badge-blue-bg); color: var(--data-blue)"
+            >
+              <i class="fas fa-file-invoice-dollar"></i>
             </div>
             <div>
               <div class="metric-title">CBS Acumulado (R$)</div>
@@ -1379,8 +1414,14 @@
             </div>
           </div>
           <div class="metric-card green">
-             <div class="metric-icon-bg" style="background: var(--badge-green-bg); color: var(--data-green)">
-               <i class="fas fa-hand-holding-dollar"></i>
+            <div
+              class="metric-icon-bg"
+              style="
+                background: var(--badge-green-bg);
+                color: var(--data-green);
+              "
+            >
+              <i class="fas fa-hand-holding-dollar"></i>
             </div>
             <div>
               <div class="metric-title">IBS Acumulado (R$)</div>
@@ -1388,8 +1429,14 @@
             </div>
           </div>
           <div class="metric-card purple">
-             <div class="metric-icon-bg" style="background: var(--badge-purple-bg); color: var(--data-purple)">
-               <i class="fas fa-check-circle"></i>
+            <div
+              class="metric-icon-bg"
+              style="
+                background: var(--badge-purple-bg);
+                color: var(--data-purple);
+              "
+            >
+              <i class="fas fa-check-circle"></i>
             </div>
             <div>
               <div class="metric-title">Conformidade</div>
@@ -1561,14 +1608,19 @@
         </div>
       </div>
     </main>
-    
+
     <div class="donation-popover" id="donationPopover">
-      <h4><i class="fas fa-mug-hot" style="color:var(--data-orange)"></i> Café do Desenvolvedor</h4>
-      <p>Este sistema é gratuito e seguro. Contribua via Pix para mantermos as atualizações.</p>
-      
-      <div class="pix-key-display" id="pixKeyContainer">
-        </div>
-      
+      <h4>
+        <i class="fas fa-mug-hot" style="color: var(--data-orange)"></i> Café do
+        Desenvolvedor
+      </h4>
+      <p>
+        Este sistema é gratuito e seguro. Contribua via Pix para mantermos as
+        atualizações.
+      </p>
+
+      <div class="pix-key-display" id="pixKeyContainer"></div>
+
       <button class="btn-donate-action" onclick="copiarPixKey()">
         <i class="fas fa-copy"></i> Copiar Chave Aleatória
       </button>
@@ -2014,9 +2066,12 @@
       function highlightTerm(text, term) {
         if (!term || term.length < 2) return text;
         // Escape regex characters
-        const cleanTerm = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const cleanTerm = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         const regex = new RegExp(`(${cleanTerm})`, "gi");
-        return String(text).replace(regex, '<span class="highlight-neon">$1</span>');
+        return String(text).replace(
+          regex,
+          '<span class="highlight-neon">$1</span>',
+        );
       }
 
       function renderizarTabela() {
@@ -2172,25 +2227,25 @@
         const formattedData = filteredItems.map((r) => {
           let statusStr = !r.hasTags
             ? "SEM_TAGS"
-            : (r.pRedCBS > 0 || r.pRedIBS > 0)
+            : r.pRedCBS > 0 || r.pRedIBS > 0
               ? "REDUCAO"
-              : (r.vCBS == 0 && r.vIBS == 0)
+              : r.vCBS == 0 && r.vIBS == 0
                 ? "ZERADO"
                 : "OK";
 
           return {
-            "Emitente": r.emitNome,
-            "CNPJ": r.emitCNPJ,
-            "Regime": r.regimeDesc,
-            "Chave": r.chNFe,
-            "Nota": r.nNF,
-            "Data": r.data,
-            "Código": r.cProd,
-            "Produto": r.xProd,
-            "NCM": r.ncm,
-            "CFOP": r.cfop,
-            "CST": r.cst,
-            "ClassTrib": r.cClassTrib,
+            Emitente: r.emitNome,
+            CNPJ: r.emitCNPJ,
+            Regime: r.regimeDesc,
+            Chave: r.chNFe,
+            Nota: r.nNF,
+            Data: r.data,
+            Código: r.cProd,
+            Produto: r.xProd,
+            NCM: r.ncm,
+            CFOP: r.cfop,
+            CST: r.cst,
+            ClassTrib: r.cClassTrib,
             "V.Prod": r.vProd,
             "% CBS": r.pCBS,
             "Red% CBS": r.pRedCBS,
@@ -2198,60 +2253,60 @@
             "% IBS": r.pIBS,
             "Red% IBS": r.pRedIBS,
             "R$ IBS": r.vIBS,
-            "Status": statusStr
+            Status: statusStr,
           };
         });
 
         // Create workbook and worksheet
         const wb = XLSX.utils.book_new();
         const ws = XLSX.utils.json_to_sheet(formattedData);
-        
+
         // Auto-width for columns
         const wscols = [
-          {wch: 20}, // Emitente
-          {wch: 15}, // CNPJ
-          {wch: 10}, // Regime
-          {wch: 44}, // Chave
-          {wch: 8},  // Nota
-          {wch: 10}, // Data
-          {wch: 10}, // Código
-          {wch: 40}, // Produto
-          {wch: 10}, // NCM
-          {wch: 6},  // CFOP
-          {wch: 6},  // CST
-          {wch: 8},  // Class
-          {wch: 12}, // VProd
-          {wch: 6},  // % CBS
-          {wch: 6},  // Red%
-          {wch: 10}, // R$ CBS
-          {wch: 6},  // % IBS
-          {wch: 6},  // Red%
-          {wch: 10}, // R$ IBS
-          {wch: 10}  // Status
+          { wch: 20 }, // Emitente
+          { wch: 15 }, // CNPJ
+          { wch: 10 }, // Regime
+          { wch: 44 }, // Chave
+          { wch: 8 }, // Nota
+          { wch: 10 }, // Data
+          { wch: 10 }, // Código
+          { wch: 40 }, // Produto
+          { wch: 10 }, // NCM
+          { wch: 6 }, // CFOP
+          { wch: 6 }, // CST
+          { wch: 8 }, // Class
+          { wch: 12 }, // VProd
+          { wch: 6 }, // % CBS
+          { wch: 6 }, // Red%
+          { wch: 10 }, // R$ CBS
+          { wch: 6 }, // % IBS
+          { wch: 6 }, // Red%
+          { wch: 10 }, // R$ IBS
+          { wch: 10 }, // Status
         ];
-        ws['!cols'] = wscols;
+        ws["!cols"] = wscols;
 
         XLSX.utils.book_append_sheet(wb, ws, "Auditoria");
 
         // Write file
         XLSX.writeFile(wb, "auditoria_tax_audit_pro.xlsx");
       }
-      
+
       // ============================================
       // WIDGET DOAÇÃO - SCRIPT
       // ============================================
       const MY_PIX_KEY = "553a7d69-3f85-4f42-a8b0-267a6f136fa1"; // SUBSTITUA PELA SUA CHAVE
-      
+
       // Inicializar visualização da chave (truncada)
       const containerPix = document.getElementById("pixKeyContainer");
-      if(containerPix) {
+      if (containerPix) {
         containerPix.innerText = MY_PIX_KEY.substring(0, 32) + "...";
       }
 
       function toggleDonationWidget() {
         const popover = document.getElementById("donationPopover");
         const icon = document.getElementById("iconDonate");
-        
+
         if (popover.classList.contains("active")) {
           popover.classList.remove("active");
           icon.classList.remove("fa-times");
@@ -2267,27 +2322,31 @@
         navigator.clipboard.writeText(MY_PIX_KEY).then(() => {
           const btn = document.querySelector(".btn-donate-action");
           const originalHTML = btn.innerHTML;
-          
+
           btn.style.background = "var(--data-green)";
           btn.innerHTML = `<i class="fas fa-check"></i> Copiado!`;
-          
+
           setTimeout(() => {
             btn.style.background = ""; // Volta ao padrão
             btn.innerHTML = originalHTML;
             // Opcional: fechar após copiar
-            // toggleDonationWidget(); 
+            // toggleDonationWidget();
           }, 2000);
         });
       }
 
       // Fechar se clicar fora
-      document.addEventListener('click', function(event) {
+      document.addEventListener("click", function (event) {
         const popover = document.getElementById("donationPopover");
         const btn = document.querySelector(".donation-float-btn");
-        
+
         if (!popover || !btn) return;
-        
-        if (!popover.contains(event.target) && !btn.contains(event.target) && popover.classList.contains("active")) {
+
+        if (
+          !popover.contains(event.target) &&
+          !btn.contains(event.target) &&
+          popover.classList.contains("active")
+        ) {
           toggleDonationWidget();
         }
       });
