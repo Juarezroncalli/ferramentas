@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conferência de Notas - Estilo Clean</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    <style>
+        /* Ajustes finos para estilo Apple/Clean */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+        }
+        .apple-card {
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background-color: #0071e3;
+            color: white;
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #0077ed;
+        }
+        .btn-secondary {
+            background-color: #333;
+            color: white;
+            transition: background-color 0.2s;
+        }
+        .btn-secondary:hover {
+            background-color: #555;
+        }
+        th {
+            font-weight: 600;
+            color: #86868b;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        td {
+            font-size: 0.9rem;
+        }
+        .status-missing {
+            background-color: #ffe5e5;
+            color: #d70015;
+        }
+        .status-ok {
+            /* background-color: #f2fcf5; */
+        }
+    </style>
+</head>
+<body class="p-8">
+
+    <div class="max-w-7xl mx-auto space-y-8">
+        
+        <div class="text-center space-y-2">
+            <h1 class="text-3xl font-semibold tracking-tight">Conferência de Notas Fiscais</h1>
+            <p class="text-gray-500">Compare a Base Nacional com a Base Domínio</p>
+        </div>
+
+        <div class="apple-card p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="space-y-3">
+                <label class="block text-sm font-medium text-gray-700">Arquivo Domínio (.xlsx)</label>
+                <div class="relative group">
+                    <input type="file" id="fileDominio" accept=".xlsx, .xls" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"/>
+                </div>
+                <p class="text-xs text-gray-400">Colunas esperadas: Data, Nota, Fornecedor, Valor Contábil</p>
+            </div>
+
+            <div class="space-y-3">
+                <label class="block text-sm font-medium text-gray-700">Arquivo Ambiente Nacional (.xlsx)</label>
+                <div class="relative group">
+                    <input type="file" id="fileNacional" accept=".xlsx, .xls" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"/>
+                </div>
+                <p class="text-xs text-gray-400">Colunas esperadas: Número (nNFSe), Data de Competência (dCompet), Data da Emissão (dhEmi), Emitente (xNome), Valor Serviço (vServ)</p>
+            </div>
+        </div>
+
+        <div class="text-center space-x-4">
+            <button onclick="processarArquivos()" class="btn-primary px-8 py-3 rounded-full font-medium text-sm shadow-sm hover:shadow-md transform active:scale-95 transition-all">
+                Processar e Comparar
+            </button>
+            <button id="btnExport" onclick="exportarMarcadas()" class="hidden btn-secondary px-8 py-3 rounded-full font-medium text-sm shadow-sm hover:shadow-md transform active:scale-95 transition-all">
+                Exportar Notas Marcadas
+            </button>
+        </div>
+
+        <div id="resultSection" class="hidden apple-card overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse border-2 border-gray-500">
+                    <thead>
+                        <tr class="border-b-2 border-gray-500 bg-gray-50/50">
+                            <th class="p-4 w-1/12">Status</th> <th class="p-4 w-5/12 text-center border-r-2 border-gray-500">Ambiente Nacional (Origem)</th>
+                            <th class="p-4 w-6/12 text-center">Domínio (Destino)</th>
+                        </tr>
+                        <tr class="border-b-2 border-gray-500 text-xs text-gray-500 bg-white">
+                            <th class="p-2"></th>
+                            <th class="p-0">
+                                <div class="grid grid-cols-4 gap-2 px-2">
+                                    <span>Número</span>
+                                    <span>Emissão</span>
+                                    <span>Emitente</span>
+                                    <span class="text-right">Valor</span>
+                                </div>
+                            </th>
+                            <th class="p-0 border-l-2 border-gray-500">
+                                <div class="grid grid-cols-4 gap-2 px-2">
+                                    <span>Nota Enc.</span>
+                                    <span>Data</span>
+                                    <span>Fornecedor</span>
+                                    <span class="text-right">Valor</span>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Variáveis globais para armazenar dados e estado
+        let globalNacionalList = [];
+        let markedIndices = new Set();
+
+        // Função auxiliar para normalizar chaves do objeto (remove espaços e lowercase)
+        const normalizeKey = (key) => key.trim().toLowerCase();
+
+        // Função para ler arquivo Excel
+        const readExcel = (file) => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        
+                        // Converter para array de arrays primeiro para encontrar o cabeçalho
+                        const tempJson = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                        
+                        // Procurar linha de cabeçalho
+                        let headerRowIndex = 0;
+                        for (let i = 0; i < Math.min(tempJson.length, 20); i++) {
+                            const row = tempJson[i];
+                            const rowStr = row.join(" ").toLowerCase();
+                            // Critérios para identificar cabeçalho: ter "nota" e "data" ou "valor"
+                            if ((rowStr.includes("nota") && rowStr.includes("data")) || 
+                                (rowStr.includes("número") && rowStr.includes("valor"))) {
+                                headerRowIndex = i;
+                                break;
+                            }
+                        }
+
+                        console.log("Cabeçalho encontrado na linha:", headerRowIndex);
+
+                        // Ler novamente usando a linha correta como cabeçalho
+                        const json = XLSX.utils.sheet_to_json(worksheet, { range: headerRowIndex, defval: "" });
+                        resolve(json);
+                    } catch (err) {
+                        reject(err);
+                    }
+                };
+                reader.onerror = (error) => reject(error);
+                reader.readAsArrayBuffer(file);
+            });
+        };
+
+        // Função de formatação de moeda
+        const formatCurrency = (val) => {
+            if (!val && val !== 0) return "-";
+            if (typeof val === 'string') {
+                // Tenta converter string "1.000,00" ou "1000.00"
+                let clean = val.replace(/[^\d.,-]/g, ''); 
+                val = parseFloat(clean.replace(',', '.')); // assumindo ponto como decimal se falhar
+                if (isNaN(val)) return clean; 
+            }
+            return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        };
+
+        // Função para converter valor em número float para comparação
+        const parseValue = (val) => {
+            if (typeof val === 'number') return val;
+            if (!val) return 0;
+            // Se for string "1.234,56" -> remove ponto milhar, troca virgula por ponto
+            // Se for string "1234.56" -> ok
+            let str = String(val).trim();
+            // Verifica se tem formato brasileiro (ponto como milhar e vírgula como decimal)
+            if (str.includes(',') && str.includes('.')) {
+                 // Remove pontos de milhar e substitui virgula decimal por ponto
+                str = str.replace(/\./g, '').replace(',', '.');
+            } else if (str.includes(',')) {
+                // Apenas virgula como decimal
+                str = str.replace(',', '.');
+            }
+            const num = parseFloat(str);
+            return isNaN(num) ? 0 : num;
+        };
+
+        // Função para formatar data (Excel serial ou string)
+        const formatDate = (val) => {
+            if (!val) return "-";
+            if (typeof val === 'number') {
+                // Excel date serial
+                const date = new Date(Math.round((val - 25569) * 86400 * 1000));
+                return date.toLocaleDateString('pt-BR');
+            }
+            // Se for string, tenta limpar
+            if (val instanceof Date) return val.toLocaleDateString('pt-BR');
+            return val.toString().split(' ')[0]; // pega só a parte da data se tiver hora
+        };
+
+        async function processarArquivos() {
+            const fileDom = document.getElementById('fileDominio').files[0];
+            const fileNac = document.getElementById('fileNacional').files[0];
+
+            if (!fileDom || !fileNac) {
+                alert("Por favor, selecione ambos os arquivos.");
+                return;
+            }
+
+            try {
+                const dataDominio = await readExcel(fileDom);
+                const dataNacional = await readExcel(fileNac);
+
+                // Armazena dados globais e limpa marcadores
+                globalNacionalList = dataNacional;
+                markedIndices.clear();
+
+                renderTable(dataDominio, dataNacional);
+                
+                // Mostrar botão de exportar
+                document.getElementById('btnExport').classList.remove('hidden');
+            } catch (error) {
+                console.error(error);
+                alert("Erro ao processar arquivos. Verifique o formato.");
+            }
+        }
+
+        // Função para exportar notas marcadas
+        function exportarMarcadas() {
+            const marcadas = [];
+            markedIndices.forEach(index => {
+                if (globalNacionalList[index]) {
+                    marcadas.push(globalNacionalList[index]);
+                }
+            });
+
+            if (marcadas.length === 0) {
+                alert("Nenhuma nota marcada para exportação. Marque as caixas de seleção na primeira coluna.");
+                return;
+            }
+
+            // Criar planilha e exportar
+            const ws = XLSX.utils.json_to_sheet(marcadas);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Notas Marcadas");
+            XLSX.writeFile(wb, "notas_manual_nacional.xlsx");
+        }
+
+        // Função para marcar/desmarcar nota
+        function toggleMark(index) {
+            if (markedIndices.has(index)) {
+                markedIndices.delete(index);
+            } else {
+                markedIndices.add(index);
+            }
+        }
+
+        function renderTable(dominioList, nacionalList) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = "";
+            
+            const dominioMap = {};
+            
+            // 1. Indexar Domínio
+            dominioList.forEach(row => {
+                let nota = "", data = "", fornecedor = "", valor = "";
+                for (let k in row) {
+                    const key = k.trim().toLowerCase();
+                    if (key.includes("nota")) nota = String(row[k]).trim();
+                    else if (key === "data" || key.includes("lançamento") || key.includes("entrada")) data = row[k];
+                    else if (key.includes("fornecedor") || key.includes("nome")) fornecedor = row[k];
+                    else if (key.includes("valor") && (key.includes("cont") || key.includes("serviço"))) valor = row[k];
+                }
+
+                if (nota) {
+                    const notaClean = nota.replace(/^0+/, '');
+                    if (!dominioMap[notaClean]) dominioMap[notaClean] = [];
+                    dominioMap[notaClean].push({ nota, data, fornecedor, valor });
+                }
+            });
+
+            // Ordenar nacionalList por número da nota (crescente) antes de renderizar
+            nacionalList.sort((a, b) => {
+                const findNumero = (row) => {
+                    for (let k in row) {
+                        const key = k.trim().toLowerCase();
+                        if (key.includes("nnfse") || key === "número") return String(row[k]).trim();
+                    }
+                    return "";
+                };
+                
+                // Limpa não-dígitos para garantir ordenação numérica correta
+                const valA = parseInt(findNumero(a).replace(/\D/g, '')) || 0;
+                const valB = parseInt(findNumero(b).replace(/\D/g, '')) || 0;
+                return valA - valB;
+            });
+
+            // 2. Processar Nacional
+            let html = "";
+
+            nacionalList.forEach((row, index) => {
+                let numero = "", dCompet = "", dhEmi = "", xNome = "", vServ = "";
+                
+                for (let k in row) {
+                    const key = k.trim().toLowerCase();
+                    if (key.includes("nnfse") || key === "número") numero = String(row[k]).trim();
+                    else if (key.includes("dcompet") || key.includes("competência")) dCompet = row[k];
+                    else if (key.includes("dhemi") || key.includes("emissão")) dhEmi = row[k];
+                    // Melhoria na captura de xNome: tenta "razão", "prestador", "nome fantasia" além de emitente/xnome
+                    else if (key.includes("xnome") || key.includes("emitente") || key.includes("razão social") || key.includes("prestador") || key.includes("nome fantasia")) {
+                        // Evita pegar colunas de Tomador se tiverem nomes parecidos (mas 'emitente' geralmente diferencia)
+                        if (!key.includes("tomador")) xNome = row[k];
+                    }
+                    else if (key.includes("vserv") || key.includes("valor serviço")) vServ = row[k];
+                }
+
+                const numeroClean = numero.replace(/^0+/, '');
+                const matches = dominioMap[numeroClean] || [];
+                const vServFloat = parseValue(vServ);
+
+                // Se houver matches, ordena colocando o valor exato primeiro
+                if (matches.length > 0) {
+                    matches.sort((a, b) => {
+                        const valA = parseValue(a.valor);
+                        const valB = parseValue(b.valor);
+                        const diffA = Math.abs(valA - vServFloat);
+                        const diffB = Math.abs(valB - vServFloat);
+                        return diffA - diffB; // Menor diferença primeiro
+                    });
+                }
+
+                const rowSpan = matches.length > 0 ? matches.length : 1;
+                
+                // === Renderização === //
+                
+                // Dados da Esquerda (Nacional) - Renderizados apenas na primeira linha do grupo
+                // ADICIONADO: Checkbox para seleção manual
+                const leftCell = `
+                    <td class="p-4 text-center align-middle border-r border-gray-200 bg-white" rowspan="${rowSpan}">
+                        <div class="flex flex-col items-center gap-2">
+                            <div>
+                                ${matches.length > 0 
+                                    ? (matches.some(m => Math.abs(parseValue(m.valor) - vServFloat) < 0.05) 
+                                        ? `<svg class="w-6 h-6 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`
+                                        : `<svg class="w-6 h-6 text-yellow-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`)
+                                    : `<svg class="w-6 h-6 text-red-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`
+                                }
+                            </div>
+                            <label class="cursor-pointer">
+                                <input type="checkbox" 
+                                    class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" 
+                                    onchange="toggleMark(${index})" 
+                                    title="Marcar nota manualmente para exportação">
+                            </label>
+                        </div>
+                    </td>
+                    <td class="p-4 border-r border-gray-200 bg-white" rowspan="${rowSpan}">
+                        <div class="grid grid-cols-4 gap-2 items-center">
+                            <span class="font-medium text-gray-900 truncate" title="${numero}">${numero || "-"}</span>
+                            <span class="text-gray-500 text-xs truncate">${formatDate(dhEmi)}</span>
+                            <span class="text-gray-600 text-xs truncate" title="${xNome}">${xNome || "-"}</span>
+                            <span class="text-gray-900 font-mono text-xs text-right">${formatCurrency(vServ)}</span>
+                        </div>
+                    </td>
+                `;
+
+                if (matches.length === 0) {
+                    // Caso: Não Encontrado
+                    html += `
+                    <tr class="status-missing border-b-4 border-gray-600">
+                        ${leftCell}
+                        <td class="p-4 bg-red-50">
+                            <div class="text-xs text-red-700 font-bold text-center uppercase tracking-wide">
+                                Não encontrado no Domínio
+                            </div>
+                        </td>
+                    </tr>`;
+                } else {
+                    // Caso: Encontrado (1 ou mais)
+                    matches.forEach((match, idx) => {
+                        const mValFloat = parseValue(match.valor);
+                        const isExact = Math.abs(mValFloat - vServFloat) < 0.05;
+                        
+                        // Estilo da célula direita
+                        // Verde suave se for match exato de valor
+                        // Amarelo suave se for o mesmo número mas valor diferente
+                        const bgClass = isExact ? "bg-green-50/50" : "bg-yellow-50/50";
+                        // Borda mais forte para separar blocos de notas
+                        const borderClass = idx === matches.length - 1 ? "border-b-4 border-gray-600" : "border-b border-gray-400 border-dashed";
+
+                        html += `
+                        <tr class="${bgClass} ${borderClass} transition-colors">
+                            ${idx === 0 ? leftCell : ''}
+                            <td class="p-4">
+                                <div class="grid grid-cols-4 gap-2 items-center">
+                                    <span class="font-medium text-gray-900 truncate" title="${match.nota}">${match.nota}</span>
+                                    <span class="text-gray-500 text-xs truncate">${formatDate(match.data)}</span>
+                                    <span class="text-gray-600 text-xs truncate" title="${match.fornecedor}">${match.fornecedor}</span>
+                                    <span class="text-gray-900 font-mono text-xs text-right ${isExact ? 'font-bold text-green-700' : 'text-yellow-700'}">
+                                        ${formatCurrency(match.valor)}
+                                        ${!isExact ? '<span class="block text-[9px] text-red-500 font-normal">Diferente</span>' : ''}
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>`;
+                    });
+                }
+            });
+
+            tbody.innerHTML = html;
+            document.getElementById('resultSection').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

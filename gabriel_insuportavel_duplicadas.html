@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise de Duplicatas - Domínio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    <style>
+        /* Ajustes finos para estilo Apple/Clean */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+        }
+        .apple-card {
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background-color: #0071e3;
+            color: white;
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #0077ed;
+        }
+        th {
+            font-weight: 600;
+            color: #86868b;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        td {
+            font-size: 0.9rem;
+        }
+        .tag-count {
+            @apply px-2 py-1 rounded-full text-xs font-bold;
+        }
+    </style>
+</head>
+<body class="p-8">
+
+    <div class="max-w-7xl mx-auto space-y-8">
+        
+        <div class="text-center space-y-2">
+            <h1 class="text-3xl font-semibold tracking-tight">Análise de Notas Duplicadas</h1>
+            <p class="text-gray-500">Verifique duplicatas no arquivo do Domínio</p>
+        </div>
+
+        <div class="apple-card p-8 max-w-2xl mx-auto">
+            <div class="space-y-3">
+                <label class="block text-sm font-medium text-gray-700">Arquivo Domínio (.xlsx)</label>
+                <div class="relative group">
+                    <input type="file" id="fileDominio" accept=".xlsx, .xls" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"/>
+                </div>
+                <p class="text-xs text-gray-400">Colunas esperadas: Data, Nota, Fornecedor, Valor Contábil</p>
+            </div>
+
+            <div class="mt-6 text-center">
+                <button onclick="processarArquivo()" class="btn-primary px-8 py-3 rounded-full font-medium text-sm shadow-sm hover:shadow-md transform active:scale-95 transition-all w-full md:w-auto">
+                    Analisar Duplicatas
+                </button>
+            </div>
+        </div>
+
+        <div id="resultSection" class="hidden space-y-4">
+            <div class="flex justify-between items-center px-2">
+                <h2 class="text-xl font-semibold text-gray-800">Resultados da Análise</h2>
+                <div class="text-sm text-gray-600">
+                    Mostrando apenas grupos com <span class="font-bold text-red-600">2 ou mais</span> ocorrências.
+                </div>
+            </div>
+
+            <div class="apple-card overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50/50 border-b border-gray-200">
+                                <th class="p-4 w-1/4 border-r border-gray-200 text-center">Nota Fiscal</th>
+                                <th class="p-4 w-3/4">Ocorrências Encontradas</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div id="noDuplicatesMsg" class="hidden text-center p-12 bg-green-50 rounded-xl border border-green-100">
+                <svg class="w-12 h-12 text-green-500 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <h3 class="text-lg font-medium text-green-900">Nenhuma duplicata encontrada!</h3>
+                <p class="text-green-600">Todas as notas parecem ser únicas.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Função para ler arquivo Excel
+        const readExcel = (file) => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        
+                        const tempJson = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                        
+                        let headerRowIndex = 0;
+                        for (let i = 0; i < Math.min(tempJson.length, 20); i++) {
+                            const row = tempJson[i];
+                            const rowStr = row.join(" ").toLowerCase();
+                            if ((rowStr.includes("nota") && rowStr.includes("data")) || 
+                                (rowStr.includes("número") && rowStr.includes("valor"))) {
+                                headerRowIndex = i;
+                                break;
+                            }
+                        }
+
+                        const json = XLSX.utils.sheet_to_json(worksheet, { range: headerRowIndex, defval: "" });
+                        resolve(json);
+                    } catch (err) {
+                        reject(err);
+                    }
+                };
+                reader.onerror = (error) => reject(error);
+                reader.readAsArrayBuffer(file);
+            });
+        };
+
+        const formatCurrency = (val) => {
+            if (!val && val !== 0) return "-";
+            if (typeof val === 'string') {
+                let clean = val.replace(/[^\d.,-]/g, ''); 
+                val = parseFloat(clean.replace(',', '.')); 
+                if (isNaN(val)) return clean; 
+            }
+            return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        };
+
+        const formatDate = (val) => {
+            if (!val) return "-";
+            if (typeof val === 'number') {
+                const date = new Date(Math.round((val - 25569) * 86400 * 1000));
+                return date.toLocaleDateString('pt-BR');
+            }
+            if (val instanceof Date) return val.toLocaleDateString('pt-BR');
+            return val.toString().split(' ')[0];
+        };
+
+        async function processarArquivo() {
+            const fileDom = document.getElementById('fileDominio').files[0];
+
+            if (!fileDom) {
+                alert("Por favor, selecione o arquivo do Domínio.");
+                return;
+            }
+
+            try {
+                const dataDominio = await readExcel(fileDom);
+                renderTable(dataDominio);
+            } catch (error) {
+                console.error(error);
+                alert("Erro ao processar arquivo. Verifique o formato.");
+            }
+        }
+
+        function renderTable(dominioList) {
+            const tbody = document.getElementById('tableBody');
+            const resultSection = document.getElementById('resultSection');
+            const noDuplicatesMsg = document.getElementById('noDuplicatesMsg');
+            
+            tbody.innerHTML = "";
+            
+            const groups = {};
+            
+            // 1. Agrupar por Número de Nota
+            dominioList.forEach((row, originalIndex) => {
+                let nota = "", data = "", fornecedor = "", valor = "";
+                // Tenta identificar as colunas dinamicamente
+                for (let k in row) {
+                    const key = k.trim().toLowerCase();
+                    if (key.includes("nota")) nota = String(row[k]).trim();
+                    else if (key === "data" || key.includes("lançamento") || key.includes("entrada")) data = row[k];
+                    else if (key.includes("fornecedor") || key.includes("nome")) fornecedor = row[k];
+                    else if (key.includes("valor") && (key.includes("cont") || key.includes("serviço"))) valor = row[k];
+                }
+
+                if (nota) {
+                    const notaClean = nota.replace(/^0+/, ''); // Remove zeros a esquerda para agrupar corretamente
+                    if (!groups[notaClean]) groups[notaClean] = [];
+                    groups[notaClean].push({ 
+                        originalNota: nota, 
+                        data, 
+                        fornecedor, 
+                        valor,
+                        index: originalIndex + 2 // Linha aproximada no excel
+                    });
+                }
+            });
+
+            // 2. Filtrar apenas os que tem > 1 ocorrência
+            // Convertendo para array de [chave, entradas] para facilitar e ter length
+            const duplicateEntries = Object.entries(groups).filter(([key, entries]) => entries.length > 1);
+
+            if (duplicateEntries.length === 0) {
+                resultSection.classList.remove('hidden');
+                tbody.closest('.apple-card').classList.add('hidden');
+                noDuplicatesMsg.classList.remove('hidden');
+                return;
+            } else {
+                resultSection.classList.remove('hidden');
+                tbody.closest('.apple-card').classList.remove('hidden');
+                noDuplicatesMsg.classList.add('hidden');
+            }
+
+            // 3. Renderizar
+            let html = "";
+            
+            // Ordena os grupos pela nota (numérica se possível)
+            duplicateEntries.sort((a, b) => {
+                const nA = parseInt(a[0]);
+                const nB = parseInt(b[0]);
+                if (!isNaN(nA) && !isNaN(nB)) return nA - nB;
+                return a[0].localeCompare(b[0]);
+            });
+
+            duplicateEntries.forEach(([key, entries]) => {
+                
+                // Analisar valores duplicados DENTRO do grupo
+                const valueCounts = {};
+                entries.forEach(e => {
+                    // Normaliza valor para comparação (remove pontuação se string, float se number)
+                    let v = e.valor;
+                    if (typeof v === 'string') {
+                        v = parseFloat(v.replace(/\./g, '').replace(',', '.')) || 0;
+                    } else {
+                        v = parseFloat(v) || 0;
+                    }
+                    // Arredonda para 2 casas decimais para evitar erros de ponto flutuante
+                    v = v.toFixed(2);
+                    valueCounts[v] = (valueCounts[v] || 0) + 1;
+                });
+
+                // Cabeçalho do grupo (Nota) na esquerda com Rowspan
+                const leftCell = `
+                    <td class="p-4 align-top border-r border-gray-200 bg-white border-b border-gray-100 w-1/4">
+                        <div class="sticky top-4 text-center">
+                            <span class="block text-2xl font-bold text-gray-800 tracking-tight">${key}</span>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 mt-2">
+                                ${entries.length} ocorrências
+                            </span>
+                        </div>
+                    </td>
+                `;
+
+                // Montar lista da direita
+                let rightContent = `<td class="p-0 border-b border-gray-100 bg-white align-top w-3/4">`;
+                
+                // Para cada entrada, criar uma "sub-linha" visual
+                entries.forEach((entry, idx) => {
+                    // Verifica se este valor específico é duplicado neste grupo
+                    let v = entry.valor;
+                    if (typeof v === 'string') {
+                        v = parseFloat(v.replace(/\./g, '').replace(',', '.')) || 0;
+                    } else {
+                        v = parseFloat(v) || 0;
+                    }
+                    v = v.toFixed(2);
+                    
+                    const isValueDuplicate = valueCounts[v] > 1;
+                    const isLast = idx === entries.length - 1;
+                    
+                    // Estilo condicional: Vermelho claro se for duplicata de valor
+                    const rowClass = isValueDuplicate ? "bg-red-50 hover:bg-red-100 border-l-4 border-l-red-500" : "hover:bg-gray-50 border-l-4 border-l-transparent";
+                    const textClass = isValueDuplicate ? "text-red-700 font-bold" : "text-gray-900";
+
+                    rightContent += `
+                        <div class="flex items-center p-3 ${rowClass} transition-colors ${!isLast ? 'border-b border-gray-100' : ''}">
+                            <div class="grid grid-cols-1 md:grid-cols-4 w-full gap-4 items-center">
+                                <div class="col-span-1">
+                                    <span class="text-[10px] font-semibold text-gray-400 uppercase block">Data</span>
+                                    <span class="text-sm text-gray-700">${formatDate(entry.data)}</span>
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="text-[10px] font-semibold text-gray-400 uppercase block">Fornecedor</span>
+                                    <span class="text-sm text-gray-700 font-medium truncate sm:w-full" title="${entry.fornecedor || ''}">${entry.fornecedor || '-'}</span>
+                                </div>
+                                <div class="col-span-1 text-right">
+                                    <span class="text-[10px] font-semibold text-gray-400 uppercase block">Valor</span>
+                                    <span class="text-sm font-mono ${textClass}">${formatCurrency(entry.valor)}</span>
+                                    ${isValueDuplicate ? '<span class="text-[10px] text-red-600 block font-semibold">Valor Repetido</span>' : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                rightContent += `</td>`;
+
+                html += `<tr class="border-b border-gray-200">${leftCell}${rightContent}</tr>`;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+
+    </script>
+</body>
+</html>
