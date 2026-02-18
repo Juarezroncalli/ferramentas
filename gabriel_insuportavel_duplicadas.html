@@ -73,7 +73,7 @@
                     Analisar Duplicatas
                 </button>
                 <button id="btnExport" onclick="exportarMarcadas()" class="hidden btn-secondary px-8 py-3 rounded-full font-medium text-sm shadow-sm hover:shadow-md transform active:scale-95 transition-all w-full md:w-auto">
-                    Exportar Notas Marcadas
+                    Exportar Grupos Marcados
                 </button>
             </div>
         </div>
@@ -91,7 +91,7 @@
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-gray-50/50 border-b border-gray-200">
-                                <th class="p-4 w-1/4 border-r border-gray-200 text-center">Nota Fiscal</th>
+                                <th class="p-4 w-1/4 border-r border-gray-200 text-center">Nota Fiscal / Seleção</th>
                                 <th class="p-4 w-3/4">Ocorrências Encontradas</th>
                             </tr>
                         </thead>
@@ -113,7 +113,8 @@
     <script>
         // Variáveis globais para armazenar dados e estado
         let globalDominioList = [];
-        let markedIndices = new Set();
+        let markedGroups = new Set();
+        let groupedData = {}; // Armazena grupos mapeados por chave (Num Nota)
         
         // Função para ler arquivo Excel
         const readExcel = (file) => {
@@ -182,7 +183,8 @@
                 const dataDominio = await readExcel(fileDom);
                 // Armazena dados globais e limpa marcadores
                 globalDominioList = dataDominio;
-                markedIndices.clear();
+                markedGroups.clear();
+                groupedData = {};
                 
                 renderTable(dataDominio);
                 
@@ -194,46 +196,40 @@
             }
         }
 
-        // Função para exportar notas marcadas
+        function toggleGroupMark(key) {
+            if (markedGroups.has(key)) {
+                markedGroups.delete(key);
+            } else {
+                markedGroups.add(key);
+            }
+        }
+
+        // Função para exportar notas marcadas (baseado em grupos)
         function exportarMarcadas() {
             const marcadas = [];
             
-            // O markedIndices agora armazena indices que referenciam elementos, precisamos mapear de volta.
-            // Para simplificar, vou iterar sobre a lista global e encontrar os itens.
-            // Porem como o mapeamento 'idx' original pode nao ser direto, vamos ajustar.
-            
-            // ATENÇÃO: No renderTable, eu estou pegando elementos da grouped list.
-            // Preciso que o toggleMark saiba EXATAMENTE qual objeto da lista global ele está marcando.
-            // Vou usar um ID único ou indice original da array global.
-            
-            // Solução: O globalDominioList contem todos os itens.
-            // Vou usar o índice original da lista para marcar.
-            markedIndices.forEach(idx => {
-                const item = globalDominioList[idx];
-                if (item) {
-                     marcadas.push(item);
+            markedGroups.forEach(key => {
+                const entries = groupedData[key];
+                if (entries) {
+                    // Adiciona todas as entradas deste grupo à lista de exportação
+                    entries.forEach(entry => {
+                         // Recupera o item original completo
+                         const item = globalDominioList[entry.originalListIndex];
+                         if (item) marcadas.push(item);
+                    });
                 }
             });
 
             if (marcadas.length === 0) {
-                alert("Nenhuma nota marcada para exportação.");
+                alert("Nenhum grupo marcado para exportação.");
                 return;
             }
 
             // Criar planilha e exportar
             const ws = XLSX.utils.json_to_sheet(marcadas);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Notas Duplicadas Marcadas");
-            XLSX.writeFile(wb, "notas_duplicadas_selecionadas.xlsx");
-        }
-
-        // Função para marcar/desmarcar nota
-        function toggleMark(originalIndex) {
-            if (markedIndices.has(originalIndex)) {
-                markedIndices.delete(originalIndex);
-            } else {
-                markedIndices.add(originalIndex);
-            }
+            XLSX.utils.book_append_sheet(wb, ws, "Notas Duplicadas Grupos");
+            XLSX.writeFile(wb, "notas_duplicadas_grupos.xlsx");
         }
 
         function renderTable(dominioList) {
@@ -265,15 +261,16 @@
                         data, 
                         fornecedor, 
                         valor,
-                        // IMPORTANTE: Guardamos o índice original na lista global
                         originalListIndex: originalIndex 
                     });
                 }
             });
 
             // 2. Filtrar apenas os que tem > 1 ocorrência
-            // Convertendo para array de [chave, entradas] para facilitar e ter length
             const duplicateEntries = Object.entries(groups).filter(([key, entries]) => entries.length > 1);
+            
+            // Salvar no escopo global para exportação
+            groupedData = groups;
 
             if (duplicateEntries.length === 0) {
                 resultSection.classList.remove('hidden');
@@ -302,26 +299,34 @@
                 // Analisar valores duplicados DENTRO do grupo
                 const valueCounts = {};
                 entries.forEach(e => {
-                    // Normaliza valor para comparação (remove pontuação se string, float se number)
                     let v = e.valor;
                     if (typeof v === 'string') {
                         v = parseFloat(v.replace(/\./g, '').replace(',', '.')) || 0;
                     } else {
                         v = parseFloat(v) || 0;
                     }
-                    // Arredonda para 2 casas decimais para evitar erros de ponto flutuante
                     v = v.toFixed(2);
                     valueCounts[v] = (valueCounts[v] || 0) + 1;
                 });
 
                 // Cabeçalho do grupo (Nota) na esquerda com Rowspan
+                // ADICIONADO: Checkbox
                 const leftCell = `
                     <td class="p-4 align-top border-r border-gray-200 bg-white border-b border-gray-100 w-1/4">
-                        <div class="sticky top-4 text-center">
+                        <div class="sticky top-4 flex flex-col items-center">
                             <span class="block text-2xl font-bold text-gray-800 tracking-tight">${key}</span>
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 mt-2">
                                 ${entries.length} ocorrências
                             </span>
+                            <div class="mt-4 pt-2 border-t border-gray-100 w-full flex justify-center">
+                                <label class="inline-flex flex-col items-center cursor-pointer group">
+                                    <input type="checkbox" 
+                                        class="form-checkbox h-5 w-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 mb-1" 
+                                        onchange="toggleGroupMark('${key}')" 
+                                        title="Marcar todo o grupo para exportação">
+                                    <span class="text-[10px] text-gray-400 font-semibold uppercase group-hover:text-blue-600 transition-colors">Selecionar</span>
+                                </label>
+                            </div>
                         </div>
                     </td>
                 `;
@@ -329,9 +334,8 @@
                 // Montar lista da direita
                 let rightContent = `<td class="p-0 border-b border-gray-100 bg-white align-top w-3/4">`;
                 
-                // Para cada entrada, criar uma "sub-linha" visual
+                // Para cada entrada
                 entries.forEach((entry, idx) => {
-                    // Verifica se este valor específico é duplicado neste grupo
                     let v = entry.valor;
                     if (typeof v === 'string') {
                         v = parseFloat(v.replace(/\./g, '').replace(',', '.')) || 0;
@@ -343,28 +347,22 @@
                     const isValueDuplicate = valueCounts[v] > 1;
                     const isLast = idx === entries.length - 1;
                     
-                    // Estilo condicional: Vermelho claro se for duplicata de valor
                     const rowClass = isValueDuplicate ? "bg-red-50 hover:bg-red-100 border-l-4 border-l-red-500" : "hover:bg-gray-50 border-l-4 border-l-transparent";
                     const textClass = isValueDuplicate ? "text-red-700 font-bold" : "text-gray-900";
 
+                    // Removido o checkbox individual daqui
                     rightContent += `
                         <div class="flex items-center p-3 ${rowClass} transition-colors ${!isLast ? 'border-b border-gray-100' : ''}">
-                            <div class="grid grid-cols-1 md:grid-cols-12 w-full gap-4 items-center">
-                                <div class="col-span-1 flex justify-center">
-                                    <input type="checkbox" 
-                                        class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer" 
-                                        onchange="toggleMark(${entry.originalListIndex})"
-                                        title="Marcar para exportação">
-                                </div>
-                                <div class="col-span-2">
+                            <div class="grid grid-cols-1 md:grid-cols-4 w-full gap-4 items-center">
+                                <div class="col-span-1">
                                     <span class="text-[10px] font-semibold text-gray-400 uppercase block">Data</span>
                                     <span class="text-sm text-gray-700">${formatDate(entry.data)}</span>
                                 </div>
-                                <div class="col-span-6">
+                                <div class="col-span-2">
                                     <span class="text-[10px] font-semibold text-gray-400 uppercase block">Fornecedor</span>
                                     <span class="text-sm text-gray-700 font-medium truncate sm:w-full" title="${entry.fornecedor || ''}">${entry.fornecedor || '-'}</span>
                                 </div>
-                                <div class="col-span-3 text-right">
+                                <div class="col-span-1 text-right">
                                     <span class="text-[10px] font-semibold text-gray-400 uppercase block">Valor</span>
                                     <span class="text-sm font-mono ${textClass}">${formatCurrency(entry.valor)}</span>
                                     ${isValueDuplicate ? '<span class="text-[10px] text-red-600 block font-semibold">Valor Repetido</span>' : ''}
@@ -381,8 +379,6 @@
 
             tbody.innerHTML = html;
         }
-
-
     </script>
 </body>
 </html>
