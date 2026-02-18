@@ -27,6 +27,14 @@
         .btn-primary:hover {
             background-color: #0077ed;
         }
+        .btn-secondary {
+            background-color: #333;
+            color: white;
+            transition: background-color 0.2s;
+        }
+        .btn-secondary:hover {
+            background-color: #555;
+        }
         th {
             font-weight: 600;
             color: #86868b;
@@ -60,9 +68,12 @@
                 <p class="text-xs text-gray-400">Colunas esperadas: Data, Nota, Fornecedor, Valor Contábil</p>
             </div>
 
-            <div class="mt-6 text-center">
+            <div class="mt-6 text-center space-x-4">
                 <button onclick="processarArquivo()" class="btn-primary px-8 py-3 rounded-full font-medium text-sm shadow-sm hover:shadow-md transform active:scale-95 transition-all w-full md:w-auto">
                     Analisar Duplicatas
+                </button>
+                <button id="btnExport" onclick="exportarMarcadas()" class="hidden btn-secondary px-8 py-3 rounded-full font-medium text-sm shadow-sm hover:shadow-md transform active:scale-95 transition-all w-full md:w-auto">
+                    Exportar Notas Marcadas
                 </button>
             </div>
         </div>
@@ -100,6 +111,10 @@
     </div>
 
     <script>
+        // Variáveis globais para armazenar dados e estado
+        let globalDominioList = [];
+        let markedIndices = new Set();
+        
         // Função para ler arquivo Excel
         const readExcel = (file) => {
             return new Promise((resolve, reject) => {
@@ -165,10 +180,59 @@
 
             try {
                 const dataDominio = await readExcel(fileDom);
+                // Armazena dados globais e limpa marcadores
+                globalDominioList = dataDominio;
+                markedIndices.clear();
+                
                 renderTable(dataDominio);
+                
+                // Mostrar botão de exportar
+                document.getElementById('btnExport').classList.remove('hidden');
             } catch (error) {
                 console.error(error);
                 alert("Erro ao processar arquivo. Verifique o formato.");
+            }
+        }
+
+        // Função para exportar notas marcadas
+        function exportarMarcadas() {
+            const marcadas = [];
+            
+            // O markedIndices agora armazena indices que referenciam elementos, precisamos mapear de volta.
+            // Para simplificar, vou iterar sobre a lista global e encontrar os itens.
+            // Porem como o mapeamento 'idx' original pode nao ser direto, vamos ajustar.
+            
+            // ATENÇÃO: No renderTable, eu estou pegando elementos da grouped list.
+            // Preciso que o toggleMark saiba EXATAMENTE qual objeto da lista global ele está marcando.
+            // Vou usar um ID único ou indice original da array global.
+            
+            // Solução: O globalDominioList contem todos os itens.
+            // Vou usar o índice original da lista para marcar.
+            markedIndices.forEach(idx => {
+                const item = globalDominioList[idx];
+                if (item) {
+                     marcadas.push(item);
+                }
+            });
+
+            if (marcadas.length === 0) {
+                alert("Nenhuma nota marcada para exportação.");
+                return;
+            }
+
+            // Criar planilha e exportar
+            const ws = XLSX.utils.json_to_sheet(marcadas);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Notas Duplicadas Marcadas");
+            XLSX.writeFile(wb, "notas_duplicadas_selecionadas.xlsx");
+        }
+
+        // Função para marcar/desmarcar nota
+        function toggleMark(originalIndex) {
+            if (markedIndices.has(originalIndex)) {
+                markedIndices.delete(originalIndex);
+            } else {
+                markedIndices.add(originalIndex);
             }
         }
 
@@ -201,7 +265,8 @@
                         data, 
                         fornecedor, 
                         valor,
-                        index: originalIndex + 2 // Linha aproximada no excel
+                        // IMPORTANTE: Guardamos o índice original na lista global
+                        originalListIndex: originalIndex 
                     });
                 }
             });
@@ -284,16 +349,22 @@
 
                     rightContent += `
                         <div class="flex items-center p-3 ${rowClass} transition-colors ${!isLast ? 'border-b border-gray-100' : ''}">
-                            <div class="grid grid-cols-1 md:grid-cols-4 w-full gap-4 items-center">
-                                <div class="col-span-1">
+                            <div class="grid grid-cols-1 md:grid-cols-12 w-full gap-4 items-center">
+                                <div class="col-span-1 flex justify-center">
+                                    <input type="checkbox" 
+                                        class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer" 
+                                        onchange="toggleMark(${entry.originalListIndex})"
+                                        title="Marcar para exportação">
+                                </div>
+                                <div class="col-span-2">
                                     <span class="text-[10px] font-semibold text-gray-400 uppercase block">Data</span>
                                     <span class="text-sm text-gray-700">${formatDate(entry.data)}</span>
                                 </div>
-                                <div class="col-span-2">
+                                <div class="col-span-6">
                                     <span class="text-[10px] font-semibold text-gray-400 uppercase block">Fornecedor</span>
                                     <span class="text-sm text-gray-700 font-medium truncate sm:w-full" title="${entry.fornecedor || ''}">${entry.fornecedor || '-'}</span>
                                 </div>
-                                <div class="col-span-1 text-right">
+                                <div class="col-span-3 text-right">
                                     <span class="text-[10px] font-semibold text-gray-400 uppercase block">Valor</span>
                                     <span class="text-sm font-mono ${textClass}">${formatCurrency(entry.valor)}</span>
                                     ${isValueDuplicate ? '<span class="text-[10px] text-red-600 block font-semibold">Valor Repetido</span>' : ''}
