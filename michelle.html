@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extrator de Comprovantes PDF para Excel</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; padding: 20px; background-color: #f4f4f4; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        .controls { margin-bottom: 20px; padding: 15px; background: #e9ecef; border-radius: 5px; }
+        button { padding: 10px 20px; cursor: pointer; background-color: #28a745; color: white; border: none; border-radius: 4px; font-size: 14px; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #007bff; color: white; }
+        #status { margin-top: 10px; font-weight: bold; color: #555; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Extrator de Comprovantes Itaú/Bancos</h1>
+    <p>Selecione o PDF com múltiplos comprovantes. O sistema tentará ler página por página.</p>
+    
+    <div class="controls">
+        <input type="file" id="fileInput" accept="application/pdf" />
+        <br><br>
+        <button id="btnExport" onclick="exportToExcel()" disabled>Baixar Excel (.xlsx)</button>
+        <div id="status">Aguardando arquivo...</div>
+    </div>
+
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>Página</th>
+                <th>Beneficiário</th>
+                <th>Valor Boleto</th>
+                <th>Desconto</th>
+                <th>Mora/Multa</th>
+                <th>Valor Pagamento</th>
+                <th>Data Pagamento</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
+</div>
+
+<script>
+    let extractedData = [];
+
+    document.getElementById('fileInput').addEventListener('change', async function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const statusDiv = document.getElementById('status');
+        const tbody = document.querySelector('#dataTable tbody');
+        const btnExport = document.getElementById('btnExport');
+        
+        // Reset
+        tbody.innerHTML = '';
+        extractedData = [];
+        btnExport.disabled = true;
+        statusDiv.innerText = "Lendo PDF...";
+
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+            
+            statusDiv.innerText = `PDF carregado. Processando ${pdf.numPages} páginas...`;
+
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                
+                // Junta todo o texto da página em uma string única para facilitar a busca (Regex)
+                const textItems = textContent.items.map(item => item.str).join(' ');
+                
+                // Extração dos dados
+                const dados = extractDataFromText(textItems, i);
+                
+                // Só adiciona se encontrou algo relevante (ex: um valor de pagamento)
+                if (dados.valorPagamento || dados.beneficiario) {
+                    extractedData.push(dados);
+                    addRowToTable(dados);
+                }
+            }
+
+            statusDiv.innerText = `Concluído! ${extractedData.length} comprovantes encontrados.`;
+            btnExport.disabled = false;
+
+        } catch (error) {
+            console.error(error);
+            statusDiv.innerText = "Erro ao ler o PDF. Verifique se o arquivo é válido.";
+        }
+    });
+
+    function extractDataFromText(text, pageNum) {
+        // Padrões Regex baseados no PDF de exemplo enviado
+        // Nota: O texto extraído muitas vezes perde formatação, então buscamos padrões próximos
+        
+        // Beneficiário: Procura "Beneficiário:" e pega o texto até "Razão Social" ou fim do padrão
+        const benefMatch = text.match(/Beneficiário:\s*(.*?)(?:\s+Razão|\s+CPF|\s+CNPJ|$)/i);
+        
+        // Valores (R$): Procura os rótulos e depois um padrão numérico (ex: 881,40)
+        const valorBoletoMatch = text.match(/Valor do boleto.*?(\d{1,3}(?:\.\d{3})*,\d{2})/i);
+        const descontoMatch = text.match(/Desconto.*?(\d{1,3}(?:\.\d{3})*,\d{2})/i);
+        const multaMatch = text.match(/Mora\/Multa.*?(\d{1,3}(?:\.\d{3})*,\d{2})/i);
+        const valorPgtoMatch = text.match(/\(=\)\s*Valor do pagamento.*?(\d{1,3}(?:\.\d{3})*,\d{2})/i);
+        
+        // Data: Procura "Data de pagamento:"
+        const dataMatch = text.match(/Data de pagamento:\s*(\d{2}\/\d{2}\/\d{4})/i);
+
+        return {
+            pagina: pageNum,
+            beneficiario: benefMatch ? benefMatch[1].trim() : "Não encontrado",
+            valorBoleto: valorBoletoMatch ? valorBoletoMatch[1] : "0,00",
+            desconto: descontoMatch ? descontoMatch[1] : "0,00",
+            multa: multaMatch ? multaMatch[1] : "0,00",
+            valorPagamento: valorPgtoMatch ? valorPgtoMatch[1] : (valorBoletoMatch ? valorBoletoMatch[1] : "0,00"), // Fallback
+            dataPagamento: dataMatch ? dataMatch[1] : ""
+        };
+    }
+
+    function addRowToTable(data) {
+        const tbody = document.querySelector('#dataTable tbody');
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${data.pagina}</td>
+            <td>${data.beneficiario}</td>
+            <td>${data.valorBoleto}</td>
+            <td>${data.desconto}</td>
+            <td>${data.multa}</td>
+            <td><strong>${data.valorPagamento}</strong></td>
+            <td>${data.dataPagamento}</td>
+        `;
+        tbody.appendChild(tr);
+    }
+
+    function exportToExcel() {
+        if (extractedData.length === 0) return;
+
+        // Cria uma planilha
+        const ws = XLSX.utils.json_to_sheet(extractedData);
+        
+        // Ajusta cabeçalhos (opcional, mapeando nomes das chaves)
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Comprovantes");
+
+        // Salva o arquivo
+        XLSX.writeFile(wb, "Comprovantes_Extraidos.xlsx");
+    }
+</script>
+
+</body>
+</html>
