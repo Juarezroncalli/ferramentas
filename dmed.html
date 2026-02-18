@@ -981,6 +981,14 @@
             >
               <i class="fas fa-print"></i> IMPRIMIR
             </button>
+            <button
+              class="btn-filter"
+              style="background: var(--data-green); display: none"
+              id="btnExportFilter"
+              onclick="exportToExcel()"
+            >
+              <i class="fas fa-file-excel"></i> EXPORTAR
+            </button>
           </div>
         </div>
 
@@ -1071,6 +1079,8 @@
           document.getElementById("btnExportSidebar").style.display = "flex";
           document.getElementById("btnPrintSidebar").style.display = "flex";
           document.getElementById("btnPrintFilter").style.display =
+            "inline-block";
+          document.getElementById("btnExportFilter").style.display =
             "inline-block";
         };
         reader.readAsText(file);
