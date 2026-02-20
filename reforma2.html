@@ -184,16 +184,55 @@
       }
 
       .sidebar {
-        width: 240px;
+        width: 80px;
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
         background: var(--bg-sidebar);
-        padding: 2rem 1.2rem;
+        padding: 2rem 1rem;
         display: flex;
         flex-direction: column;
         flex-shrink: 0;
         color: var(--text-primary);
-        z-index: 20;
-        transition: background-color 0.3s ease;
+        z-index: 2000;
+        transition:
+          width 0.3s ease,
+          background-color 0.3s ease,
+          padding 0.3s ease,
+          box-shadow 0.3s ease;
         box-shadow: 1px 0 0 var(--border-subtle);
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .sidebar:hover {
+        width: 240px;
+        padding: 2rem 1.2rem;
+        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.05);
+      }
+      [data-theme="dark"] .sidebar:hover {
+        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.4);
+      }
+
+      /* Oculta textos na sidebar minimizada */
+      .sidebar .logo-text,
+      .sidebar .nav-item span,
+      .sidebar > div:not(.logo) {
+        opacity: 0;
+        visibility: hidden;
+        transition:
+          opacity 0.2s ease,
+          visibility 0.2s ease;
+      }
+      .sidebar > div:not(.logo) {
+        white-space: normal;
+      }
+      .sidebar:hover .logo-text,
+      .sidebar:hover .nav-item span,
+      .sidebar:hover > div:not(.logo) {
+        opacity: 1;
+        visibility: visible;
+        transition-delay: 0.1s;
       }
       [data-theme="dark"] .sidebar {
         box-shadow: 1px 0 0 var(--border-subtle);
@@ -248,6 +287,8 @@
         gap: 12px;
         transition: all 0.2s ease;
         font-size: 13px;
+        overflow: hidden;
+        white-space: nowrap;
       }
       .nav-item:hover {
         background-color: var(--bg-hover);
@@ -259,6 +300,7 @@
       }
 
       .main-content {
+        margin-left: 80px;
         flex: 1;
         display: flex;
         flex-direction: column;
@@ -766,7 +808,7 @@
         align-items: center;
         position: fixed;
         bottom: 0;
-        left: 240px;
+        left: 80px;
         right: 0;
         z-index: 100;
         height: 60px;
@@ -910,6 +952,11 @@
           align-items: center;
           justify-content: space-between;
           padding: 0.8rem 1rem;
+          position: relative;
+        }
+        .sidebar:hover {
+          width: 100%;
+          padding: 0.8rem 1rem;
         }
         .logo {
           margin: 0;
@@ -925,6 +972,7 @@
           display: none;
         }
         .main-content {
+          margin-left: 0;
           overflow: visible;
           height: auto;
         }
@@ -2313,13 +2361,26 @@
       function limparTudo() {
         allItems = [];
         filteredItems = [];
+        simOriginalItems = [];
         document.getElementById("xmlInput").value = "";
         document.getElementById("filtroNcm").value = "";
         document.getElementById("filtroCfop").value = "";
         document.getElementById("filtroProd").value = "";
+
+        if (document.getElementById("aliqCBS2027"))
+          document.getElementById("aliqCBS2027").value = "8.8";
+        if (document.getElementById("filtroVariacao2027"))
+          document.getElementById("filtroVariacao2027").value = "all";
+
         setRegimeFilter("all");
         setTagsFilter("all");
-        aplicarFiltros();
+
+        if (modo2027) {
+          desativarModo2027();
+        } else {
+          aplicarFiltros();
+        }
+
         document.getElementById("statusMsg").innerText = "Sessão limpa.";
       }
 
@@ -2650,6 +2711,17 @@
             `;
         const tbody = document.querySelector("#tabelaDados tbody");
         tbody.innerHTML = "";
+
+        const fProd = document.getElementById("filtroProd")
+          ? document.getElementById("filtroProd").value.trim()
+          : "";
+        const fNcm = document.getElementById("filtroNcm")
+          ? document.getElementById("filtroNcm").value.trim()
+          : "";
+        const fCfop = document.getElementById("filtroCfop")
+          ? document.getElementById("filtroCfop").value.trim()
+          : "";
+
         const start = (currentPage - 1) * itemsPerPage;
         const end = start + itemsPerPage;
         const itemsToRender = filteredItems.slice(start, end);
@@ -2755,8 +2827,13 @@
             item.regimeDesc === "SIMPLES"
               ? `<span class="badge-crt crt-simples">SIMPLES</span>`
               : `<span class="badge-crt crt-normal">NORMAL</span>`;
+
+          const displayProd = highlightTerm(item.xProd, fProd);
+          const displayNcm = highlightTerm(item.ncm, fNcm);
+          const displayCfop = highlightTerm(item.cfop, fCfop);
+
           tr.innerHTML = `
-                <td>${item.nNF}</td><td title="${item.emitNome}">${item.emitNome}</td><td class="center">${regimeLabel}</td><td>${item.cProd || "-"}</td><td title="${item.xProd}"><span class="col-prod" onclick="copyFromProduct(${index})" onmouseover="showTooltip(event, ${index})" onmousemove="moveTooltip(event)" onmouseout="hideTooltip()">${item.xProd}</span></td><td style="font-size:10px">${item.ncm}<br><span style="color:var(--text-tertiary)">${item.cfop}</span></td><td class="money">${baseDisplay}</td><td class="money" style="color:var(--text-secondary)">${novosTribDisplay}</td><td class="money" style="color:${item.vST > 0 ? "var(--data-blue)" : "inherit"}">${stDisplay}</td><td class="money">${total2027Display}</td><td class="money" style="font-weight:700; color:var(--data-purple)">${custoLiquidoDisplay}</td><td class="money" style="color:var(--data-green); font-weight:600">${creditoDisplay}</td><td class="center" style="font-weight:bold;">${varDisplay}</td>
+                <td>${item.nNF}</td><td title="${item.emitNome}">${item.emitNome}</td><td class="center">${regimeLabel}</td><td>${item.cProd || "-"}</td><td title="${item.xProd}"><span class="col-prod" onclick="copyFromProduct(${index})" onmouseover="showTooltip(event, ${index})" onmousemove="moveTooltip(event)" onmouseout="hideTooltip()">${displayProd}</span></td><td style="font-size:10px">${displayNcm}<br><span style="color:var(--text-tertiary)">${displayCfop}</span></td><td class="money">${baseDisplay}</td><td class="money" style="color:var(--text-secondary)">${novosTribDisplay}</td><td class="money" style="color:${item.vST > 0 ? "var(--data-blue)" : "inherit"}">${stDisplay}</td><td class="money">${total2027Display}</td><td class="money" style="font-weight:700; color:var(--data-purple)">${custoLiquidoDisplay}</td><td class="money" style="color:var(--data-green); font-weight:600">${creditoDisplay}</td><td class="center" style="font-weight:bold;">${varDisplay}</td>
                 `;
           fragment.appendChild(tr);
         });
