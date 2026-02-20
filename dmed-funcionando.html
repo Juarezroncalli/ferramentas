@@ -739,13 +739,6 @@
       }
 
       @media print {
-        html,
-        body {
-          height: auto !important;
-          overflow: visible !important;
-          background: white !important;
-          display: block !important;
-        }
         .no-print,
         .upload-section,
         header,
@@ -757,19 +750,13 @@
           display: none !important;
         }
         .main-content {
-          height: auto !important;
-          overflow: visible !important;
-          background: white !important;
-          display: block !important;
+          height: auto;
+          overflow: visible;
+          background: white;
         }
         .scroll-content {
           padding: 0;
           overflow: visible;
-        }
-        .table-container {
-          height: auto !important;
-          overflow: visible !important;
-          box-shadow: none !important;
         }
         .container {
           width: 100%;
@@ -788,20 +775,6 @@
         /* Se a classe print-marked estiver no body, esconde as não marcadas */
         body.print-marked-only tbody tr:not(.marked-row) {
           display: none !important;
-        }
-        body.print-marked-only tbody tr.marked-row {
-          display: table-row !important;
-        }
-        #tableContainer {
-          display: block !important;
-          width: 100% !important;
-        }
-        #resultTable {
-          display: table !important;
-          width: 100% !important;
-        }
-        tbody {
-          display: table-row-group !important;
         }
       }
     </style>
@@ -835,6 +808,14 @@
           onclick="exportToExcel()"
         >
           <i class="fas fa-file-excel"></i> <span>Exportar Excel</span>
+        </div>
+        <div
+          class="nav-item"
+          id="btnPrintSidebar"
+          style="display: none"
+          onclick="printMarked()"
+        >
+          <i class="fas fa-print"></i> <span>Imprimir Marcados</span>
         </div>
         <div class="nav-item" onclick="limparSessao()">
           <i class="fas fa-eraser"></i> <span>Limpar</span>
@@ -996,6 +977,14 @@
 
             <button
               class="btn-filter"
+              style="background: var(--data-red); display: none"
+              id="btnPrintFilter"
+              onclick="printMarked()"
+            >
+              <i class="fas fa-print"></i> IMPRIMIR
+            </button>
+            <button
+              class="btn-filter"
               style="background: var(--data-green); display: none"
               id="btnExportFilter"
               onclick="exportToExcel()"
@@ -1129,7 +1118,8 @@
           document.getElementById("filtersContainer").style.display = "block";
           document.getElementById("tableContainer").style.display = "block";
           document.getElementById("btnExportSidebar").style.display = "flex";
-          document.getElementById("btnExportFilter").style.display =
+          document.getElementById("btnPrintSidebar").style.display = "flex";
+          document.getElementById("btnPrintFilter").style.display =
             "inline-block";
           document.getElementById("btnExportFilter").style.display =
             "inline-block";
@@ -1159,10 +1149,6 @@
 
         // 3. Padrão Nacional / SPED (XMLs anexados no final do arquivo) - Tag <infNFSe>
         xml.querySelectorAll("infNFSe").forEach((n) => notas.push(n));
-
-        // 4. Padrão Matozinhos (Tag <item> dentro de <notas>)
-        if (notas.length === 0)
-          xml.querySelectorAll("notas > item").forEach((n) => notas.push(n));
 
         // Fallback robusto antigo (mantido para segurança)
         if (notas.length === 0) {
@@ -1205,23 +1191,21 @@
 
         notas.forEach((nota) => {
           // Apenas processa se tiver um número de nota válido para evitar nós vazios
-          const numero = getText(nota, ["Numero", "nNFSe", "NuNfse", "numero"]);
+          const numero = getText(nota, ["Numero", "nNFSe", "NuNfse"]);
           if (!numero) return;
 
           totalNotasCount++;
 
           // 1. Data
-          // Old: DataEmissao | New (SPED): dhEmi | Other: Data | Matozinhos: data_emissao
+          // Old: DataEmissao | New (SPED): dhEmi | Other: Data
           let dataRaw = getText(nota, [
             "DataEmissao",
             "dCompet",
             "Data",
             "dhEmi",
-            "data_emissao",
           ]);
-          // Tratamento de Data (pode vir com 'T' ou com espaço separando a hora do dia)
+          // Tratamento de Data
           if (dataRaw.includes("T")) dataRaw = dataRaw.split("T")[0];
-          if (dataRaw.includes(" ")) dataRaw = dataRaw.split(" ")[0];
 
           let data = "N/A";
           if (dataRaw) {
@@ -1240,7 +1224,6 @@
               "prestadorservico RazaoSocial", // Lowercase tag
               "emit xNome",
               "Prestador RazaoSocial",
-              "prestacao_servico razao_social",
             ]) || "N/A";
 
           // 2. Tomador
@@ -1251,36 +1234,25 @@
               "Tomador RazaoSocial",
               "Tomador Servico RazaoSocial",
               "DPS infDPS toma xNome", // Caminho explícito SPED
-              "tomador_servico razao_social",
             ]) || "N/A";
 
           if (razaoSocial !== "N/A") uniqueTomadores.add(razaoSocial);
 
           // 3. DOC (CPF/CNPJ)
-          let cpf = getText(nota, [
+          const cpf = getText(nota, [
             "TomadorServico Cpf",
             "toma CPF", // SPED
             "Tomador Cpf",
             "Cpf",
             "DPS infDPS toma CPF",
           ]);
-          let cnpj = getText(nota, [
+          const cnpj = getText(nota, [
             "TomadorServico Cnpj",
             "toma CNPJ", // SPED
             "Tomador Cnpj",
             "Cnpj",
             "DPS infDPS toma CNPJ",
           ]);
-
-          let docMisto = getText(nota, [
-            "tomador_servico cpf_cnpj",
-            "cpf_cnpj",
-          ]);
-          if (docMisto) {
-            docMisto = docMisto.replace(/[^0-9]/g, "");
-            if (docMisto.length <= 11) cpf = docMisto;
-            else cnpj = docMisto;
-          }
 
           let tomadorDoc = "N/A";
           let tipoDoc = "OUTRO";
@@ -1295,23 +1267,10 @@
 
           // 4. Valor
           const valorRaw =
-            getText(nota, [
-              "ValorServicos",
-              "vServ",
-              "ValorServico",
-              "vLiq",
-              "valor_servico",
-            ]) || "0.00";
-          // Normaliza valor para float: "R$ 3.650,00" -> 3650.00
-          let valorStr = valorRaw.replace(/R\$/g, "").trim();
-          if (valorStr.includes(".") && valorStr.includes(",")) {
-            // Formato 3.650,00 -> remove pontos e troca virgula
-            valorStr = valorStr.replace(/\./g, "").replace(",", ".");
-          } else if (valorStr.includes(",")) {
-            // Formato 3650,00
-            valorStr = valorStr.replace(",", ".");
-          }
-          const valorFloat = parseFloat(valorStr);
+            getText(nota, ["ValorServicos", "vServ", "ValorServico", "vLiq"]) ||
+            "0.00";
+          // Normaliza float (virgula para ponto se necessário, embora XML padrão use ponto)
+          const valorFloat = parseFloat(valorRaw.replace(",", "."));
           const valor = isNaN(valorFloat)
             ? "0,00"
             : valorFloat.toLocaleString("pt-BR", {
@@ -1326,7 +1285,6 @@
               "xDescServ", // SPED
               "DiscriminacaoServico",
               "DPS infDPS serv cServ xDescServ",
-              "discriminacao",
             ]) || "";
 
           // Mark Logic
@@ -1360,11 +1318,16 @@
           tbody.appendChild(tr);
         });
 
-        // Aciona o filtro (que agora também atualiza o Dashboard)
-        applyFilters();
+        // Update Metrics
+        document.getElementById("totalNotas").textContent = totalNotasCount;
+        document.getElementById("valorTotal").textContent =
+          totalValorSum.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
+        document.getElementById("totalTomadores").textContent =
+          uniqueTomadores.size;
+        document.getElementById("totalMarcados").textContent = marcardosCount;
 
         document.getElementById("statusMsg").innerHTML =
-          `<span style="color: var(--data-green)">●</span> Processado com sucesso.`;
+          `<span style="color: var(--data-green)">●</span> Processado com sucesso. ${totalNotasCount} notas encontradas.`;
       }
 
       function toggleMark(btn, rowId) {
@@ -1383,7 +1346,12 @@
           icon.className = "far fa-square";
           localStorage.removeItem(rowId);
         }
-        updateDashboardMetrics();
+        updateMarkedCount();
+      }
+
+      function updateMarkedCount() {
+        const count = document.querySelectorAll(".marked-row").length;
+        document.getElementById("totalMarcados").textContent = count;
       }
 
       function setFilterType(type) {
@@ -1443,50 +1411,6 @@
             row.style.display = "none";
           }
         });
-
-        updateDashboardMetrics();
-      }
-
-      function updateDashboardMetrics() {
-        const rows = document.querySelectorAll("#resultTable tbody tr");
-        let totalNotasCount = 0;
-        let totalValorSum = 0;
-        let uniqueTomadores = new Set();
-        let marcadosCount = 0;
-
-        rows.forEach((row) => {
-          if (row.style.display !== "none") {
-            totalNotasCount++;
-
-            // Get Tomador (column index 4)
-            const razaoSocial = row.children[4].textContent.trim();
-            if (razaoSocial && razaoSocial !== "N/A") {
-              uniqueTomadores.add(razaoSocial);
-            }
-
-            // Get Valor (column index 7)
-            const valorText = row.children[7].textContent.trim();
-            // Convert back to float
-            let valorStr = valorText.replace(/\./g, "").replace(",", ".");
-            const valorFloat = parseFloat(valorStr);
-            if (!isNaN(valorFloat)) {
-              totalValorSum += valorFloat;
-            }
-
-            // check if marked
-            if (row.classList.contains("marked-row")) {
-              marcadosCount++;
-            }
-          }
-        });
-
-        // Update Metrics
-        document.getElementById("totalNotas").textContent = totalNotasCount;
-        document.getElementById("valorTotal").textContent =
-          totalValorSum.toLocaleString("pt-BR", { minimumFractionDigits: 2 });
-        document.getElementById("totalTomadores").textContent =
-          uniqueTomadores.size;
-        document.getElementById("totalMarcados").textContent = marcadosCount;
       }
 
       function printMarked() {
