@@ -1665,7 +1665,7 @@
           <table id="tabelaDados">
             <thead>
               <tr>
-                <th>Nota</th>
+                <th>Nota/Data</th>
                 <th>Emitente</th>
                 <th>Regime</th>
                 <th>Cód.</th>
@@ -2676,7 +2676,7 @@
         document.getElementById("boxSimulacao").style.display = "none";
 
         document.querySelector("#tabelaDados thead tr").innerHTML = `
-                <th>Nota</th><th>Emitente</th><th>Regime</th><th>Cód.</th><th>Produto</th><th>NCM/CFOP</th><th>CST/Class</th><th>V.BC</th><th class="money">% CBS</th><th class="center">Red%</th><th class="money">R$ CBS</th><th class="money">% IBS</th><th class="center">Red%</th><th class="money">R$ IBS</th><th class="center">Status</th>
+                <th>Nota/Data</th><th>Emitente</th><th>Regime</th><th>Cód.</th><th>Produto</th><th>NCM/CFOP</th><th>CST/Class</th><th>V.BC</th><th class="money">% CBS</th><th class="center">Red%</th><th class="money">R$ CBS</th><th class="money">% IBS</th><th class="center">Red%</th><th class="money">R$ IBS</th><th class="center">Status</th>
           `;
         renderizarTabela();
         atualizarTotais();
@@ -2707,7 +2707,7 @@
         let simTotalNovos = 0;
         const thead = document.querySelector("#tabelaDados thead tr");
         thead.innerHTML = `
-                <th style="width:60px">Nota</th><th>Emitente</th><th class="center" style="width:80px">Regime</th><th>Cód.</th><th>Produto</th><th>NCM/CFOP</th><th class="money" style="text-align:right; width:90px;">Base Calc.</th><th class="money" style="text-align:right; width:90px;">Novos Trib.</th><th class="money" style="text-align:right; width:90px; color:var(--data-blue)">ICMS ST</th><th class="money" style="text-align:right; width:90px;">Total 2027</th><th class="money" style="text-align:right; width:100px; font-weight:bold; color:var(--data-purple)">Custo Líq.</th><th class="money" style="text-align:right; width:90px; color:var(--data-green)">Créd. Recup.</th><th class="center" style="width:90px;">Var. R$</th>
+                <th style="width:60px">Nota/Data</th><th>Emitente</th><th class="center" style="width:80px">Regime</th><th>Cód.</th><th>Produto</th><th>NCM/CFOP</th><th class="money" style="text-align:right; width:90px;">Base Calc.</th><th class="money" style="text-align:right; width:90px;">Novos Trib.</th><th class="money" style="text-align:right; width:90px; color:var(--data-blue)">ICMS ST</th><th class="money" style="text-align:right; width:90px;">Total 2027</th><th class="money" style="text-align:right; width:100px; font-weight:bold; color:var(--data-purple)">Custo Líq.</th><th class="money" style="text-align:right; width:90px; color:var(--data-green)">Créd. Recup.</th><th class="center" style="width:90px;">Var. R$</th>
             `;
         const tbody = document.querySelector("#tabelaDados tbody");
         tbody.innerHTML = "";
@@ -2833,7 +2833,7 @@
           const displayCfop = highlightTerm(item.cfop, fCfop);
 
           tr.innerHTML = `
-                <td>${item.nNF}</td><td title="${item.emitNome}">${item.emitNome}</td><td class="center">${regimeLabel}</td><td>${item.cProd || "-"}</td><td title="${item.xProd}"><span class="col-prod" onclick="copyFromProduct(${index})" onmouseover="showTooltip(event, ${index})" onmousemove="moveTooltip(event)" onmouseout="hideTooltip()">${displayProd}</span></td><td style="font-size:10px">${displayNcm}<br><span style="color:var(--text-tertiary)">${displayCfop}</span></td><td class="money">${baseDisplay}</td><td class="money" style="color:var(--text-secondary)">${novosTribDisplay}</td><td class="money" style="color:${item.vST > 0 ? "var(--data-blue)" : "inherit"}">${stDisplay}</td><td class="money">${total2027Display}</td><td class="money" style="font-weight:700; color:var(--data-purple)">${custoLiquidoDisplay}</td><td class="money" style="color:var(--data-green); font-weight:600">${creditoDisplay}</td><td class="center" style="font-weight:bold;">${varDisplay}</td>
+                <td style="font-weight:600; font-size:11px">${item.nNF}<br><small style="color:var(--text-tertiary); font-weight:400">${item.data}</small></td><td title="${item.emitNome}">${item.emitNome}</td><td class="center">${regimeLabel}</td><td style="font-size:10px; color:var(--text-secondary)">${item.cProd || "-"}</td><td title="${item.xProd}"><span class="col-prod" onclick="copyFromProduct(${index})" onmouseover="showTooltip(event, ${index})" onmousemove="moveTooltip(event)" onmouseout="hideTooltip()">${displayProd}</span></td><td style="font-size:10px">${displayNcm}<br><span style="color:var(--text-tertiary)">${displayCfop}</span></td><td class="money">${baseDisplay}</td><td class="money" style="color:var(--text-secondary)">${novosTribDisplay}</td><td class="money" style="color:${item.vST > 0 ? "var(--data-blue)" : "inherit"}">${stDisplay}</td><td class="money">${total2027Display}</td><td class="money" style="font-weight:700; color:var(--data-purple)">${custoLiquidoDisplay}</td><td class="money" style="color:var(--data-green); font-weight:600">${creditoDisplay}</td><td class="center" style="font-weight:bold;">${varDisplay}</td>
                 `;
           fragment.appendChild(tr);
         });
