@@ -98,8 +98,8 @@
           <span class="material-symbols-outlined">file_download</span>
           <span class="hidden lg:block text-sm">Exportar Excel</span>
         </button>
-        <button onclick="location.reload()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-surface-dark transition-colors group">
-          <span class="material-symbols-outlined">delete</span>
+        <button onclick="limparDados()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-surface-dark transition-colors group">
+          <span class="material-symbols-outlined text-rose-500">delete</span>
           <span class="hidden lg:block text-sm">Limpar Dados</span>
         </button>
       </nav>
@@ -282,27 +282,6 @@
           </div>
         </div>
 
-        <!-- System Alerts / Info -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-12">
-          <div class="bg-primary/5 border border-primary/20 rounded-2xl p-6">
-            <div class="flex items-center gap-3 mb-4">
-              <span class="material-symbols-outlined text-primary">info</span>
-              <h4 class="font-bold text-primary">Segurança de Dados</h4>
-            </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              Este dashboard opera inteiramente no <b>lado do cliente</b>. Nenhum dado de remuneração ou identificação pessoal de funcionários é enviado para servidores externos. O PDF é lido e processado localmente na memória do seu navegador.
-            </p>
-          </div>
-          <div class="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-6">
-            <div class="flex items-center gap-3 mb-4">
-              <span class="material-symbols-outlined text-emerald-500">task_alt</span>
-              <h4 class="font-bold text-emerald-500">Dica de Uso</h4>
-            </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              Certifique-se de que o PDF da DIRF segue o layout padrão da Receita Federal para garantir a precisão máxima na extração automática dos valores por mês.
-            </p>
-          </div>
-        </div>
 
         <!-- Individual Table Section -->
         <div id="individualContainer" class="hidden space-y-6">
@@ -333,6 +312,28 @@
             </div>
           </div>
         </div>
+
+        <!-- System Alerts / Info -->
+        <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8 pb-12">
+          <div class="bg-primary/5 border border-primary/20 rounded-2xl p-6">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="material-symbols-outlined text-primary">info</span>
+              <h4 class="font-bold text-primary">Segurança de Dados</h4>
+            </div>
+            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              Este dashboard opera inteiramente no <b>lado do cliente</b>. Nenhum dado de remuneração ou identificação pessoal de funcionários é enviado para servidores externos. O PDF é lido e processado localmente na memória do seu navegador.
+            </p>
+          </div>
+          <div class="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-6">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="material-symbols-outlined text-emerald-500">task_alt</span>
+              <h4 class="font-bold text-emerald-500">Dica de Uso</h4>
+            </div>
+            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              Certifique-se de que o PDF da DIRF segue o layout padrão da Receita Federal para garantir a precisão máxima na extração automática dos valores por mês.
+            </p>
+          </div>
+        </div>
       </div>
     </main>
 
@@ -358,7 +359,14 @@
         detalhesPorFuncionario = {};
         totalFuncionarios = 0;
         nomeEmpresa = "";
-        localStorage.removeItem('dirf_data');
+      }
+
+      function limparDados() {
+        if (confirm("Deseja realmente apagar todos os dados processados e resetar o sistema?")) {
+          localStorage.removeItem('dirf_data');
+          initDados();
+          location.reload();
+        }
       }
 
       function saveToLocal() {
