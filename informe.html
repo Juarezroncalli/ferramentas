@@ -47,6 +47,7 @@
     <style>
       body {
         font-family: 'Inter', sans-serif;
+        scroll-behavior: smooth;
       }
       .custom-scrollbar::-webkit-scrollbar {
         height: 6px;
@@ -63,11 +64,67 @@
         background: #197fe6;
       }
       .loading-overlay {
-        backdrop-filter: blur(8px);
+        backdrop-filter: blur(12px);
       }
-      /* Animação suave para hover de linhas */
+      
+      /* --- Sistema de Animações --- */
+      @keyframes revealUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+      }
+
+      @keyframes pulse-soft {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.05); opacity: 0.8; }
+      }
+
+      .animate-reveal {
+        animation: revealUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        opacity: 0;
+      }
+
+      .delay-100 { animation-delay: 100ms; }
+      .delay-150 { animation-delay: 150ms; }
+      .delay-200 { animation-delay: 200ms; }
+      .delay-300 { animation-delay: 300ms; }
+      .delay-500 { animation-delay: 500ms; }
+
+      .card-hover {
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .card-hover:hover {
+        transform: translateY(-4px) scale(1.01);
+        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        border-color: rgba(25, 127, 230, 0.4);
+      }
+
+      .glass {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .dark .glass {
+        background: rgba(30, 33, 40, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      /* Pulse effect for upload icon */
+      .upload-pulse {
+        animation: pulse-soft 3s ease-in-out infinite;
+      }
+
       tr {
-        transition: background-color 0.2s;
+        transition: all 0.2s ease;
+      }
+      tr:hover {
+        transform: scale(1.002);
       }
     </style>
   </head>
@@ -75,7 +132,7 @@
   <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex font-display">
     
     <!-- Loading Overlay -->
-    <div id="loading" class="fixed inset-0 z-[100] hidden flex-col items-center justify-center bg-background-dark/80 loading-overlay">
+    <div id="loading" class="fixed inset-0 z-[100] hidden flex-col items-center justify-center bg-background-dark/80 loading-overlay transition-opacity duration-500 opacity-0">
       <div class="size-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
       <h3 id="loadingText" class="text-xl font-medium text-white">Processando PDF...</h3>
     </div>
@@ -105,11 +162,11 @@
       </nav>
       
       <div class="p-4 border-t border-slate-200 dark:border-border-dark space-y-1">
-        <div class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400">
-          <span class="material-symbols-outlined text-primary">code</span>
+        <div class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 transition-colors cursor-help group">
+          <span class="material-symbols-outlined text-primary group-hover:rotate-12 transition-transform">code</span>
           <div class="flex flex-col hidden lg:block">
             <span class="text-[10px] uppercase font-bold tracking-tighter text-slate-500">Developed by</span>
-            <span class="text-xs font-black text-slate-300">J.Roncalli</span>
+            <span class="text-xs font-black text-slate-300 group-hover:text-primary transition-colors">J.Roncalli</span>
           </div>
         </div>
       </div>
@@ -166,9 +223,9 @@
         <!-- Metrics Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <!-- Total Funcionários -->
-          <div class="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-border-dark shadow-sm hover:shadow-md transition-all group">
+          <div class="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-border-dark shadow-sm card-hover animate-reveal delay-100 group">
             <div class="flex justify-between items-start mb-4">
-              <div class="p-2 rounded-xl bg-primary/10 text-primary">
+              <div class="p-2 rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform">
                 <span class="material-symbols-outlined">groups</span>
               </div>
             </div>
@@ -177,9 +234,9 @@
           </div>
 
           <!-- Total Rendimentos -->
-          <div class="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-border-dark shadow-sm hover:shadow-md transition-all">
+          <div class="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-border-dark shadow-sm card-hover animate-reveal delay-150 group">
             <div class="flex justify-between items-start mb-4">
-              <div class="p-2 rounded-xl bg-emerald-500/10 text-emerald-500">
+              <div class="p-2 rounded-xl bg-emerald-500/10 text-emerald-500 group-hover:scale-110 transition-transform">
                 <span class="material-symbols-outlined">payments</span>
               </div>
             </div>
@@ -188,9 +245,9 @@
           </div>
 
           <!-- Total Imposto -->
-          <div class="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-border-dark shadow-sm hover:shadow-md transition-all">
+          <div class="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-border-dark shadow-sm card-hover animate-reveal delay-200 group">
             <div class="flex justify-between items-start mb-4">
-              <div class="p-2 rounded-xl bg-rose-500/10 text-rose-500">
+              <div class="p-2 rounded-xl bg-rose-500/10 text-rose-500 group-hover:scale-110 transition-transform">
                 <span class="material-symbols-outlined">receipt_long</span>
               </div>
             </div>
@@ -199,9 +256,9 @@
           </div>
 
           <!-- Total Previdência -->
-          <div class="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-border-dark shadow-sm hover:shadow-md transition-all">
+          <div class="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-border-dark shadow-sm card-hover animate-reveal delay-300 group">
             <div class="flex justify-between items-start mb-4">
-              <div class="p-2 rounded-xl bg-amber-500/10 text-amber-500">
+              <div class="p-2 rounded-xl bg-amber-500/10 text-amber-500 group-hover:scale-110 transition-transform">
                 <span class="material-symbols-outlined">savings</span>
               </div>
             </div>
@@ -211,7 +268,7 @@
         </div>
 
         <!-- Upload Section -->
-        <div id="uploadSection" class="bg-white dark:bg-surface-dark rounded-2xl border-2 border-dashed border-slate-200 dark:border-border-dark p-12 transition-all hover:border-primary/50 group relative">
+        <div id="uploadSection" class="bg-white dark:bg-surface-dark rounded-2xl border-2 border-dashed border-slate-200 dark:border-border-dark p-12 transition-all hover:border-primary/50 group relative animate-reveal delay-500">
           <input
             type="file"
             id="fileInput"
@@ -220,11 +277,11 @@
             class="absolute inset-0 opacity-0 cursor-pointer z-10"
           />
           <div class="flex flex-col items-center justify-center text-center space-y-4">
-            <div class="size-20 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+            <div class="size-20 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-all duration-500 upload-pulse">
               <span class="material-symbols-outlined text-4xl">cloud_upload</span>
             </div>
             <div>
-              <h3 class="text-xl font-bold">Faça o upload do seu PDF DIRF</h3>
+              <h3 class="text-xl font-bold group-hover:text-primary transition-colors">Faça o upload do seu PDF DIRF</h3>
               <p class="text-slate-500 dark:text-slate-400 max-w-sm mt-2">Arraste o arquivo aqui ou clique para selecionar. O processamento é feito 100% no seu navegador.</p>
             </div>
           </div>
@@ -425,13 +482,41 @@
         const el = document.getElementById("loading");
         const txt = document.getElementById("loadingText");
         if (show) {
+          el.classList.remove("opacity-0", "pointer-events-none");
           el.classList.remove("hidden");
           el.classList.add("flex");
           txt.innerText = msg || "Processando...";
         } else {
-          el.classList.add("hidden");
-          el.classList.remove("flex");
+          el.classList.add("opacity-0", "pointer-events-none");
+          setTimeout(() => {
+            el.classList.add("hidden");
+            el.classList.remove("flex");
+          }, 500);
         }
+      }
+
+      function animateValue(id, start, end, duration, isMoney = false) {
+        const obj = document.getElementById(id);
+        if (!obj) return;
+        
+        // Remove symbols for calculation
+        let startTimestamp = null;
+        const step = (timestamp) => {
+          if (!startTimestamp) startTimestamp = timestamp;
+          const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+          const current = progress * (end - start) + start;
+          
+          if (isMoney) {
+            obj.innerText = formatMoney(current);
+          } else {
+            obj.innerText = Math.floor(current).toLocaleString();
+          }
+          
+          if (progress < 1) {
+            window.requestAnimationFrame(step);
+          }
+        };
+        window.requestAnimationFrame(step);
       }
 
       // Função auxiliar para converter string PT-BR para float
@@ -601,11 +686,14 @@
         const tbody = document.getElementById("individualBody");
         tbody.innerHTML = "";
         
+        let delay = 0;
         Object.keys(detalhesPorFuncionario).forEach(cpf => {
           const func = detalhesPorFuncionario[cpf];
           if (cpf.includes(filter) || func.nome.toLowerCase().includes(filter)) {
             const tr = document.createElement("tr");
-            tr.className = "hover:bg-slate-50 dark:hover:bg-background-dark/50 transition-colors";
+            tr.className = "hover:bg-slate-50 dark:hover:bg-background-dark/50 transition-all animate-reveal";
+            tr.style.animationDelay = `${delay}ms`;
+            delay = Math.min(delay + 30, 600); // Stagger limit to 600ms
             
             let cellsHtml = `
               <td class="px-6 py-4 font-mono text-xs text-slate-500 sticky left-0 bg-white dark:bg-surface-dark z-10">${cpf}</td>
@@ -637,12 +725,18 @@
         const tbody = document.getElementById("tableBody");
         tbody.innerHTML = "";
         let grandTotal = Array(8).fill(0);
-        document.getElementById("totalFuncionarios").innerText = totalFuncionarios;
         
+        // Animating stats
+        animateValue("totalFuncionarios", 0, totalFuncionarios, 800);
+        
+        let delay = 0;
         MESES.forEach((mes) => {
           const vals = dadosConsolidados[mes];
           const tr = document.createElement("tr");
-          tr.className = "hover:bg-slate-50 dark:hover:bg-background-dark/50 transition-colors";
+          tr.className = "hover:bg-slate-50 dark:hover:bg-background-dark/50 transition-all animate-reveal";
+          tr.style.animationDelay = `${delay}ms`;
+          delay = Math.min(delay + 30, 400);
+
           let html = `<td class="px-6 py-4 font-bold sticky left-0 bg-white dark:bg-surface-dark border-r border-slate-100 dark:border-border-dark z-10">${mes}</td>`;
           vals.forEach((v, idx) => {
             html += `<td class="px-6 py-4 text-right font-medium text-slate-600 dark:text-slate-300">${formatMoney(v)}</td>`;
@@ -653,7 +747,9 @@
         });
         
         const trTotal = document.createElement("tr");
-        trTotal.className = "bg-primary/5 dark:bg-primary/10 border-t-2 border-primary/20";
+        trTotal.className = "bg-primary/5 dark:bg-primary/10 border-t-2 border-primary/20 animate-reveal";
+        trTotal.style.animationDelay = "500ms";
+
         let tdTotalLabel = `<td class="px-6 py-5 font-black text-primary sticky left-0 bg-slate-50 dark:bg-slate-900 z-10">TOTAL ANUAL</td>`;
         let tdTotalVals = "";
         grandTotal.forEach((v) => {
@@ -662,9 +758,10 @@
         trTotal.innerHTML = tdTotalLabel + tdTotalVals;
         tbody.appendChild(trTotal);
         
-        document.getElementById("totalRendimentos").innerText = formatMoney(grandTotal[0]);
-        document.getElementById("totalImposto").innerText = formatMoney(grandTotal[7]);
-        document.getElementById("totalPrev").innerText = formatMoney(grandTotal[2]);
+        // Animate metrics
+        animateValue("totalRendimentos", 0, grandTotal[0], 1000, true);
+        animateValue("totalImposto", 0, grandTotal[7], 1000, true);
+        animateValue("totalPrev", 0, grandTotal[2], 1000, true);
         
         renderIndividualBody();
         saveToLocal();
