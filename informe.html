@@ -18,10 +18,11 @@
         theme: {
           extend: {
             colors: {
-              "primary": "#8c25f4",
-              "accent-cyan": "#00f2ff",
-              "background-dark": "#060608",
-              "card-dark": "rgba(26, 26, 36, 0.45)",
+              "primary": "#f43f5e",
+              "accent-cyan": "#f43f5e",
+              "background-dark": "#0a0a0a",
+              "card-dark": "#141414",
+              "border-dark": "#262626"
             },
             fontFamily: {
               "display": ["Inter", "sans-serif"],
@@ -52,17 +53,18 @@
       }
       body {
         font-family: 'Inter', sans-serif;
-        background: radial-gradient(circle at 50% 0%, #160d26 0%, #060608 100%);
+        background-color: #0a0a0a;
         min-height: 100vh;
         scroll-behavior: smooth;
+        -webkit-font-smoothing: antialiased;
       }
       .font-mono {
         font-family: monospace; /* Força uso da mono do sistema/navegador ao invés de webfont que corte o zero */
       }
       .glass-panel {
-        background: var(--glass-bg);
-        backdrop-filter: blur(16px);
-        border: 1px solid var(--glass-border);
+        background: rgba(20, 20, 20, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
       }
       .custom-scrollbar::-webkit-scrollbar {
         height: 6px;
@@ -116,6 +118,14 @@
         0%, 100% { transform: scale(1); opacity: 1; }
         50% { transform: scale(1.05); opacity: 0.8; }
       }
+      .glow-orange {
+        box-shadow: 0 0 20px rgba(244, 63, 94, 0.15);
+      }
+      .gradient-border {
+        border: 1px solid transparent;
+        background: linear-gradient(#141414, #141414) padding-box,
+                    linear-gradient(to bottom right, #f43f5e, transparent) border-box;
+      }
     </style>
   </head>
   
@@ -128,10 +138,29 @@
     </div>
 
     <div class="flex h-screen overflow-hidden">
-      <!-- Sidebar Navigation (Estilo code.html) -->
-      <aside class="flex flex-col items-center py-6 w-20 glass-panel m-4 rounded-2xl border-white/5 shrink-0 z-50">
-        <div class="mb-10 text-accent-cyan">
-          <span class="material-symbols-outlined text-3xl">grid_view</span>
+      
+      <!-- Modal Exclusão -->
+      <div id="deleteModal" class="fixed inset-0 z-[200] hidden flex-col items-center justify-center bg-background-dark/80 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+        <div class="bg-[#141414] border border-border-dark p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center transform scale-95 transition-transform duration-300" id="deleteModalContent">
+          <div class="w-16 h-16 bg-rose-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-rose-500/20">
+            <span class="material-symbols-outlined text-rose-500 text-3xl">delete_forever</span>
+          </div>
+          <h2 class="text-xl font-bold text-white mb-2">Limpar Dados</h2>
+          <p class="text-sm text-slate-400 mb-6">Tem certeza que deseja apagar todos os dados processados? Esta ação não pode ser desfeita e você precisará processar o PDF novamente.</p>
+          <div class="flex gap-3 justify-center">
+            <button onclick="closeModal()" class="px-5 py-2.5 rounded-lg text-sm font-bold bg-white/5 hover:bg-white/10 text-white transition-colors border border-white/10 flex-1">
+              Cancelar
+            </button>
+            <button onclick="confirmLimparDados()" class="px-5 py-2.5 rounded-lg text-sm font-bold bg-rose-500 hover:bg-rose-600 text-white transition-colors shadow-lg shadow-rose-500/20 flex-1">
+              Sim, Apagar
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Sidebar Navigation (Estilo code.html base - manter onClicks originais) -->
+      <aside class="flex flex-col items-center py-6 w-20 bg-[#111111] border-r border-border-dark shrink-0 z-50">
+        <div class="mb-10 text-primary">
+          <span class="material-symbols-outlined text-3xl">bolt</span>
         </div>
         
         <nav class="flex flex-col gap-6 flex-1">
@@ -139,15 +168,15 @@
             <span class="material-symbols-outlined">analytics</span>
           </button>
           
-          <button onclick="switchTab('individual')" class="p-3 rounded-xl hover:bg-white/5 text-slate-500 hover:text-white transition-all" title="Indivíduos">
+          <button onclick="switchTab('individual')" class="p-3 rounded-xl shadow-sm hover:bg-white/5 text-slate-500 hover:text-white transition-all" title="Indivíduos">
             <span class="material-symbols-outlined">groups</span>
           </button>
 
-          <button onclick="exportExcel()" class="p-3 rounded-xl hover:bg-white/5 text-slate-500 hover:text-white transition-all" title="Exportar Excel">
+          <button onclick="exportExcel()" class="p-3 rounded-xl shadow-sm hover:bg-white/5 text-slate-500 hover:text-white transition-all" title="Exportar Excel">
             <span class="material-symbols-outlined">file_download</span>
           </button>
 
-          <button onclick="limparDados()" class="p-3 rounded-xl hover:bg-white/5 text-slate-400 hover:text-rose-500 transition-all" title="Limpar Dados">
+          <button onclick="limparDados()" class="p-3 rounded-xl shadow-sm hover:bg-white/5 text-slate-400 hover:text-rose-500 transition-all" title="Limpar Dados">
             <span class="material-symbols-outlined">delete_forever</span>
           </button>
         </nav>
@@ -166,7 +195,7 @@
       <header class="flex items-center justify-between px-2">
         <div>
           <h1 class="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
-            DIRF Master <span class="text-xs font-mono text-accent-cyan bg-accent-cyan/10 px-2 py-0.5 rounded border border-accent-cyan/20">2026.v1</span>
+            DIRF Master <span class="text-xs font-mono text-primary bg-primary/10 px-2 py-0.5 rounded border border-primary/20">2026.v1</span>
           </h1>
           <div class="mt-2 flex items-center gap-2" id="nomeEmpresaDisplay">
             <span class="text-[10px] font-bold text-slate-500 tracking-widest uppercase">Declarante</span>
@@ -206,47 +235,62 @@
       <!-- Dashboard Content -->
       <div class="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-6 pr-2">
         
-        <!-- Metrics Bento Grid (Estilo code.html) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 animate-reveal">
+        <!-- Metrics Bento Grid (Estilo Lumix AI Integrado) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-reveal">
           <!-- Total Funcionários -->
-          <div class="glass-panel rounded-xl p-4 flex flex-col justify-between border-l-2 border-l-primary group">
-            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Funcionários</p>
-            <div class="mt-1">
+          <div class="bg-card-dark p-6 rounded-2xl border border-border-dark shadow-sm relative overflow-hidden group">
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Funcionários</span>
+              <div class="w-2 h-2 rounded-full bg-primary glow-orange"></div>
+            </div>
+            <div class="flex items-end gap-3 mt-1">
               <h3 class="text-4xl xl:text-5xl font-display font-black tracking-tighter text-white" id="totalFuncionarios">0</h3>
-              <p class="text-[10px] font-bold text-accent-cyan mt-1">NODES ATIVOS</p>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-2 font-bold text-primary">NODES ATIVOS</p>
+            <div class="absolute -right-2 -bottom-2 opacity-10">
+              <span class="material-symbols-outlined text-7xl text-primary">groups</span>
             </div>
           </div>
 
           <!-- Total Rendimentos -->
-          <div class="glass-panel rounded-xl p-4 flex flex-col justify-between border-l-2 border-l-emerald-400 group">
-            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Rend. Tributáveis</p>
-            <div class="mt-1">
-              <h3 class="text-3xl xl:text-4xl font-display font-black tracking-tighter text-white truncate" id="totalRendimentos">R$ 0,00</h3>
-              <p class="text-[10px] font-bold text-emerald-400 mt-1">BRUTO ACUMULADO</p>
+          <div class="bg-card-dark p-6 rounded-2xl border border-border-dark shadow-sm relative overflow-hidden">
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Rend. Tributáveis</span>
+              <div class="w-2 h-2 rounded-full bg-primary glow-orange"></div>
             </div>
+            <div class="flex items-end gap-3 mt-1">
+              <h3 class="text-3xl xl:text-4xl font-display font-black tracking-tighter text-white truncate" id="totalRendimentos">R$ 0,00</h3>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-2">DADOS ACUMULADOS</p>
           </div>
 
           <!-- Total Imposto -->
-          <div class="glass-panel rounded-xl p-4 flex flex-col justify-between border-l-2 border-l-rose-500 group">
-            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Imposto Retido</p>
-            <div class="mt-1">
-              <h3 class="text-3xl xl:text-4xl font-display font-black tracking-tighter text-white truncate" id="totalImposto">R$ 0,00</h3>
-              <p class="text-[10px] font-bold text-rose-500 mt-1">IRRF TOTAL</p>
+          <div class="bg-card-dark p-6 rounded-2xl border border-border-dark shadow-sm relative overflow-hidden">
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Imposto Retido</span>
+              <div class="w-2 h-2 rounded-full bg-primary glow-orange"></div>
             </div>
+            <div class="flex items-end gap-3 mt-1">
+              <h3 class="text-3xl xl:text-4xl font-display font-black tracking-tighter text-white truncate" id="totalImposto">R$ 0,00</h3>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-2">IRRF TOTAL</p>
           </div>
 
           <!-- Total Previdência -->
-          <div class="glass-panel rounded-xl p-4 flex flex-col justify-between border-l-2 border-l-amber-500 group">
-            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Previdência</p>
-            <div class="mt-1">
-              <h3 class="text-3xl xl:text-4xl font-display font-black tracking-tighter text-white truncate" id="totalPrev">R$ 0,00</h3>
-              <p class="text-[10px] font-bold text-amber-500 mt-1">OFICIAL/COMPL.</p>
+          <div class="bg-card-dark p-6 rounded-2xl border border-border-dark shadow-sm relative overflow-hidden">
+            <div class="flex justify-between items-start mb-4">
+              <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Previdência</span>
+              <div class="w-2 h-2 rounded-full bg-primary glow-orange"></div>
             </div>
+            <div class="flex items-end gap-3 mt-1">
+              <h3 class="text-3xl xl:text-4xl font-display font-black tracking-tighter text-white truncate" id="totalPrev">R$ 0,00</h3>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-2">OFICIAL/COMPLEMENTAR</p>
           </div>
         </div>
 
-        <!-- Upload Section (Glassmorphism) -->
-        <div id="uploadSection" class="glass-panel rounded-2xl border-2 border-dashed border-white/10 p-12 transition-all hover:border-primary/50 group relative animate-reveal">
+        <!-- Upload Section (Modern Flat) -->
+        <div id="uploadSection" class="gradient-border rounded-xl p-12 transition-all hover:opacity-90 group relative animate-reveal">
           <input
             type="file"
             id="fileInput"
@@ -260,9 +304,10 @@
             </div>
             <div>
               <h3 class="text-xl font-bold group-hover:text-primary transition-colors">Processar Dados DIRF</h3>
-              <p class="text-slate-500 text-xs font-mono max-w-sm mt-2">UPLOAD SEU PDF PARA ANÁLISE QUANTUM-S2 LOCAL</p>
+              <p class="text-slate-500 text-xs font-mono max-w-sm mt-2 uppercase">Arraste seu PDF para análise local segura</p>
             </div>
           </div>
+          <div class="absolute -right-8 -bottom-8 w-48 h-48 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-all pointer-events-none"></div>
         </div>
 
         <!-- Tabs Section -->
@@ -272,16 +317,16 @@
         </div>
 
         <!-- Results Table Section (Consolidado) -->
-        <div id="resultContainer" class="hidden flex-1 glass-panel rounded-xl overflow-hidden flex flex-col">
+        <div id="resultContainer" class="hidden flex-1 bg-card-dark border border-border-dark rounded-xl overflow-hidden flex flex-col">
           <div class="p-3 border-b border-white/5 bg-white/5 flex items-center justify-between">
             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Detalhamento Mensal Consolidado</span>
             <div class="flex gap-2">
-              <button onclick="exportExcel()" class="p-1 text-slate-400 hover:text-white" title="Exportar"><span class="material-symbols-outlined text-sm">spreadsheet</span></button>
+              <button onclick="exportExcel()" class="p-1 text-slate-400 hover:text-white" title="Exportar"><span class="material-symbols-outlined text-sm"></span></button>
             </div>
           </div>
           
           <div class="overflow-auto flex-1 custom-scrollbar">
-            <table id="mainTable" class="w-full border-collapse text-[20px] font-display font-bold tracking-tight">
+            <table id="mainTable" class="w-full border-collapse text-[20px] font-medium tracking-tight">
               <thead class="sticky top-0 z-20 bg-background-dark/90 backdrop-blur-md">
                 <tr>
                   <th class="p-3 text-left border-b border-r border-white/10 text-slate-500 font-bold bg-white/5 min-w-[150px]">MÊS REF</th>
@@ -292,7 +337,7 @@
                   <th class="p-3 text-right border-b border-r border-white/10 text-slate-500 font-bold">PREV. FAPI</th>
                   <th class="p-3 text-right border-b border-r border-white/10 text-slate-500 font-bold">DEPEND.</th>
                   <th class="p-3 text-right border-b border-r border-white/10 text-slate-500 font-bold">PENSÃO ALIM.</th>
-                  <th class="p-3 text-right border-b border-white/10 text-slate-500 font-bold text-accent-cyan">IRRF RETIDO</th>
+                  <th class="p-3 text-right border-b border-white/10 text-slate-500 font-bold text-primary">IRRF RETIDO</th>
                 </tr>
               </thead>
               <tbody id="tableBody" class="divide-y divide-white/5">
@@ -303,12 +348,12 @@
         </div>
 
         <!-- Individual Table Section -->
-        <div id="individualContainer" class="hidden flex-1 glass-panel rounded-xl overflow-hidden flex flex-col">
+        <div id="individualContainer" class="hidden flex-1 bg-card-dark border border-border-dark rounded-xl overflow-hidden flex flex-col">
           <div class="p-3 border-b border-white/5 bg-white/5 flex items-center justify-between">
             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Lista de Beneficiários</span>
           </div>
           <div class="overflow-auto flex-1 custom-scrollbar">
-            <table id="individualTable" class="w-full border-collapse text-[16px] font-display font-bold tracking-tight">
+            <table id="individualTable" class="w-full border-collapse text-[16px] font-medium tracking-tight">
               <thead class="sticky top-0 z-20 bg-background-dark/90 backdrop-blur-md">
                 <tr>
                   <th class="p-3 text-left border-b border-r border-white/10 text-slate-500 font-bold bg-white/5 sticky left-0 z-30">CPF</th>
@@ -320,7 +365,7 @@
                   <th class="p-3 text-right border-b border-r border-white/10 text-slate-500 font-bold">PREV. FAPI</th>
                   <th class="p-3 text-right border-b border-r border-white/10 text-slate-500 font-bold">DEPEND.</th>
                   <th class="p-3 text-right border-b border-r border-white/10 text-slate-500 font-bold">PENSÃO.</th>
-                  <th class="p-3 text-right border-b border-white/10 text-slate-500 font-bold text-accent-cyan">IRRF.</th>
+                  <th class="p-3 text-right border-b border-white/10 text-slate-500 font-bold text-primary">IRRF.</th>
                 </tr>
               </thead>
               <tbody id="individualBody" class="divide-y divide-white/5">
@@ -330,13 +375,16 @@
         </div>
 
         <!-- System Info Footer -->
-        <footer class="flex items-center justify-between text-[10px] text-slate-600 font-mono tracking-wider pt-4">
-          <div class="flex gap-6">
-            <span class="flex items-center gap-1.5"><span class="size-1.5 rounded-full bg-accent-cyan animate-pulse"></span> LEDGER LIVE: DIRF-SECURE-V1</span>
+        <footer class="flex items-center justify-between text-[10px] text-slate-600 font-mono tracking-wider pt-4 pb-2">
+          <div class="flex flex-wrap gap-6 items-center">
+            <span class="flex items-center gap-1.5"><span class="size-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(244,63,94,0.8)] animate-pulse"></span> LEDGER LIVE: DIRF-SECURE-V1</span>
             <span>VERIFICATION: LOCAL-QUANTUM</span>
           </div>
-          <div class="flex gap-4">
-            <span class="text-slate-500 uppercase">Processamento 100% Client-Side</span>
+          <div class="flex items-center gap-2 mr-4 opacity-50 hover:opacity-100 transition-opacity duration-300">
+            <span class="material-symbols-outlined text-[14px] text-primary">data_object</span>
+            <span class="uppercase tracking-[0.3em] font-bold text-slate-500 font-display text-[9px]">
+              Desenvolvido por <span class="text-white">J.Roncalli</span>
+            </span>
           </div>
         </footer>
       </div>
@@ -368,11 +416,38 @@
       }
 
       function limparDados() {
-        if (confirm("Deseja realmente apagar todos os dados processados e resetar o sistema?")) {
-          localStorage.removeItem('dirf_data');
-          initDados();
-          location.reload();
-        }
+        const modal = document.getElementById('deleteModal');
+        const content = document.getElementById('deleteModalContent');
+        
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        
+        // Pequeno delay pra ativar a transição
+        setTimeout(() => {
+          modal.classList.remove('opacity-0');
+          content.classList.remove('scale-95');
+          content.classList.add('scale-100');
+        }, 10);
+      }
+
+      function closeModal() {
+        const modal = document.getElementById('deleteModal');
+        const content = document.getElementById('deleteModalContent');
+        
+        modal.classList.add('opacity-0');
+        content.classList.remove('scale-100');
+        content.classList.add('scale-95');
+        
+        setTimeout(() => {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+        }, 300);
+      }
+
+      function confirmLimparDados() {
+        localStorage.removeItem('dirf_data');
+        initDados();
+        location.reload();
       }
 
       function saveToLocal() {
@@ -646,13 +721,13 @@
             delay = Math.min(delay + 10, 200);
             
             let cellsHtml = `
-              <td class="p-3 font-bold text-slate-300 border-r border-white/5 sticky left-0 bg-[#0c0c12] z-20">${cpf}</td>
-              <td class="p-3 font-bold text-slate-300 border-r border-white/5 sticky left-[100px] bg-[#0c0c12] z-20">${func.nome}</td>
+              <td class="p-3 font-semibold text-slate-300 border-r border-white/5 sticky left-0 bg-[#0c0c12] z-20">${cpf}</td>
+              <td class="p-3 font-semibold text-slate-300 border-r border-white/5 sticky left-[100px] bg-[#0c0c12] z-20">${func.nome}</td>
             `;
 
             func.totais.forEach((v, idx) => {
               let colorClass = "text-white";
-              if (idx === 7) colorClass = "text-accent-cyan";
+              if (idx === 7) colorClass = "text-primary";
               cellsHtml += `<td class="p-3 text-right data-cell ${colorClass}">${formatMoney(v)}</td>`;
             });
 
@@ -688,10 +763,10 @@
           tr.style.animationDelay = `${delay}ms`;
           delay = Math.min(delay + 20, 300);
 
-          let html = `<td class="p-3 font-bold text-slate-300 border-r border-white/10 bg-white/5 min-w-[150px] sticky left-0 z-20">${mes.toUpperCase()}</td>`;
+          let html = `<td class="p-3 font-semibold text-slate-300 border-r border-white/10 bg-white/5 min-w-[150px] sticky left-0 z-20">${mes.toUpperCase()}</td>`;
           vals.forEach((v, idx) => {
             let colorClass = "text-white";
-            if (idx === 7) colorClass = "text-accent-cyan";
+            if (idx === 7) colorClass = "text-primary";
             html += `<td class="p-3 text-right data-cell ${colorClass}">${formatMoney(v)}</td>`;
             grandTotal[idx] += v;
           });
@@ -703,12 +778,12 @@
         const trTotal = document.createElement("tr");
         trTotal.className = "bg-primary/20 backdrop-blur-md sticky bottom-0 z-30 font-bold border-t border-primary/30";
 
-        let tdTotalLabel = `<td class="p-3 font-bold text-white border-r border-white/20 bg-primary/40 sticky left-0 z-40">TOTAL ACUMULADO</td>`;
+        let tdTotalLabel = `<td class="p-3 font-semibold text-white border-r border-white/20 bg-primary/40 sticky left-0 z-40">TOTAL ACUMULADO</td>`;
         let tdTotalVals = "";
         grandTotal.forEach((v, idx) => {
           let colorClass = "text-white";
-          if (idx === 7) colorClass = "text-accent-cyan";
-          tdTotalVals += `<td class="p-3 text-right font-bold ${colorClass}">${formatMoney(v)}</td>`;
+          if (idx === 7) colorClass = "text-primary font-bold";
+          tdTotalVals += `<td class="p-3 text-right font-semibold ${colorClass}">${formatMoney(v)}</td>`;
         });
         trTotal.innerHTML = tdTotalLabel + tdTotalVals;
         tbody.appendChild(trTotal);
