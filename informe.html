@@ -3,12 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Consolidador DIRF - Modern Dashboard</title>
+    <title>DIRF Master - High-Density Dashboard</title>
     
     <!-- Scripts Externos -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     
@@ -18,19 +18,20 @@
         theme: {
           extend: {
             colors: {
-              "primary": "#197fe6",
-              "background-light": "#f6f7f8",
-              "background-dark": "#0f1115",
-              "surface-dark": "#1e2128",
-              "border-dark": "#2d333d"
+              "primary": "#8c25f4",
+              "accent-cyan": "#00f2ff",
+              "background-dark": "#060608",
+              "card-dark": "rgba(26, 26, 36, 0.45)",
             },
             fontFamily: {
-              "display": ["Inter", "sans-serif"]
+              "display": ["Inter", "sans-serif"],
+              "mono": ["'Inter'", "monospace"]
             },
             borderRadius: {
               "DEFAULT": "0.25rem",
               "lg": "0.5rem",
               "xl": "0.75rem",
+              "2xl": "1rem",
               "full": "9999px"
             },
           },
@@ -44,231 +45,208 @@
         "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
     </script>
     
-    <style>
+    <style type="text/tailwindcss">
+      :root {
+          --glass-border: rgba(255, 255, 255, 0.08);
+          --glass-bg: rgba(26, 26, 36, 0.6);
+      }
       body {
         font-family: 'Inter', sans-serif;
+        background: radial-gradient(circle at 50% 0%, #160d26 0%, #060608 100%);
+        min-height: 100vh;
         scroll-behavior: smooth;
+      }
+      .font-mono {
+        font-family: monospace; /* Força uso da mono do sistema/navegador ao invés de webfont que corte o zero */
+      }
+      .glass-panel {
+        background: var(--glass-bg);
+        backdrop-filter: blur(16px);
+        border: 1px solid var(--glass-border);
       }
       .custom-scrollbar::-webkit-scrollbar {
         height: 6px;
         width: 6px;
       }
       .custom-scrollbar::-webkit-scrollbar-track {
-        background: transparent;
+        background: rgba(0, 0, 0, 0.2);
       }
       .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #2d333d;
+        background: #3a3a4a;
         border-radius: 10px;
       }
       .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: #197fe6;
+        background: #8c25f4;
       }
       .loading-overlay {
         backdrop-filter: blur(12px);
       }
       
+      .data-cell {
+        border-right: 1px solid rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      }
+      .data-cell:last-child {
+        border-right: none;
+      }
+
       /* --- Sistema de Animações --- */
       @keyframes revealUp {
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
       }
-
-      @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
-        100% { transform: translateY(0px); }
-      }
-
-      @keyframes pulse-soft {
-        0%, 100% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.05); opacity: 0.8; }
-      }
-
       .animate-reveal {
         animation: revealUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         opacity: 0;
       }
 
-      .delay-100 { animation-delay: 100ms; }
-      .delay-150 { animation-delay: 150ms; }
-      .delay-200 { animation-delay: 200ms; }
-      .delay-300 { animation-delay: 300ms; }
-      .delay-500 { animation-delay: 500ms; }
-
       .card-hover {
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .card-hover:hover {
-        transform: translateY(-4px) scale(1.01);
-        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-        border-color: rgba(25, 127, 230, 0.4);
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.5);
+        border-color: rgba(140, 37, 244, 0.4);
       }
 
-      .glass {
-        background: rgba(255, 255, 255, 0.03);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-      }
-
-      .dark .glass {
-        background: rgba(30, 33, 40, 0.7);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-      }
-
-      /* Pulse effect for upload icon */
       .upload-pulse {
         animation: pulse-soft 3s ease-in-out infinite;
       }
-
-      tr {
-        transition: all 0.2s ease;
-      }
-      tr:hover {
-        transform: scale(1.002);
+      @keyframes pulse-soft {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.05); opacity: 0.8; }
       }
     </style>
   </head>
   
-  <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex font-display">
+  <body class="bg-background-dark text-slate-100 antialiased font-display overflow-hidden">
     
     <!-- Loading Overlay -->
     <div id="loading" class="fixed inset-0 z-[100] hidden flex-col items-center justify-center bg-background-dark/80 loading-overlay transition-opacity duration-500 opacity-0">
       <div class="size-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-      <h3 id="loadingText" class="text-xl font-medium text-white">Processando PDF...</h3>
+      <h3 id="loadingText" class="text-xl font-medium text-white font-mono">Processando PDF...</h3>
     </div>
 
-    <!-- Sidebar Navigation -->
-    <aside class="w-20 lg:w-64 border-r border-slate-200 dark:border-border-dark flex flex-col bg-white dark:bg-background-dark sticky top-0 h-screen transition-all duration-300">
-      <div class="p-6 flex items-center gap-3">
-        <div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white shrink-0">
-          <span class="material-symbols-outlined">payments</span>
-        </div>
-        <span class="text-xl font-bold tracking-tight hidden lg:block">DIRF Master</span>
-      </div>
-      
-      <nav class="flex-1 px-4 py-4 space-y-2">
-        <a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary font-medium group transition-all" href="#" onclick="location.reload()">
-          <span class="material-symbols-outlined">dashboard</span>
-          <span class="hidden lg:block text-sm">Visão Geral</span>
-        </a>
-        <button onclick="exportExcel()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-surface-dark transition-colors group">
-          <span class="material-symbols-outlined">file_download</span>
-          <span class="hidden lg:block text-sm">Exportar Excel</span>
-        </button>
-        <button onclick="limparDados()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-surface-dark transition-colors group">
-          <span class="material-symbols-outlined text-rose-500">delete</span>
-          <span class="hidden lg:block text-sm">Limpar Dados</span>
-        </button>
-      </nav>
-      
-      <div class="p-4 border-t border-slate-200 dark:border-border-dark space-y-1">
-        <div class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-slate-200 transition-colors cursor-help group">
-          <span class="material-symbols-outlined text-primary group-hover:rotate-12 transition-transform">code</span>
-          <div class="flex flex-col hidden lg:block">
-            <span class="text-[10px] uppercase font-bold tracking-tighter text-slate-500">Developed by</span>
-            <span class="text-xs font-black text-slate-300 group-hover:text-primary transition-colors">J.Roncalli</span>
-          </div>
-        </div>
-      </div>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="flex-1 flex flex-col h-screen overflow-y-auto overflow-x-hidden bg-background-light dark:bg-background-dark custom-scrollbar">
-      
-      <!-- Header -->
-      <header class="h-20 border-b border-slate-200 dark:border-border-dark flex items-center justify-between px-8 bg-white/50 dark:bg-background-dark/50 backdrop-blur-md sticky top-0 z-50">
-        <div class="flex flex-col">
-          <h1 class="text-xl font-bold">Consolidação DIRF Anual</h1>
-          <p class="text-xs text-slate-500 dark:text-slate-400">Análise corporativa de rendimentos e tributação</p>
+    <div class="flex h-screen overflow-hidden">
+      <!-- Sidebar Navigation (Estilo code.html) -->
+      <aside class="flex flex-col items-center py-6 w-20 glass-panel m-4 rounded-2xl border-white/5 shrink-0 z-50">
+        <div class="mb-10 text-accent-cyan">
+          <span class="material-symbols-outlined text-3xl">grid_view</span>
         </div>
         
-        <div class="flex items-center flex-1 max-w-xl">
+        <nav class="flex flex-col gap-6 flex-1">
+          <button onclick="location.reload()" class="p-3 rounded-xl bg-primary/20 text-primary shadow-lg transition-all" title="Visão Geral">
+            <span class="material-symbols-outlined">analytics</span>
+          </button>
+          
+          <button onclick="switchTab('individual')" class="p-3 rounded-xl hover:bg-white/5 text-slate-500 hover:text-white transition-all" title="Indivíduos">
+            <span class="material-symbols-outlined">groups</span>
+          </button>
+
+          <button onclick="exportExcel()" class="p-3 rounded-xl hover:bg-white/5 text-slate-500 hover:text-white transition-all" title="Exportar Excel">
+            <span class="material-symbols-outlined">file_download</span>
+          </button>
+
+          <button onclick="limparDados()" class="p-3 rounded-xl hover:bg-white/5 text-slate-400 hover:text-rose-500 transition-all" title="Limpar Dados">
+            <span class="material-symbols-outlined">delete_forever</span>
+          </button>
+        </nav>
+        
+        <div class="mt-auto flex flex-col gap-5">
+          <div class="size-10 rounded-full border border-white/10 overflow-hidden bg-slate-800 flex items-center justify-center" title="J.Roncalli">
+            <span class="material-symbols-outlined text-primary text-xl">code</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-1 flex flex-col overflow-hidden p-4 lg:p-6 space-y-6">
+      
+      <!-- Header (Estilo code.html) -->
+      <header class="flex items-center justify-between px-2">
+        <div>
+          <h1 class="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
+            DIRF Master <span class="text-xs font-mono text-accent-cyan bg-accent-cyan/10 px-2 py-0.5 rounded border border-accent-cyan/20">2026.v1</span>
+          </h1>
+          <div class="mt-2 flex items-center gap-2" id="nomeEmpresaDisplay">
+            <span class="text-[10px] font-bold text-slate-500 tracking-widest uppercase">Declarante</span>
+            <span class="text-xs font-bold text-white bg-white/10 px-2.5 py-1 rounded-md border border-white/20">Aguardando Processamento...</span>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-4 flex-1 max-w-lg mx-8">
           <div class="relative w-full">
-            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm">search</span>
             <input 
               id="searchInput"
               oninput="handleSearch(this.value)"
-              class="w-full bg-slate-100 dark:bg-surface-dark border-none rounded-xl pl-10 pr-4 py-3 focus:ring-2 focus:ring-primary text-sm transition-all" 
-              placeholder="Buscar funcionário por nome ou CPF..." 
+              class="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2 focus:ring-1 focus:ring-primary text-xs transition-all placeholder:text-slate-600 outline-none hover:bg-white/10" 
+              placeholder="Buscar por funcionário ou CPF..." 
               type="text"
             />
           </div>
         </div>
-        
-        <div class="flex items-center gap-4">
+
+        <div class="flex items-center gap-3">
           <button 
             onclick="togglePrivacy()" 
             id="privacyToggle"
-            class="size-12 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-surface-dark text-slate-500 dark:text-slate-400 hover:bg-slate-200 transition-all group"
-            title="Alternar Modo Privacidade"
+            class="p-2 rounded-lg bg-white/5 border border-white/10 text-slate-400 hover:text-white transition-all group"
+            title="Modo Privacidade"
           >
-            <span class="material-symbols-outlined transition-transform group-active:scale-90" id="privacyIcon">visibility</span>
+            <span class="material-symbols-outlined text-sm" id="privacyIcon">visibility</span>
           </button>
-
-          <div class="flex items-center gap-3">
-            <div class="text-right hidden sm:block">
-              <p class="text-3xl font-black text-primary tracking-tight" id="nomeEmpresaDisplay">Usuário Fiscal</p>
-              <p class="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest">Empresa Declarante Selecionada</p>
-            </div>
-            <div class="size-10 rounded-xl bg-primary/20 flex items-center justify-center overflow-hidden border-2 border-primary/50">
-              <span class="material-symbols-outlined text-primary">account_circle</span>
-            </div>
-          </div>
+          <button onclick="exportExcel()" class="bg-primary hover:bg-primary/80 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">download</span>
+            EXPORTAR
+          </button>
         </div>
       </header>
 
       <!-- Dashboard Content -->
-      <div class="p-8 space-y-8 max-w-[1600px] mx-auto w-full">
+      <div class="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-6 pr-2">
         
-        <!-- Metrics Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Metrics Bento Grid (Estilo code.html) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 animate-reveal">
           <!-- Total Funcionários -->
-          <div class="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-border-dark shadow-sm card-hover animate-reveal delay-100 group">
-            <div class="flex justify-between items-start mb-4">
-              <div class="p-2 rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform">
-                <span class="material-symbols-outlined">groups</span>
-              </div>
+          <div class="glass-panel rounded-xl p-4 flex flex-col justify-between border-l-2 border-l-primary group">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Funcionários</p>
+            <div class="mt-1">
+              <h3 class="text-4xl xl:text-5xl font-display font-black tracking-tighter text-white" id="totalFuncionarios">0</h3>
+              <p class="text-[10px] font-bold text-accent-cyan mt-1">NODES ATIVOS</p>
             </div>
-            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Funcionários Processados</p>
-            <h3 class="text-4xl xl:text-5xl font-display font-black tracking-tighter mt-1" id="totalFuncionarios">0</h3>
           </div>
 
           <!-- Total Rendimentos -->
-          <div class="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-border-dark shadow-sm card-hover animate-reveal delay-150 group">
-            <div class="flex justify-between items-start mb-4">
-              <div class="p-2 rounded-xl bg-emerald-500/10 text-emerald-500 group-hover:scale-110 transition-transform">
-                <span class="material-symbols-outlined">payments</span>
-              </div>
+          <div class="glass-panel rounded-xl p-4 flex flex-col justify-between border-l-2 border-l-emerald-400 group">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Rend. Tributáveis</p>
+            <div class="mt-1">
+              <h3 class="text-3xl xl:text-4xl font-display font-black tracking-tighter text-white truncate" id="totalRendimentos">R$ 0,00</h3>
+              <p class="text-[10px] font-bold text-emerald-400 mt-1">BRUTO ACUMULADO</p>
             </div>
-            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Rend. Tributáveis</p>
-            <h3 class="text-3xl xl:text-4xl font-display font-black tracking-tighter mt-1 truncate" id="totalRendimentos">R$ 0,00</h3>
           </div>
 
           <!-- Total Imposto -->
-          <div class="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-border-dark shadow-sm card-hover animate-reveal delay-200 group">
-            <div class="flex justify-between items-start mb-4">
-              <div class="p-2 rounded-xl bg-rose-500/10 text-rose-500 group-hover:scale-110 transition-transform">
-                <span class="material-symbols-outlined">receipt_long</span>
-              </div>
+          <div class="glass-panel rounded-xl p-4 flex flex-col justify-between border-l-2 border-l-rose-500 group">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Imposto Retido</p>
+            <div class="mt-1">
+              <h3 class="text-3xl xl:text-4xl font-display font-black tracking-tighter text-white truncate" id="totalImposto">R$ 0,00</h3>
+              <p class="text-[10px] font-bold text-rose-500 mt-1">IRRF TOTAL</p>
             </div>
-            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Imposto Retido</p>
-            <h3 class="text-3xl xl:text-4xl font-display font-black tracking-tighter mt-1 truncate" id="totalImposto">R$ 0,00</h3>
           </div>
 
           <!-- Total Previdência -->
-          <div class="bg-white dark:bg-surface-dark p-6 rounded-2xl border border-slate-200 dark:border-border-dark shadow-sm card-hover animate-reveal delay-300 group">
-            <div class="flex justify-between items-start mb-4">
-              <div class="p-2 rounded-xl bg-amber-500/10 text-amber-500 group-hover:scale-110 transition-transform">
-                <span class="material-symbols-outlined">savings</span>
-              </div>
+          <div class="glass-panel rounded-xl p-4 flex flex-col justify-between border-l-2 border-l-amber-500 group">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Previdência</p>
+            <div class="mt-1">
+              <h3 class="text-3xl xl:text-4xl font-display font-black tracking-tighter text-white truncate" id="totalPrev">R$ 0,00</h3>
+              <p class="text-[10px] font-bold text-amber-500 mt-1">OFICIAL/COMPL.</p>
             </div>
-            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">Previdência Oficial</p>
-            <h3 class="text-3xl xl:text-4xl font-display font-black tracking-tighter mt-1 truncate" id="totalPrev">R$ 0,00</h3>
           </div>
         </div>
 
-        <!-- Upload Section -->
-        <div id="uploadSection" class="bg-white dark:bg-surface-dark rounded-2xl border-2 border-dashed border-slate-200 dark:border-border-dark p-12 transition-all hover:border-primary/50 group relative animate-reveal delay-500">
+        <!-- Upload Section (Glassmorphism) -->
+        <div id="uploadSection" class="glass-panel rounded-2xl border-2 border-dashed border-white/10 p-12 transition-all hover:border-primary/50 group relative animate-reveal">
           <input
             type="file"
             id="fileInput"
@@ -277,122 +255,93 @@
             class="absolute inset-0 opacity-0 cursor-pointer z-10"
           />
           <div class="flex flex-col items-center justify-center text-center space-y-4">
-            <div class="size-20 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-all duration-500 upload-pulse">
+            <div class="size-20 rounded-full bg-primary/10 text-primary flex items-center justify-center group-hover:scale-110 transition-all duration-500 upload-pulse border border-primary/20">
               <span class="material-symbols-outlined text-4xl">cloud_upload</span>
             </div>
             <div>
-              <h3 class="text-xl font-bold group-hover:text-primary transition-colors">Faça o upload do seu PDF DIRF</h3>
-              <p class="text-slate-500 dark:text-slate-400 max-w-sm mt-2">Arraste o arquivo aqui ou clique para selecionar. O processamento é feito 100% no seu navegador.</p>
+              <h3 class="text-xl font-bold group-hover:text-primary transition-colors">Processar Dados DIRF</h3>
+              <p class="text-slate-500 text-xs font-mono max-w-sm mt-2">UPLOAD SEU PDF PARA ANÁLISE QUANTUM-S2 LOCAL</p>
             </div>
           </div>
         </div>
 
         <!-- Tabs Section -->
-        <div id="tabsContainer" class="hidden flex gap-2 p-1 bg-slate-200/50 dark:bg-border-dark/30 rounded-xl w-fit">
-          <button onclick="switchTab('consolidado')" id="tab-consolidado" class="px-6 py-2 rounded-lg text-sm font-bold transition-all bg-white dark:bg-surface-dark shadow-sm text-primary">Visão Consolidada</button>
-          <button onclick="switchTab('individual')" id="tab-individual" class="px-6 py-2 rounded-lg text-sm font-bold transition-all text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">Visão Individual</button>
+        <div id="tabsContainer" class="hidden flex gap-2 p-1 bg-white/5 border border-white/10 rounded-xl w-fit">
+          <button onclick="switchTab('consolidado')" id="tab-consolidado" class="px-6 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all bg-primary text-white shadow-lg">Consolidado</button>
+          <button onclick="switchTab('individual')" id="tab-individual" class="px-6 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all text-slate-500 hover:text-white">Individual</button>
         </div>
 
-        <!-- Results Table Section (Consolidade) -->
-        <div id="resultContainer" class="hidden space-y-6">
-          <div class="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-border-dark overflow-hidden shadow-sm flex flex-col">
-            <div class="px-8 py-6 border-b border-slate-200 dark:border-border-dark flex items-center justify-between">
-              <div>
-                <h2 class="text-lg font-bold">Detalhamento Mensal Consolidado</h2>
-                <p class="text-sm text-slate-500 dark:text-slate-400">Valores totais somados de todos os beneficiários processados.</p>
-              </div>
-              <div class="flex items-center gap-3">
-                <button onclick="exportExcel()" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white hover:bg-primary/90 text-sm font-medium transition-all shadow-lg shadow-primary/20">
-                  <span class="material-symbols-outlined text-sm">download</span>
-                  Exportar CSV/Excel
-                </button>
-              </div>
-            </div>
-            
-            <div class="overflow-x-auto custom-scrollbar">
-              <table id="mainTable" class="w-full text-left border-collapse min-w-[1200px]">
-                <thead>
-                  <tr class="bg-slate-50 dark:bg-background-dark/50">
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider sticky left-0 bg-slate-50 dark:bg-background-dark/50 border-r border-slate-200 dark:border-border-dark z-10">Mês</th>
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Rend. Tributável</th>
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Dedução Simpl.</th>
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Prev. Oficial</th>
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Prev. Complem.</th>
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Prev. FAPI</th>
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Dependentes</th>
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Pensão Alim.</th>
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Imposto Retido</th>
-                  </tr>
-                </thead>
-                <tbody id="tableBody" class="divide-y divide-slate-100 dark:divide-border-dark text-sm">
-                  <!-- Linhas geradas via JavaScript -->
-                </tbody>
-              </table>
-            </div>
-            
-            <div class="px-8 py-4 bg-slate-50 dark:bg-background-dark/30 border-t border-slate-200 dark:border-border-dark flex items-center justify-between">
-              <p class="text-xs text-slate-500 dark:text-slate-400">Processamento concluído com sucesso.</p>
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-medium text-slate-400 italic"></span>
-              </div>
+        <!-- Results Table Section (Consolidado) -->
+        <div id="resultContainer" class="hidden flex-1 glass-panel rounded-xl overflow-hidden flex flex-col">
+          <div class="p-3 border-b border-white/5 bg-white/5 flex items-center justify-between">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Detalhamento Mensal Consolidado</span>
+            <div class="flex gap-2">
+              <button onclick="exportExcel()" class="p-1 text-slate-400 hover:text-white" title="Exportar"><span class="material-symbols-outlined text-sm">spreadsheet</span></button>
             </div>
           </div>
+          
+          <div class="overflow-auto flex-1 custom-scrollbar">
+            <table id="mainTable" class="w-full border-collapse text-[20px] font-display font-bold tracking-tight">
+              <thead class="sticky top-0 z-20 bg-background-dark/90 backdrop-blur-md">
+                <tr>
+                  <th class="p-3 text-left border-b border-r border-white/10 text-slate-500 font-bold bg-white/5 min-w-[150px]">MÊS REF</th>
+                  <th class="p-3 text-right border-b border-r border-white/10 text-slate-500 font-bold">REND. TRIB.</th>
+                  <th class="p-3 text-right border-b border-r border-white/10 text-slate-500 font-bold">DED. SIMPL.</th>
+                  <th class="p-3 text-right border-b border-r border-white/10 text-slate-500 font-bold">PREV. OFIC.</th>
+                  <th class="p-3 text-right border-b border-r border-white/10 text-slate-500 font-bold">PREV. COMPL.</th>
+                  <th class="p-3 text-right border-b border-r border-white/10 text-slate-500 font-bold">PREV. FAPI</th>
+                  <th class="p-3 text-right border-b border-r border-white/10 text-slate-500 font-bold">DEPEND.</th>
+                  <th class="p-3 text-right border-b border-r border-white/10 text-slate-500 font-bold">PENSÃO ALIM.</th>
+                  <th class="p-3 text-right border-b border-white/10 text-slate-500 font-bold text-accent-cyan">IRRF RETIDO</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody" class="divide-y divide-white/5">
+                <!-- Linhas geradas via JavaScript -->
+              </tbody>
+            </table>
+          </div>
         </div>
-
 
         <!-- Individual Table Section -->
-        <div id="individualContainer" class="hidden space-y-6">
-          <div class="bg-white dark:bg-surface-dark rounded-2xl border border-slate-200 dark:border-border-dark overflow-hidden shadow-sm flex flex-col">
-            <div class="px-8 py-6 border-b border-slate-200 dark:border-border-dark">
-              <h2 class="text-lg font-bold">Lista de Funcionários</h2>
-              <p class="text-sm text-slate-500 dark:text-slate-400">Total acumulado anual por beneficiário.</p>
-            </div>
-            <div class="overflow-x-auto custom-scrollbar">
-              <table id="individualTable" class="w-full text-left border-collapse">
-                <thead>
-                  <tr class="bg-slate-50 dark:bg-background-dark/50">
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider sticky left-0 bg-slate-50 z-10">CPF</th>
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider sticky left-[120px] bg-slate-50 z-10">Nome do Funcionário</th>
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right whitespace-nowrap">Rend. Tributável</th>
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right whitespace-nowrap">Ded. Simpl.</th>
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right whitespace-nowrap">Prev. Oficial</th>
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right whitespace-nowrap">Prev. Compl.</th>
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right whitespace-nowrap">Prev. FAPI</th>
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right whitespace-nowrap">Dependentes</th>
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right whitespace-nowrap">Pensão Alim.</th>
-                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right whitespace-nowrap">Imposto Retido</th>
-                  </tr>
-                </thead>
-                <tbody id="individualBody" class="divide-y divide-slate-100 dark:divide-border-dark text-sm">
-                </tbody>
-              </table>
-            </div>
+        <div id="individualContainer" class="hidden flex-1 glass-panel rounded-xl overflow-hidden flex flex-col">
+          <div class="p-3 border-b border-white/5 bg-white/5 flex items-center justify-between">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Lista de Beneficiários</span>
+          </div>
+          <div class="overflow-auto flex-1 custom-scrollbar">
+            <table id="individualTable" class="w-full border-collapse text-[16px] font-display font-bold tracking-tight">
+              <thead class="sticky top-0 z-20 bg-background-dark/90 backdrop-blur-md">
+                <tr>
+                  <th class="p-3 text-left border-b border-r border-white/10 text-slate-500 font-bold bg-white/5 sticky left-0 z-30">CPF</th>
+                  <th class="p-3 text-left border-b border-r border-white/10 text-slate-500 font-bold bg-white/5 sticky left-[100px] z-30 min-w-[200px]">BENEFICIÁRIO</th>
+                  <th class="p-3 text-right border-b border-r border-white/10 text-slate-500 font-bold">REND. TRIB.</th>
+                  <th class="p-3 text-right border-b border-r border-white/10 text-slate-500 font-bold">DED. SIMP.</th>
+                  <th class="p-3 text-right border-b border-r border-white/10 text-slate-500 font-bold">PREV. OFIC.</th>
+                  <th class="p-3 text-right border-b border-r border-white/10 text-slate-500 font-bold">PREV. COMP.</th>
+                  <th class="p-3 text-right border-b border-r border-white/10 text-slate-500 font-bold">PREV. FAPI</th>
+                  <th class="p-3 text-right border-b border-r border-white/10 text-slate-500 font-bold">DEPEND.</th>
+                  <th class="p-3 text-right border-b border-r border-white/10 text-slate-500 font-bold">PENSÃO.</th>
+                  <th class="p-3 text-right border-b border-white/10 text-slate-500 font-bold text-accent-cyan">IRRF.</th>
+                </tr>
+              </thead>
+              <tbody id="individualBody" class="divide-y divide-white/5">
+              </tbody>
+            </table>
           </div>
         </div>
 
-        <!-- System Alerts / Info -->
-        <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8 pb-12">
-          <div class="bg-primary/5 border border-primary/20 rounded-2xl p-6">
-            <div class="flex items-center gap-3 mb-4">
-              <span class="material-symbols-outlined text-primary">info</span>
-              <h4 class="font-bold text-primary">Segurança de Dados</h4>
-            </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              Este dashboard opera inteiramente no <b>lado do cliente</b>. Nenhum dado de remuneração ou identificação pessoal de funcionários é enviado para servidores externos. O PDF é lido e processado localmente na memória do seu navegador.
-            </p>
+        <!-- System Info Footer -->
+        <footer class="flex items-center justify-between text-[10px] text-slate-600 font-mono tracking-wider pt-4">
+          <div class="flex gap-6">
+            <span class="flex items-center gap-1.5"><span class="size-1.5 rounded-full bg-accent-cyan animate-pulse"></span> LEDGER LIVE: DIRF-SECURE-V1</span>
+            <span>VERIFICATION: LOCAL-QUANTUM</span>
           </div>
-          <div class="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-6">
-            <div class="flex items-center gap-3 mb-4">
-              <span class="material-symbols-outlined text-emerald-500">task_alt</span>
-              <h4 class="font-bold text-emerald-500">Dica de Uso</h4>
-            </div>
-            <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              Certifique-se de que o PDF da DIRF segue o layout padrão da Receita Federal para garantir a precisão máxima na extração automática dos valores por mês.
-            </p>
+          <div class="flex gap-4">
+            <span class="text-slate-500 uppercase">Processamento 100% Client-Side</span>
           </div>
-        </div>
+        </footer>
       </div>
     </main>
+  </div>
 
     <script>
       // === Lógica de Estado ===
@@ -663,13 +612,13 @@
           const container = t === 'consolidado' ? document.getElementById('resultContainer') : document.getElementById('individualContainer');
           
           if (t === tab) {
-            btn.classList.add('bg-white', 'dark:bg-surface-dark', 'shadow-sm', 'text-primary');
+            btn.classList.add('bg-primary', 'text-white', 'shadow-lg');
             btn.classList.remove('text-slate-500');
-            container.classList.remove('hidden');
+            if (container) container.classList.remove('hidden');
           } else {
-            btn.classList.remove('bg-white', 'dark:bg-surface-dark', 'shadow-sm', 'text-primary');
+            btn.classList.remove('bg-primary', 'text-white', 'shadow-lg');
             btn.classList.add('text-slate-500');
-            container.classList.add('hidden');
+            if (container) container.classList.add('hidden');
           }
         });
       }
@@ -684,6 +633,7 @@
 
       function renderIndividualBody(filter = "") {
         const tbody = document.getElementById("individualBody");
+        if (!tbody) return;
         tbody.innerHTML = "";
         
         let delay = 0;
@@ -691,20 +641,19 @@
           const func = detalhesPorFuncionario[cpf];
           if (cpf.includes(filter) || func.nome.toLowerCase().includes(filter)) {
             const tr = document.createElement("tr");
-            tr.className = "hover:bg-slate-50 dark:hover:bg-background-dark/50 transition-all animate-reveal";
+            tr.className = "group hover:bg-white/5 animate-reveal";
             tr.style.animationDelay = `${delay}ms`;
-            delay = Math.min(delay + 30, 600); // Stagger limit to 600ms
+            delay = Math.min(delay + 10, 200);
             
             let cellsHtml = `
-              <td class="px-6 py-4 font-mono text-xs text-slate-500 sticky left-0 bg-white dark:bg-surface-dark z-10">${cpf}</td>
-              <td class="px-6 py-4 font-bold text-slate-700 dark:text-slate-200 sticky left-[120px] bg-white dark:bg-surface-dark z-10">${func.nome}</td>
+              <td class="p-3 font-bold text-slate-300 border-r border-white/5 sticky left-0 bg-[#0c0c12] z-20">${cpf}</td>
+              <td class="p-3 font-bold text-slate-300 border-r border-white/5 sticky left-[100px] bg-[#0c0c12] z-20">${func.nome}</td>
             `;
 
             func.totais.forEach((v, idx) => {
-              let colorClass = "text-slate-600 dark:text-slate-300";
-              if (idx === 0) colorClass = "text-emerald-600 font-bold";
-              if (idx === 7) colorClass = "text-rose-600 font-bold";
-              cellsHtml += `<td class="px-6 py-4 text-right font-medium ${colorClass}">${formatMoney(v)}</td>`;
+              let colorClass = "text-white";
+              if (idx === 7) colorClass = "text-accent-cyan";
+              cellsHtml += `<td class="p-3 text-right data-cell ${colorClass}">${formatMoney(v)}</td>`;
             });
 
             tr.innerHTML = cellsHtml;
@@ -714,15 +663,17 @@
       }
 
       function renderResults() {
-        document.getElementById("uploadSection").classList.add("hidden");
-        document.getElementById("tabsContainer").classList.remove("hidden");
+        if (document.getElementById("uploadSection")) document.getElementById("uploadSection").classList.add("hidden");
+        if (document.getElementById("tabsContainer")) document.getElementById("tabsContainer").classList.remove("hidden");
         switchTab(currentTab);
         
         if (nomeEmpresa) {
-          document.getElementById("nomeEmpresaDisplay").innerText = nomeEmpresa;
+          const empresaDisplay = document.getElementById("nomeEmpresaDisplay");
+          if (empresaDisplay) empresaDisplay.innerHTML = `<span class="text-[10px] font-bold text-slate-500 tracking-widest uppercase items-center flex gap-1"><span class="material-symbols-outlined text-[14px] text-emerald-400">check_circle</span> Processado</span> <span class="text-sm font-bold text-white bg-primary/20 px-3 py-1 rounded-md border border-primary/30 ml-2 shadow-lg shadow-primary/10 tracking-wide">${nomeEmpresa.toUpperCase()}</span>`;
         }
 
         const tbody = document.getElementById("tableBody");
+        if (!tbody) return;
         tbody.innerHTML = "";
         let grandTotal = Array(8).fill(0);
         
@@ -733,27 +684,31 @@
         MESES.forEach((mes) => {
           const vals = dadosConsolidados[mes];
           const tr = document.createElement("tr");
-          tr.className = "hover:bg-slate-50 dark:hover:bg-background-dark/50 transition-all animate-reveal";
+          tr.className = "group hover:bg-white/5 animate-reveal";
           tr.style.animationDelay = `${delay}ms`;
-          delay = Math.min(delay + 30, 400);
+          delay = Math.min(delay + 20, 300);
 
-          let html = `<td class="px-6 py-4 font-bold sticky left-0 bg-white dark:bg-surface-dark border-r border-slate-100 dark:border-border-dark z-10">${mes}</td>`;
+          let html = `<td class="p-3 font-bold text-slate-300 border-r border-white/10 bg-white/5 min-w-[150px] sticky left-0 z-20">${mes.toUpperCase()}</td>`;
           vals.forEach((v, idx) => {
-            html += `<td class="px-6 py-4 text-right font-medium text-slate-600 dark:text-slate-300">${formatMoney(v)}</td>`;
+            let colorClass = "text-white";
+            if (idx === 7) colorClass = "text-accent-cyan";
+            html += `<td class="p-3 text-right data-cell ${colorClass}">${formatMoney(v)}</td>`;
             grandTotal[idx] += v;
           });
           tr.innerHTML = html;
           tbody.appendChild(tr);
         });
         
+        // Row de Total Final
         const trTotal = document.createElement("tr");
-        trTotal.className = "bg-primary/5 dark:bg-primary/10 border-t-2 border-primary/20 animate-reveal";
-        trTotal.style.animationDelay = "500ms";
+        trTotal.className = "bg-primary/20 backdrop-blur-md sticky bottom-0 z-30 font-bold border-t border-primary/30";
 
-        let tdTotalLabel = `<td class="px-6 py-5 font-black text-primary sticky left-0 bg-slate-50 dark:bg-slate-900 z-10">TOTAL ANUAL</td>`;
+        let tdTotalLabel = `<td class="p-3 font-bold text-white border-r border-white/20 bg-primary/40 sticky left-0 z-40">TOTAL ACUMULADO</td>`;
         let tdTotalVals = "";
-        grandTotal.forEach((v) => {
-          tdTotalVals += `<td class="px-6 py-5 text-right font-black text-slate-900 dark:text-white">${formatMoney(v)}</td>`;
+        grandTotal.forEach((v, idx) => {
+          let colorClass = "text-white";
+          if (idx === 7) colorClass = "text-accent-cyan";
+          tdTotalVals += `<td class="p-3 text-right font-bold ${colorClass}">${formatMoney(v)}</td>`;
         });
         trTotal.innerHTML = tdTotalLabel + tdTotalVals;
         tbody.appendChild(trTotal);
@@ -761,7 +716,7 @@
         // Animate metrics
         animateValue("totalRendimentos", 0, grandTotal[0], 1000, true);
         animateValue("totalImposto", 0, grandTotal[7], 1000, true);
-        animateValue("totalPrev", 0, grandTotal[2], 1000, true);
+        animateValue("totalPrev", 0, (grandTotal[2] + grandTotal[3]), 1000, true);
         
         renderIndividualBody();
         saveToLocal();
