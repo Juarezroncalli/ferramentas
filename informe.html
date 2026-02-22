@@ -129,7 +129,7 @@
     </style>
   </head>
   
-  <body class="bg-background-dark text-slate-100 antialiased font-display overflow-hidden">
+  <body class="bg-background-dark text-slate-100 antialiased font-display overflow-hidden select-none" oncontextmenu="return false;">
     
     <!-- Loading Overlay -->
     <div id="loading" class="fixed inset-0 z-[100] hidden flex-col items-center justify-center bg-background-dark/80 loading-overlay transition-opacity duration-500 opacity-0">
@@ -822,6 +822,23 @@
         XLSX.utils.book_append_sheet(wb, ws, "Consolidado DIRF");
         XLSX.writeFile(wb, "Consolidado_DIRF.xlsx");
       }
+      
+      // Proteção de Código Básica
+      document.addEventListener("keydown", function (e) {
+        if (e.keyCode == 123) { // F12
+          e.preventDefault();
+        }
+        if (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) { // Ctrl+Shift+I/J/C
+          e.preventDefault();
+        }
+        if (e.ctrlKey && e.keyCode == 85) { // Ctrl+U
+          e.preventDefault();
+        }
+        if (e.ctrlKey && e.keyCode == 83) { // Ctrl+S
+          e.preventDefault();
+        }
+      });
+      document.addEventListener('contextmenu', event => event.preventDefault());
     </script>
   </body>
 </html>
