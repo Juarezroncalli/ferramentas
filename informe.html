@@ -1037,6 +1037,7 @@
             let colorClass =
               idx === 7 ? "text-accent font-bold" : "text-text-main";
             let bgClass = idx === 7 ? "bg-orange-50/30" : "";
+            if (v < 0) colorClass = "text-red-600 font-bold";
             cellsHtml += `<td class="p-2.5 text-right border-r border-border-light ${colorClass} ${bgClass}">${formatMoney(v)}</td>`;
             monthGrandTotal[idx] += v;
           });
@@ -1060,6 +1061,7 @@
               colorClass = "text-accent font-bold";
               bgClass = "bg-orange-100";
             }
+            if (v < 0) colorClass = "text-red-600 font-bold";
             tdTotalVals += `<td class="p-4 text-right font-bold ${colorClass} ${bgClass}">${formatMoney(v)}</td>`;
           });
           trTotal.innerHTML = tdTotalLabel + tdTotalVals;
@@ -1222,19 +1224,29 @@
       function parseBrlFloat(str) {
         if (!str || str.trim() === "") return 0;
         let clean = str.replace(/\s/g, "");
+        let isNegative = false;
+        if (clean.startsWith("-")) {
+          isNegative = true;
+          clean = clean.substring(1);
+        }
         if ((clean.match(/\./g) || []).length > 1 && !clean.includes(",")) {
           const parts = clean.split(".");
           const decimal = parts.pop();
           const integer = parts.join("");
-          return parseFloat(integer + "." + decimal);
+          const val = parseFloat(integer + "." + decimal);
+          return isNegative ? -val : val;
         }
         if (clean.includes(".") && !clean.includes(",")) {
-          if (/\.\d{2}$/.test(clean)) return parseFloat(clean);
+          if (/\.\d{2}$/.test(clean)) {
+            const val = parseFloat(clean);
+            return isNegative ? -val : val;
+          }
         }
         clean = clean.replace(/\./g, "").replace(",", ".");
         if (clean.startsWith(".")) clean = "0" + clean;
         const val = parseFloat(clean);
-        return isNaN(val) ? 0 : val;
+        if (isNaN(val)) return 0;
+        return isNegative ? -val : val;
       }
 
       async function handleFile(file) {
@@ -1385,7 +1397,7 @@
               // separa o texto em múltiplos tokens.
               const rawValues = lines[i].slice(1);
               const numericValues = rawValues.filter(
-                (v) => /^\s*[\d.,]+\s*$/.test(v) && v.trim().length > 0,
+                (v) => /^\s*-?[\d.,]+\s*$/.test(v) && v.trim().length > 0,
               );
               if (numericValues.length >= 8) {
                 for (let col = 0; col < 8; col++) {
@@ -1489,6 +1501,7 @@
               colorClass = "text-accent font-bold";
               bgClass = "bg-orange-50/50 group-hover:bg-orange-50";
             }
+            if (v < 0) colorClass = "text-red-600 font-bold";
             cellsHtml += `<td class="p-3 text-right data-cell ${colorClass} ${bgClass} transition-colors">${formatMoney(v)}</td>`;
           });
 
@@ -1540,6 +1553,7 @@
               colorClass = "text-accent font-bold";
               bgClass = "bg-orange-50/50 group-hover:bg-orange-50";
             }
+            if (v < 0) colorClass = "text-red-600 font-bold";
             html += `<td class="p-4 text-right data-cell ${colorClass} ${bgClass} transition-colors">${formatMoney(v)}</td>`;
             grandTotal[idx] += v;
           });
@@ -1561,6 +1575,7 @@
             colorClass = "text-accent font-bold";
             bgClass = "bg-orange-100";
           }
+          if (v < 0) colorClass = "text-red-600 font-bold";
           tdTotalVals += `<td class="p-4 text-right font-bold ${colorClass} ${bgClass}">${formatMoney(v)}</td>`;
         });
         trTotal.innerHTML = tdTotalLabel + tdTotalVals;
