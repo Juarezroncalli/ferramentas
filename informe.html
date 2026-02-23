@@ -317,8 +317,17 @@
           </div>
 
           <div
-            class="p-4 border-t border-border-light bg-slate-50 rounded-b-xl flex justify-end"
+            class="p-4 border-t border-border-light bg-slate-50 rounded-b-xl flex justify-between items-center"
           >
+            <button
+              onclick="exportMonthExcel()"
+              class="px-5 py-2 rounded-md text-sm font-bold bg-green-600 hover:bg-green-700 text-white flat-btn shadow-md flex items-center gap-2"
+            >
+              <span class="material-symbols-outlined text-[18px]"
+                >download</span
+              >
+              Exportar Excel
+            </button>
             <button
               onclick="closeMonthModal()"
               class="px-6 py-2 rounded-md text-sm font-bold bg-primary text-white flat-btn shadow-md"
@@ -948,6 +957,12 @@
         }
       }
 
+      // Remove prefixo numérico do nome para ordenação alfabética correta
+      // Ex: "001 FULANO DE TAL" -> "FULANO DE TAL"
+      function stripNumPrefix(nome) {
+        return nome.replace(/^\s*\d+[\s.\-)*]+/, "").trim();
+      }
+
       function closeMonthModal() {
         const modal = document.getElementById("monthModal");
         const content = document.getElementById("monthModalContent");
@@ -962,7 +977,10 @@
         }, 300);
       }
 
+      let currentMonthModalName = "";
+
       function openMonthDetail(mes) {
+        currentMonthModalName = mes;
         const modal = document.getElementById("monthModal");
         const content = document.getElementById("monthModalContent");
         const title = document.getElementById("monthModalTitle");
@@ -985,31 +1003,46 @@
         let needsReprocess = false;
         let monthGrandTotal = Array(8).fill(0);
 
+        // Coletar funcionários que têm dados neste mês e ordenar por nome
+        const funcionariosDoMes = [];
         Object.keys(detalhesPorFuncionario).forEach((cpf) => {
           const func = detalhesPorFuncionario[cpf];
           if (!func.mensal) {
             needsReprocess = true;
           } else if (func.mensal[mes]) {
-            foundAny = true;
-            const tr = document.createElement("tr");
-            tr.className = "hover:bg-slate-50 transition-colors group";
-
-            let cellsHtml = `
-              <td class="p-2.5 font-semibold text-text-main border-r border-border-light sticky left-0 bg-white group-hover:bg-slate-50 z-10 transition-colors">${cpf}</td>
-              <td class="p-2.5 font-semibold text-text-main border-r border-border-light sticky left-[100px] bg-white group-hover:bg-slate-50 z-10 transition-colors group-hover:underline cursor-default">${func.nome}</td>
-            `;
-
-            func.mensal[mes].forEach((v, idx) => {
-              let colorClass =
-                idx === 7 ? "text-accent font-bold" : "text-text-main";
-              let bgClass = idx === 7 ? "bg-orange-50/30" : "";
-              cellsHtml += `<td class="p-2.5 text-right border-r border-border-light ${colorClass} ${bgClass}">${formatMoney(v)}</td>`;
-              monthGrandTotal[idx] += v;
+            funcionariosDoMes.push({
+              cpf,
+              nome: func.nome,
+              valores: func.mensal[mes],
             });
-
-            tr.innerHTML = cellsHtml;
-            tbody.appendChild(tr);
           }
+        });
+
+        // Ordenar por nome
+        funcionariosDoMes.sort((a, b) =>
+          stripNumPrefix(a.nome).localeCompare(stripNumPrefix(b.nome), "pt-BR"),
+        );
+
+        funcionariosDoMes.forEach(({ cpf, nome, valores }) => {
+          foundAny = true;
+          const tr = document.createElement("tr");
+          tr.className = "hover:bg-slate-50 transition-colors group";
+
+          let cellsHtml = `
+            <td class="p-2.5 font-semibold text-text-main border-r border-border-light sticky left-0 bg-white group-hover:bg-slate-50 z-10 transition-colors">${cpf}</td>
+            <td class="p-2.5 font-semibold text-text-main border-r border-border-light sticky left-[100px] bg-white group-hover:bg-slate-50 z-10 transition-colors group-hover:underline cursor-default">${nome}</td>
+          `;
+
+          valores.forEach((v, idx) => {
+            let colorClass =
+              idx === 7 ? "text-accent font-bold" : "text-text-main";
+            let bgClass = idx === 7 ? "bg-orange-50/30" : "";
+            cellsHtml += `<td class="p-2.5 text-right border-r border-border-light ${colorClass} ${bgClass}">${formatMoney(v)}</td>`;
+            monthGrandTotal[idx] += v;
+          });
+
+          tr.innerHTML = cellsHtml;
+          tbody.appendChild(tr);
         });
 
         if (foundAny) {
@@ -1044,6 +1077,96 @@
             tbody.innerHTML = `<tr><td colspan="10" class="p-10 text-center text-text-muted font-medium italic">Nenhum dado encontrado para este mês (${mes}).</td></tr>`;
           }
         }
+      }
+
+      function exportMonthExcel() {
+        if (!currentMonthModalName) return;
+        const mes = currentMonthModalName;
+
+        const HEADERS = [
+          "CPF",
+          "BENEFICIÁRIO",
+          "Rend. Tributável",
+          "Ded. Simplificada",
+          "Prev. Oficial",
+          "Prev. Complementar",
+          "Prev. FAPI",
+          "Dependentes",
+          "Pensão Alimentícia",
+          "IRRF",
+        ];
+
+        // Coletar e ordenar por nome
+        const funcionariosDoMes = [];
+        Object.keys(detalhesPorFuncionario).forEach((cpf) => {
+          const func = detalhesPorFuncionario[cpf];
+          if (func.mensal && func.mensal[mes]) {
+            funcionariosDoMes.push({
+              cpf,
+              nome: func.nome,
+              valores: func.mensal[mes],
+            });
+          }
+        });
+        funcionariosDoMes.sort((a, b) =>
+          stripNumPrefix(a.nome).localeCompare(stripNumPrefix(b.nome), "pt-BR"),
+        );
+
+        if (funcionariosDoMes.length === 0) {
+          return alert("Nenhum dado para exportar neste mês.");
+        }
+
+        const rows = [HEADERS];
+        let totais = Array(8).fill(0);
+
+        funcionariosDoMes.forEach(({ cpf, nome, valores }) => {
+          const row = [cpf, nome];
+          valores.forEach((v, i) => {
+            row.push(v);
+            totais[i] += v;
+          });
+          rows.push(row);
+        });
+
+        // Linha de total
+        const totalRow = ["", "TOTAL"];
+        totais.forEach((v) => totalRow.push(v));
+        rows.push(totalRow);
+
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+
+        // Formatar colunas de valores como número
+        const range = XLSX.utils.decode_range(ws["!ref"]);
+        for (let R = 1; R <= range.e.r; R++) {
+          for (let C = 2; C <= range.e.c; C++) {
+            const addr = XLSX.utils.encode_cell({ r: R, c: C });
+            if (ws[addr] && typeof ws[addr].v === "number") {
+              ws[addr].z = "#,##0.00";
+            }
+          }
+        }
+
+        // Largura das colunas
+        ws["!cols"] = [
+          { wch: 16 },
+          { wch: 35 },
+          { wch: 16 },
+          { wch: 16 },
+          { wch: 16 },
+          { wch: 18 },
+          { wch: 14 },
+          { wch: 14 },
+          { wch: 16 },
+          { wch: 14 },
+        ];
+
+        XLSX.utils.book_append_sheet(
+          wb,
+          ws,
+          mes.toUpperCase().substring(0, 31),
+        );
+        XLSX.writeFile(wb, `Detalhamento_${mes}_${nomeEmpresa || "DIRF"}.xlsx`);
       }
 
       function formatMoney(val) {
@@ -1332,36 +1455,45 @@
         tbody.innerHTML = "";
 
         let delay = 0;
-        Object.keys(detalhesPorFuncionario).forEach((cpf) => {
-          const func = detalhesPorFuncionario[cpf];
-          if (
-            cpf.includes(filter) ||
-            func.nome.toLowerCase().includes(filter)
-          ) {
-            const tr = document.createElement("tr");
-            tr.className =
-              "group hover:bg-slate-50 animate-reveal transition-colors";
-            tr.style.animationDelay = `${delay}ms`;
-            delay = Math.min(delay + 10, 200);
 
-            let cellsHtml = `
+        // Coletar e ordenar por nome
+        const cpfList = Object.keys(detalhesPorFuncionario)
+          .map((cpf) => ({ cpf, ...detalhesPorFuncionario[cpf] }))
+          .filter(
+            (f) =>
+              f.cpf.includes(filter) || f.nome.toLowerCase().includes(filter),
+          )
+          .sort((a, b) =>
+            stripNumPrefix(a.nome).localeCompare(
+              stripNumPrefix(b.nome),
+              "pt-BR",
+            ),
+          );
+
+        cpfList.forEach(({ cpf, nome, totais }) => {
+          const tr = document.createElement("tr");
+          tr.className =
+            "group hover:bg-slate-50 animate-reveal transition-colors";
+          tr.style.animationDelay = `${delay}ms`;
+          delay = Math.min(delay + 10, 200);
+
+          let cellsHtml = `
               <td class="p-3 font-semibold text-text-main border-r border-border-light sticky left-0 bg-white group-hover:bg-slate-50 z-20 transition-colors">${cpf}</td>
-              <td class="p-3 font-semibold text-text-main border-r border-border-light sticky left-[100px] bg-white group-hover:bg-slate-50 z-20 transition-colors">${func.nome}</td>
+              <td class="p-3 font-semibold text-text-main border-r border-border-light sticky left-[100px] bg-white group-hover:bg-slate-50 z-20 transition-colors">${nome}</td>
             `;
 
-            func.totais.forEach((v, idx) => {
-              let colorClass = "text-text-main";
-              let bgClass = "";
-              if (idx === 7) {
-                colorClass = "text-accent font-bold";
-                bgClass = "bg-orange-50/50 group-hover:bg-orange-50";
-              }
-              cellsHtml += `<td class="p-3 text-right data-cell ${colorClass} ${bgClass} transition-colors">${formatMoney(v)}</td>`;
-            });
+          totais.forEach((v, idx) => {
+            let colorClass = "text-text-main";
+            let bgClass = "";
+            if (idx === 7) {
+              colorClass = "text-accent font-bold";
+              bgClass = "bg-orange-50/50 group-hover:bg-orange-50";
+            }
+            cellsHtml += `<td class="p-3 text-right data-cell ${colorClass} ${bgClass} transition-colors">${formatMoney(v)}</td>`;
+          });
 
-            tr.innerHTML = cellsHtml;
-            tbody.appendChild(tr);
-          }
+          tr.innerHTML = cellsHtml;
+          tbody.appendChild(tr);
         });
       }
 
@@ -1449,6 +1581,8 @@
           return;
         }
         const wb = XLSX.utils.book_new();
+
+        // Aba 1: Consolidado por mês
         const ws_data = [
           [
             "Mês",
@@ -1474,7 +1608,52 @@
         ws_data.push(totalRow);
         const ws = XLSX.utils.aoa_to_sheet(ws_data);
         XLSX.utils.book_append_sheet(wb, ws, "Consolidado DIRF");
-        XLSX.writeFile(wb, "Consolidado_DIRF.xlsx");
+
+        // Aba 2: Individual ordenado por nome
+        const ws2_data = [
+          [
+            "CPF",
+            "Beneficiário",
+            "Rend. Tributável",
+            "Dedução Simpl.",
+            "Prev. Oficial",
+            "Prev. Complem.",
+            "Prev. FAPI",
+            "Dependentes",
+            "Pensão Alim.",
+            "Imposto Retido",
+          ],
+        ];
+
+        const listaOrdenada = Object.keys(detalhesPorFuncionario)
+          .map((cpf) => ({ cpf, ...detalhesPorFuncionario[cpf] }))
+          .sort((a, b) =>
+            stripNumPrefix(a.nome).localeCompare(
+              stripNumPrefix(b.nome),
+              "pt-BR",
+            ),
+          );
+
+        listaOrdenada.forEach(({ cpf, nome, totais }) => {
+          ws2_data.push([cpf, nome, ...totais]);
+        });
+
+        const ws2 = XLSX.utils.aoa_to_sheet(ws2_data);
+        ws2["!cols"] = [
+          { wch: 16 },
+          { wch: 35 },
+          { wch: 16 },
+          { wch: 16 },
+          { wch: 16 },
+          { wch: 16 },
+          { wch: 14 },
+          { wch: 14 },
+          { wch: 16 },
+          { wch: 14 },
+        ];
+        XLSX.utils.book_append_sheet(wb, ws2, "Por Beneficiário");
+
+        XLSX.writeFile(wb, `Consolidado_DIRF_${nomeEmpresa || "Export"}.xlsx`);
       }
 
       async function downloadIndividualPDFsZip() {

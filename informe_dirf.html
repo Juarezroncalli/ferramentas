@@ -1,11 +1,39 @@
 <!doctype html>
 <html lang="pt-BR">
   <head>
+    <script>
+      document.addEventListener("contextmenu", (event) =>
+        event.preventDefault(),
+      );
+      document.onkeydown = function (e) {
+        if (e.keyCode == 123) return false;
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 73) return false;
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 74) return false;
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 67) return false;
+        if (e.ctrlKey && e.keyCode == 85) return false;
+        if (e.ctrlKey && e.keyCode == 83) return false;
+      };
+    </script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-6XKND47T4H"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-6XKND47T4H", {
+        anonymize_ip: true,
+        allow_google_signals: false,
+        allow_ad_personalization_signals: false,
+      });
+    </script>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>DIRF Informe Master</title>
+    <title>Informe de Rendimentos - Consolidador</title>
 
-    <!-- Scripts Externos -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
@@ -25,8 +53,10 @@
         theme: {
           extend: {
             colors: {
-              primary: "#0F172A",
-              accent: "#0284C7",
+              primary: "#1E40AF",
+              accent: "#F97316",
+              danger: "#DC2626",
+              success: "#059669",
               "background-light": "#F8FAFC",
               "card-light": "#FFFFFF",
               "border-light": "#E2E8F0",
@@ -35,7 +65,7 @@
             },
             fontFamily: {
               display: ["Inter", "sans-serif"],
-              mono: ["'Inter'", "monospace"],
+              mono: ["'Courier New'", "monospace"],
             },
             borderRadius: {
               DEFAULT: "0px",
@@ -78,41 +108,46 @@
         background: #94a3b8;
       }
       .loading-overlay {
-        background-color: rgba(255, 255, 255, 0.9);
+        background-color: rgba(248, 250, 252, 0.95);
+        backdrop-filter: blur(4px);
       }
-
-      .informe-box {
-        border: 1px solid theme("colors.border-light");
-        padding: 1.5rem;
-        background: white;
-        margin-bottom: 2rem;
-      }
-
-      .section-title {
+      .section-header {
         background: theme("colors.primary");
         color: white;
-        padding: 0.5rem 1rem;
+        padding: 0.625rem 1rem;
         font-weight: 800;
-        font-size: 0.875rem;
+        font-size: 0.8rem;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 1rem;
+        letter-spacing: 0.04em;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
       }
-
       .item-row {
         display: flex;
         justify-content: space-between;
-        padding: 0.5rem 0;
+        align-items: center;
+        padding: 0.625rem 1rem;
         border-bottom: 1px solid theme("colors.border-light");
+        transition: background-color 0.15s ease;
       }
       .item-row:last-child {
         border-bottom: none;
       }
-
+      .item-row:hover {
+        background: #f8fafc;
+      }
+      .item-value {
+        font-family: "Courier New", monospace;
+        font-weight: 700;
+        font-size: 0.875rem;
+        min-width: 130px;
+        text-align: right;
+      }
       @keyframes revealUp {
         from {
           opacity: 0;
-          transform: translateY(15px);
+          transform: translateY(12px);
         }
         to {
           opacity: 1;
@@ -120,14 +155,41 @@
         }
       }
       .animate-reveal {
-        animation: revealUp 0.4s ease-out forwards;
+        animation: revealUp 0.35s ease-out forwards;
         opacity: 0;
+      }
+      .flat-btn {
+        transition:
+          background-color 0.15s ease,
+          transform 0.1s ease;
+      }
+      .flat-btn:active {
+        transform: scale(0.97);
+      }
+      .func-row:hover {
+        background: #f1f5f9 !important;
+      }
+      .func-row {
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .card-flat {
+        background: white;
+        border: 1px solid theme("colors.border-light");
+        transition: all 0.2s ease;
+      }
+      .card-flat:hover {
+        border-color: theme("colors.primary");
+        box-shadow:
+          0 4px 6px -1px rgba(30, 64, 175, 0.05),
+          0 2px 4px -1px rgba(30, 64, 175, 0.03);
       }
     </style>
   </head>
 
   <body
     class="bg-background-light text-text-main antialiased font-display overflow-hidden select-none"
+    oncontextmenu="return false;"
   >
     <!-- Loading Overlay -->
     <div
@@ -135,69 +197,130 @@
       class="fixed inset-0 z-[100] hidden flex-col items-center justify-center loading-overlay transition-opacity duration-300 opacity-0"
     >
       <div
-        class="size-16 border-4 border-accent border-t-transparent rounded-full animate-spin mb-4"
+        class="size-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"
       ></div>
-      <h3 id="loadingText" class="text-xl font-medium text-primary font-mono">
-        Processando DIRF...
+      <h3 id="loadingText" class="text-lg font-semibold text-primary font-mono">
+        Processando PDF...
       </h3>
+      <div class="w-64 h-1.5 bg-slate-200 rounded-full mt-4 overflow-hidden">
+        <div
+          id="loadingBar"
+          class="h-full bg-primary rounded-full transition-all duration-300"
+          style="width: 0%"
+        ></div>
+      </div>
+      <span
+        id="loadingPercent"
+        class="text-xs text-text-muted mt-2 font-mono"
+      ></span>
     </div>
 
     <div class="flex h-screen overflow-hidden">
-      <!-- Sidebar Navigation -->
+      <!-- Modal Exclusão -->
+      <div
+        id="deleteModal"
+        class="fixed inset-0 z-[200] hidden flex-col items-center justify-center bg-text-main/20 backdrop-blur-sm transition-opacity duration-300 opacity-0"
+      >
+        <div
+          class="bg-card-light border border-border-light p-8 rounded-xl shadow-xl max-w-sm w-full text-center transform scale-95 transition-transform duration-300"
+          id="deleteModalContent"
+        >
+          <div
+            class="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-orange-100"
+          >
+            <span class="material-symbols-outlined text-accent text-3xl"
+              >delete_forever</span
+            >
+          </div>
+          <h2 class="text-xl font-bold text-text-main mb-2">Limpar Dados</h2>
+          <p class="text-sm text-text-muted mb-6">
+            Tem certeza que deseja apagar todos os dados processados? Esta ação
+            não pode ser desfeita e você precisará processar o PDF novamente.
+          </p>
+          <div class="flex gap-3 justify-center">
+            <button
+              onclick="closeDeleteModal()"
+              class="px-5 py-2.5 rounded-md text-sm font-bold bg-slate-100 hover:bg-slate-200 text-text-main transition-colors border border-slate-200 flex-1 flat-btn"
+            >
+              Cancelar
+            </button>
+            <button
+              onclick="confirmLimpar()"
+              class="px-5 py-2.5 rounded-md text-sm font-bold bg-accent hover:bg-orange-600 text-white transition-colors flex-1 flat-btn"
+            >
+              Sim, Apagar
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Sidebar -->
       <aside
         class="flex flex-col items-center py-6 w-20 bg-primary border-r border-primary shrink-0 z-50 text-white"
       >
         <div class="mb-10 text-white">
-          <span class="material-symbols-outlined text-3xl">shield</span>
+          <span class="material-symbols-outlined text-3xl">bolt</span>
         </div>
-
-        <nav class="flex flex-col gap-6 flex-1">
+        <nav class="flex flex-col gap-5 flex-1">
           <button
-            onclick="location.reload()"
-            class="p-3 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all"
-            title="Sincronizar"
+            onclick="showView('consolidado')"
+            class="p-3 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all flat-btn"
+            title="Consolidado"
           >
-            <span class="material-symbols-outlined">sync</span>
+            <span class="material-symbols-outlined">analytics</span>
           </button>
-
+          <button
+            onclick="showView('individual')"
+            class="p-3 hover:bg-white/10 rounded-lg text-white/70 hover:text-white transition-all flat-btn"
+            title="Por Funcionário"
+          >
+            <span class="material-symbols-outlined">groups</span>
+          </button>
           <button
             onclick="exportExcel()"
-            class="p-3 hover:bg-white/10 rounded-lg text-white/70 hover:text-white transition-all"
+            class="p-3 hover:bg-white/10 rounded-lg text-white/70 hover:text-white transition-all flat-btn"
             title="Exportar Excel"
           >
             <span class="material-symbols-outlined">file_download</span>
           </button>
-
+          <button
+            id="btnZipSidebar"
+            onclick="downloadZip()"
+            class="hidden p-3 hover:bg-white/10 rounded-lg text-white/70 hover:text-white transition-all flat-btn"
+            title="PDFs Individuais (.ZIP)"
+          >
+            <span class="material-symbols-outlined">folder_zip</span>
+          </button>
           <button
             onclick="limparDados()"
-            class="p-3 hover:bg-white/10 rounded-lg text-white/70 hover:text-red-400 transition-all"
+            class="p-3 hover:bg-white/10 rounded-lg text-white/70 hover:text-red-400 transition-all flat-btn"
             title="Limpar Dados"
           >
             <span class="material-symbols-outlined">delete</span>
           </button>
         </nav>
+        <div class="text-[9px] text-white/30 font-mono mt-auto">v1.0</div>
       </aside>
 
       <!-- Main Content -->
       <main
-        class="flex-1 flex flex-col overflow-hidden p-4 lg:p-8 space-y-8 bg-background-light"
+        class="flex-1 flex flex-col overflow-hidden p-4 lg:p-8 space-y-6 bg-background-light"
       >
         <!-- Header -->
-        <header class="flex items-center justify-between px-2">
+        <header class="flex items-center justify-between px-2 flex-wrap gap-4">
           <div>
             <h1
-              class="text-3xl font-extrabold tracking-tight text-primary flex items-center gap-3"
+              class="text-2xl font-extrabold tracking-tight text-primary flex items-center gap-3"
             >
-              Informe DIRF
+              Informe de Rendimentos
               <span
-                class="text-xs font-mono text-white bg-accent px-2 py-0.5 rounded-sm"
-                >2026</span
+                class="text-[10px] font-mono text-white bg-accent px-2 py-0.5 rounded-sm"
+                >CONSOLIDADOR</span
               >
             </h1>
-            <div class="mt-2 flex items-center gap-2" id="nomeEmpresaDisplay">
+            <div class="mt-2 flex items-center gap-2" id="empresaDisplay">
               <span
                 class="text-[10px] font-bold text-text-muted tracking-widest uppercase"
-                >Empresa</span
+                >Fonte Pagadora</span
               >
               <span
                 class="text-xs font-bold text-text-main bg-white px-2.5 py-1 rounded border border-border-light"
@@ -206,7 +329,7 @@
             </div>
           </div>
 
-          <div class="flex items-center gap-4 flex-1 max-w-lg mx-8">
+          <div class="flex items-center gap-3 flex-1 max-w-md mx-6">
             <div class="relative w-full">
               <span
                 class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-sm"
@@ -215,8 +338,8 @@
               <input
                 id="searchInput"
                 oninput="handleSearch(this.value)"
-                class="w-full bg-white border border-border-light rounded-md pl-10 pr-4 py-2.5 focus:ring-2 focus:ring-accent focus:border-accent text-sm transition-all placeholder:text-slate-400 outline-none"
-                placeholder="Filtrar por nome ou CPF do funcionário..."
+                class="w-full bg-white border border-border-light rounded-md pl-10 pr-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-primary text-sm transition-all placeholder:text-slate-400 outline-none"
+                placeholder="Filtrar por nome ou CPF..."
                 type="text"
               />
             </div>
@@ -224,16 +347,16 @@
 
           <div class="flex items-center gap-3">
             <button
-              id="btnZip"
-              onclick="downloadIndividualPDFsZip()"
-              class="hidden bg-primary hover:bg-slate-800 text-white px-5 py-2.5 rounded-md text-sm font-bold transition-all flex items-center gap-2"
+              id="btnZipHeader"
+              onclick="downloadZip()"
+              class="hidden bg-primary hover:bg-slate-800 text-white px-4 py-2.5 rounded-md text-xs font-bold transition-all flat-btn items-center gap-2"
             >
               <span class="material-symbols-outlined text-sm">folder_zip</span>
-              PDFs Individuais (.ZIP)
+              ZIP
             </button>
             <button
               onclick="exportExcel()"
-              class="bg-accent hover:bg-sky-700 text-white px-5 py-2.5 rounded-md text-sm font-bold transition-all flex items-center gap-2"
+              class="bg-primary hover:bg-blue-800 text-white px-5 py-2.5 rounded-md text-xs font-bold transition-all flat-btn flex items-center gap-2"
             >
               <span class="material-symbols-outlined text-sm">download</span>
               EXCEL
@@ -241,46 +364,66 @@
           </div>
         </header>
 
-        <!-- Dynamic Content -->
+        <!-- Dashboard Area -->
         <div
           id="dashboard"
-          class="flex-1 overflow-y-auto custom-scrollbar space-y-8 pr-2"
+          class="flex-1 overflow-y-auto custom-scrollbar space-y-6 pr-2"
         >
           <!-- Metrics -->
           <div
             id="metricsGrid"
-            class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-reveal"
+            class="grid grid-cols-1 md:grid-cols-4 gap-4 animate-reveal"
           >
             <div
-              class="bg-white border border-border-light p-6 rounded-lg relative overflow-hidden group"
+              class="bg-white border border-border-light p-5 rounded-lg relative overflow-hidden group"
             >
               <span
-                class="text-xs font-bold text-text-muted uppercase tracking-widest"
-                >Funcionários</span
+                class="text-[10px] font-bold text-text-muted uppercase tracking-widest"
+                >Beneficiários</span
               >
-              <h3 class="text-4xl font-black text-primary mt-2" id="totalM1">
+              <h3
+                class="text-3xl font-black text-primary mt-1.5"
+                id="metricTotal"
+              >
                 0
               </h3>
             </div>
             <div
-              class="bg-white border border-border-light p-6 rounded-lg relative overflow-hidden group"
+              class="bg-white border border-border-light p-5 rounded-lg relative overflow-hidden group"
             >
               <span
-                class="text-xs font-bold text-text-muted uppercase tracking-widest"
+                class="text-[10px] font-bold text-text-muted uppercase tracking-widest"
                 >Rend. Tributáveis</span
               >
-              <h3 class="text-4xl font-black text-primary mt-2" id="totalM2">
+              <h3
+                class="text-3xl font-black text-primary mt-1.5"
+                id="metricRend"
+              >
                 R$ 0,00
               </h3>
             </div>
             <div
-              class="bg-white border border-border-light p-6 rounded-lg relative overflow-hidden group"
+              class="bg-white border border-border-light p-5 rounded-lg relative overflow-hidden group"
             >
               <span
-                class="text-xs font-bold text-text-muted uppercase tracking-widest"
+                class="text-[10px] font-bold text-text-muted uppercase tracking-widest"
                 >IRRF Retido</span
               >
-              <h3 class="text-4xl font-black text-accent mt-2" id="totalM3">
+              <h3
+                class="text-3xl font-black text-accent mt-1.5"
+                id="metricIRRF"
+              >
+                R$ 0,00
+              </h3>
+            </div>
+            <div
+              class="bg-white border border-border-light p-5 rounded-lg relative overflow-hidden group"
+            >
+              <span
+                class="text-[10px] font-bold text-text-muted uppercase tracking-widest"
+                >13º Salário Líq.</span
+              >
+              <h3 class="text-3xl font-black text-success mt-1.5" id="metric13">
                 R$ 0,00
               </h3>
             </div>
@@ -302,14 +445,16 @@
               class="flex flex-col items-center justify-center text-center space-y-4"
             >
               <div
-                class="size-20 rounded-full bg-sky-50 text-accent flex items-center justify-center border border-sky-100"
+                class="size-20 rounded-full bg-blue-50 text-primary flex items-center justify-center border border-blue-100"
               >
                 <span class="material-symbols-outlined text-4xl"
                   >upload_file</span
                 >
               </div>
               <div>
-                <h3 class="text-xl font-bold">Importar DIRF (dirf.pdf)</h3>
+                <h3 class="text-xl font-bold">
+                  Importar Comprovante de Rendimentos (.pdf)
+                </h3>
                 <p class="text-text-muted text-sm">
                   Arraste o arquivo ou clique para selecionar
                 </p>
@@ -317,97 +462,171 @@
             </div>
           </div>
 
-          <!-- Informe Display -->
-          <div id="informeDisplay" class="hidden animate-reveal">
-            <div class="flex justify-between items-center mb-6">
-              <h2 id="informeTitle" class="text-xl font-bold text-primary">
-                Detalhamento Consolidado
+          <!-- CONSOLIDADO VIEW -->
+          <div id="viewConsolidado" class="hidden space-y-6">
+            <div class="flex justify-between items-center">
+              <h2
+                class="text-lg font-bold text-primary flex items-center gap-2"
+              >
+                <span class="material-symbols-outlined text-primary"
+                  >summarize</span
+                >
+                <span id="viewTitle">Informe Consolidado</span>
               </h2>
               <span
-                id="informeBadge"
-                class="bg-primary text-white text-[10px] font-bold px-2 py-1 uppercase rounded"
-                >Todos os Funcionários</span
+                id="viewBadge"
+                class="bg-primary text-white text-[10px] font-bold px-2.5 py-1 uppercase rounded"
+                >Todos</span
               >
             </div>
 
             <!-- Section 3 -->
-            <div class="informe-box">
-              <div class="section-title">
-                3. RENDIMENTOS TRIBUTÁVEIS, DEDUÇÕES E IMPOSTO RETIDO NA FONTE
+            <div
+              class="bg-white border border-border-light rounded-lg overflow-hidden shadow-sm"
+            >
+              <div class="section-header">
+                <span
+                  >3. Rendimentos Tributáveis, Deduções e Imposto Retido na
+                  Fonte</span
+                >
+                <span class="text-[10px] font-mono opacity-70"
+                  >Valores em Reais</span
+                >
               </div>
-              <div id="sec3Content" class="space-y-1">
-                <!-- Items here -->
-              </div>
+              <div id="sec3Content"></div>
             </div>
 
             <!-- Section 4 -->
-            <div class="informe-box">
-              <div class="section-title">
-                4. RENDIMENTOS ISENTOS E NÃO TRIBUTÁVEIS
+            <div
+              class="bg-white border border-border-light rounded-lg overflow-hidden shadow-sm"
+            >
+              <div class="section-header">
+                <span>4. Rendimentos Isentos e Não Tributáveis</span>
+                <span class="text-[10px] font-mono opacity-70"
+                  >Valores em Reais</span
+                >
               </div>
-              <div id="sec4Content" class="space-y-1">
-                <!-- Items here -->
-              </div>
+              <div id="sec4Content"></div>
             </div>
 
             <!-- Section 5 -->
-            <div class="informe-box">
-              <div class="section-title">
-                5. RENDIMENTOS SUJEITOS À TRIBUTAÇÃO EXCLUSIVA (RENDIMENTO
-                LÍQUIDO)
+            <div
+              class="bg-white border border-border-light rounded-lg overflow-hidden shadow-sm"
+            >
+              <div class="section-header">
+                <span
+                  >5. Rendimentos Sujeitos à Tributação Exclusiva (rendimento
+                  líquido)</span
+                >
+                <span class="text-[10px] font-mono opacity-70"
+                  >Valores em Reais</span
+                >
               </div>
-              <div id="sec5Content" class="space-y-1">
-                <!-- Items here -->
+              <div id="sec5Content"></div>
+            </div>
+          </div>
+
+          <!-- INDIVIDUAL VIEW (lista de funcionários) -->
+          <div id="viewIndividual" class="hidden space-y-4">
+            <h2 class="text-lg font-bold text-primary flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary">groups</span>
+              Beneficiários Individuais
+            </h2>
+            <div
+              class="bg-white border border-border-light rounded-lg overflow-hidden shadow-sm"
+            >
+              <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-xs">
+                  <thead class="sticky top-0 z-10">
+                    <tr class="bg-primary text-white text-left">
+                      <th class="p-3 font-bold">CPF</th>
+                      <th class="p-3 font-bold min-w-[200px]">BENEFICIÁRIO</th>
+                      <th class="p-3 font-bold text-right">REND. TRIB.</th>
+                      <th class="p-3 font-bold text-right">PREV. OFICIAL</th>
+                      <th class="p-3 font-bold text-right">IRRF</th>
+                      <th class="p-3 font-bold text-right">13º SALÁRIO</th>
+                    </tr>
+                  </thead>
+                  <tbody
+                    id="individualBody"
+                    class="divide-y divide-border-light"
+                  ></tbody>
+                </table>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- Footer -->
+        <footer
+          class="flex items-center justify-between text-xs text-text-muted pt-3 pb-1 border-t border-border-light"
+        >
+          <div class="flex items-center gap-1.5">
+            <span class="size-2 rounded-full bg-green-500"></span>
+            <span class="font-bold">SECURE-V1 ACTIVO</span>
+          </div>
+          <div class="font-bold text-xs uppercase">
+            Desenvolvido por
+            <span class="text-primary">J.Roncalli</span>
+          </div>
+        </footer>
       </main>
     </div>
 
     <script>
-      let db = {
-        empresa: "",
-        funcionarios: [],
-        consolidado: {
-          sec3: {},
-          sec4: {},
-          sec5: {},
-        },
-      };
-
-      let pdfSourceBytes = null;
-      let paginaParaFuncionario = []; // info do funcionário por página do PDF
-
+      // ============================================================
+      // DEFINIÇÃO DOS CAMPOS EXATOS DO INFORME DE RENDIMENTOS
+      // ============================================================
       const SEC_LABELS = {
         sec3: {
           "01": "Total dos rendimentos (inclusive férias)",
           "02": "Contribuição previdenciária oficial",
-          "03": "Contribuição a entidades de previdência complementar",
-          "04": "Pensão alimentícia",
-          "05": "Imposto sobre a renda retido na fonte",
+          "03": "Contribuição a entidades de previdência complementar, pública ou privada, e a Fundo de Aposentadoria Programada Individual - (Fapi) (preencher também o Quadro 7)",
+          "04": "Pensão alimentícia (preencher também o Quadro 7)",
+          "05": "Imposto sobre a Renda Retido na Fonte (IRRF)",
         },
         sec4: {
-          "01": "Parcela isenta proventos de aposentadoria (65+)",
-          "02": "Parcela isenta do 13º salário (65+)",
+          "01": "Parcela isenta dos proventos de aposentadoria, reserva remunerada, reforma e pensão (65 anos ou mais), exceto a parcela isenta do 13º (décimo terceiro) salário",
+          "02": "Parcela isenta do 13º salário de aposentadoria, reserva remunerada, reforma e pensão (65 anos ou mais)",
           "03": "Diárias e ajudas de custo",
-          "04": "Pensão e proventos moléstia grave/acidente",
-          "05": "Lucros e dividendos pagos por PJ",
-          "06": "Valores pagos ao titular/sócio ME/EPP",
-          "07": "Indenizações por rescisão / PDV / Acidente",
-          "08": "Juros de mora recebidos",
+          "04": "Pensão e proventos de aposentadoria ou reforma por moléstia grave; proventos de aposentadoria ou reforma por acidente em serviço",
+          "05": "Lucros e dividendos, apurados a partir de 1996, pagos por pessoa jurídica (lucro real, presumido ou arbitrado)",
+          "06": "Valores pagos ao titular ou sócio da microempresa ou empresa de pequeno porte, exceto pró-labore, aluguéis ou serviços prestados",
+          "07": "Indenizações por rescisão de contrato de trabalho, inclusive a título de PDV e por acidente de trabalho",
+          "08": "Juros de mora recebidos, devidos pelo atraso no pagamento de remuneração por exercício de emprego, cargo ou função",
           "09": "Outros (especificar)",
         },
         sec5: {
-          "01": "Décimo terceiro salário",
-          "02": "Imposto sobre a renda retido sobre o 13º salário",
+          "01": "13º (décimo terceiro) salário",
+          "02": "Imposto sobre a Renda Retido na Fonte sobre 13º (décimo terceiro) salário",
           "03": "Outros",
         },
       };
 
+      // ============================================================
+      // ESTADO GLOBAL
+      // ============================================================
+      let db = {
+        empresa: "",
+        cnpj: "",
+        anoCalendario: "",
+        funcionarios: [],
+        consolidado: { sec3: {}, sec4: {}, sec5: {} },
+      };
+
+      let pdfSourceBytes = null;
+      let paginaParaFuncionario = [];
+      let currentView = "consolidado";
+      let selectedCpf = null;
+
+      // ============================================================
+      // HELPERS
+      // ============================================================
       function parseBrl(str) {
-        if (!str) return 0;
-        let clean = str.replace(/[^\d,.-]/g, "");
+        if (!str || typeof str !== "string") return 0;
+        let clean = str.replace(/[^\d,.-]/g, "").trim();
+        if (!clean) return 0;
+        // Ex: 1.768,74 -> 1768.74
         if (clean.includes(".") && clean.includes(",")) {
           clean = clean.replace(/\./g, "").replace(",", ".");
         } else if (clean.includes(",")) {
@@ -424,33 +643,99 @@
         });
       }
 
+      function limparDados() {
+        const modal = document.getElementById("deleteModal");
+        const content = document.getElementById("deleteModalContent");
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+        setTimeout(() => {
+          modal.classList.remove("opacity-0");
+          content.classList.remove("scale-95");
+          content.classList.add("scale-100");
+        }, 10);
+      }
+
+      function closeDeleteModal() {
+        const modal = document.getElementById("deleteModal");
+        const content = document.getElementById("deleteModalContent");
+        modal.classList.add("opacity-0");
+        content.classList.remove("scale-100");
+        content.classList.add("scale-95");
+        setTimeout(() => {
+          modal.classList.add("hidden");
+          modal.classList.remove("flex");
+        }, 300);
+      }
+
+      function confirmLimpar() {
+        location.reload();
+      }
+
+      function showLoading(show, msg, percent) {
+        const el = document.getElementById("loading");
+        const txt = document.getElementById("loadingText");
+        const bar = document.getElementById("loadingBar");
+        const pct = document.getElementById("loadingPercent");
+        if (show) {
+          el.classList.remove("hidden", "opacity-0");
+          el.classList.add("flex");
+          txt.innerText = msg || "Processando...";
+          if (percent !== undefined) {
+            bar.style.width = percent + "%";
+            pct.innerText = Math.round(percent) + "%";
+          }
+        } else {
+          el.classList.add("opacity-0");
+          setTimeout(() => {
+            el.classList.add("hidden");
+            el.classList.remove("flex");
+          }, 300);
+        }
+      }
+
+      // ============================================================
+      // PROCESSAMENTO DO PDF
+      // ============================================================
       async function handleFile(file) {
         if (!file) return;
-        showLoading(true, "Lendo PDF...");
+        showLoading(true, "Lendo PDF...", 0);
+
         const reader = new FileReader();
         reader.onload = async function () {
           try {
             pdfSourceBytes = new Uint8Array(this.result);
-            const pdf = await pdfjsLib.getDocument(pdfSourceBytes).promise;
+            const pdfCopy = new Uint8Array(this.result.slice(0));
+            const pdf = await pdfjsLib.getDocument(pdfCopy).promise;
 
-            db.funcionarios = [];
-            db.consolidado = { sec3: {}, sec4: {}, sec5: {} };
+            db = {
+              empresa: "",
+              cnpj: "",
+              anoCalendario: "",
+              funcionarios: [],
+              consolidado: { sec3: {}, sec4: {}, sec5: {} },
+            };
             paginaParaFuncionario = [];
 
             for (let i = 1; i <= pdf.numPages; i++) {
-              showLoading(true, `Processando página ${i}/${pdf.numPages}...`);
+              showLoading(
+                true,
+                `Processando página ${i} de ${pdf.numPages}...`,
+                (i / pdf.numPages) * 100,
+              );
               const page = await pdf.getPage(i);
               const textContent = await page.getTextContent();
               const lines = groupTextByLines(textContent.items);
-              const info = processPageLines(lines);
+              const info = processPage(lines);
               paginaParaFuncionario.push(info);
             }
 
             showLoading(false);
-            renderDashboard();
+            document.getElementById("uploadSection").classList.add("hidden");
+            showView("consolidado");
+            renderAll();
           } catch (e) {
             console.error(e);
-            alert("Erro ao ler PDF: " + e.message);
+            alert("Erro ao processar o PDF: " + e.message);
             showLoading(false);
           }
         };
@@ -472,295 +757,433 @@
             currentY === null ||
             Math.abs(item.transform[5] - currentY) > tolerance
           ) {
-            if (currentLine.length > 0) lines.push(currentLine.join(" "));
+            if (currentLine.length > 0) lines.push(currentLine);
             currentLine = [];
             currentY = item.transform[5];
           }
           currentLine.push(item.str);
         });
-        if (currentLine.length > 0) lines.push(currentLine.join(" "));
+        if (currentLine.length > 0) lines.push(currentLine);
         return lines;
       }
 
-      function processPageLines(lines) {
-        const textFull = lines.join(" ");
+      function processPage(lines) {
         let foundCpf = null;
         let foundNome = "DESCONHECIDO";
 
-        // 1. Identificação de Empresa (Busca Global por CNPJ)
-        if (!db.empresa) {
-          const cnpjM = textFull.match(
-            /(\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2})\s+([A-Z0-9\s.-]{5,})/i,
-          );
-          if (cnpjM) db.empresa = cnpjM[2].split("  ")[0].trim();
-        }
+        // 1. Buscar empresa / CNPJ / Ano-calendário no topo de cada página
+        for (let i = 0; i < lines.length; i++) {
+          const lineStr = lines[i].join(" ").trim();
 
-        // 2. Identificação de Beneficiário (Busca Global por CPF)
-        const cpfM = textFull.match(
-          /(\d{3}\.\d{3}\.\d{3}-\d{2})\s+([A-Z\s.-]{5,})/i,
-        );
-        if (cpfM) {
-          foundCpf = cpfM[1].trim();
-          foundNome = cpfM[2].split("  ")[0].trim();
+          // Ano-calendário
+          if (!db.anoCalendario && lineStr.includes("Ano-calendário")) {
+            const anoM = lineStr.match(/Ano[- ]calend[aá]rio[\s:]*(\d{4})/i);
+            if (anoM) db.anoCalendario = anoM[1];
+          }
+
+          // CNPJ e Nome da empresa (Seção 1)
+          if (!db.cnpj) {
+            const cnpjM = lineStr.match(/(\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2})/);
+            if (cnpjM) {
+              db.cnpj = cnpjM[1];
+              // O nome da empresa geralmente vem depois do CNPJ na mesma linha ou na próxima
+              const afterCnpj = lineStr
+                .substring(lineStr.indexOf(cnpjM[1]) + cnpjM[1].length)
+                .trim();
+              if (afterCnpj.length > 3) {
+                db.empresa = afterCnpj.split("  ")[0].trim();
+              } else if (i + 1 < lines.length) {
+                db.empresa = lines[i + 1].join(" ").trim();
+              }
+            }
+          }
+
+          // CPF do beneficiário (Seção 2)
+          const cpfPattern = /(\d{3}\.\d{3}\.\d{3}-\d{2})/;
+          if (!foundCpf && lineStr.match(cpfPattern)) {
+            // Evita capturar o CNPJ como CPF
+            if (!lineStr.includes("/")) {
+              const cpfM = lineStr.match(cpfPattern);
+              if (cpfM) {
+                foundCpf = cpfM[1];
+                const afterCpf = lineStr
+                  .substring(lineStr.indexOf(foundCpf) + foundCpf.length)
+                  .trim();
+                if (afterCpf.length > 2) {
+                  foundNome = afterCpf.split("  ")[0].trim();
+                } else if (i + 1 < lines.length) {
+                  const nextLine = lines[i + 1].join(" ").trim();
+                  if (
+                    nextLine.length > 2 &&
+                    !nextLine.match(/^\d/) &&
+                    !nextLine.includes("Rendimentos")
+                  ) {
+                    foundNome = nextLine;
+                  }
+                }
+              }
+            }
+          }
         }
 
         if (!foundCpf) return null;
 
-        let funcionario = db.funcionarios.find((f) => f.cpf === foundCpf);
-        if (!funcionario) {
-          funcionario = {
+        // Verificar se já existe este funcionário
+        let func = db.funcionarios.find((f) => f.cpf === foundCpf);
+        if (!func) {
+          func = {
             cpf: foundCpf,
             nome: foundNome,
             sec3: {},
             sec4: {},
             sec5: {},
           };
-          db.funcionarios.push(funcionario);
+          db.funcionarios.push(func);
         }
 
-        // 3. Extração de Valores por Seções
+        // 2. Extrair valores das seções 3, 4, 5
         let currentSec = null;
         for (let i = 0; i < lines.length; i++) {
-          const line = lines[i].trim();
+          const lineStr = lines[i].join(" ").trim();
 
+          // Detecção de seções
           if (
-            line.includes("3. Rendimentos Tributáveis") ||
-            line.match(/^3\./)
+            lineStr.includes("3.") &&
+            lineStr.toLowerCase().includes("rendimentos tributáveis")
           ) {
             currentSec = "sec3";
             continue;
           }
-          if (line.includes("4. Rendimentos Isentos") || line.match(/^4\./)) {
+          if (
+            lineStr.includes("4.") &&
+            lineStr.toLowerCase().includes("rendimentos isentos")
+          ) {
             currentSec = "sec4";
             continue;
           }
-          if (line.includes("5. Rendimentos Sujeitos") || line.match(/^5\./)) {
+          if (
+            lineStr.includes("5.") &&
+            lineStr.toLowerCase().includes("rendimentos sujeitos")
+          ) {
             currentSec = "sec5";
             continue;
           }
           if (
-            line.includes("6. Informações Complementares") ||
-            line.match(/^6\./)
+            (lineStr.includes("6.") &&
+              lineStr.toLowerCase().includes("informações")) ||
+            lineStr.toLowerCase().includes("responsável pelas informações")
           ) {
             currentSec = null;
             continue;
           }
 
           if (currentSec) {
-            // Procura linhas que começam com "N. " (Ex: 1., 05.)
-            const itemMatch = line.match(/^(\d{1,2})\.\s+/);
+            // Procura linhas começando com "N." (de 1. a 9.)
+            const itemMatch = lineStr.match(/^(\d{1,2})\.\s/);
             if (itemMatch) {
               const num = itemMatch[1].padStart(2, "0");
 
-              // Tenta pegar o valor monetário NO FINAL da mesma linha
-              // Ignora pontos decorativos e pega o último grupo de números/vírgula
+              // Verificar se este item pertence à seção ativa
+              if (!SEC_LABELS[currentSec][num]) continue;
+
+              // Encontrar o valor monetário na linha
+              // Pode estar no final da mesma linha OU na próxima (se quebrada)
               let valStr = "";
-              const moneyRegex = /([\d\.,-]+)$/;
-              const matchLine = line.match(moneyRegex);
 
-              if (matchLine && matchLine[1].includes(",")) {
-                valStr = matchLine[1];
-              } else if (i + 1 < lines.length) {
-                // Se não achou na linha, olha a próxima (pode estar quebrada)
-                const nextLine = lines[i + 1].trim();
-                const nextMatch = nextLine.match(/^([\d\.,-]+)$/);
-                if (nextMatch) valStr = nextMatch[1];
-              }
-
-              if (valStr) {
-                const val = parseBrl(valStr);
-                // Verifica se capturou um valor válido e não o próprio número do item
-                if (valStr !== num && val !== 0) {
-                  funcionario[currentSec][num] =
-                    (funcionario[currentSec][num] || 0) + val;
-                  db.consolidado[currentSec][num] =
-                    (db.consolidado[currentSec][num] || 0) + val;
+              // Estratégia: pegar o ÚLTIMO token numérico da linha inteira
+              const tokens = lines[i];
+              for (let t = tokens.length - 1; t >= 0; t--) {
+                const tk = tokens[t].trim();
+                if (/^[\d.,]+$/.test(tk) && tk.includes(",")) {
+                  valStr = tk;
+                  break;
                 }
               }
+
+              // Se não encontrou na mesma linha, tenta a próxima
+              if (!valStr && i + 1 < lines.length) {
+                const nextTokens = lines[i + 1];
+                const nextStr = nextTokens.join(" ").trim();
+                if (/^[\d.,]+$/.test(nextStr)) {
+                  valStr = nextStr;
+                } else {
+                  for (let t = nextTokens.length - 1; t >= 0; t--) {
+                    const tk = nextTokens[t].trim();
+                    if (/^[\d.,]+$/.test(tk) && tk.includes(",")) {
+                      valStr = tk;
+                      break;
+                    }
+                  }
+                }
+              }
+
+              const val = parseBrl(valStr);
+
+              func[currentSec][num] = (func[currentSec][num] || 0) + val;
+              db.consolidado[currentSec][num] =
+                (db.consolidado[currentSec][num] || 0) + val;
             }
           }
         }
+
         return { cpf: foundCpf, nome: foundNome };
       }
 
-      function updateConsolidado(f) {
-        ["sec3", "sec4", "sec5"].forEach((sec) => {
-          for (let k in f[sec]) {
-            db.consolidado[sec][k] = (db.consolidado[sec][k] || 0) + f[sec][k];
-          }
-        });
-      }
+      // ============================================================
+      // RENDERIZAÇÃO
+      // ============================================================
+      function renderAll() {
+        // Atualizar display da empresa
+        const empresaEl = document.getElementById("empresaDisplay");
+        empresaEl.innerHTML = `
+          <span class="text-[10px] font-bold text-text-muted tracking-widest uppercase">Fonte Pagadora</span>
+          <span class="text-xs font-bold text-primary bg-blue-50 px-2.5 py-1 rounded border border-blue-200">${db.empresa || "NÃO IDENTIFICADA"}</span>
+          ${db.cnpj ? `<span class="text-[10px] font-mono text-text-muted">CNPJ: ${db.cnpj}</span>` : ""}
+          ${db.anoCalendario ? `<span class="text-[10px] font-mono text-primary font-bold">Ano: ${db.anoCalendario}</span>` : ""}
+        `;
 
-      function showLoading(show, msg) {
-        const el = document.getElementById("loading");
-        const txt = document.getElementById("loadingText");
-        if (show) {
-          el.classList.remove("hidden");
-          el.classList.add("flex");
-          setTimeout(() => el.classList.add("opacity-100"), 10);
-          txt.innerText = msg;
-        } else {
-          el.classList.remove("opacity-100");
-          setTimeout(() => el.classList.add("hidden"), 300);
-        }
-      }
-
-      function renderDashboard(filter = "") {
-        const upload = document.getElementById("uploadSection");
-        const display = document.getElementById("informeDisplay");
-        const btnZip = document.getElementById("btnZip");
-
-        upload.classList.add("hidden");
-        display.classList.remove("hidden");
-        if (pdfSourceBytes) btnZip.classList.remove("hidden");
-
-        const empresaEl = document.getElementById("nomeEmpresaDisplay");
-        empresaEl.innerHTML = `<span class="text-[10px] font-bold text-text-muted tracking-widest uppercase">Empresa</span> <span class="text-xs font-bold text-primary bg-sky-50 px-2.5 py-1 rounded border border-sky-100">${db.empresa || "NÃO IDENTIFICADA"}</span>`;
-
-        let dataToShow = db.consolidado;
-        let title = "Detalhamento Consolidado";
-        let badge = "Todos os Funcionários";
-        let totalCount = db.funcionarios.length;
-
-        if (filter) {
-          const filtered = db.funcionarios.find(
-            (f) =>
-              f.nome.toLowerCase().includes(filter.toLowerCase()) ||
-              f.cpf.includes(filter),
-          );
-          if (filtered) {
-            dataToShow = filtered;
-            title = filtered.nome;
-            badge = "CPF: " + filtered.cpf;
-            totalCount = 1;
-          }
+        // Mostrar botão ZIP se temos PDF
+        if (pdfSourceBytes) {
+          document.getElementById("btnZipSidebar").classList.remove("hidden");
+          document.getElementById("btnZipHeader").classList.remove("hidden");
+          document.getElementById("btnZipHeader").classList.add("flex");
         }
 
-        document.getElementById("informeTitle").innerText = title;
-        document.getElementById("informeBadge").innerText = badge;
-
-        renderSection("sec3Content", "sec3", dataToShow.sec3);
-        renderSection("sec4Content", "sec4", dataToShow.sec4);
-        renderSection("sec5Content", "sec5", dataToShow.sec5);
-
-        // Metrics
-        document.getElementById("totalM1").innerText = totalCount;
-        document.getElementById("totalM2").innerText = formatBrl(
-          dataToShow.sec3["01"] || 0,
+        // Métricas
+        document.getElementById("metricTotal").innerText =
+          db.funcionarios.length;
+        document.getElementById("metricRend").innerText = formatBrl(
+          db.consolidado.sec3["01"] || 0,
         );
-        document.getElementById("totalM3").innerText = formatBrl(
-          dataToShow.sec3["05"] || 0,
+        document.getElementById("metricIRRF").innerText = formatBrl(
+          db.consolidado.sec3["05"] || 0,
         );
+        document.getElementById("metric13").innerText = formatBrl(
+          db.consolidado.sec5["01"] || 0,
+        );
+
+        renderConsolidadoView();
+        renderIndividualView();
       }
 
-      function renderSection(id, secKey, data) {
-        const container = document.getElementById(id);
+      function renderConsolidadoView(dataOverride, title, badge) {
+        const data = dataOverride || db.consolidado;
+        document.getElementById("viewTitle").innerText =
+          title || "Informe Consolidado";
+        document.getElementById("viewBadge").innerText =
+          badge || `${db.funcionarios.length} Beneficiários`;
+
+        renderSection("sec3Content", "sec3", data.sec3 || data);
+        renderSection("sec4Content", "sec4", data.sec4 || {});
+        renderSection("sec5Content", "sec5", data.sec5 || {});
+      }
+
+      function renderSection(containerId, secKey, data) {
+        const container = document.getElementById(containerId);
         container.innerHTML = "";
-
         const labels = SEC_LABELS[secKey];
+
         for (let k in labels) {
           const val = data[k] || 0;
           const row = document.createElement("div");
           row.className = "item-row";
+
+          const isHighlight =
+            (secKey === "sec3" && k === "05") ||
+            (secKey === "sec5" && k === "02");
+
           row.innerHTML = `
-            <span class="text-sm font-medium text-text-muted">${parseInt(k)}. ${labels[k]}</span>
-            <span class="text-sm font-bold text-text-main">${formatBrl(val)}</span>
+            <span class="text-[13px] text-text-main leading-snug pr-4 flex-1">
+              <span class="font-bold text-text-muted">${parseInt(k)}.</span> ${labels[k]}
+            </span>
+            <span class="item-value ${isHighlight ? "text-accent" : val > 0 ? "text-primary" : "text-slate-400"}">${formatBrl(val)}</span>
           `;
           container.appendChild(row);
         }
       }
 
-      function handleSearch(val) {
-        renderDashboard(val);
+      function renderIndividualView(filter = "") {
+        const tbody = document.getElementById("individualBody");
+        tbody.innerHTML = "";
+
+        const filteredList = db.funcionarios.filter(
+          (f) =>
+            !filter ||
+            f.nome.toLowerCase().includes(filter.toLowerCase()) ||
+            f.cpf.includes(filter),
+        );
+
+        filteredList.forEach((f) => {
+          const tr = document.createElement("tr");
+          tr.className = "func-row";
+          tr.onclick = () => {
+            selectedCpf = f.cpf;
+            showView("consolidado");
+            renderConsolidadoView(f, f.nome, `CPF: ${f.cpf}`);
+
+            // Rolar para o topo
+            document.getElementById("dashboard").scrollTop = 0;
+          };
+
+          tr.innerHTML = `
+            <td class="p-3 font-mono text-xs text-text-main">${f.cpf}</td>
+            <td class="p-3 font-semibold text-text-main">${f.nome}</td>
+            <td class="p-3 text-right font-mono ${(f.sec3["01"] || 0) > 0 ? "text-primary font-bold" : "text-slate-400"}">${formatBrl(f.sec3["01"] || 0)}</td>
+            <td class="p-3 text-right font-mono ${(f.sec3["02"] || 0) > 0 ? "text-text-main" : "text-slate-400"}">${formatBrl(f.sec3["02"] || 0)}</td>
+            <td class="p-3 text-right font-mono ${(f.sec3["05"] || 0) > 0 ? "text-accent font-bold" : "text-slate-400"}">${formatBrl(f.sec3["05"] || 0)}</td>
+            <td class="p-3 text-right font-mono ${(f.sec5["01"] || 0) > 0 ? "text-success font-bold" : "text-slate-400"}">${formatBrl(f.sec5["01"] || 0)}</td>
+          `;
+          tbody.appendChild(tr);
+        });
       }
 
-      function limparDados() {
-        if (confirm("Deseja mesmo limpar os dados atuais?")) {
-          location.reload();
+      // ============================================================
+      // NAVEGAÇÃO DE VIEWS
+      // ============================================================
+      function showView(view) {
+        currentView = view;
+        const consView = document.getElementById("viewConsolidado");
+        const indView = document.getElementById("viewIndividual");
+
+        if (view === "consolidado") {
+          consView.classList.remove("hidden");
+          indView.classList.add("hidden");
+          // Se não há seleção individual, mostrar consolidado
+          if (!selectedCpf) {
+            renderConsolidadoView();
+          }
+        } else {
+          consView.classList.add("hidden");
+          indView.classList.remove("hidden");
+          selectedCpf = null;
+          renderIndividualView();
         }
       }
 
+      function handleSearch(val) {
+        if (val.trim()) {
+          showView("individual");
+          renderIndividualView(val);
+        } else {
+          renderIndividualView();
+        }
+      }
+
+      // ============================================================
+      // EXPORTAÇÃO EXCEL
+      // ============================================================
       function exportExcel() {
         if (!db.funcionarios.length) return alert("Nenhum dado para exportar.");
+
         const wb = XLSX.utils.book_new();
-        const consData = [["ITEM", "DESCRIÇÃO", "VALOR TOTAL"]];
+
+        // Sheet 1: Consolidado
+        const consData = [
+          ["INFORME DE RENDIMENTOS - CONSOLIDADO"],
+          ["Empresa:", db.empresa, "CNPJ:", db.cnpj],
+          [],
+          ["SEÇÃO", "ITEM", "DESCRIÇÃO", "VALOR"],
+        ];
+
         ["sec3", "sec4", "sec5"].forEach((sec) => {
-          consData.push([sec.toUpperCase(), "", ""]);
+          const secNum = sec.replace("sec", "");
           for (let k in SEC_LABELS[sec]) {
-            consData.push([k, SEC_LABELS[sec][k], db.consolidado[sec][k] || 0]);
+            consData.push([
+              secNum,
+              k,
+              SEC_LABELS[sec][k],
+              db.consolidado[sec][k] || 0,
+            ]);
           }
         });
+
         XLSX.utils.book_append_sheet(
           wb,
           XLSX.utils.aoa_to_sheet(consData),
           "Consolidado",
         );
-        const funcData = [["NOME", "CPF", "SEC", "ITEM", "VALOR"]];
+
+        // Sheet 2: Individual
+        const header = ["CPF", "NOME"];
+        ["sec3", "sec4", "sec5"].forEach((sec) => {
+          for (let k in SEC_LABELS[sec]) {
+            const secNum = sec.replace("sec", "");
+            header.push(`S${secNum}.${k}`);
+          }
+        });
+
+        const funcData = [header];
         db.funcionarios.forEach((f) => {
+          const row = [f.cpf, f.nome];
           ["sec3", "sec4", "sec5"].forEach((sec) => {
-            for (let k in f[sec]) {
-              if (f[sec][k] !== 0)
-                funcData.push([f.nome, f.cpf, sec, k, f[sec][k]]);
+            for (let k in SEC_LABELS[sec]) {
+              row.push(f[sec][k] || 0);
             }
           });
+          funcData.push(row);
         });
+
         XLSX.utils.book_append_sheet(
           wb,
           XLSX.utils.aoa_to_sheet(funcData),
-          "Por Funcionário",
+          "Por Beneficiário",
         );
-        XLSX.writeFile(wb, `Informe_DIRF_${db.empresa || "Export"}.xlsx`);
+
+        XLSX.writeFile(
+          wb,
+          `Informe_Rendimentos_${db.empresa || "Export"}.xlsx`,
+        );
       }
 
-      async function downloadIndividualPDFsZip() {
+      // ============================================================
+      // ZIP COM PDFs INDIVIDUAIS
+      // ============================================================
+      async function downloadZip() {
         if (!pdfSourceBytes || paginaParaFuncionario.length === 0) {
-          alert("Nenhum dado de PDF disponível para separar.");
-          return;
+          return alert("Nenhum PDF disponível.");
         }
-        showLoading(true, "Iniciando separação dos PDFs...");
+        showLoading(true, "Separando PDFs...", 0);
         try {
           const zip = new JSZip();
           const { PDFDocument } = PDFLib;
-          const mainPdfDoc = await PDFDocument.load(pdfSourceBytes);
-          const funcionariosMap = {};
-          paginaParaFuncionario.forEach((info, index) => {
+          const mainPdf = await PDFDocument.load(pdfSourceBytes);
+
+          const map = {};
+          paginaParaFuncionario.forEach((info, idx) => {
             if (info && info.cpf) {
-              if (!funcionariosMap[info.cpf]) {
-                funcionariosMap[info.cpf] = { nome: info.nome, pages: [] };
-              }
-              funcionariosMap[info.cpf].pages.push(index);
+              if (!map[info.cpf])
+                map[info.cpf] = { nome: info.nome, pages: [] };
+              map[info.cpf].pages.push(idx);
             }
           });
-          const cpfs = Object.keys(funcionariosMap);
-          let count = 0;
-          for (const cpf of cpfs) {
-            count++;
-            const func = funcionariosMap[cpf];
+
+          const cpfs = Object.keys(map);
+          for (let c = 0; c < cpfs.length; c++) {
+            const cpf = cpfs[c];
+            const func = map[cpf];
             showLoading(
               true,
-              `Criando PDF de ${func.nome} (${count}/${cpfs.length})...`,
+              `Criando PDF: ${func.nome} (${c + 1}/${cpfs.length})`,
+              ((c + 1) / cpfs.length) * 100,
             );
-            const newPdfDoc = await PDFDocument.create();
-            const copiedPages = await newPdfDoc.copyPages(
-              mainPdfDoc,
-              func.pages,
-            );
-            copiedPages.forEach((page) => newPdfDoc.addPage(page));
-            const pdfBytes = await newPdfDoc.save();
-            const fileName = `${func.nome.replace(/[/\\?%*:|"<>]/g, "-")}.pdf`;
-            zip.file(fileName, pdfBytes);
+
+            const newDoc = await PDFDocument.create();
+            const pages = await newDoc.copyPages(mainPdf, func.pages);
+            pages.forEach((p) => newDoc.addPage(p));
+            const bytes = await newDoc.save();
+            zip.file(`${func.nome.replace(/[/\\?%*:|"<>]/g, "-")}.pdf`, bytes);
           }
-          showLoading(true, "Gerando arquivo ZIP...");
-          const zipBlob = await zip.generateAsync({ type: "blob" });
-          const zipName = `${(db.empresa || "Empresa").replace(/[/\\?%*:|"<>]/g, "-")}.zip`;
+
+          showLoading(true, "Gerando ZIP...", 100);
+          const blob = await zip.generateAsync({ type: "blob" });
           const link = document.createElement("a");
-          link.href = URL.createObjectURL(zipBlob);
-          link.download = zipName;
+          link.href = URL.createObjectURL(blob);
+          link.download = `${(db.empresa || "Empresa").replace(/[/\\?%*:|"<>]/g, "-")}.zip`;
           link.click();
           showLoading(false);
-        } catch (error) {
-          console.error(error);
-          alert("Erro ao criar ZIP: " + error.message);
+        } catch (e) {
+          console.error(e);
+          alert("Erro ao criar ZIP: " + e.message);
           showLoading(false);
         }
       }
