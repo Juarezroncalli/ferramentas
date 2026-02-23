@@ -1,57 +1,65 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>DIRF Master</title>
-    
+
     <!-- Scripts Externos -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
     <script id="tailwind-config">
       tailwind.config = {
         theme: {
           extend: {
             colors: {
-              "primary": "#1E40AF",
-              "accent": "#F97316",
+              primary: "#1E40AF",
+              accent: "#F97316",
               "background-light": "#F8FAFC",
               "card-light": "#FFFFFF",
               "border-light": "#E2E8F0",
               "text-main": "#1E293B",
-              "text-muted": "#64748B"
+              "text-muted": "#64748B",
             },
             fontFamily: {
-              "display": ["Inter", "sans-serif"],
-              "mono": ["'Inter'", "monospace"]
+              display: ["Inter", "sans-serif"],
+              mono: ["'Inter'", "monospace"],
             },
             borderRadius: {
-              "DEFAULT": "0px",
-              "md": "4px",
-              "lg": "8px",
-              "xl": "12px",
-              "full": "9999px"
+              DEFAULT: "0px",
+              md: "4px",
+              lg: "8px",
+              xl: "12px",
+              full: "9999px",
             },
           },
         },
-      }
+      };
     </script>
-    
+
     <script>
       // Configuração do Worker do PDF.js
       pdfjsLib.GlobalWorkerOptions.workerSrc =
         "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
     </script>
-    
+
     <style type="text/tailwindcss">
       body {
-        font-family: 'Inter', sans-serif;
-        background-color: theme('colors.background-light');
-        color: theme('colors.text-main');
+        font-family: "Inter", sans-serif;
+        background-color: theme("colors.background-light");
+        color: theme("colors.text-main");
         min-height: 100vh;
         scroll-behavior: smooth;
         -webkit-font-smoothing: antialiased;
@@ -64,22 +72,22 @@
         width: 6px;
       }
       .custom-scrollbar::-webkit-scrollbar-track {
-        background: #F1F5F9;
+        background: #f1f5f9;
       }
       .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #CBD5E1;
+        background: #cbd5e1;
         border-radius: 4px;
       }
       .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: #94A3B8;
+        background: #94a3b8;
       }
       .loading-overlay {
         background-color: rgba(255, 255, 255, 0.9);
       }
-      
+
       .data-cell {
-        border-right: 1px solid theme('colors.border-light');
-        border-bottom: 1px solid theme('colors.border-light');
+        border-right: 1px solid theme("colors.border-light");
+        border-bottom: 1px solid theme("colors.border-light");
       }
       .data-cell:last-child {
         border-right: none;
@@ -87,8 +95,14 @@
 
       /* --- Sistema de Animações --- */
       @keyframes revealUp {
-        from { opacity: 0; transform: translateY(15px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+          opacity: 0;
+          transform: translateY(15px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
       .animate-reveal {
         animation: revealUp 0.4s ease-out forwards;
@@ -96,7 +110,9 @@
       }
 
       .flat-btn {
-        transition: background-color 0.2s ease, transform 0.1s ease;
+        transition:
+          background-color 0.2s ease,
+          transform 0.1s ease;
       }
       .flat-btn:active {
         transform: scale(0.98);
@@ -104,298 +120,596 @@
 
       .card-flat {
         background: white;
-        border: 1px solid theme('colors.border-light');
+        border: 1px solid theme("colors.border-light");
         transition: all 0.2s ease;
       }
       .card-flat:hover {
-        border-color: theme('colors.primary');
-        box-shadow: 0 4px 6px -1px rgba(30, 64, 175, 0.05), 0 2px 4px -1px rgba(30, 64, 175, 0.03);
+        border-color: theme("colors.primary");
+        box-shadow:
+          0 4px 6px -1px rgba(30, 64, 175, 0.05),
+          0 2px 4px -1px rgba(30, 64, 175, 0.03);
       }
-
     </style>
   </head>
-  
-  <body class="bg-background-light text-text-main antialiased font-display overflow-hidden select-none" oncontextmenu="return false;">
-    
+
+  <body
+    class="bg-background-light text-text-main antialiased font-display overflow-hidden select-none"
+    oncontextmenu="return false;"
+  >
     <!-- Loading Overlay -->
-    <div id="loading" class="fixed inset-0 z-[100] hidden flex-col items-center justify-center loading-overlay transition-opacity duration-500 opacity-0">
-      <div class="size-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-      <h3 id="loadingText" class="text-xl font-medium text-primary font-mono">Processando PDF...</h3>
+    <div
+      id="loading"
+      class="fixed inset-0 z-[100] hidden flex-col items-center justify-center loading-overlay transition-opacity duration-500 opacity-0"
+    >
+      <div
+        class="size-16 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"
+      ></div>
+      <h3 id="loadingText" class="text-xl font-medium text-primary font-mono">
+        Processando PDF...
+      </h3>
     </div>
 
     <div class="flex h-screen overflow-hidden">
-      
       <!-- Modal Exclusão -->
-      <div id="deleteModal" class="fixed inset-0 z-[200] hidden flex-col items-center justify-center bg-text-main/20 backdrop-blur-sm transition-opacity duration-300 opacity-0">
-        <div class="bg-card-light border border-border-light p-8 rounded-xl shadow-xl max-w-sm w-full text-center transform scale-95 transition-transform duration-300" id="deleteModalContent">
-          <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-100">
-            <span class="material-symbols-outlined text-red-500 text-3xl">delete_forever</span>
+      <div
+        id="deleteModal"
+        class="fixed inset-0 z-[200] hidden flex-col items-center justify-center bg-text-main/20 backdrop-blur-sm transition-opacity duration-300 opacity-0"
+      >
+        <div
+          class="bg-card-light border border-border-light p-8 rounded-xl shadow-xl max-w-sm w-full text-center transform scale-95 transition-transform duration-300"
+          id="deleteModalContent"
+        >
+          <div
+            class="w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-orange-100"
+          >
+            <span class="material-symbols-outlined text-accent text-3xl"
+              >delete_forever</span
+            >
           </div>
           <h2 class="text-xl font-bold text-text-main mb-2">Limpar Dados</h2>
-          <p class="text-sm text-text-muted mb-6">Tem certeza que deseja apagar todos os dados processados? Esta ação não pode ser desfeita e você precisará processar o PDF novamente.</p>
+          <p class="text-sm text-text-muted mb-6">
+            Tem certeza que deseja apagar todos os dados processados? Esta ação
+            não pode ser desfeita e você precisará processar o PDF novamente.
+          </p>
           <div class="flex gap-3 justify-center">
-            <button onclick="closeModal()" class="px-5 py-2.5 rounded-md text-sm font-bold bg-slate-100 hover:bg-slate-200 text-text-main transition-colors border border-slate-200 flex-1 flat-btn">
+            <button
+              onclick="closeModal()"
+              class="px-5 py-2.5 rounded-md text-sm font-bold bg-slate-100 hover:bg-slate-200 text-text-main transition-colors border border-slate-200 flex-1 flat-btn"
+            >
               Cancelar
             </button>
-            <button onclick="confirmLimparDados()" class="px-5 py-2.5 rounded-md text-sm font-bold bg-red-600 hover:bg-red-700 text-white transition-colors flex-1 flat-btn">
+            <button
+              onclick="confirmLimparDados()"
+              class="px-5 py-2.5 rounded-md text-sm font-bold bg-accent hover:bg-orange-600 text-white transition-colors flex-1 flat-btn"
+            >
               Sim, Apagar
             </button>
           </div>
         </div>
       </div>
       <!-- Sidebar Navigation -->
-      <aside class="flex flex-col items-center py-6 w-20 bg-primary border-r border-primary shrink-0 z-50 text-white">
+      <aside
+        class="flex flex-col items-center py-6 w-20 bg-primary border-r border-primary shrink-0 z-50 text-white"
+      >
         <div class="mb-10 text-white">
           <span class="material-symbols-outlined text-3xl">bolt</span>
         </div>
-        
+
         <nav class="flex flex-col gap-6 flex-1">
-          <button onclick="location.reload()" class="p-3 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all flat-btn" title="Visão Geral">
+          <button
+            onclick="location.reload()"
+            class="p-3 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all flat-btn"
+            title="Visão Geral"
+          >
             <span class="material-symbols-outlined">analytics</span>
           </button>
-          
-          <button onclick="switchTab('individual')" class="p-3 hover:bg-white/10 rounded-lg text-white/70 hover:text-white transition-all flat-btn" title="Indivíduos">
+
+          <button
+            onclick="switchTab('individual')"
+            class="p-3 hover:bg-white/10 rounded-lg text-white/70 hover:text-white transition-all flat-btn"
+            title="Indivíduos"
+          >
             <span class="material-symbols-outlined">groups</span>
           </button>
 
-          <button onclick="exportExcel()" class="p-3 hover:bg-white/10 rounded-lg text-white/70 hover:text-white transition-all flat-btn" title="Exportar Excel">
+          <button
+            onclick="exportExcel()"
+            class="p-3 hover:bg-white/10 rounded-lg text-white/70 hover:text-white transition-all flat-btn"
+            title="Exportar Excel"
+          >
             <span class="material-symbols-outlined">file_download</span>
           </button>
 
-          <button onclick="limparDados()" class="p-3 hover:bg-white/10 rounded-lg text-white/70 hover:text-red-300 transition-all flat-btn" title="Limpar Dados">
+          <button
+            onclick="limparDados()"
+            class="p-3 hover:bg-white/10 rounded-lg text-white/70 hover:text-red-300 transition-all flat-btn"
+            title="Limpar Dados"
+          >
             <span class="material-symbols-outlined">delete_forever</span>
           </button>
         </nav>
-        
+
         <div class="mt-auto flex flex-col gap-5">
-          <div class="size-10 rounded-full border border-white/20 overflow-hidden bg-white/10 flex items-center justify-center" title="J.Roncalli">
-            <span class="material-symbols-outlined text-white text-xl">code</span>
+          <div
+            class="size-10 rounded-full border border-white/20 overflow-hidden bg-white/10 flex items-center justify-center"
+            title="J.Roncalli"
+          >
+            <span class="material-symbols-outlined text-white text-xl"
+              >code</span
+            >
           </div>
         </div>
       </aside>
 
       <!-- Main Content -->
-      <main class="flex-1 flex flex-col overflow-hidden p-4 lg:p-8 space-y-8 bg-background-light">
-      
-      <!-- Header -->
-      <header class="flex items-center justify-between px-2">
-        <div>
-          <h1 class="text-3xl font-extrabold tracking-tight text-primary flex items-center gap-3">
-            DIRF Master <span class="text-xs font-mono text-white bg-primary px-2 py-0.5 rounded-sm">2026.v1</span>
-          </h1>
-          <div class="mt-2 flex items-center gap-2" id="nomeEmpresaDisplay">
-            <span class="text-[10px] font-bold text-text-muted tracking-widest uppercase">Declarante</span>
-            <span class="text-xs font-bold text-text-main bg-white px-2.5 py-1 rounded border border-border-light">Aguardando Processamento...</span>
+      <main
+        class="flex-1 flex flex-col overflow-hidden p-4 lg:p-8 space-y-8 bg-background-light"
+      >
+        <!-- Header -->
+        <header class="flex items-center justify-between px-2">
+          <div>
+            <h1
+              class="text-3xl font-extrabold tracking-tight text-primary flex items-center gap-3"
+            >
+              DIRF Master
+              <span
+                class="text-xs font-mono text-white bg-primary px-2 py-0.5 rounded-sm"
+                >2026.v1</span
+              >
+            </h1>
+            <div class="mt-2 flex items-center gap-2" id="nomeEmpresaDisplay">
+              <span
+                class="text-[10px] font-bold text-text-muted tracking-widest uppercase"
+                >Declarante</span
+              >
+              <span
+                class="text-xs font-bold text-text-main bg-white px-2.5 py-1 rounded border border-border-light"
+                >Aguardando Processamento...</span
+              >
+            </div>
           </div>
-        </div>
-        
-        <div class="flex items-center gap-4 flex-1 max-w-lg mx-8">
-          <div class="relative w-full">
-            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-sm">search</span>
-            <input 
-              id="searchInput"
-              oninput="handleSearch(this.value)"
-              class="w-full bg-white border border-border-light rounded-md pl-10 pr-4 py-2.5 focus:ring-2 focus:ring-accent focus:border-accent text-sm transition-all placeholder:text-slate-400 outline-none hover:border-slate-300" 
-              placeholder="Buscar por funcionário ou CPF..." 
-              type="text"
-            />
-          </div>
-        </div>
 
-        <div class="flex items-center gap-3">
-          <button 
-            onclick="togglePrivacy()" 
-            id="privacyToggle"
-            class="p-2.5 rounded-md bg-white border border-border-light text-text-muted hover:text-primary hover:border-primary transition-all group flat-btn"
-            title="Modo Privacidade"
+          <div class="flex items-center gap-4 flex-1 max-w-lg mx-8">
+            <div class="relative w-full">
+              <span
+                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-sm"
+                >search</span
+              >
+              <input
+                id="searchInput"
+                oninput="handleSearch(this.value)"
+                class="w-full bg-white border border-border-light rounded-md pl-10 pr-4 py-2.5 focus:ring-2 focus:ring-accent focus:border-accent text-sm transition-all placeholder:text-slate-400 outline-none hover:border-slate-300"
+                placeholder="Buscar por funcionário ou CPF..."
+                type="text"
+              />
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button
+              onclick="togglePrivacy()"
+              id="privacyToggle"
+              class="p-2.5 rounded-md bg-white border border-border-light text-text-muted hover:text-primary hover:border-primary transition-all group flat-btn"
+              title="Modo Privacidade"
+            >
+              <span class="material-symbols-outlined text-sm" id="privacyIcon"
+                >visibility</span
+              >
+            </button>
+            <button
+              onclick="exportExcel()"
+              class="bg-accent hover:bg-orange-600 text-white px-5 py-2.5 rounded-md text-sm font-bold transition-all flex items-center gap-2 flat-btn"
+            >
+              <span class="material-symbols-outlined text-sm">download</span>
+              EXPORTAR DADOS
+            </button>
+            <button
+              id="btnZip"
+              onclick="downloadIndividualPDFsZip()"
+              class="hidden bg-primary hover:bg-blue-700 text-white px-5 py-2.5 rounded-md text-sm font-bold transition-all flex items-center gap-2 flat-btn"
+            >
+              <span class="material-symbols-outlined text-sm">folder_zip</span>
+              BAIXAR PDFS POR FUNCIONÁRIO (.ZIP)
+            </button>
+          </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div
+          class="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-8 pr-2"
+        >
+          <!-- Metrics Bento Grid  -->
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-reveal"
           >
-            <span class="material-symbols-outlined text-sm" id="privacyIcon">visibility</span>
-          </button>
-          <button onclick="exportExcel()" class="bg-accent hover:bg-orange-600 text-white px-5 py-2.5 rounded-md text-sm font-bold transition-all flex items-center gap-2 flat-btn">
-            <span class="material-symbols-outlined text-sm">download</span>
-            EXPORTAR DADOS
-          </button>
+            <!-- Total Funcionários -->
+            <div
+              class="card-flat p-6 rounded-lg relative overflow-hidden group"
+            >
+              <div class="flex justify-between items-start mb-4">
+                <span
+                  class="text-xs font-bold text-text-muted uppercase tracking-widest"
+                  >Funcionários</span
+                >
+              </div>
+              <div class="flex items-end gap-3 mt-1">
+                <h3
+                  class="text-4xl xl:text-5xl font-display font-black tracking-tighter text-primary"
+                  id="totalFuncionarios"
+                >
+                  0
+                </h3>
+              </div>
+              <p class="text-[10px] text-accent mt-2 font-bold">ATIVOS</p>
+              <div
+                class="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity"
+              >
+                <span class="material-symbols-outlined text-8xl text-primary"
+                  >groups</span
+                >
+              </div>
+            </div>
+
+            <!-- Total Rendimentos -->
+            <div
+              class="card-flat p-6 rounded-lg relative overflow-hidden group"
+            >
+              <div class="flex justify-between items-start mb-4">
+                <span
+                  class="text-xs font-bold text-text-muted uppercase tracking-widest"
+                  >Rend. Tributáveis</span
+                >
+              </div>
+              <div class="flex items-end gap-3 mt-1">
+                <h3
+                  class="text-3xl xl:text-4xl font-display font-black tracking-tighter text-primary truncate"
+                  id="totalRendimentos"
+                >
+                  R$ 0,00
+                </h3>
+              </div>
+              <p class="text-[10px] text-text-muted mt-2 font-bold">
+                DADOS ACUMULADOS
+              </p>
+              <div
+                class="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity"
+              >
+                <span class="material-symbols-outlined text-8xl text-primary"
+                  >account_balance_wallet</span
+                >
+              </div>
+            </div>
+
+            <!-- Total Imposto -->
+            <div
+              class="card-flat p-6 rounded-lg relative overflow-hidden group border-l-4 border-l-accent"
+            >
+              <div class="flex justify-between items-start mb-4">
+                <span
+                  class="text-xs font-bold text-text-muted uppercase tracking-widest"
+                  >Imposto Retido</span
+                >
+              </div>
+              <div class="flex items-end gap-3 mt-1">
+                <h3
+                  class="text-3xl xl:text-4xl font-display font-black tracking-tighter text-text-main truncate"
+                  id="totalImposto"
+                >
+                  R$ 0,00
+                </h3>
+              </div>
+              <p class="text-[10px] text-text-muted mt-2 font-bold">
+                IRRF TOTAL
+              </p>
+              <div
+                class="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity"
+              >
+                <span class="material-symbols-outlined text-8xl text-accent"
+                  >receipt_long</span
+                >
+              </div>
+            </div>
+
+            <!-- Total Previdência -->
+            <div
+              class="card-flat p-6 rounded-lg relative overflow-hidden group"
+            >
+              <div class="flex justify-between items-start mb-4">
+                <span
+                  class="text-xs font-bold text-text-muted uppercase tracking-widest"
+                  >Previdência</span
+                >
+              </div>
+              <div class="flex items-end gap-3 mt-1">
+                <h3
+                  class="text-3xl xl:text-4xl font-display font-black tracking-tighter text-primary truncate"
+                  id="totalPrev"
+                >
+                  R$ 0,00
+                </h3>
+              </div>
+              <p class="text-[10px] text-text-muted mt-2 font-bold">
+                OFICIAL/COMPLEMENTAR
+              </p>
+              <div
+                class="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity"
+              >
+                <span class="material-symbols-outlined text-8xl text-primary"
+                  >shield</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Upload Section -->
+          <div
+            id="uploadSection"
+            class="bg-white border-2 border-dashed border-primary/30 rounded-lg p-16 transition-all hover:bg-slate-50 hover:border-primary group relative animate-reveal"
+          >
+            <input
+              type="file"
+              id="fileInput"
+              accept=".pdf"
+              onchange="handleFile(this.files[0])"
+              class="absolute inset-0 opacity-0 cursor-pointer z-10"
+            />
+            <div
+              class="flex flex-col items-center justify-center text-center space-y-6"
+            >
+              <div
+                class="size-24 rounded-full bg-blue-50 text-primary flex items-center justify-center group-hover:scale-105 transition-all duration-300 border border-blue-100"
+              >
+                <span class="material-symbols-outlined text-5xl"
+                  >cloud_upload</span
+                >
+              </div>
+              <div>
+                <h3
+                  class="text-2xl font-bold text-text-main group-hover:text-primary transition-colors"
+                >
+                  Processar Dados DIRF
+                </h3>
+                <p class="text-text-muted text-sm mt-2">
+                  Clique ou arraste seu arquivo PDF aqui para iniciar a leitura
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabs Section -->
+          <div
+            id="tabsContainer"
+            class="hidden flex gap-2 p-1.5 bg-white border border-border-light rounded-md w-fit"
+          >
+            <button
+              onclick="switchTab('consolidado')"
+              id="tab-consolidado"
+              class="px-6 py-2 rounded text-xs font-bold uppercase tracking-wide transition-all bg-primary text-white"
+            >
+              Consolidado
+            </button>
+            <button
+              onclick="switchTab('individual')"
+              id="tab-individual"
+              class="px-6 py-2 rounded text-xs font-bold uppercase tracking-wide transition-all text-text-muted hover:text-text-main hover:bg-slate-50"
+            >
+              Individual
+            </button>
+          </div>
+
+          <!-- Results Table Section (Consolidado) -->
+          <div
+            id="resultContainer"
+            class="hidden flex-1 card-flat rounded-lg flex flex-col"
+          >
+            <div
+              class="p-4 border-b border-border-light bg-slate-50 flex items-center justify-between rounded-t-lg"
+            >
+              <span
+                class="text-xs font-bold text-text-main uppercase tracking-widest"
+                >Detalhamento Mensal Consolidado</span
+              >
+              <div class="flex gap-2">
+                <button
+                  onclick="exportExcel()"
+                  class="p-1 inline-flex text-text-muted hover:text-primary transition-colors text-sm font-bold items-center gap-1 group"
+                >
+                  <span
+                    class="material-symbols-outlined text-base group-hover:-translate-y-0.5 transition-transform"
+                    >download</span
+                  >
+                  <span>Exportar Excel</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="overflow-auto flex-1 custom-scrollbar">
+              <table
+                id="mainTable"
+                class="w-full border-collapse text-sm font-medium tracking-tight bg-white"
+              >
+                <thead class="sticky top-0 z-20 bg-white shadow-sm">
+                  <tr>
+                    <th
+                      class="p-4 text-left border-b border-r border-border-light text-text-muted font-bold bg-slate-50 min-w-[150px]"
+                    >
+                      MÊS REF
+                    </th>
+                    <th
+                      class="p-4 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50"
+                    >
+                      REND. TRIB.
+                    </th>
+                    <th
+                      class="p-4 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50"
+                    >
+                      DED. SIMPL.
+                    </th>
+                    <th
+                      class="p-4 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50"
+                    >
+                      PREV. OFIC.
+                    </th>
+                    <th
+                      class="p-4 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50"
+                    >
+                      PREV. COMPL.
+                    </th>
+                    <th
+                      class="p-4 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50"
+                    >
+                      PREV. FAPI
+                    </th>
+                    <th
+                      class="p-4 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50"
+                    >
+                      DEPEND.
+                    </th>
+                    <th
+                      class="p-4 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50"
+                    >
+                      PENSÃO ALIM.
+                    </th>
+                    <th
+                      class="p-4 text-right border-b border-border-light text-accent font-bold bg-orange-50"
+                    >
+                      IRRF RETIDO
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="tableBody" class="divide-y divide-border-light">
+                  <!-- Linhas geradas via JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Individual Table Section -->
+          <div
+            id="individualContainer"
+            class="hidden flex-1 card-flat rounded-lg flex flex-col"
+          >
+            <div
+              class="p-4 border-b border-border-light bg-slate-50 flex items-center justify-between rounded-t-lg"
+            >
+              <span
+                class="text-xs font-bold text-text-main uppercase tracking-widest"
+                >Lista de Beneficiários</span
+              >
+            </div>
+            <div class="overflow-auto flex-1 custom-scrollbar">
+              <table
+                id="individualTable"
+                class="w-full border-collapse text-xs font-medium tracking-tight bg-white"
+              >
+                <thead class="sticky top-0 z-20 bg-white shadow-sm">
+                  <tr>
+                    <th
+                      class="p-3 text-left border-b border-r border-border-light text-text-muted font-bold bg-slate-50 sticky left-0 z-30"
+                    >
+                      CPF
+                    </th>
+                    <th
+                      class="p-3 text-left border-b border-r border-border-light text-text-muted font-bold bg-slate-50 sticky left-[100px] z-30 min-w-[200px]"
+                    >
+                      BENEFICIÁRIO
+                    </th>
+                    <th
+                      class="p-3 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50"
+                    >
+                      REND. TRIB.
+                    </th>
+                    <th
+                      class="p-3 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50"
+                    >
+                      DED. SIMP.
+                    </th>
+                    <th
+                      class="p-3 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50"
+                    >
+                      PREV. OFIC.
+                    </th>
+                    <th
+                      class="p-3 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50"
+                    >
+                      PREV. COMP.
+                    </th>
+                    <th
+                      class="p-3 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50"
+                    >
+                      PREV. FAPI
+                    </th>
+                    <th
+                      class="p-3 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50"
+                    >
+                      DEPEND.
+                    </th>
+                    <th
+                      class="p-3 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50"
+                    >
+                      PENSÃO.
+                    </th>
+                    <th
+                      class="p-3 text-right border-b border-border-light text-accent font-bold bg-orange-50"
+                    >
+                      IRRF.
+                    </th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="individualBody"
+                  class="divide-y divide-border-light"
+                ></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- System Info Footer -->
+          <footer
+            class="flex items-center justify-between text-xs text-text-muted pt-4 pb-2 border-t border-border-light mt-8"
+          >
+            <div class="flex flex-wrap gap-6 items-center">
+              <span class="flex items-center gap-1.5 font-bold"
+                ><span class="size-2 rounded-full bg-green-500"></span>
+                SECURE-V1 ACTIVO</span
+              >
+            </div>
+            <div class="flex items-center gap-2 mr-4 text-text-main">
+              <span class="font-bold text-xs uppercase">
+                Desenvolvido por <span class="text-primary">J.Roncalli</span>
+              </span>
+            </div>
+          </footer>
         </div>
-      </header>
-
-      <!-- Dashboard Content -->
-      <div class="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar space-y-8 pr-2">
-        
-        <!-- Metrics Bento Grid  -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-reveal">
-          <!-- Total Funcionários -->
-          <div class="card-flat p-6 rounded-lg relative overflow-hidden group">
-            <div class="flex justify-between items-start mb-4">
-              <span class="text-xs font-bold text-text-muted uppercase tracking-widest">Funcionários</span>
-            </div>
-            <div class="flex items-end gap-3 mt-1">
-              <h3 class="text-4xl xl:text-5xl font-display font-black tracking-tighter text-primary" id="totalFuncionarios">0</h3>
-            </div>
-            <p class="text-[10px] text-accent mt-2 font-bold">ATIVOS</p>
-            <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <span class="material-symbols-outlined text-8xl text-primary">groups</span>
-            </div>
-          </div>
-
-          <!-- Total Rendimentos -->
-          <div class="card-flat p-6 rounded-lg relative overflow-hidden group">
-            <div class="flex justify-between items-start mb-4">
-              <span class="text-xs font-bold text-text-muted uppercase tracking-widest">Rend. Tributáveis</span>
-            </div>
-            <div class="flex items-end gap-3 mt-1">
-              <h3 class="text-3xl xl:text-4xl font-display font-black tracking-tighter text-primary truncate" id="totalRendimentos">R$ 0,00</h3>
-            </div>
-            <p class="text-[10px] text-text-muted mt-2 font-bold">DADOS ACUMULADOS</p>
-            <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <span class="material-symbols-outlined text-8xl text-primary">account_balance_wallet</span>
-            </div>
-          </div>
-
-          <!-- Total Imposto -->
-          <div class="card-flat p-6 rounded-lg relative overflow-hidden group border-l-4 border-l-accent">
-            <div class="flex justify-between items-start mb-4">
-              <span class="text-xs font-bold text-text-muted uppercase tracking-widest">Imposto Retido</span>
-            </div>
-            <div class="flex items-end gap-3 mt-1">
-              <h3 class="text-3xl xl:text-4xl font-display font-black tracking-tighter text-text-main truncate" id="totalImposto">R$ 0,00</h3>
-            </div>
-            <p class="text-[10px] text-text-muted mt-2 font-bold">IRRF TOTAL</p>
-            <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <span class="material-symbols-outlined text-8xl text-accent">receipt_long</span>
-            </div>
-          </div>
-
-          <!-- Total Previdência -->
-          <div class="card-flat p-6 rounded-lg relative overflow-hidden group">
-            <div class="flex justify-between items-start mb-4">
-              <span class="text-xs font-bold text-text-muted uppercase tracking-widest">Previdência</span>
-            </div>
-            <div class="flex items-end gap-3 mt-1">
-              <h3 class="text-3xl xl:text-4xl font-display font-black tracking-tighter text-primary truncate" id="totalPrev">R$ 0,00</h3>
-            </div>
-            <p class="text-[10px] text-text-muted mt-2 font-bold">OFICIAL/COMPLEMENTAR</p>
-            <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <span class="material-symbols-outlined text-8xl text-primary">shield</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Upload Section -->
-        <div id="uploadSection" class="bg-white border-2 border-dashed border-primary/30 rounded-lg p-16 transition-all hover:bg-slate-50 hover:border-primary group relative animate-reveal">
-          <input
-            type="file"
-            id="fileInput"
-            accept=".pdf"
-            onchange="handleFile(this.files[0])"
-            class="absolute inset-0 opacity-0 cursor-pointer z-10"
-          />
-          <div class="flex flex-col items-center justify-center text-center space-y-6">
-            <div class="size-24 rounded-full bg-blue-50 text-primary flex items-center justify-center group-hover:scale-105 transition-all duration-300 border border-blue-100">
-              <span class="material-symbols-outlined text-5xl">cloud_upload</span>
-            </div>
-            <div>
-              <h3 class="text-2xl font-bold text-text-main group-hover:text-primary transition-colors">Processar Dados DIRF</h3>
-              <p class="text-text-muted text-sm mt-2">Clique ou arraste seu arquivo PDF aqui para iniciar a leitura</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tabs Section -->
-        <div id="tabsContainer" class="hidden flex gap-2 p-1.5 bg-white border border-border-light rounded-md w-fit">
-          <button onclick="switchTab('consolidado')" id="tab-consolidado" class="px-6 py-2 rounded text-xs font-bold uppercase tracking-wide transition-all bg-primary text-white">Consolidado</button>
-          <button onclick="switchTab('individual')" id="tab-individual" class="px-6 py-2 rounded text-xs font-bold uppercase tracking-wide transition-all text-text-muted hover:text-text-main hover:bg-slate-50">Individual</button>
-        </div>
-
-        <!-- Results Table Section (Consolidado) -->
-        <div id="resultContainer" class="hidden flex-1 card-flat rounded-lg flex flex-col">
-          <div class="p-4 border-b border-border-light bg-slate-50 flex items-center justify-between rounded-t-lg">
-            <span class="text-xs font-bold text-text-main uppercase tracking-widest">Detalhamento Mensal Consolidado</span>
-            <div class="flex gap-2">
-              <button onclick="exportExcel()" class="p-1 inline-flex text-text-muted hover:text-primary transition-colors text-sm font-bold items-center gap-1 group">
-                <span class="material-symbols-outlined text-base group-hover:-translate-y-0.5 transition-transform">download</span>
-                <span>Exportar Excel</span>
-              </button>
-            </div>
-          </div>
-          
-          <div class="overflow-auto flex-1 custom-scrollbar">
-            <table id="mainTable" class="w-full border-collapse text-sm font-medium tracking-tight bg-white">
-              <thead class="sticky top-0 z-20 bg-white shadow-sm">
-                <tr>
-                  <th class="p-4 text-left border-b border-r border-border-light text-text-muted font-bold bg-slate-50 min-w-[150px]">MÊS REF</th>
-                  <th class="p-4 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50">REND. TRIB.</th>
-                  <th class="p-4 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50">DED. SIMPL.</th>
-                  <th class="p-4 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50">PREV. OFIC.</th>
-                  <th class="p-4 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50">PREV. COMPL.</th>
-                  <th class="p-4 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50">PREV. FAPI</th>
-                  <th class="p-4 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50">DEPEND.</th>
-                  <th class="p-4 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50">PENSÃO ALIM.</th>
-                  <th class="p-4 text-right border-b border-border-light text-accent font-bold bg-orange-50">IRRF RETIDO</th>
-                </tr>
-              </thead>
-              <tbody id="tableBody" class="divide-y divide-border-light">
-                <!-- Linhas geradas via JavaScript -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Individual Table Section -->
-        <div id="individualContainer" class="hidden flex-1 card-flat rounded-lg flex flex-col">
-          <div class="p-4 border-b border-border-light bg-slate-50 flex items-center justify-between rounded-t-lg">
-            <span class="text-xs font-bold text-text-main uppercase tracking-widest">Lista de Beneficiários</span>
-          </div>
-          <div class="overflow-auto flex-1 custom-scrollbar">
-            <table id="individualTable" class="w-full border-collapse text-xs font-medium tracking-tight bg-white">
-              <thead class="sticky top-0 z-20 bg-white shadow-sm">
-                <tr>
-                  <th class="p-3 text-left border-b border-r border-border-light text-text-muted font-bold bg-slate-50 sticky left-0 z-30">CPF</th>
-                  <th class="p-3 text-left border-b border-r border-border-light text-text-muted font-bold bg-slate-50 sticky left-[100px] z-30 min-w-[200px]">BENEFICIÁRIO</th>
-                  <th class="p-3 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50">REND. TRIB.</th>
-                  <th class="p-3 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50">DED. SIMP.</th>
-                  <th class="p-3 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50">PREV. OFIC.</th>
-                  <th class="p-3 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50">PREV. COMP.</th>
-                  <th class="p-3 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50">PREV. FAPI</th>
-                  <th class="p-3 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50">DEPEND.</th>
-                  <th class="p-3 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50">PENSÃO.</th>
-                  <th class="p-3 text-right border-b border-border-light text-accent font-bold bg-orange-50">IRRF.</th>
-                </tr>
-              </thead>
-              <tbody id="individualBody" class="divide-y divide-border-light">
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- System Info Footer -->
-        <footer class="flex items-center justify-between text-xs text-text-muted pt-4 pb-2 border-t border-border-light mt-8">
-          <div class="flex flex-wrap gap-6 items-center">
-            <span class="flex items-center gap-1.5 font-bold"><span class="size-2 rounded-full bg-green-500"></span> SECURE-V1 ACTIVO</span>
-          </div>
-          <div class="flex items-center gap-2 mr-4 text-text-main">
-            <span class="font-bold text-xs uppercase">
-              Desenvolvido por <span class="text-primary">J.Roncalli</span>
-            </span>
-          </div>
-        </footer>
-      </div>
-    </main>
-  </div>
+      </main>
+    </div>
 
     <script>
       // === Lógica de Estado ===
       const MESES = [
-        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
-        "13° Salário"
+        "Janeiro",
+        "Fevereiro",
+        "Março",
+        "Abril",
+        "Maio",
+        "Junho",
+        "Julho",
+        "Agosto",
+        "Setembro",
+        "Outubro",
+        "Novembro",
+        "Dezembro",
+        "13° Salário",
       ];
 
       let dadosConsolidados = {};
       let detalhesPorFuncionario = {}; // { cpf: { nome: "", totais: [8 vals] } }
       let totalFuncionarios = 0;
       let nomeEmpresa = "";
-      let privacyMode = localStorage.getItem('privacy_mode') === 'true';
-      let currentTab = 'consolidado';
+      let privacyMode = localStorage.getItem("privacy_mode") === "true";
+      let currentTab = "consolidado";
+      let pdfSourceBytes = null;
+      let paginaParaFuncionario = []; // Array of { cpf, nome } per page index (0-based)
 
       function initDados() {
         MESES.forEach((mes) => {
@@ -404,39 +718,41 @@
         detalhesPorFuncionario = {};
         totalFuncionarios = 0;
         nomeEmpresa = "";
+        pdfSourceBytes = null;
+        paginaParaFuncionario = [];
       }
 
       function limparDados() {
-        const modal = document.getElementById('deleteModal');
-        const content = document.getElementById('deleteModalContent');
-        
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        
+        const modal = document.getElementById("deleteModal");
+        const content = document.getElementById("deleteModalContent");
+
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+
         // Pequeno delay pra ativar a transição
         setTimeout(() => {
-          modal.classList.remove('opacity-0');
-          content.classList.remove('scale-95');
-          content.classList.add('scale-100');
+          modal.classList.remove("opacity-0");
+          content.classList.remove("scale-95");
+          content.classList.add("scale-100");
         }, 10);
       }
 
       function closeModal() {
-        const modal = document.getElementById('deleteModal');
-        const content = document.getElementById('deleteModalContent');
-        
-        modal.classList.add('opacity-0');
-        content.classList.remove('scale-100');
-        content.classList.add('scale-95');
-        
+        const modal = document.getElementById("deleteModal");
+        const content = document.getElementById("deleteModalContent");
+
+        modal.classList.add("opacity-0");
+        content.classList.remove("scale-100");
+        content.classList.add("scale-95");
+
         setTimeout(() => {
-          modal.classList.add('hidden');
-          modal.classList.remove('flex');
+          modal.classList.add("hidden");
+          modal.classList.remove("flex");
         }, 300);
       }
 
       function confirmLimparDados() {
-        localStorage.removeItem('dirf_data');
+        localStorage.removeItem("dirf_data");
         initDados();
         location.reload();
       }
@@ -447,13 +763,13 @@
           detalhesPorFuncionario,
           totalFuncionarios,
           nomeEmpresa,
-          lastUpdated: new Date().getTime()
+          lastUpdated: new Date().getTime(),
         };
-        localStorage.setItem('dirf_data', JSON.stringify(data));
+        localStorage.setItem("dirf_data", JSON.stringify(data));
       }
 
       function loadFromLocal() {
-        const saved = localStorage.getItem('dirf_data');
+        const saved = localStorage.getItem("dirf_data");
         if (saved) {
           const data = JSON.parse(saved);
           dadosConsolidados = data.dadosConsolidados;
@@ -467,19 +783,27 @@
 
       function togglePrivacy() {
         privacyMode = !privacyMode;
-        localStorage.setItem('privacy_mode', privacyMode);
+        localStorage.setItem("privacy_mode", privacyMode);
         updatePrivacyUI();
         renderResults();
       }
 
       function updatePrivacyUI() {
-        const icon = document.getElementById('privacyIcon');
-        icon.innerText = privacyMode ? 'visibility_off' : 'visibility';
-        const btn = document.getElementById('privacyToggle');
+        const icon = document.getElementById("privacyIcon");
+        icon.innerText = privacyMode ? "visibility_off" : "visibility";
+        const btn = document.getElementById("privacyToggle");
         if (privacyMode) {
-          btn.classList.add('bg-primary/10', 'text-primary', 'border-primary/50');
+          btn.classList.add(
+            "bg-primary/10",
+            "text-primary",
+            "border-primary/50",
+          );
         } else {
-          btn.classList.remove('bg-primary/10', 'text-primary', 'border-primary/50');
+          btn.classList.remove(
+            "bg-primary/10",
+            "text-primary",
+            "border-primary/50",
+          );
         }
       }
 
@@ -513,19 +837,19 @@
       function animateValue(id, start, end, duration, isMoney = false) {
         const obj = document.getElementById(id);
         if (!obj) return;
-        
+
         let startTimestamp = null;
         const step = (timestamp) => {
           if (!startTimestamp) startTimestamp = timestamp;
           const progress = Math.min((timestamp - startTimestamp) / duration, 1);
           const current = progress * (end - start) + start;
-          
+
           if (isMoney) {
             obj.innerText = formatMoney(current);
           } else {
             obj.innerText = Math.floor(current).toLocaleString();
           }
-          
+
           if (progress < 1) {
             window.requestAnimationFrame(step);
           }
@@ -559,14 +883,20 @@
         reader.onload = async function () {
           try {
             const typedarray = new Uint8Array(this.result);
+            // Criar uma cópia para evitar que o buffer seja "desconectado" (detached) pelo pdf.js
+            pdfSourceBytes = new Uint8Array(this.result.slice(0));
             const pdf = await pdfjsLib.getDocument(typedarray).promise;
             showLoading(true, `Processando ${pdf.numPages} páginas...`);
             const cpfsProcessados = new Set();
+            let lastFoundBeneficiary = null;
+            paginaParaFuncionario = [];
             for (let i = 1; i <= pdf.numPages; i++) {
               const page = await pdf.getPage(i);
               const textContent = await page.getTextContent();
               const lines = groupTextByLines(textContent.items);
-              processPageLines(lines, cpfsProcessados);
+              const info = processPageLines(lines, cpfsProcessados);
+              if (info) lastFoundBeneficiary = info;
+              paginaParaFuncionario.push(lastFoundBeneficiary);
             }
             totalFuncionarios = cpfsProcessados.size;
             renderResults();
@@ -584,13 +914,17 @@
         const lines = [];
         const tolerance = 4;
         items.sort((a, b) => {
-          if (Math.abs(a.transform[5] - b.transform[5]) > tolerance) return b.transform[5] - a.transform[5];
+          if (Math.abs(a.transform[5] - b.transform[5]) > tolerance)
+            return b.transform[5] - a.transform[5];
           return a.transform[4] - b.transform[4];
         });
         let currentLine = [];
         let currentY = null;
         items.forEach((item) => {
-          if (currentY === null || Math.abs(item.transform[5] - currentY) > tolerance) {
+          if (
+            currentY === null ||
+            Math.abs(item.transform[5] - currentY) > tolerance
+          ) {
             if (currentLine.length > 0) lines.push(currentLine);
             currentLine = [];
             currentY = item.transform[5];
@@ -604,61 +938,94 @@
       function processPageLines(lines, cpfSet) {
         let isMainTable = false;
         let currentCpf = null;
-        let currentNome = null;
+        let foundOnPage = null;
 
         for (let i = 0; i < lines.length; i++) {
           const lineStr = lines[i].join(" ").trim();
 
           // Extração do Nome da Empresa (Declarante)
-          if (!nomeEmpresa && (lineStr.includes("Nome empresarial") || lineStr.includes("NOME EMPRESARIAL") || lineStr.includes("Nome da fonte pagadora") || lineStr.startsWith("Empresa:"))) {
+          if (
+            !nomeEmpresa &&
+            (lineStr.includes("Nome empresarial") ||
+              lineStr.includes("NOME EMPRESARIAL") ||
+              lineStr.includes("Nome da fonte pagadora") ||
+              lineStr.startsWith("Empresa:"))
+          ) {
             let potentialName = "";
             if (lineStr.includes(":")) {
-               potentialName = lineStr.split(":")[1].trim();
+              potentialName = lineStr.split(":")[1].trim();
             } else {
-               const keywords = ["Nome empresarial", "NOME EMPRESARIAL", "Nome da fonte pagadora", "Empresa"];
-               for (let key of keywords) {
-                 if (lineStr.includes(key)) {
-                    potentialName = lineStr.substring(lineStr.indexOf(key) + key.length).trim();
-                    break;
-                 }
-               }
+              const keywords = [
+                "Nome empresarial",
+                "NOME EMPRESARIAL",
+                "Nome da fonte pagadora",
+                "Empresa",
+              ];
+              for (let key of keywords) {
+                if (lineStr.includes(key)) {
+                  potentialName = lineStr
+                    .substring(lineStr.indexOf(key) + key.length)
+                    .trim();
+                  break;
+                }
+              }
             }
-            if (potentialName && potentialName.length > 3) nomeEmpresa = potentialName;
-            else if (i + 1 < lines.length) nomeEmpresa = lines[i+1].join(" ").trim();
+            if (potentialName && potentialName.length > 3)
+              nomeEmpresa = potentialName;
+            else if (i + 1 < lines.length)
+              nomeEmpresa = lines[i + 1].join(" ").trim();
           }
 
           // Busca CPF e Nome do Beneficiário
           if (lineStr.includes("CPF:")) {
             const cpfMatch = lineStr.match(/CPF:\s*([\d\.-]+)/);
             const nomeMatch = lineStr.match(/Nome:\s*(.+)$/);
-            
+
             if (cpfMatch) {
               currentCpf = cpfMatch[1].trim();
               cpfSet.add(currentCpf);
+              const nome = nomeMatch ? nomeMatch[1].trim() : "Não Identificado";
               if (!detalhesPorFuncionario[currentCpf]) {
                 detalhesPorFuncionario[currentCpf] = {
-                  nome: nomeMatch ? nomeMatch[1].trim() : "Não Identificado",
-                  totais: Array(8).fill(0)
+                  nome: nome,
+                  totais: Array(8).fill(0),
                 };
               }
+              foundOnPage = { cpf: currentCpf, nome: nome };
             }
           }
 
-          if (lineStr.includes("Rend. Tributável") && lineStr.includes("Imposto Retido")) {
-            isMainTable = true; continue;
+          if (
+            lineStr.includes("Rend. Tributável") &&
+            lineStr.includes("Imposto Retido")
+          ) {
+            isMainTable = true;
+            continue;
           }
-          if (isMainTable && (lineStr.includes("RENDIMENTOS ISENTOS") || lineStr.includes("INFORMAÇÕES"))) {
+          if (
+            isMainTable &&
+            (lineStr.includes("RENDIMENTOS ISENTOS") ||
+              lineStr.includes("INFORMAÇÕES"))
+          ) {
             isMainTable = false;
           }
           if (isMainTable) {
-            const mesMatch = MESES.find(m => lineStr.startsWith(m) || lineStr.startsWith(m.replace("°", "º")));
+            const mesMatch = MESES.find(
+              (m) =>
+                lineStr.startsWith(m) ||
+                lineStr.startsWith(m.replace("°", "º")),
+            );
             if (mesMatch && currentCpf) {
               const rawValues = lines[i].slice(1);
-              const numericValues = rawValues.filter(v => /[\d\.,]+/.test(v) && v.trim().length > 0);
+              const numericValues = rawValues.filter(
+                (v) => /[\d\.,]+/.test(v) && v.trim().length > 0,
+              );
               if (numericValues.length >= 8) {
                 for (let col = 0; col < 8; col++) {
                   const val = parseBrlFloat(numericValues[col]);
-                  let mesKey = mesMatch.includes("13") ? "13° Salário" : mesMatch;
+                  let mesKey = mesMatch.includes("13")
+                    ? "13° Salário"
+                    : mesMatch;
                   dadosConsolidados[mesKey][col] += val;
                   detalhesPorFuncionario[currentCpf].totais[col] += val;
                 }
@@ -666,23 +1033,35 @@
             }
           }
         }
+        return foundOnPage;
       }
 
       function switchTab(tab) {
         currentTab = tab;
-        const tabs = ['consolidado', 'individual'];
-        tabs.forEach(t => {
+        const tabs = ["consolidado", "individual"];
+        tabs.forEach((t) => {
           const btn = document.getElementById(`tab-${t}`);
-          const container = t === 'consolidado' ? document.getElementById('resultContainer') : document.getElementById('individualContainer');
-          
+          const container =
+            t === "consolidado"
+              ? document.getElementById("resultContainer")
+              : document.getElementById("individualContainer");
+
           if (t === tab) {
-            btn.classList.add('bg-primary', 'text-white');
-            btn.classList.remove('text-text-muted', 'hover:text-text-main', 'hover:bg-slate-50');
-            if (container) container.classList.remove('hidden');
+            btn.classList.add("bg-primary", "text-white");
+            btn.classList.remove(
+              "text-text-muted",
+              "hover:text-text-main",
+              "hover:bg-slate-50",
+            );
+            if (container) container.classList.remove("hidden");
           } else {
-            btn.classList.remove('bg-primary', 'text-white');
-            btn.classList.add('text-text-muted', 'hover:text-text-main', 'hover:bg-slate-50');
-            if (container) container.classList.add('hidden');
+            btn.classList.remove("bg-primary", "text-white");
+            btn.classList.add(
+              "text-text-muted",
+              "hover:text-text-main",
+              "hover:bg-slate-50",
+            );
+            if (container) container.classList.add("hidden");
           }
         });
       }
@@ -690,8 +1069,8 @@
       function handleSearch(query) {
         query = query.toLowerCase();
         renderIndividualBody(query);
-        if (query && currentTab !== 'individual') {
-          switchTab('individual');
+        if (query && currentTab !== "individual") {
+          switchTab("individual");
         }
       }
 
@@ -699,16 +1078,20 @@
         const tbody = document.getElementById("individualBody");
         if (!tbody) return;
         tbody.innerHTML = "";
-        
+
         let delay = 0;
-        Object.keys(detalhesPorFuncionario).forEach(cpf => {
+        Object.keys(detalhesPorFuncionario).forEach((cpf) => {
           const func = detalhesPorFuncionario[cpf];
-          if (cpf.includes(filter) || func.nome.toLowerCase().includes(filter)) {
+          if (
+            cpf.includes(filter) ||
+            func.nome.toLowerCase().includes(filter)
+          ) {
             const tr = document.createElement("tr");
-            tr.className = "group hover:bg-slate-50 animate-reveal transition-colors";
+            tr.className =
+              "group hover:bg-slate-50 animate-reveal transition-colors";
             tr.style.animationDelay = `${delay}ms`;
             delay = Math.min(delay + 10, 200);
-            
+
             let cellsHtml = `
               <td class="p-3 font-semibold text-text-main border-r border-border-light sticky left-0 bg-white group-hover:bg-slate-50 z-20 transition-colors">${cpf}</td>
               <td class="p-3 font-semibold text-text-main border-r border-border-light sticky left-[100px] bg-white group-hover:bg-slate-50 z-20 transition-colors">${func.nome}</td>
@@ -731,28 +1114,34 @@
       }
 
       function renderResults() {
-        if (document.getElementById("uploadSection")) document.getElementById("uploadSection").classList.add("hidden");
-        if (document.getElementById("tabsContainer")) document.getElementById("tabsContainer").classList.remove("hidden");
+        if (document.getElementById("uploadSection"))
+          document.getElementById("uploadSection").classList.add("hidden");
+        if (document.getElementById("tabsContainer"))
+          document.getElementById("tabsContainer").classList.remove("hidden");
+        if (document.getElementById("btnZip") && pdfSourceBytes)
+          document.getElementById("btnZip").classList.remove("hidden");
         switchTab(currentTab);
-        
+
         if (nomeEmpresa) {
           const empresaDisplay = document.getElementById("nomeEmpresaDisplay");
-          if (empresaDisplay) empresaDisplay.innerHTML = `<span class="text-[10px] font-bold text-text-muted tracking-widest uppercase items-center flex gap-1"><span class="material-symbols-outlined text-[14px] text-green-600">check_circle</span> Processado</span> <span class="text-sm font-bold text-primary bg-blue-50 px-3 py-1 rounded border border-blue-200 ml-2 tracking-wide">${nomeEmpresa.toUpperCase()}</span>`;
+          if (empresaDisplay)
+            empresaDisplay.innerHTML = `<span class="text-[10px] font-bold text-text-muted tracking-widest uppercase items-center flex gap-1"><span class="material-symbols-outlined text-[14px] text-green-600">check_circle</span> Processado</span> <span class="text-sm font-bold text-primary bg-blue-50 px-3 py-1 rounded border border-blue-200 ml-2 tracking-wide">${nomeEmpresa.toUpperCase()}</span>`;
         }
 
         const tbody = document.getElementById("tableBody");
         if (!tbody) return;
         tbody.innerHTML = "";
         let grandTotal = Array(8).fill(0);
-        
+
         // Animating stats
         animateValue("totalFuncionarios", 0, totalFuncionarios, 800);
-        
+
         let delay = 0;
         MESES.forEach((mes) => {
           const vals = dadosConsolidados[mes];
           const tr = document.createElement("tr");
-          tr.className = "group hover:bg-slate-50 animate-reveal transition-colors";
+          tr.className =
+            "group hover:bg-slate-50 animate-reveal transition-colors";
           tr.style.animationDelay = `${delay}ms`;
           delay = Math.min(delay + 20, 300);
 
@@ -760,7 +1149,7 @@
           vals.forEach((v, idx) => {
             let colorClass = "text-text-main";
             let bgClass = "";
-            if (idx === 7) { 
+            if (idx === 7) {
               colorClass = "text-accent font-bold";
               bgClass = "bg-orange-50/50 group-hover:bg-orange-50";
             }
@@ -770,10 +1159,11 @@
           tr.innerHTML = html;
           tbody.appendChild(tr);
         });
-        
+
         // Row de Total Final
         const trTotal = document.createElement("tr");
-        trTotal.className = "bg-slate-100 sticky bottom-0 z-30 font-bold border-t-2 border-primary/20";
+        trTotal.className =
+          "bg-slate-100 sticky bottom-0 z-30 font-bold border-t-2 border-primary/20";
 
         let tdTotalLabel = `<td class="p-4 font-bold text-primary border-r border-border-light bg-blue-50 sticky left-0 z-40">TOTAL ACUMULADO</td>`;
         let tdTotalVals = "";
@@ -788,21 +1178,38 @@
         });
         trTotal.innerHTML = tdTotalLabel + tdTotalVals;
         tbody.appendChild(trTotal);
-        
+
         // Animate metrics
         animateValue("totalRendimentos", 0, grandTotal[0], 1000, true);
         animateValue("totalImposto", 0, grandTotal[7], 1000, true);
-        animateValue("totalPrev", 0, (grandTotal[2] + grandTotal[3]), 1000, true);
-        
+        animateValue("totalPrev", 0, grandTotal[2] + grandTotal[3], 1000, true);
+
         renderIndividualBody();
         saveToLocal();
       }
 
       function exportExcel() {
-        if (totalFuncionarios === 0) { alert("Processe um arquivo primeiro."); return; }
+        if (totalFuncionarios === 0) {
+          alert("Processe um arquivo primeiro.");
+          return;
+        }
         const wb = XLSX.utils.book_new();
-        const ws_data = [["Mês", "Rend. Tributável", "Dedução Simpl.", "Prev. Oficial", "Prev. Complem.", "Prev. FAPI", "Dependentes", "Pensão Alim.", "Imposto Retido"]];
-        MESES.forEach((mes) => { ws_data.push([mes, ...dadosConsolidados[mes]]); });
+        const ws_data = [
+          [
+            "Mês",
+            "Rend. Tributável",
+            "Dedução Simpl.",
+            "Prev. Oficial",
+            "Prev. Complem.",
+            "Prev. FAPI",
+            "Dependentes",
+            "Pensão Alim.",
+            "Imposto Retido",
+          ],
+        ];
+        MESES.forEach((mes) => {
+          ws_data.push([mes, ...dadosConsolidados[mes]]);
+        });
         let totalRow = ["TOTAL ANUAL"];
         for (let i = 0; i < 8; i++) {
           let sum = 0;
@@ -814,23 +1221,98 @@
         XLSX.utils.book_append_sheet(wb, ws, "Consolidado DIRF");
         XLSX.writeFile(wb, "Consolidado_DIRF.xlsx");
       }
-      
+
+      async function downloadIndividualPDFsZip() {
+        if (!pdfSourceBytes || paginaParaFuncionario.length === 0) {
+          alert("Nenhum dado de PDF disponível para separar.");
+          return;
+        }
+
+        showLoading(true, "Iniciando separação dos PDFs...");
+
+        try {
+          const zip = new JSZip();
+          const { PDFDocument } = PDFLib;
+          const mainPdfDoc = await PDFDocument.load(pdfSourceBytes);
+
+          // Agrupar páginas por funcionário
+          const funcionariosMap = {}; // { cpf: { nome: "", pages: [] } }
+
+          paginaParaFuncionario.forEach((info, index) => {
+            if (info && info.cpf) {
+              if (!funcionariosMap[info.cpf]) {
+                funcionariosMap[info.cpf] = { nome: info.nome, pages: [] };
+              }
+              funcionariosMap[info.cpf].pages.push(index);
+            }
+          });
+
+          const cpfs = Object.keys(funcionariosMap);
+          let count = 0;
+
+          for (const cpf of cpfs) {
+            count++;
+            const func = funcionariosMap[cpf];
+            showLoading(
+              true,
+              `Criando PDF de ${func.nome} (${count}/${cpfs.length})...`,
+            );
+
+            const newPdfDoc = await PDFDocument.create();
+            const copiedPages = await newPdfDoc.copyPages(
+              mainPdfDoc,
+              func.pages,
+            );
+            copiedPages.forEach((page) => newPdfDoc.addPage(page));
+
+            const pdfBytes = await newPdfDoc.save();
+            const fileName = `${func.nome.replace(/[/\\?%*:|"<>]/g, "-")}.pdf`;
+            zip.file(fileName, pdfBytes);
+          }
+
+          showLoading(true, "Gerando arquivo ZIP...");
+          const zipBlob = await zip.generateAsync({ type: "blob" });
+
+          const zipName = `${(nomeEmpresa || "Empresa").replace(/[/\\?%*:|"<>]/g, "-")}.zip`;
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(zipBlob);
+          link.download = zipName;
+          link.click();
+
+          showLoading(false);
+        } catch (error) {
+          console.error(error);
+          alert("Erro ao criar ZIP: " + error.message);
+          showLoading(false);
+        }
+      }
+
       // Proteção de Código Básica
       document.addEventListener("keydown", function (e) {
-        if (e.keyCode == 123) { // F12
+        if (e.keyCode == 123) {
+          // F12
           e.preventDefault();
         }
-        if (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) { // Ctrl+Shift+I/J/C
+        if (
+          e.ctrlKey &&
+          e.shiftKey &&
+          (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)
+        ) {
+          // Ctrl+Shift+I/J/C
           e.preventDefault();
         }
-        if (e.ctrlKey && e.keyCode == 85) { // Ctrl+U
+        if (e.ctrlKey && e.keyCode == 85) {
+          // Ctrl+U
           e.preventDefault();
         }
-        if (e.ctrlKey && e.keyCode == 83) { // Ctrl+S
+        if (e.ctrlKey && e.keyCode == 83) {
+          // Ctrl+S
           e.preventDefault();
         }
       });
-      document.addEventListener('contextmenu', event => event.preventDefault());
+      document.addEventListener("contextmenu", (event) =>
+        event.preventDefault(),
+      );
     </script>
   </body>
 </html>
