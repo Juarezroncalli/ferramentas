@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>DIRF Informe Master</title>
+
+    <!-- Scripts Externos -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <script id="tailwind-config">
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#0F172A",
+              accent: "#0284C7",
+              "background-light": "#F8FAFC",
+              "card-light": "#FFFFFF",
+              "border-light": "#E2E8F0",
+              "text-main": "#1E293B",
+              "text-muted": "#64748B",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+              mono: ["'Inter'", "monospace"],
+            },
+            borderRadius: {
+              DEFAULT: "0px",
+              md: "4px",
+              lg: "8px",
+              xl: "12px",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+
+    <script>
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    </script>
+
+    <style type="text/tailwindcss">
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: theme("colors.background-light");
+        color: theme("colors.text-main");
+        min-height: 100vh;
+        scroll-behavior: smooth;
+        -webkit-font-smoothing: antialiased;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        height: 6px;
+        width: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f5f9;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+      .loading-overlay {
+        background-color: rgba(255, 255, 255, 0.9);
+      }
+
+      .informe-box {
+        border: 1px solid theme("colors.border-light");
+        padding: 1.5rem;
+        background: white;
+        margin-bottom: 2rem;
+      }
+
+      .section-title {
+        background: theme("colors.primary");
+        color: white;
+        padding: 0.5rem 1rem;
+        font-weight: 800;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 1rem;
+      }
+
+      .item-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid theme("colors.border-light");
+      }
+      .item-row:last-child {
+        border-bottom: none;
+      }
+
+      @keyframes revealUp {
+        from {
+          opacity: 0;
+          transform: translateY(15px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .animate-reveal {
+        animation: revealUp 0.4s ease-out forwards;
+        opacity: 0;
+      }
+    </style>
+  </head>
+
+  <body
+    class="bg-background-light text-text-main antialiased font-display overflow-hidden select-none"
+  >
+    <!-- Loading Overlay -->
+    <div
+      id="loading"
+      class="fixed inset-0 z-[100] hidden flex-col items-center justify-center loading-overlay transition-opacity duration-300 opacity-0"
+    >
+      <div
+        class="size-16 border-4 border-accent border-t-transparent rounded-full animate-spin mb-4"
+      ></div>
+      <h3 id="loadingText" class="text-xl font-medium text-primary font-mono">
+        Processando DIRF...
+      </h3>
+    </div>
+
+    <div class="flex h-screen overflow-hidden">
+      <!-- Sidebar Navigation -->
+      <aside
+        class="flex flex-col items-center py-6 w-20 bg-primary border-r border-primary shrink-0 z-50 text-white"
+      >
+        <div class="mb-10 text-white">
+          <span class="material-symbols-outlined text-3xl">shield</span>
+        </div>
+
+        <nav class="flex flex-col gap-6 flex-1">
+          <button
+            onclick="location.reload()"
+            class="p-3 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-all"
+            title="Sincronizar"
+          >
+            <span class="material-symbols-outlined">sync</span>
+          </button>
+
+          <button
+            onclick="exportExcel()"
+            class="p-3 hover:bg-white/10 rounded-lg text-white/70 hover:text-white transition-all"
+            title="Exportar Excel"
+          >
+            <span class="material-symbols-outlined">file_download</span>
+          </button>
+
+          <button
+            onclick="limparDados()"
+            class="p-3 hover:bg-white/10 rounded-lg text-white/70 hover:text-red-400 transition-all"
+            title="Limpar Dados"
+          >
+            <span class="material-symbols-outlined">delete</span>
+          </button>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main
+        class="flex-1 flex flex-col overflow-hidden p-4 lg:p-8 space-y-8 bg-background-light"
+      >
+        <!-- Header -->
+        <header class="flex items-center justify-between px-2">
+          <div>
+            <h1
+              class="text-3xl font-extrabold tracking-tight text-primary flex items-center gap-3"
+            >
+              Informe DIRF
+              <span
+                class="text-xs font-mono text-white bg-accent px-2 py-0.5 rounded-sm"
+                >2026</span
+              >
+            </h1>
+            <div class="mt-2 flex items-center gap-2" id="nomeEmpresaDisplay">
+              <span
+                class="text-[10px] font-bold text-text-muted tracking-widest uppercase"
+                >Empresa</span
+              >
+              <span
+                class="text-xs font-bold text-text-main bg-white px-2.5 py-1 rounded border border-border-light"
+                >Aguardando Arquivo...</span
+              >
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4 flex-1 max-w-lg mx-8">
+            <div class="relative w-full">
+              <span
+                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-sm"
+                >search</span
+              >
+              <input
+                id="searchInput"
+                oninput="handleSearch(this.value)"
+                class="w-full bg-white border border-border-light rounded-md pl-10 pr-4 py-2.5 focus:ring-2 focus:ring-accent focus:border-accent text-sm transition-all placeholder:text-slate-400 outline-none"
+                placeholder="Filtrar por nome ou CPF do funcionário..."
+                type="text"
+              />
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button
+              id="btnZip"
+              onclick="downloadIndividualPDFsZip()"
+              class="hidden bg-primary hover:bg-slate-800 text-white px-5 py-2.5 rounded-md text-sm font-bold transition-all flex items-center gap-2"
+            >
+              <span class="material-symbols-outlined text-sm">folder_zip</span>
+              PDFs Individuais (.ZIP)
+            </button>
+            <button
+              onclick="exportExcel()"
+              class="bg-accent hover:bg-sky-700 text-white px-5 py-2.5 rounded-md text-sm font-bold transition-all flex items-center gap-2"
+            >
+              <span class="material-symbols-outlined text-sm">download</span>
+              EXCEL
+            </button>
+          </div>
+        </header>
+
+        <!-- Dynamic Content -->
+        <div
+          id="dashboard"
+          class="flex-1 overflow-y-auto custom-scrollbar space-y-8 pr-2"
+        >
+          <!-- Metrics -->
+          <div
+            id="metricsGrid"
+            class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-reveal"
+          >
+            <div
+              class="bg-white border border-border-light p-6 rounded-lg relative overflow-hidden group"
+            >
+              <span
+                class="text-xs font-bold text-text-muted uppercase tracking-widest"
+                >Funcionários</span
+              >
+              <h3 class="text-4xl font-black text-primary mt-2" id="totalM1">
+                0
+              </h3>
+            </div>
+            <div
+              class="bg-white border border-border-light p-6 rounded-lg relative overflow-hidden group"
+            >
+              <span
+                class="text-xs font-bold text-text-muted uppercase tracking-widest"
+                >Rend. Tributáveis</span
+              >
+              <h3 class="text-4xl font-black text-primary mt-2" id="totalM2">
+                R$ 0,00
+              </h3>
+            </div>
+            <div
+              class="bg-white border border-border-light p-6 rounded-lg relative overflow-hidden group"
+            >
+              <span
+                class="text-xs font-bold text-text-muted uppercase tracking-widest"
+                >IRRF Retido</span
+              >
+              <h3 class="text-4xl font-black text-accent mt-2" id="totalM3">
+                R$ 0,00
+              </h3>
+            </div>
+          </div>
+
+          <!-- Upload Section -->
+          <div
+            id="uploadSection"
+            class="bg-white border-2 border-dashed border-accent/30 rounded-lg p-16 transition-all hover:bg-slate-50 hover:border-accent group relative animate-reveal"
+          >
+            <input
+              type="file"
+              id="fileInput"
+              accept=".pdf"
+              onchange="handleFile(this.files[0])"
+              class="absolute inset-0 opacity-0 cursor-pointer z-10"
+            />
+            <div
+              class="flex flex-col items-center justify-center text-center space-y-4"
+            >
+              <div
+                class="size-20 rounded-full bg-sky-50 text-accent flex items-center justify-center border border-sky-100"
+              >
+                <span class="material-symbols-outlined text-4xl"
+                  >upload_file</span
+                >
+              </div>
+              <div>
+                <h3 class="text-xl font-bold">Importar DIRF (dirf.pdf)</h3>
+                <p class="text-text-muted text-sm">
+                  Arraste o arquivo ou clique para selecionar
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Informe Display -->
+          <div id="informeDisplay" class="hidden animate-reveal">
+            <div class="flex justify-between items-center mb-6">
+              <h2 id="informeTitle" class="text-xl font-bold text-primary">
+                Detalhamento Consolidado
+              </h2>
+              <span
+                id="informeBadge"
+                class="bg-primary text-white text-[10px] font-bold px-2 py-1 uppercase rounded"
+                >Todos os Funcionários</span
+              >
+            </div>
+
+            <!-- Section 3 -->
+            <div class="informe-box">
+              <div class="section-title">
+                3. RENDIMENTOS TRIBUTÁVEIS, DEDUÇÕES E IMPOSTO RETIDO NA FONTE
+              </div>
+              <div id="sec3Content" class="space-y-1">
+                <!-- Items here -->
+              </div>
+            </div>
+
+            <!-- Section 4 -->
+            <div class="informe-box">
+              <div class="section-title">
+                4. RENDIMENTOS ISENTOS E NÃO TRIBUTÁVEIS
+              </div>
+              <div id="sec4Content" class="space-y-1">
+                <!-- Items here -->
+              </div>
+            </div>
+
+            <!-- Section 5 -->
+            <div class="informe-box">
+              <div class="section-title">
+                5. RENDIMENTOS SUJEITOS À TRIBUTAÇÃO EXCLUSIVA (RENDIMENTO
+                LÍQUIDO)
+              </div>
+              <div id="sec5Content" class="space-y-1">
+                <!-- Items here -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      let db = {
+        empresa: "",
+        funcionarios: [],
+        consolidado: {
+          sec3: {},
+          sec4: {},
+          sec5: {},
+        },
+      };
+
+      let pdfSourceBytes = null;
+      let paginaParaFuncionario = []; // info do funcionário por página do PDF
+
+      const SEC_LABELS = {
+        sec3: {
+          "01": "Total dos rendimentos (inclusive férias)",
+          "02": "Contribuição previdenciária oficial",
+          "03": "Contribuição a entidades de previdência complementar",
+          "04": "Pensão alimentícia",
+          "05": "Imposto sobre a renda retido na fonte",
+        },
+        sec4: {
+          "01": "Parcela isenta proventos de aposentadoria (65+)",
+          "02": "Parcela isenta do 13º salário (65+)",
+          "03": "Diárias e ajudas de custo",
+          "04": "Pensão e proventos moléstia grave/acidente",
+          "05": "Lucros e dividendos pagos por PJ",
+          "06": "Valores pagos ao titular/sócio ME/EPP",
+          "07": "Indenizações por rescisão / PDV / Acidente",
+          "08": "Juros de mora recebidos",
+          "09": "Outros (especificar)",
+        },
+        sec5: {
+          "01": "Décimo terceiro salário",
+          "02": "Imposto sobre a renda retido sobre o 13º salário",
+          "03": "Outros",
+        },
+      };
+
+      function parseBrl(str) {
+        if (!str) return 0;
+        let clean = str.replace(/[^\d,.-]/g, "");
+        if (clean.includes(".") && clean.includes(",")) {
+          clean = clean.replace(/\./g, "").replace(",", ".");
+        } else if (clean.includes(",")) {
+          clean = clean.replace(",", ".");
+        }
+        const val = parseFloat(clean);
+        return isNaN(val) ? 0 : val;
+      }
+
+      function formatBrl(val) {
+        return val.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
+      }
+
+      async function handleFile(file) {
+        if (!file) return;
+        showLoading(true, "Lendo PDF...");
+        const reader = new FileReader();
+        reader.onload = async function () {
+          try {
+            pdfSourceBytes = new Uint8Array(this.result);
+            const pdf = await pdfjsLib.getDocument(pdfSourceBytes).promise;
+
+            db.funcionarios = [];
+            db.consolidado = { sec3: {}, sec4: {}, sec5: {} };
+            paginaParaFuncionario = [];
+
+            for (let i = 1; i <= pdf.numPages; i++) {
+              showLoading(true, `Processando página ${i}/${pdf.numPages}...`);
+              const page = await pdf.getPage(i);
+              const textContent = await page.getTextContent();
+              const lines = groupTextByLines(textContent.items);
+              const info = processPageLines(lines);
+              paginaParaFuncionario.push(info);
+            }
+
+            showLoading(false);
+            renderDashboard();
+          } catch (e) {
+            console.error(e);
+            alert("Erro ao ler PDF: " + e.message);
+            showLoading(false);
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      }
+
+      function groupTextByLines(items) {
+        const lines = [];
+        const tolerance = 3;
+        items.sort((a, b) => {
+          if (Math.abs(a.transform[5] - b.transform[5]) > tolerance)
+            return b.transform[5] - a.transform[5];
+          return a.transform[4] - b.transform[4];
+        });
+        let currentLine = [];
+        let currentY = null;
+        items.forEach((item) => {
+          if (
+            currentY === null ||
+            Math.abs(item.transform[5] - currentY) > tolerance
+          ) {
+            if (currentLine.length > 0) lines.push(currentLine.join(" "));
+            currentLine = [];
+            currentY = item.transform[5];
+          }
+          currentLine.push(item.str);
+        });
+        if (currentLine.length > 0) lines.push(currentLine.join(" "));
+        return lines;
+      }
+
+      function processPageLines(lines) {
+        const textFull = lines.join(" ");
+        let foundCpf = null;
+        let foundNome = "DESCONHECIDO";
+
+        // 1. Identificação de Empresa (Busca Global por CNPJ)
+        if (!db.empresa) {
+          const cnpjM = textFull.match(
+            /(\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2})\s+([A-Z0-9\s.-]{5,})/i,
+          );
+          if (cnpjM) db.empresa = cnpjM[2].split("  ")[0].trim();
+        }
+
+        // 2. Identificação de Beneficiário (Busca Global por CPF)
+        const cpfM = textFull.match(
+          /(\d{3}\.\d{3}\.\d{3}-\d{2})\s+([A-Z\s.-]{5,})/i,
+        );
+        if (cpfM) {
+          foundCpf = cpfM[1].trim();
+          foundNome = cpfM[2].split("  ")[0].trim();
+        }
+
+        if (!foundCpf) return null;
+
+        let funcionario = db.funcionarios.find((f) => f.cpf === foundCpf);
+        if (!funcionario) {
+          funcionario = {
+            cpf: foundCpf,
+            nome: foundNome,
+            sec3: {},
+            sec4: {},
+            sec5: {},
+          };
+          db.funcionarios.push(funcionario);
+        }
+
+        // 3. Extração de Valores por Seções
+        let currentSec = null;
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i].trim();
+
+          if (
+            line.includes("3. Rendimentos Tributáveis") ||
+            line.match(/^3\./)
+          ) {
+            currentSec = "sec3";
+            continue;
+          }
+          if (line.includes("4. Rendimentos Isentos") || line.match(/^4\./)) {
+            currentSec = "sec4";
+            continue;
+          }
+          if (line.includes("5. Rendimentos Sujeitos") || line.match(/^5\./)) {
+            currentSec = "sec5";
+            continue;
+          }
+          if (
+            line.includes("6. Informações Complementares") ||
+            line.match(/^6\./)
+          ) {
+            currentSec = null;
+            continue;
+          }
+
+          if (currentSec) {
+            // Procura linhas que começam com "N. " (Ex: 1., 05.)
+            const itemMatch = line.match(/^(\d{1,2})\.\s+/);
+            if (itemMatch) {
+              const num = itemMatch[1].padStart(2, "0");
+
+              // Tenta pegar o valor monetário NO FINAL da mesma linha
+              // Ignora pontos decorativos e pega o último grupo de números/vírgula
+              let valStr = "";
+              const moneyRegex = /([\d\.,-]+)$/;
+              const matchLine = line.match(moneyRegex);
+
+              if (matchLine && matchLine[1].includes(",")) {
+                valStr = matchLine[1];
+              } else if (i + 1 < lines.length) {
+                // Se não achou na linha, olha a próxima (pode estar quebrada)
+                const nextLine = lines[i + 1].trim();
+                const nextMatch = nextLine.match(/^([\d\.,-]+)$/);
+                if (nextMatch) valStr = nextMatch[1];
+              }
+
+              if (valStr) {
+                const val = parseBrl(valStr);
+                // Verifica se capturou um valor válido e não o próprio número do item
+                if (valStr !== num && val !== 0) {
+                  funcionario[currentSec][num] =
+                    (funcionario[currentSec][num] || 0) + val;
+                  db.consolidado[currentSec][num] =
+                    (db.consolidado[currentSec][num] || 0) + val;
+                }
+              }
+            }
+          }
+        }
+        return { cpf: foundCpf, nome: foundNome };
+      }
+
+      function updateConsolidado(f) {
+        ["sec3", "sec4", "sec5"].forEach((sec) => {
+          for (let k in f[sec]) {
+            db.consolidado[sec][k] = (db.consolidado[sec][k] || 0) + f[sec][k];
+          }
+        });
+      }
+
+      function showLoading(show, msg) {
+        const el = document.getElementById("loading");
+        const txt = document.getElementById("loadingText");
+        if (show) {
+          el.classList.remove("hidden");
+          el.classList.add("flex");
+          setTimeout(() => el.classList.add("opacity-100"), 10);
+          txt.innerText = msg;
+        } else {
+          el.classList.remove("opacity-100");
+          setTimeout(() => el.classList.add("hidden"), 300);
+        }
+      }
+
+      function renderDashboard(filter = "") {
+        const upload = document.getElementById("uploadSection");
+        const display = document.getElementById("informeDisplay");
+        const btnZip = document.getElementById("btnZip");
+
+        upload.classList.add("hidden");
+        display.classList.remove("hidden");
+        if (pdfSourceBytes) btnZip.classList.remove("hidden");
+
+        const empresaEl = document.getElementById("nomeEmpresaDisplay");
+        empresaEl.innerHTML = `<span class="text-[10px] font-bold text-text-muted tracking-widest uppercase">Empresa</span> <span class="text-xs font-bold text-primary bg-sky-50 px-2.5 py-1 rounded border border-sky-100">${db.empresa || "NÃO IDENTIFICADA"}</span>`;
+
+        let dataToShow = db.consolidado;
+        let title = "Detalhamento Consolidado";
+        let badge = "Todos os Funcionários";
+        let totalCount = db.funcionarios.length;
+
+        if (filter) {
+          const filtered = db.funcionarios.find(
+            (f) =>
+              f.nome.toLowerCase().includes(filter.toLowerCase()) ||
+              f.cpf.includes(filter),
+          );
+          if (filtered) {
+            dataToShow = filtered;
+            title = filtered.nome;
+            badge = "CPF: " + filtered.cpf;
+            totalCount = 1;
+          }
+        }
+
+        document.getElementById("informeTitle").innerText = title;
+        document.getElementById("informeBadge").innerText = badge;
+
+        renderSection("sec3Content", "sec3", dataToShow.sec3);
+        renderSection("sec4Content", "sec4", dataToShow.sec4);
+        renderSection("sec5Content", "sec5", dataToShow.sec5);
+
+        // Metrics
+        document.getElementById("totalM1").innerText = totalCount;
+        document.getElementById("totalM2").innerText = formatBrl(
+          dataToShow.sec3["01"] || 0,
+        );
+        document.getElementById("totalM3").innerText = formatBrl(
+          dataToShow.sec3["05"] || 0,
+        );
+      }
+
+      function renderSection(id, secKey, data) {
+        const container = document.getElementById(id);
+        container.innerHTML = "";
+
+        const labels = SEC_LABELS[secKey];
+        for (let k in labels) {
+          const val = data[k] || 0;
+          const row = document.createElement("div");
+          row.className = "item-row";
+          row.innerHTML = `
+            <span class="text-sm font-medium text-text-muted">${parseInt(k)}. ${labels[k]}</span>
+            <span class="text-sm font-bold text-text-main">${formatBrl(val)}</span>
+          `;
+          container.appendChild(row);
+        }
+      }
+
+      function handleSearch(val) {
+        renderDashboard(val);
+      }
+
+      function limparDados() {
+        if (confirm("Deseja mesmo limpar os dados atuais?")) {
+          location.reload();
+        }
+      }
+
+      function exportExcel() {
+        if (!db.funcionarios.length) return alert("Nenhum dado para exportar.");
+        const wb = XLSX.utils.book_new();
+        const consData = [["ITEM", "DESCRIÇÃO", "VALOR TOTAL"]];
+        ["sec3", "sec4", "sec5"].forEach((sec) => {
+          consData.push([sec.toUpperCase(), "", ""]);
+          for (let k in SEC_LABELS[sec]) {
+            consData.push([k, SEC_LABELS[sec][k], db.consolidado[sec][k] || 0]);
+          }
+        });
+        XLSX.utils.book_append_sheet(
+          wb,
+          XLSX.utils.aoa_to_sheet(consData),
+          "Consolidado",
+        );
+        const funcData = [["NOME", "CPF", "SEC", "ITEM", "VALOR"]];
+        db.funcionarios.forEach((f) => {
+          ["sec3", "sec4", "sec5"].forEach((sec) => {
+            for (let k in f[sec]) {
+              if (f[sec][k] !== 0)
+                funcData.push([f.nome, f.cpf, sec, k, f[sec][k]]);
+            }
+          });
+        });
+        XLSX.utils.book_append_sheet(
+          wb,
+          XLSX.utils.aoa_to_sheet(funcData),
+          "Por Funcionário",
+        );
+        XLSX.writeFile(wb, `Informe_DIRF_${db.empresa || "Export"}.xlsx`);
+      }
+
+      async function downloadIndividualPDFsZip() {
+        if (!pdfSourceBytes || paginaParaFuncionario.length === 0) {
+          alert("Nenhum dado de PDF disponível para separar.");
+          return;
+        }
+        showLoading(true, "Iniciando separação dos PDFs...");
+        try {
+          const zip = new JSZip();
+          const { PDFDocument } = PDFLib;
+          const mainPdfDoc = await PDFDocument.load(pdfSourceBytes);
+          const funcionariosMap = {};
+          paginaParaFuncionario.forEach((info, index) => {
+            if (info && info.cpf) {
+              if (!funcionariosMap[info.cpf]) {
+                funcionariosMap[info.cpf] = { nome: info.nome, pages: [] };
+              }
+              funcionariosMap[info.cpf].pages.push(index);
+            }
+          });
+          const cpfs = Object.keys(funcionariosMap);
+          let count = 0;
+          for (const cpf of cpfs) {
+            count++;
+            const func = funcionariosMap[cpf];
+            showLoading(
+              true,
+              `Criando PDF de ${func.nome} (${count}/${cpfs.length})...`,
+            );
+            const newPdfDoc = await PDFDocument.create();
+            const copiedPages = await newPdfDoc.copyPages(
+              mainPdfDoc,
+              func.pages,
+            );
+            copiedPages.forEach((page) => newPdfDoc.addPage(page));
+            const pdfBytes = await newPdfDoc.save();
+            const fileName = `${func.nome.replace(/[/\\?%*:|"<>]/g, "-")}.pdf`;
+            zip.file(fileName, pdfBytes);
+          }
+          showLoading(true, "Gerando arquivo ZIP...");
+          const zipBlob = await zip.generateAsync({ type: "blob" });
+          const zipName = `${(db.empresa || "Empresa").replace(/[/\\?%*:|"<>]/g, "-")}.zip`;
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(zipBlob);
+          link.download = zipName;
+          link.click();
+          showLoading(false);
+        } catch (error) {
+          console.error(error);
+          alert("Erro ao criar ZIP: " + error.message);
+          showLoading(false);
+        }
+      }
+    </script>
+  </body>
+</html>

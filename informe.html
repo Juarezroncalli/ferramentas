@@ -1016,9 +1016,13 @@
                 lineStr.startsWith(m.replace("°", "º")),
             );
             if (mesMatch && currentCpf) {
+              // Pular o primeiro token (rótulo do mês) e filtrar apenas
+              // tokens PURAMENTE numéricos (sem letras). Isso evita que
+              // "13" do rótulo "13° Salário" vaze como valor quando o PDF
+              // separa o texto em múltiplos tokens.
               const rawValues = lines[i].slice(1);
               const numericValues = rawValues.filter(
-                (v) => /[\d\.,]+/.test(v) && v.trim().length > 0,
+                (v) => /^\s*[\d.,]+\s*$/.test(v) && v.trim().length > 0,
               );
               if (numericValues.length >= 8) {
                 for (let col = 0; col < 8; col++) {
