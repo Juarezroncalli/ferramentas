@@ -1,6 +1,39 @@
 <!doctype html>
 <html lang="pt-BR">
   <head>
+    <script>
+      // Desabilita o clique direito
+      document.addEventListener("contextmenu", (event) =>
+        event.preventDefault(),
+      );
+
+      // Desabilita atalhos de teclado comuns para desenvolvedores
+      document.onkeydown = function (e) {
+        if (e.keyCode == 123) return false; // F12
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 73) return false; // Ctrl+Shift+I
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 74) return false; // Ctrl+Shift+J
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 67) return false; // Ctrl+Shift+C
+        if (e.ctrlKey && e.keyCode == 85) return false; // Ctrl+U
+        if (e.ctrlKey && e.keyCode == 83) return false; // Ctrl+S
+      };
+    </script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-6XKND47T4H"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-6XKND47T4H", {
+        anonymize_ip: true,
+        allow_google_signals: false,
+        allow_ad_personalization_signals: false,
+      });
+    </script>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>DIRF Master</title>
