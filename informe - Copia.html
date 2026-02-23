@@ -220,114 +220,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Modal Detalhamento Mensal -->
-      <div
-        id="monthModal"
-        class="fixed inset-0 z-[200] hidden flex-col items-center justify-center bg-text-main/30 backdrop-blur-md transition-opacity duration-300 opacity-0"
-      >
-        <div
-          class="bg-white border border-border-light rounded-xl shadow-2xl max-w-6xl w-full flex flex-col transform scale-95 transition-transform duration-300 max-h-[85vh] mx-4"
-          id="monthModalContent"
-        >
-          <div
-            class="p-6 border-b border-border-light flex justify-between items-center bg-slate-50 rounded-t-xl"
-          >
-            <div>
-              <h2 id="monthModalTitle" class="text-xl font-bold text-primary">
-                Detalhamento
-              </h2>
-              <p
-                class="text-xs text-text-muted font-bold uppercase tracking-widest mt-1"
-              >
-                Beneficiários e Totais do Mês
-              </p>
-            </div>
-            <button
-              onclick="closeMonthModal()"
-              class="p-2 hover:bg-slate-200 rounded-full transition-colors"
-            >
-              <span class="material-symbols-outlined">close</span>
-            </button>
-          </div>
-
-          <div class="overflow-auto flex-1 p-4 custom-scrollbar">
-            <table
-              class="w-full border-collapse text-xs font-medium tracking-tight"
-            >
-              <thead class="sticky top-0 z-10 bg-white shadow-sm">
-                <tr>
-                  <th
-                    class="p-3 text-left border-b border-r border-border-light text-text-muted font-bold bg-slate-50 sticky left-0 z-20"
-                  >
-                    CPF
-                  </th>
-                  <th
-                    class="p-3 text-left border-b border-r border-border-light text-text-muted font-bold bg-slate-50 sticky left-[100px] z-20 min-w-[180px]"
-                  >
-                    BENEFICIÁRIO
-                  </th>
-                  <th
-                    class="p-3 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50"
-                  >
-                    REND. TRIB.
-                  </th>
-                  <th
-                    class="p-3 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50"
-                  >
-                    DED. SIMP.
-                  </th>
-                  <th
-                    class="p-3 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50"
-                  >
-                    PREV. OFIC.
-                  </th>
-                  <th
-                    class="p-3 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50"
-                  >
-                    PREV. COMP.
-                  </th>
-                  <th
-                    class="p-3 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50"
-                  >
-                    PREV. FAPI
-                  </th>
-                  <th
-                    class="p-3 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50"
-                  >
-                    DEPEND.
-                  </th>
-                  <th
-                    class="p-3 text-right border-b border-r border-border-light text-text-muted font-bold bg-slate-50"
-                  >
-                    PENSÃO
-                  </th>
-                  <th
-                    class="p-3 text-right border-b text-accent font-bold bg-orange-50"
-                  >
-                    IRRF
-                  </th>
-                </tr>
-              </thead>
-              <tbody
-                id="monthModalBody"
-                class="divide-y divide-border-light"
-              ></tbody>
-            </table>
-          </div>
-
-          <div
-            class="p-4 border-t border-border-light bg-slate-50 rounded-b-xl flex justify-end"
-          >
-            <button
-              onclick="closeMonthModal()"
-              class="px-6 py-2 rounded-md text-sm font-bold bg-primary text-white flat-btn shadow-md"
-            >
-              Fechar Visualização
-            </button>
-          </div>
-        </div>
-      </div>
       <!-- Sidebar Navigation -->
       <aside
         class="flex flex-col items-center py-6 w-20 bg-primary border-r border-primary shrink-0 z-50 text-white"
@@ -948,104 +840,6 @@
         }
       }
 
-      function closeMonthModal() {
-        const modal = document.getElementById("monthModal");
-        const content = document.getElementById("monthModalContent");
-
-        modal.classList.add("opacity-0");
-        content.classList.remove("scale-100");
-        content.classList.add("scale-95");
-
-        setTimeout(() => {
-          modal.classList.add("hidden");
-          modal.classList.remove("flex");
-        }, 300);
-      }
-
-      function openMonthDetail(mes) {
-        const modal = document.getElementById("monthModal");
-        const content = document.getElementById("monthModalContent");
-        const title = document.getElementById("monthModalTitle");
-        const tbody = document.getElementById("monthModalBody");
-
-        title.innerText = `Detalhamento: ${mes.toUpperCase()}`;
-        tbody.innerHTML = "";
-
-        modal.classList.remove("hidden");
-        modal.classList.add("flex");
-
-        // Pequeno delay pra ativar a transição
-        setTimeout(() => {
-          modal.classList.remove("opacity-0");
-          content.classList.remove("scale-95");
-          content.classList.add("scale-100");
-        }, 10);
-
-        let foundAny = false;
-        let needsReprocess = false;
-        let monthGrandTotal = Array(8).fill(0);
-
-        Object.keys(detalhesPorFuncionario).forEach((cpf) => {
-          const func = detalhesPorFuncionario[cpf];
-          if (!func.mensal) {
-            needsReprocess = true;
-          } else if (func.mensal[mes]) {
-            foundAny = true;
-            const tr = document.createElement("tr");
-            tr.className = "hover:bg-slate-50 transition-colors group";
-
-            let cellsHtml = `
-              <td class="p-2.5 font-semibold text-text-main border-r border-border-light sticky left-0 bg-white group-hover:bg-slate-50 z-10 transition-colors">${cpf}</td>
-              <td class="p-2.5 font-semibold text-text-main border-r border-border-light sticky left-[100px] bg-white group-hover:bg-slate-50 z-10 transition-colors group-hover:underline cursor-default">${func.nome}</td>
-            `;
-
-            func.mensal[mes].forEach((v, idx) => {
-              let colorClass =
-                idx === 7 ? "text-accent font-bold" : "text-text-main";
-              let bgClass = idx === 7 ? "bg-orange-50/30" : "";
-              cellsHtml += `<td class="p-2.5 text-right border-r border-border-light ${colorClass} ${bgClass}">${formatMoney(v)}</td>`;
-              monthGrandTotal[idx] += v;
-            });
-
-            tr.innerHTML = cellsHtml;
-            tbody.appendChild(tr);
-          }
-        });
-
-        if (foundAny) {
-          // Adiciona Row de Totalizador no final do Modal
-          const trTotal = document.createElement("tr");
-          trTotal.className =
-            "bg-slate-100 sticky bottom-0 z-30 font-bold border-t-2 border-primary/20 shadow-[0_-2px_4px_rgba(0,0,0,0.05)]";
-
-          let tdTotalLabel = `<td colspan="2" class="p-4 font-bold text-primary border-r border-border-light bg-blue-50 sticky left-0 z-40 text-center">TOTAL DO MÊS</td>`;
-          let tdTotalVals = "";
-          monthGrandTotal.forEach((v, idx) => {
-            let colorClass = "text-text-main";
-            let bgClass = "";
-            if (idx === 7) {
-              colorClass = "text-accent font-bold";
-              bgClass = "bg-orange-100";
-            }
-            tdTotalVals += `<td class="p-4 text-right font-bold ${colorClass} ${bgClass}">${formatMoney(v)}</td>`;
-          });
-          trTotal.innerHTML = tdTotalLabel + tdTotalVals;
-          tbody.appendChild(trTotal);
-        } else {
-          if (needsReprocess) {
-            tbody.innerHTML = `<tr><td colspan="10" class="p-12 text-center">
-              <div class="flex flex-col items-center gap-3">
-                <span class="material-symbols-outlined text-4xl text-orange-400">info</span>
-                <p class="text-text-main font-bold">Dados Antigos Detectados</p>
-                <p class="text-xs text-text-muted max-w-sm mx-auto">Para visualizar o detalhamento por funcionário neste mês, você precisa arrastar o arquivo PDF novamente para que o sistema processe as quebras mensais.</p>
-              </div>
-            </td></tr>`;
-          } else {
-            tbody.innerHTML = `<tr><td colspan="10" class="p-10 text-center text-text-muted font-medium italic">Nenhum dado encontrado para este mês (${mes}).</td></tr>`;
-          }
-        }
-      }
-
       function formatMoney(val) {
         if (privacyMode) return "R$ ••••••";
         return val.toLocaleString("pt-BR", {
@@ -1228,7 +1022,6 @@
                 detalhesPorFuncionario[currentCpf] = {
                   nome: nome,
                   totais: Array(8).fill(0),
-                  mensal: {},
                 };
               }
               foundOnPage = { cpf: currentCpf, nome: nome };
@@ -1270,16 +1063,8 @@
                   let mesKey = mesMatch.includes("13")
                     ? "13° Salário"
                     : mesMatch;
-
-                  // Inicializa dados mensais se não existirem
-                  if (!detalhesPorFuncionario[currentCpf].mensal[mesKey]) {
-                    detalhesPorFuncionario[currentCpf].mensal[mesKey] =
-                      Array(8).fill(0);
-                  }
-
                   dadosConsolidados[mesKey][col] += val;
                   detalhesPorFuncionario[currentCpf].totais[col] += val;
-                  detalhesPorFuncionario[currentCpf].mensal[mesKey][col] += val;
                 }
               }
             }
@@ -1397,10 +1182,7 @@
           tr.style.animationDelay = `${delay}ms`;
           delay = Math.min(delay + 20, 300);
 
-          let html = `<td onclick="openMonthDetail('${mes}')" class="p-4 font-semibold text-primary border-r border-border-light bg-white group-hover:bg-blue-50 min-w-[150px] sticky left-0 z-20 transition-colors cursor-pointer hover:underline flex items-center gap-2">
-            <span class="material-symbols-outlined text-[16px] text-primary/50">visibility</span>
-            ${mes.toUpperCase()}
-          </td>`;
+          let html = `<td class="p-4 font-semibold text-text-main border-r border-border-light bg-white group-hover:bg-slate-50 min-w-[150px] sticky left-0 z-20 transition-colors">${mes.toUpperCase()}</td>`;
           vals.forEach((v, idx) => {
             let colorClass = "text-text-main";
             let bgClass = "";
