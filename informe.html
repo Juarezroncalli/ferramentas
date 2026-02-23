@@ -48,6 +48,10 @@
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
       rel="stylesheet"
     />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
@@ -161,6 +165,131 @@
         box-shadow:
           0 4px 6px -1px rgba(30, 64, 175, 0.05),
           0 2px 4px -1px rgba(30, 64, 175, 0.03);
+      }
+
+      /* Estilos para o botão de doação */
+      .donation-float-btn {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        width: auto;
+        height: 40px;
+        padding: 0 16px;
+        border-radius: 30px;
+        background: #ffffff;
+        border: 1px solid theme("colors.primary");
+        box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.12);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        cursor: pointer;
+        z-index: 1000;
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        color: theme("colors.primary");
+        font-family: inherit;
+        font-weight: 600;
+        font-size: 12px;
+      }
+      .donation-float-btn:hover {
+        transform: scale(1.05);
+        background: theme("colors.primary");
+        color: #fff;
+      }
+      @keyframes heartBeat {
+        0% {
+          transform: scale(1);
+        }
+        14% {
+          transform: scale(1.1);
+        }
+        28% {
+          transform: scale(1);
+        }
+        42% {
+          transform: scale(1.1);
+        }
+        70% {
+          transform: scale(1);
+        }
+      }
+      .donation-float-btn i.fa-heart {
+        animation: heartBeat 3s infinite;
+      }
+      .donation-float-btn:hover i.fa-heart {
+        animation: none;
+      }
+
+      .donation-popover {
+        position: fixed;
+        bottom: 75px;
+        right: 24px;
+        width: 280px;
+        background: #ffffff;
+        border: 1px solid theme("colors.border-light");
+        border-radius: theme("borderRadius.xl");
+        box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.12);
+        padding: 16px;
+        z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(10px);
+        transition: all 0.2s ease;
+      }
+      .donation-popover.active {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
+      .donation-popover h4 {
+        margin: 0 0 8px 0;
+        font-size: 13px;
+        font-weight: 600;
+        color: theme("colors.text-main");
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-family: inherit;
+      }
+      .donation-popover p {
+        font-size: 11px;
+        color: theme("colors.text-muted");
+        margin-bottom: 12px;
+        line-height: 1.4;
+      }
+      .pix-key-display {
+        background: theme("colors.background-light");
+        border: 1px dashed theme("colors.border-light");
+        padding: 8px;
+        font-family: monospace;
+        font-size: 10px;
+        color: theme("colors.text-muted");
+        border-radius: theme("borderRadius.md");
+        margin-bottom: 12px;
+        word-break: break-all;
+        text-align: center;
+      }
+      .btn-donate-action {
+        width: 100%;
+        background: theme("colors.primary");
+        color: #fff;
+        border: none;
+        border-radius: theme("borderRadius.md");
+        height: 30px;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: background 0.2s;
+      }
+      .btn-donate-action:hover {
+        filter: brightness(1.1);
+      }
+      .btn-donate-action:active {
+        transform: scale(0.98);
       }
     </style>
   </head>
@@ -1762,6 +1891,82 @@
       document.addEventListener("contextmenu", (event) =>
         event.preventDefault(),
       );
+    </script>
+
+    <div class="donation-popover" id="donationPopover">
+      <h4>
+        <i
+          class="fas fa-mug-hot"
+          style="color: theme(&quot;colors.accent&quot;)"
+        ></i>
+        Café do Desenvolvedor
+      </h4>
+      <p>
+        Este sistema é gratuito e seguro. Contribua via Pix para mantermos as
+        atualizações.
+      </p>
+      <div class="pix-key-display" id="pixKeyContainer"></div>
+      <button
+        class="btn-donate-action"
+        id="btnCopiarPix"
+        onclick="copiarPixKey()"
+      >
+        <i class="fas fa-copy"></i> Copiar Chave Aleatória
+      </button>
+    </div>
+
+    <button
+      class="donation-float-btn"
+      id="btnDonationToggle"
+      onclick="toggleDonationWidget()"
+    >
+      <i class="fas fa-heart" id="iconDonate"></i>
+      <span>Doações</span>
+    </button>
+
+    <script>
+      const MY_PIX_KEY = "553a7d69-3f85-4f42-a8b0-267a6f136fa1";
+      const containerPix = document.getElementById("pixKeyContainer");
+      if (containerPix) {
+        containerPix.innerText = MY_PIX_KEY.substring(0, 32) + "...";
+      }
+      function toggleDonationWidget() {
+        const popover = document.getElementById("donationPopover");
+        const icon = document.getElementById("iconDonate");
+        if (popover.classList.contains("active")) {
+          popover.classList.remove("active");
+          icon.classList.remove("fa-times");
+          icon.classList.add("fa-heart");
+        } else {
+          popover.classList.add("active");
+          icon.classList.remove("fa-heart");
+          icon.classList.add("fa-times");
+        }
+      }
+      function copiarPixKey() {
+        navigator.clipboard.writeText(MY_PIX_KEY).then(() => {
+          const btn = document.getElementById("btnCopiarPix");
+          const originalHTML = btn.innerHTML;
+          btn.style.background = "#22c55e"; // Tailwind green-500
+          btn.innerHTML = `<i class="fas fa-check"></i> Copiado!`;
+          setTimeout(() => {
+            btn.style.background = "";
+            btn.innerHTML = originalHTML;
+          }, 2000);
+        });
+      }
+      document.addEventListener("click", function (event) {
+        const popover = document.getElementById("donationPopover");
+        const btn = document.getElementById("btnDonationToggle");
+        if (!popover || !btn) return;
+        if (
+          !popover.contains(event.target) &&
+          !btn.contains(event.target) &&
+          popover.classList.contains("active")
+        ) {
+          toggleDonationWidget();
+        }
+      });
     </script>
   </body>
 </html>
