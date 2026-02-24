@@ -1,382 +1,698 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Planejamento Tributário 2026 - RIFLON</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
 
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        brand: { 50: '#ecfdf5', 100: '#d1fae5', 500: '#10b981', 600: '#059669', 700: '#047857', 900: '#064e3b' },
-                        dark: { 500: '#6b7280', 700: '#374151', 900: '#111827' }
-                    }
-                }
-            }
-        }
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { sans: ["Inter", "sans-serif"] },
+            colors: {
+              brand: {
+                50: "#ecfdf5",
+                100: "#d1fae5",
+                500: "#10b981",
+                600: "#059669",
+                700: "#047857",
+                900: "#064e3b",
+              },
+              dark: { 500: "#6b7280", 700: "#374151", 900: "#111827" },
+              offwhite: "#faf9f6",
+            },
+          },
+        },
+      };
     </script>
     <style>
-        body { background-color: #f9fafb; }
-        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid #e5e7eb; }
+      body {
+        background-color: #faf9f6;
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid #e5e7eb;
+      }
     </style>
-</head>
-<body class="text-dark-700 antialiased selection:bg-brand-500 selection:text-white">
-
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <i class="fa-solid fa-industry text-brand-600 text-2xl"></i>
-                <h1 class="font-bold text-xl tracking-tight text-dark-900">RIFLON <span class="font-light text-dark-500">Plásticos</span></h1>
-            </div>
-            <span class="bg-brand-50 text-brand-700 px-3 py-1 rounded-full text-sm font-semibold border border-brand-100">Estudo 2026</span>
+  </head>
+  <body
+    class="text-dark-700 antialiased selection:bg-brand-500 selection:text-white"
+  >
+    <header class="bg-offwhite shadow-sm sticky top-0 z-50">
+      <div
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center"
+      >
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-industry text-brand-600 text-2xl"></i>
+          <h1 class="font-bold text-xl tracking-tight text-dark-900">
+            RIFLON
+            <span class="font-light text-dark-500"
+              >Industría e Comércio de Plásticos</span
+            >
+          </h1>
         </div>
+        <span
+          class="bg-brand-50 text-brand-700 px-3 py-1 rounded-full text-sm font-semibold border border-brand-100"
+          >Estudo 2026</span
+        >
+      </div>
     </header>
 
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24" data-aos="fade-up">
-        <div class="text-center max-w-3xl mx-auto mb-12">
-            <h2 class="text-4xl font-bold text-dark-900 mb-4">Planejamento Tributário <span class="text-brand-600">2026</span></h2>
-            <p class="text-xl text-dark-500">Qual regime de tributação é o mais vantajoso para a sua empresa?</p>
+    <section
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24"
+      data-aos="fade-up"
+    >
+      <div class="text-center max-w-3xl mx-auto mb-12">
+        <h2 class="text-4xl font-bold text-dark-900 mb-4">
+          Planejamento Tributário <span class="text-brand-600">2026</span>
+        </h2>
+        <p class="text-xl text-dark-500">
+          Qual regime de tributação é o mais vantajoso para a sua empresa?
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8 items-center">
+        <div class="space-y-6">
+          <div
+            class="glass-card rounded-2xl p-6 shadow-sm border-l-4 border-brand-500"
+          >
+            <p
+              class="text-sm text-dark-500 font-semibold uppercase tracking-wider mb-1"
+            >
+              Faturamento Anual Base
+            </p>
+            <p class="text-3xl font-bold text-dark-900">R$ 5.757.017,56</p>
+          </div>
+          <div
+            class="glass-card rounded-2xl p-6 shadow-sm border-l-4 border-gray-400"
+          >
+            <p
+              class="text-sm text-dark-500 font-semibold uppercase tracking-wider mb-1"
+            >
+              Lucratividade Apurada
+            </p>
+            <p class="text-3xl font-bold text-dark-900">17,17%</p>
+          </div>
         </div>
 
-        <div class="grid md:grid-cols-3 gap-8 items-center">
-            <div class="space-y-6">
-                <div class="glass-card rounded-2xl p-6 shadow-sm border-l-4 border-brand-500">
-                    <p class="text-sm text-dark-500 font-semibold uppercase tracking-wider mb-1">Faturamento Anual Base</p>
-                    <p class="text-3xl font-bold text-dark-900">R$ 5.757.017,56</p>
-                </div>
-                <div class="glass-card rounded-2xl p-6 shadow-sm border-l-4 border-gray-400">
-                    <p class="text-sm text-dark-500 font-semibold uppercase tracking-wider mb-1">Lucratividade Apurada</p>
-                    <p class="text-3xl font-bold text-dark-900">17,17%</p>
-                </div>
+        <div
+          class="glass-card rounded-3xl p-6 shadow-xl md:col-span-2 flex flex-col items-center justify-center relative border-t-4 border-brand-500"
+        >
+          <h3 class="text-lg font-semibold mb-2 text-center">
+            Lucro Real vs. Margem Presumida
+          </h3>
+          <div
+            class="w-full max-w-sm relative transition-transform hover:scale-105 duration-500"
+          >
+            <canvas id="gaugeChart"></canvas>
+            <div class="absolute bottom-4 left-0 right-0 text-center">
+              <span class="text-3xl font-black text-dark-900 tracking-tighter"
+                >17,17%</span
+              ><br />
+              <span
+                class="text-sm font-medium text-dark-500 uppercase tracking-widest"
+                >Lucro Real</span
+              >
             </div>
-
-            <div class="glass-card rounded-2xl p-6 shadow-md md:col-span-2 flex flex-col items-center justify-center relative">
-                <h3 class="text-lg font-semibold mb-2 text-center">Lucro Real vs. Margem Presumida</h3>
-                <div class="w-full max-w-md relative">
-                    <canvas id="gaugeChart"></canvas>
-                    <div class="absolute bottom-0 left-0 right-0 text-center pb-4">
-                        <span class="text-4xl font-bold text-brand-600">17,17%</span><br>
-                        <span class="text-sm text-dark-500">Lucro Real da Empresa</span>
-                    </div>
-                </div>
-                <div class="mt-6 text-center bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <i class="fa-solid fa-circle-info text-brand-600 mb-2 text-xl"></i>
-                    <p class="text-dark-700 text-sm leading-relaxed">
-                        Empresas com lucro acima da margem fixada pelo governo (8%) <strong>normalmente não se beneficiam</strong> da migração para o Lucro Real.
-                    </p>
-                </div>
-            </div>
+          </div>
+          <div
+            class="mt-6 text-center bg-gray-50 p-4 rounded-xl border border-gray-200"
+          >
+            <i class="fa-solid fa-circle-info text-brand-600 mb-2 text-xl"></i>
+            <p class="text-dark-700 text-sm leading-relaxed">
+              Empresas com lucro acima da margem fixada pelo governo (8%)
+              <strong>normalmente não se beneficiam</strong> da migração para o
+              Lucro Real.
+            </p>
+          </div>
         </div>
+      </div>
 
-        <div class="text-center mt-12">
-            <a href="#comparacao" class="inline-flex items-center gap-2 bg-dark-900 hover:bg-brand-600 text-white font-semibold py-4 px-8 rounded-full transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                Ver comparação completa <i class="fa-solid fa-arrow-down"></i>
-            </a>
-        </div>
+      <div class="text-center mt-12">
+        <a
+          href="#comparacao"
+          class="inline-flex items-center gap-2 bg-dark-900 hover:bg-brand-600 text-white font-semibold py-4 px-8 rounded-full transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+        >
+          Ver comparação completa <i class="fa-solid fa-arrow-down"></i>
+        </a>
+      </div>
     </section>
 
-    <section id="comparacao" class="bg-white py-20 border-t border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-3xl font-bold text-center text-dark-900 mb-12" data-aos="fade-up">Comparação Direta de Impostos</h2>
+    <section id="comparacao" class="bg-offwhite py-20 border-t border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2
+          class="text-3xl font-bold text-center text-dark-900 mb-12"
+          data-aos="fade-up"
+        >
+          Comparação Direta de Impostos
+        </h2>
 
-            <div class="grid md:grid-cols-2 gap-8 mb-16">
-                <div class="glass-card rounded-2xl shadow-lg overflow-hidden border-2 border-brand-500 relative" data-aos="fade-right">
-                    <div class="absolute top-0 right-0 bg-brand-500 text-white px-4 py-1 rounded-bl-lg text-sm font-bold">RECOMENDADO</div>
-                    <div class="bg-brand-50 p-6 border-b border-gray-100">
-                        <h3 class="text-2xl font-bold text-dark-900">Lucro Presumido</h3>
-                        <p class="text-sm text-dark-500">Imposto calculado sobre margem fixa de 8%</p>
-                    </div>
-                    <div class="p-6 space-y-4">
-                        <div class="flex justify-between border-b border-gray-100 pb-2"><span class="text-dark-500">IRPJ</span><span class="font-semibold" id="val-iprj-presumido"></span></div>
-                        <div class="flex justify-between border-b border-gray-100 pb-2"><span class="text-dark-500">CSLL</span><span class="font-semibold" id="val-csll-presumido"></span></div>
-                        <div class="flex justify-between border-b border-gray-100 pb-2"><span class="text-dark-500">PIS</span><span class="font-semibold" id="val-pis-presumido"></span></div>
-                        <div class="flex justify-between border-b border-gray-100 pb-2"><span class="text-dark-500">COFINS</span><span class="font-semibold" id="val-cofins-presumido"></span></div>
-                    </div>
-                    <div class="bg-gray-50 p-6 border-t border-gray-100 text-center">
-                        <p class="text-sm text-dark-500 uppercase tracking-wide font-semibold mb-1">Total pago no ano</p>
-                        <p class="text-4xl font-bold text-brand-600" id="total-presumido"></p>
-                    </div>
-                </div>
-
-                <div class="glass-card rounded-2xl shadow-lg overflow-hidden border border-gray-200 opacity-90" data-aos="fade-left">
-                    <div class="bg-gray-100 p-6 border-b border-gray-200">
-                        <h3 class="text-2xl font-bold text-dark-900">Lucro Real</h3>
-                        <p class="text-sm text-dark-500">Imposto calculado sobre o lucro efetivo de 17,17%</p>
-                    </div>
-                    <div class="p-6 space-y-4">
-                        <div class="flex justify-between border-b border-gray-100 pb-2"><span class="text-dark-500">IRPJ</span><span class="font-semibold" id="val-iprj-real"></span></div>
-                        <div class="flex justify-between border-b border-gray-100 pb-2"><span class="text-dark-500">CSLL</span><span class="font-semibold" id="val-csll-real"></span></div>
-                        <div class="flex justify-between border-b border-gray-100 pb-2"><span class="text-dark-500">PIS</span><span class="font-semibold" id="val-pis-real"></span></div>
-                        <div class="flex justify-between border-b border-gray-100 pb-2"><span class="text-dark-500">COFINS</span><span class="font-semibold" id="val-cofins-real"></span></div>
-                    </div>
-                    <div class="bg-gray-50 p-6 border-t border-gray-200 text-center">
-                        <p class="text-sm text-dark-500 uppercase tracking-wide font-semibold mb-1">Total pago no ano</p>
-                        <p class="text-4xl font-bold text-dark-900" id="total-real"></p>
-                    </div>
-                </div>
+        <div class="grid md:grid-cols-2 gap-8 mb-16">
+          <div
+            class="glass-card rounded-2xl shadow-lg overflow-hidden border-2 border-brand-500 relative"
+            data-aos="fade-right"
+          >
+            <div
+              class="absolute top-0 right-0 bg-brand-500 text-white px-4 py-1 rounded-bl-lg text-sm font-bold"
+            >
+              RECOMENDADO
             </div>
-
-            <div class="grid md:grid-cols-3 gap-8" data-aos="fade-up">
-                <div class="md:col-span-2 glass-card rounded-2xl p-6 shadow-sm">
-                    <h4 class="text-center font-semibold text-dark-700 mb-4">Diferença de Carga Tributária Total</h4>
-                    <canvas id="barChart" height="100"></canvas>
-                </div>
-                <div class="glass-card rounded-2xl p-6 shadow-sm flex flex-col justify-center">
-                    <h4 class="text-center font-semibold text-dark-700 mb-4">Composição (Lucro Presumido)</h4>
-                    <canvas id="pieChartPresumido"></canvas>
-                </div>
+            <div class="bg-brand-50 p-6 border-b border-gray-100">
+              <h3 class="text-2xl font-bold text-dark-900">Lucro Presumido</h3>
+              <p class="text-sm text-dark-500">
+                Imposto calculado sobre margem fixa de 8%
+              </p>
             </div>
+            <div class="p-6 space-y-4">
+              <div class="flex justify-between border-b border-gray-100 pb-2">
+                <span class="text-dark-500">IRPJ</span
+                ><span class="font-semibold" id="val-iprj-presumido"></span>
+              </div>
+              <div class="flex justify-between border-b border-gray-100 pb-2">
+                <span class="text-dark-500">CSLL</span
+                ><span class="font-semibold" id="val-csll-presumido"></span>
+              </div>
+              <div class="flex justify-between border-b border-gray-100 pb-2">
+                <span class="text-dark-500">PIS</span
+                ><span class="font-semibold" id="val-pis-presumido"></span>
+              </div>
+              <div class="flex justify-between border-b border-gray-100 pb-2">
+                <span class="text-dark-500">COFINS</span
+                ><span class="font-semibold" id="val-cofins-presumido"></span>
+              </div>
+            </div>
+            <div class="bg-gray-50 p-6 border-t border-gray-100 text-center">
+              <p
+                class="text-sm text-dark-500 uppercase tracking-wide font-semibold mb-1"
+              >
+                Total pago no ano
+              </p>
+              <p
+                class="text-4xl font-bold text-brand-600"
+                id="total-presumido"
+              ></p>
+            </div>
+          </div>
+
+          <div
+            class="glass-card rounded-2xl shadow-lg overflow-hidden border border-gray-200 opacity-90"
+            data-aos="fade-left"
+          >
+            <div class="bg-gray-100 p-6 border-b border-gray-200">
+              <h3 class="text-2xl font-bold text-dark-900">Lucro Real</h3>
+              <p class="text-sm text-dark-500">
+                Imposto calculado sobre o lucro efetivo de 17,17%
+              </p>
+            </div>
+            <div class="p-6 space-y-4">
+              <div class="flex justify-between border-b border-gray-100 pb-2">
+                <span class="text-dark-500">IRPJ</span
+                ><span class="font-semibold" id="val-iprj-real"></span>
+              </div>
+              <div class="flex justify-between border-b border-gray-100 pb-2">
+                <span class="text-dark-500">CSLL</span
+                ><span class="font-semibold" id="val-csll-real"></span>
+              </div>
+              <div class="flex justify-between border-b border-gray-100 pb-2">
+                <span class="text-dark-500">PIS</span
+                ><span class="font-semibold" id="val-pis-real"></span>
+              </div>
+              <div class="flex justify-between border-b border-gray-100 pb-2">
+                <span class="text-dark-500">COFINS</span
+                ><span class="font-semibold" id="val-cofins-real"></span>
+              </div>
+            </div>
+            <div class="bg-gray-50 p-6 border-t border-gray-200 text-center">
+              <p
+                class="text-sm text-dark-500 uppercase tracking-wide font-semibold mb-1"
+              >
+                Total pago no ano
+              </p>
+              <p class="text-4xl font-bold text-dark-900" id="total-real"></p>
+            </div>
+          </div>
         </div>
+
+        <div class="grid md:grid-cols-3 gap-8" data-aos="fade-up">
+          <div class="md:col-span-2 glass-card rounded-2xl p-6 shadow-sm">
+            <h4 class="text-center font-semibold text-dark-700 mb-4">
+              Diferença de Carga Tributária Total
+            </h4>
+            <canvas id="barChart" height="100"></canvas>
+          </div>
+          <div
+            class="glass-card rounded-2xl p-6 shadow-sm flex flex-col justify-center"
+          >
+            <h4 class="text-center font-semibold text-dark-700 mb-4">
+              Composição (Lucro Presumido)
+            </h4>
+            <canvas id="pieChartPresumido"></canvas>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section class="py-20 bg-dark-900 text-white" data-aos="fade-up">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl font-bold mb-8 text-brand-100">Conclusão do Planejamento</h2>
-            
-            <div class="bg-white/10 rounded-3xl p-8 backdrop-blur-sm border border-white/20 mb-10">
-                <p class="text-xl text-gray-300 mb-4">Migrar para o Lucro Real geraria um <strong class="text-red-400">AUMENTO</strong> na carga tributária de:</p>
-                <p class="text-5xl md:text-7xl font-bold text-white mb-4" id="diferenca-valor"></p>
-                <p class="text-gray-400">no ano de 2026.</p>
-            </div>
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-bold mb-8 text-brand-100">
+          Conclusão do Planejamento
+        </h2>
 
-            <div class="max-w-3xl mx-auto text-left space-y-6 bg-dark-700/50 p-6 rounded-2xl">
-                <p class="text-lg leading-relaxed">A empresa possui lucratividade real superior à margem que o governo "presume" que ela tenha.</p>
-                
-                <div>
-                    <div class="flex justify-between text-sm mb-1">
-                        <span>Base de cálculo Presumida (Governo)</span>
-                        <span class="font-bold text-brand-400">8%</span>
-                    </div>
-                    <div class="w-full bg-dark-900 rounded-full h-4">
-                        <div class="bg-brand-500 h-4 rounded-full" style="width: 30%"></div>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="flex justify-between text-sm mb-1">
-                        <span>Base de cálculo Real (Empresa)</span>
-                        <span class="font-bold text-red-400">17,17%</span>
-                    </div>
-                    <div class="w-full bg-dark-900 rounded-full h-4 relative">
-                        <div class="bg-red-500 h-4 rounded-full" style="width: 65%"></div>
-                        <div class="absolute top-0 bottom-0 border-l-2 border-dashed border-white" style="left: 30%"></div>
-                    </div>
-                </div>
-
-                <p class="text-sm text-gray-400 mt-4 border-l-4 border-brand-500 pl-4">
-                    Por isso, no Lucro Real, os impostos passam a incidir sobre um volume muito maior de lucro, tornando o regime desvantajoso.
-                </p>
-            </div>
+        <div
+          class="bg-white/10 rounded-3xl p-8 backdrop-blur-sm border border-white/20 mb-10"
+        >
+          <p class="text-xl text-gray-300 mb-4">
+            Migrar para o Lucro Real geraria um
+            <strong class="text-red-400">AUMENTO</strong> na carga tributária
+            de:
+          </p>
+          <p
+            class="text-5xl md:text-7xl font-bold text-white mb-4"
+            id="diferenca-valor"
+          ></p>
+          <p class="text-gray-400">no ano de 2026.</p>
         </div>
+
+        <div
+          class="max-w-3xl mx-auto text-left space-y-6 bg-dark-700/50 p-6 rounded-2xl"
+        >
+          <p class="text-lg leading-relaxed">
+            A empresa possui lucratividade real superior à margem que o governo
+            "presume" que ela tenha.
+          </p>
+
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span>Base de cálculo Presumida (Governo)</span>
+              <span class="font-bold text-brand-400">8%</span>
+            </div>
+            <div class="w-full bg-dark-900 rounded-full h-4">
+              <div
+                class="bg-brand-500 h-4 rounded-full"
+                style="width: 30%"
+              ></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span>Base de cálculo Real (Empresa)</span>
+              <span class="font-bold text-red-400">17,17%</span>
+            </div>
+            <div class="w-full bg-dark-900 rounded-full h-4 relative">
+              <div class="bg-red-500 h-4 rounded-full" style="width: 65%"></div>
+              <div
+                class="absolute top-0 bottom-0 border-l-2 border-dashed border-white"
+                style="left: 30%"
+              ></div>
+            </div>
+          </div>
+
+          <p
+            class="text-sm text-gray-400 mt-4 border-l-4 border-brand-500 pl-4"
+          >
+            Por isso, no Lucro Real, os impostos passam a incidir sobre um
+            volume muito maior de lucro, tornando o regime desvantajoso.
+          </p>
+        </div>
+      </div>
     </section>
 
     <section class="py-20 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-3xl font-bold text-center text-dark-900 mb-12" data-aos="fade-up">Entenda a Lógica <span class="text-brand-600">em 4 Passos</span></h2>
-            
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition" data-aos="fade-up" data-aos-delay="100">
-                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-box"></i></div>
-                    <h3 class="font-bold text-lg mb-2">O que é Lucro Presumido?</h3>
-                    <p class="text-dark-500 text-sm">O governo "chuta" que seu lucro é de 8% do faturamento e cobra impostos em cima apenas dessa fatia, ignorando seu lucro de verdade.</p>
-                </div>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2
+          class="text-3xl font-bold text-center text-dark-900 mb-12"
+          data-aos="fade-up"
+        >
+          Entenda a Lógica <span class="text-brand-600">em 4 Passos</span>
+        </h2>
 
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition" data-aos="fade-up" data-aos-delay="200">
-                    <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-calculator"></i></div>
-                    <h3 class="font-bold text-lg mb-2">O que é Lucro Real?</h3>
-                    <p class="text-dark-500 text-sm">A contabilidade apura exatamente quanto sobrou no caixa após todas as despesas (no seu caso, 17,17%) e o governo tributa esse valor exato.</p>
-                </div>
-
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition" data-aos="fade-up" data-aos-delay="300">
-                    <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-scale-balanced"></i></div>
-                    <h3 class="font-bold text-lg mb-2">O peso da Lucratividade</h3>
-                    <p class="text-dark-500 text-sm">Se o governo exige imposto sobre 8% no Presumido, mas você lucra 17%, você está legalmente "escondendo" 9% do seu lucro da base do imposto.</p>
-                </div>
-
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition" data-aos="fade-up" data-aos-delay="400">
-                    <div class="w-12 h-12 bg-brand-100 text-brand-600 rounded-xl flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-arrow-right-arrow-left"></i></div>
-                    <h3 class="font-bold text-lg mb-2">Quando vale a pena mudar?</h3>
-                    <p class="text-dark-500 text-sm">O Lucro Real só é vantajoso se a empresa der prejuízo ou tiver um lucro de verdade MUITO pequeno (menor que os 8% presumidos).</p>
-                </div>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div
+            class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition"
+            data-aos="fade-up"
+            data-aos-delay="100"
+          >
+            <div
+              class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl mb-4"
+            >
+              <i class="fa-solid fa-box"></i>
             </div>
+            <h3 class="font-bold text-lg mb-2">O que é Lucro Presumido?</h3>
+            <p class="text-dark-500 text-sm">
+              O governo "chuta" que seu lucro é de 8% do faturamento e cobra
+              impostos em cima apenas dessa fatia, ignorando seu lucro de
+              verdade.
+            </p>
+          </div>
+
+          <div
+            class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition"
+            data-aos="fade-up"
+            data-aos-delay="200"
+          >
+            <div
+              class="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center text-xl mb-4"
+            >
+              <i class="fa-solid fa-calculator"></i>
+            </div>
+            <h3 class="font-bold text-lg mb-2">O que é Lucro Real?</h3>
+            <p class="text-dark-500 text-sm">
+              A contabilidade apura exatamente quanto sobrou no caixa após todas
+              as despesas (no seu caso, 17,17%) e o governo tributa esse valor
+              exato.
+            </p>
+          </div>
+
+          <div
+            class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition"
+            data-aos="fade-up"
+            data-aos-delay="300"
+          >
+            <div
+              class="w-12 h-12 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center text-xl mb-4"
+            >
+              <i class="fa-solid fa-scale-balanced"></i>
+            </div>
+            <h3 class="font-bold text-lg mb-2">O peso da Lucratividade</h3>
+            <p class="text-dark-500 text-sm">
+              Se o governo exige imposto sobre 8% no Presumido, mas você lucra
+              17%, você está legalmente "escondendo" 9% do seu lucro da base do
+              imposto.
+            </p>
+          </div>
+
+          <div
+            class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition"
+            data-aos="fade-up"
+            data-aos-delay="400"
+          >
+            <div
+              class="w-12 h-12 bg-brand-100 text-brand-600 rounded-xl flex items-center justify-center text-xl mb-4"
+            >
+              <i class="fa-solid fa-arrow-right-arrow-left"></i>
+            </div>
+            <h3 class="font-bold text-lg mb-2">Quando vale a pena mudar?</h3>
+            <p class="text-dark-500 text-sm">
+              O Lucro Real só é vantajoso se a empresa der prejuízo ou tiver um
+              lucro de verdade MUITO pequeno (menor que os 8% presumidos).
+            </p>
+          </div>
         </div>
+      </div>
     </section>
 
-    <section class="py-16 bg-white border-t border-gray-200" data-aos="zoom-in">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="bg-dark-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row">
-                
-                <div class="p-8 md:w-1/2 flex flex-col justify-center space-y-6">
-                    <div>
-                        <p class="text-gray-400 text-sm uppercase tracking-wider">Faturamento 2026</p>
-                        <p class="text-2xl font-bold text-white">R$ 5.757.017,56</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-400 text-sm uppercase tracking-wider">Lucratividade</p>
-                        <p class="text-2xl font-bold text-white">17,17%</p>
-                    </div>
-                    <div class="pt-4 border-t border-gray-700">
-                        <div class="flex justify-between text-sm mb-2">
-                            <span class="text-gray-400">Total Presumido:</span>
-                            <span class="text-white font-semibold" id="resumo-presumido"></span>
-                        </div>
-                        <div class="flex justify-between text-sm">
-                            <span class="text-gray-400">Total Real:</span>
-                            <span class="text-red-400 font-semibold" id="resumo-real"></span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-brand-500 p-8 md:w-1/2 flex flex-col items-center justify-center text-center">
-                    <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-4 shadow-lg">
-                        <i class="fa-solid fa-check text-4xl text-brand-500"></i>
-                    </div>
-                    <h3 class="text-white font-bold text-xl mb-2">Melhor Opção para 2026</h3>
-                    <p class="text-4xl font-black text-white shadow-sm">LUCRO PRESUMIDO</p>
-                    <p class="text-brand-100 mt-4 text-sm font-medium">Decisão mais segura e econômica</p>
-                </div>
-
+    <section
+      class="py-16 bg-offwhite border-t border-gray-200"
+      data-aos="zoom-in"
+    >
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div
+          class="bg-dark-900 rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row"
+        >
+          <div class="p-8 md:w-1/2 flex flex-col justify-center space-y-6">
+            <div>
+              <p class="text-gray-400 text-sm uppercase tracking-wider">
+                Faturamento 2025
+              </p>
+              <p class="text-2xl font-bold text-white">R$ 5.757.017,56</p>
             </div>
+            <div>
+              <p class="text-gray-400 text-sm uppercase tracking-wider">
+                Lucratividade
+              </p>
+              <p class="text-2xl font-bold text-white">17,17%</p>
+            </div>
+            <div class="pt-4 border-t border-gray-700">
+              <div class="flex justify-between text-sm mb-2">
+                <span class="text-gray-400">Total Presumido:</span>
+                <span
+                  class="text-white font-semibold"
+                  id="resumo-presumido"
+                ></span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-400">Total Real:</span>
+                <span
+                  class="text-red-400 font-semibold"
+                  id="resumo-real"
+                ></span>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="bg-brand-500 p-8 md:w-1/2 flex flex-col items-center justify-center text-center"
+          >
+            <div
+              class="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-4 shadow-lg"
+            >
+              <i class="fa-solid fa-check text-4xl text-brand-500"></i>
+            </div>
+            <h3 class="text-white font-bold text-xl mb-2">
+              Melhor Opção para 2026
+            </h3>
+            <p class="text-4xl font-black text-white shadow-sm">
+              LUCRO PRESUMIDO
+            </p>
+            <p class="text-brand-100 mt-4 text-sm font-medium">
+              Decisão mais segura e econômica
+            </p>
+          </div>
         </div>
+      </div>
     </section>
 
     <footer class="bg-gray-100 py-8 text-center text-dark-500 text-sm">
-        <p>Apresentação gerada para análise gerencial. Os valores são estimativas projetadas para o exercício fiscal.</p>
+      <p>
+        Apresentação gerada para análise gerencial. Os valores são estimativas
+        projetadas para o exercício fiscal.
+      </p>
     </footer>
 
     <script>
-        // Inicializar AOS (Animações)
-        AOS.init({ duration: 800, once: true });
+      // Inicializar AOS (Animações)
+      AOS.init({ duration: 800, once: true });
 
-        // Dados base (Valores do banco de dados/estudo)
-        const dados = {
-            presumido: { irpj: 112576.67, csll: 70121.30, pis: 30118.79, cofins: 139009.80 },
-            real: { irpj: 245231.44, csll: 96923.32, pis: 41362.68, cofins: 190519.03 }
-        };
+      // Dados base (Valores do banco de dados/estudo)
+      const dados = {
+        presumido: {
+          irpj: 112576.67,
+          csll: 70121.3,
+          pis: 30118.79,
+          cofins: 139009.8,
+        },
+        real: {
+          irpj: 245231.44,
+          csll: 96923.32,
+          pis: 41362.68,
+          cofins: 190519.03,
+        },
+      };
 
-        // Cálculos Totais
-        const totalPresumido = Object.values(dados.presumido).reduce((a, b) => a + b, 0);
-        const totalReal = Object.values(dados.real).reduce((a, b) => a + b, 0);
-        const diferenca = totalReal - totalPresumido;
+      // Cálculos Totais
+      const totalPresumido = Object.values(dados.presumido).reduce(
+        (a, b) => a + b,
+        0,
+      );
+      const totalReal = Object.values(dados.real).reduce((a, b) => a + b, 0);
+      const diferenca = totalReal - totalPresumido;
 
-        // Formatador de Moeda BR
-        const formatBRL = (valor) => {
-            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
-        };
+      // Formatador de Moeda BR
+      const formatBRL = (valor) => {
+        return new Intl.NumberFormat("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        }).format(valor);
+      };
 
-        // Inserir valores no HTML
-        document.getElementById('val-iprj-presumido').innerText = formatBRL(dados.presumido.irpj);
-        document.getElementById('val-csll-presumido').innerText = formatBRL(dados.presumido.csll);
-        document.getElementById('val-pis-presumido').innerText = formatBRL(dados.presumido.pis);
-        document.getElementById('val-cofins-presumido').innerText = formatBRL(dados.presumido.cofins);
-        document.getElementById('total-presumido').innerText = formatBRL(totalPresumido);
+      // Inserir valores no HTML
+      document.getElementById("val-iprj-presumido").innerText = formatBRL(
+        dados.presumido.irpj,
+      );
+      document.getElementById("val-csll-presumido").innerText = formatBRL(
+        dados.presumido.csll,
+      );
+      document.getElementById("val-pis-presumido").innerText = formatBRL(
+        dados.presumido.pis,
+      );
+      document.getElementById("val-cofins-presumido").innerText = formatBRL(
+        dados.presumido.cofins,
+      );
+      document.getElementById("total-presumido").innerText =
+        formatBRL(totalPresumido);
 
-        document.getElementById('val-iprj-real').innerText = formatBRL(dados.real.irpj);
-        document.getElementById('val-csll-real').innerText = formatBRL(dados.real.csll);
-        document.getElementById('val-pis-real').innerText = formatBRL(dados.real.pis);
-        document.getElementById('val-cofins-real').innerText = formatBRL(dados.real.cofins);
-        document.getElementById('total-real').innerText = formatBRL(totalReal);
+      document.getElementById("val-iprj-real").innerText = formatBRL(
+        dados.real.irpj,
+      );
+      document.getElementById("val-csll-real").innerText = formatBRL(
+        dados.real.csll,
+      );
+      document.getElementById("val-pis-real").innerText = formatBRL(
+        dados.real.pis,
+      );
+      document.getElementById("val-cofins-real").innerText = formatBRL(
+        dados.real.cofins,
+      );
+      document.getElementById("total-real").innerText = formatBRL(totalReal);
 
-        document.getElementById('diferenca-valor').innerText = formatBRL(diferenca);
-        
-        document.getElementById('resumo-presumido').innerText = formatBRL(totalPresumido);
-        document.getElementById('resumo-real').innerText = formatBRL(totalReal);
+      document.getElementById("diferenca-valor").innerText =
+        formatBRL(diferenca);
 
-        // Configurações globais do Chart.js
-        Chart.defaults.font.family = "'Inter', sans-serif";
-        Chart.defaults.color = '#6b7280';
+      document.getElementById("resumo-presumido").innerText =
+        formatBRL(totalPresumido);
+      document.getElementById("resumo-real").innerText = formatBRL(totalReal);
 
-        // 1. Gráfico de Velocímetro (Gauge)
-        const ctxGauge = document.getElementById('gaugeChart').getContext('2d');
-        new Chart(ctxGauge, {
-            type: 'doughnut',
-            data: {
-                labels: ['Abaixo da Margem (Vantagem Real)', 'Acima da Margem (Vantagem Presumido)'],
-                datasets: [{
-                    data: [8, 9.17, 82.83], // 8% verde, 9.17% (até 17.17) vermelho, resto cinza
-                    backgroundColor: ['#10b981', '#ef4444', '#e5e7eb'],
-                    borderWidth: 0
-                }]
+      // Configurações globais do Chart.js
+      Chart.defaults.font.family = "'Inter', sans-serif";
+      Chart.defaults.color = "#6b7280";
+
+      // 1. Gráfico de Velocímetro (Gauge)
+      const ctxGauge = document.getElementById("gaugeChart").getContext("2d");
+
+      // Criação de gradiente para o Gauge para trazer mais vida
+      const gradient = ctxGauge.createLinearGradient(0, 0, 400, 0);
+      gradient.addColorStop(0, "#10b981"); // Verde
+      gradient.addColorStop(0.4, "#facc15"); // Amarelo
+      gradient.addColorStop(1, "#ef4444"); // Vermelho
+
+      new Chart(ctxGauge, {
+        type: "doughnut",
+        data: {
+          labels: [
+            "Zona de Vantagem (Real)",
+            "Ponto de Equilíbrio",
+            "Zona de Perda (Vantagem Presumido)",
+          ],
+          datasets: [
+            {
+              data: [8, 0.5, 8.67, 82.83], // 8% verde, 0.5% transição, resto vermelho e cinza
+              backgroundColor: [
+                "#10b981", // Verde (Presumido 8%)
+                "#facc15", // Amarelo (Transição/Equilíbrio)
+                "#ef4444", // Vermelho (Seu Lucro 17.17%)
+                "#f3f4f6", // Cinza (Fundo restante)
+              ],
+              borderWidth: 0,
+              borderRadius: 10,
+              spacing: 0,
             },
-            options: {
-                circumference: 180,
-                rotation: -90,
-                cutout: '75%',
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { enabled: false }
-                }
-            }
-        });
+          ],
+        },
+        options: {
+          circumference: 180,
+          rotation: -90,
+          cutout: "65%", // Diminuir o cutout para "engrossar" a barra
+          responsive: true,
+          maintainAspectRatio: true,
+          aspectRatio: 1.8, // Força o gráfico a preencher melhor a área horizontal
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: false },
+          },
+        },
+      });
 
-        // 2. Gráfico de Barras Comparativo
-        const ctxBar = document.getElementById('barChart').getContext('2d');
-        new Chart(ctxBar, {
-            type: 'bar',
-            data: {
-                labels: ['Lucro Presumido', 'Lucro Real'],
-                datasets: [{
-                    label: 'Total de Impostos no Ano (R$)',
-                    data: [totalPresumido, totalReal],
-                    backgroundColor: ['#10b981', '#6b7280'],
-                    borderRadius: 8
-                }]
+      // 2. Gráfico de Barras Comparativo
+      const ctxBar = document.getElementById("barChart").getContext("2d");
+      new Chart(ctxBar, {
+        type: "bar",
+        data: {
+          labels: ["Lucro Presumido", "Lucro Real"],
+          datasets: [
+            {
+              label: "Total de Impostos no Ano (R$)",
+              data: [totalPresumido, totalReal],
+              backgroundColor: ["#10b981", "#6b7280"],
+              borderRadius: 8,
             },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: { label: (ctx) => formatBRL(ctx.raw) }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { callback: (val) => 'R$ ' + (val/1000) + 'k' }
-                    }
-                }
-            }
-        });
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: { label: (ctx) => formatBRL(ctx.raw) },
+            },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { callback: (val) => "R$ " + val / 1000 + "k" },
+            },
+          },
+        },
+      });
 
-        // 3. Gráfico de Pizza (Composição Presumido)
-        const ctxPie = document.getElementById('pieChartPresumido').getContext('2d');
-        new Chart(ctxPie, {
-            type: 'doughnut',
-            data: {
-                labels: ['IRPJ', 'CSLL', 'PIS', 'COFINS'],
-                datasets: [{
-                    data: [dados.presumido.irpj, dados.presumido.csll, dados.presumido.pis, dados.presumido.cofins],
-                    backgroundColor: ['#047857', '#10b981', '#34d399', '#6ee7b7'],
-                    borderWidth: 2,
-                    borderColor: '#ffffff'
-                }]
+      // 3. Gráfico de Pizza (Composição Presumido)
+      const ctxPie = document
+        .getElementById("pieChartPresumido")
+        .getContext("2d");
+      new Chart(ctxPie, {
+        type: "doughnut",
+        plugins: [ChartDataLabels],
+        data: {
+          labels: ["IRPJ", "CSLL", "PIS", "COFINS"],
+          datasets: [
+            {
+              data: [
+                dados.presumido.irpj,
+                dados.presumido.csll,
+                dados.presumido.pis,
+                dados.presumido.cofins,
+              ],
+              backgroundColor: ["#047857", "#10b981", "#34d399", "#6ee7b7"],
+              borderWidth: 2,
+              borderColor: "#ffffff",
             },
-            options: {
-                responsive: true,
-                cutout: '60%',
-                plugins: {
-                    legend: { position: 'bottom', labels: { boxWidth: 12, usePointStyle: true } },
-                    tooltip: {
-                        callbacks: { label: (ctx) => ' ' + ctx.label + ': ' + formatBRL(ctx.raw) }
-                    }
-                }
-            }
-        });
+          ],
+        },
+        options: {
+          responsive: true,
+          cutout: "60%",
+          plugins: {
+            legend: {
+              display: false,
+            },
+            datalabels: {
+              color: "#fff",
+              font: {
+                weight: "bold",
+                size: 10,
+              },
+              formatter: (value, ctx) => {
+                return ctx.chart.data.labels[ctx.dataIndex];
+              },
+            },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => " " + ctx.label + ": " + formatBRL(ctx.raw),
+              },
+            },
+          },
+        },
+      });
     </script>
-</body>
+  </body>
 </html>
