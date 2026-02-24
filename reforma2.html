@@ -2431,12 +2431,18 @@
                 : isSimples
                   ? "Simples"
                   : "Sem Tag";
-            const novosStr =
-              !isSimples && item.vBcIbsCbs > 0 ? novosTrib.toFixed(2) : "-";
+            const novosStr = isSimples
+              ? "Simples Nacional"
+              : !isSimples && item.vBcIbsCbs > 0
+                ? novosTrib.toFixed(2)
+                : "-";
             const totalStr =
               !isSimples && item.vBcIbsCbs > 0 ? total2027.toFixed(2) : "-";
-            const varStr =
-              !isSimples && item.vBcIbsCbs > 0 ? variacao.toFixed(2) : "-";
+            const varStr = isSimples
+              ? (item.vProd + item.vST).toFixed(2)
+              : !isSimples && item.vBcIbsCbs > 0
+                ? variacao.toFixed(2)
+                : "-";
             csv += `${item.nNF};${emitClean};${item.regimeDesc};${cProdClean};${prodClean};${item.ncm};${item.cfop};${baseStr};${novosStr};${item.vST.toFixed(2)};${totalStr};${varStr}\n`;
           });
           const link = document.createElement("a");
@@ -2520,10 +2526,18 @@
                   : isSimples
                     ? "Simples"
                     : "Sem Tag",
-              "Novos Trib.": !isSimples && item.vBcIbsCbs > 0 ? novosTrib : "-",
+              "Novos Trib.": isSimples
+                ? "Simples Nacional"
+                : !isSimples && item.vBcIbsCbs > 0
+                  ? novosTrib
+                  : "-",
               "ICMS ST": item.vST,
               "TOTAL 2027": !isSimples && item.vBcIbsCbs > 0 ? total2027 : "-",
-              "Var. R$": !isSimples && item.vBcIbsCbs > 0 ? variacao : "-",
+              "Var. R$": isSimples
+                ? item.vProd + item.vST
+                : !isSimples && item.vBcIbsCbs > 0
+                  ? variacao
+                  : "-",
             };
           });
           const wb = XLSX.utils.book_new();
@@ -2788,8 +2802,9 @@
           } else {
             baseDisplay = `<div style="color:var(--data-red); font-weight:bold; font-size:10px; line-height:1.2;"><i class="fas fa-exclamation-triangle"></i> SEM TAGS</div><div style="font-size:9px; color:var(--text-tertiary);">Contate o Dev</div>`;
           }
-          const novosTribDisplay =
-            !isSimples && hasXmlTag && !item.isMonofasico
+          const novosTribDisplay = isSimples
+            ? '<span style="color:var(--data-green); font-size:10px; font-weight:bold;">Simples Nacional</span>'
+            : !isSimples && hasXmlTag && !item.isMonofasico
               ? `<div>${formatMoney(totalFedNovo)}</div><div style="font-size:9px; color:var(--text-tertiary); margin-top:2px;">CBS: ${formatMoney(novoCBS)}<br>IBS: ${formatMoney(novoIBS)}<br><span style="color:var(--text-primary); opacity:0.75">+ ICMS: ${formatMoney(item.vICMS || 0)}</span></div>`
               : item.isMonofasico
                 ? '<span style="color:var(--data-green); font-size:10px; font-weight:bold;">MONOFÁSICO</span>'
@@ -2818,8 +2833,9 @@
             item.vOutro;
           const percVar = custoAnt > 0 ? (variacao / custoAnt) * 100 : 0;
           const percStr = `(${sinal}${Math.abs(percVar).toFixed(1)}%)`;
-          const varDisplay =
-            !isSimples && hasXmlTag && !item.isMonofasico
+          const varDisplay = isSimples
+            ? `<div style="color:var(--data-green)">${formatMoney(item.vProd + item.vST)}</div>`
+            : !isSimples && hasXmlTag && !item.isMonofasico
               ? `<div><span style="${styleVar}">${sinal}${formatMoney(variacao)}</span></div><div style="font-size:10px; font-weight:600; opacity:0.9; ${styleVar}">${percStr}</div><div style="font-size:9px; color:var(--text-tertiary); margin-top:2px;">Custo Ant.: ${formatMoney(custoAnt)}</div>`
               : "-";
           const tr = document.createElement("tr");
