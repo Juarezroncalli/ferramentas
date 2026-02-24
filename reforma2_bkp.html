@@ -1,0 +1,2897 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <script>
+      // Desabilita o clique direito
+      document.addEventListener("contextmenu", (event) =>
+        event.preventDefault(),
+      );
+
+      // Desabilita atalhos de teclado comuns para desenvolvedores
+      document.onkeydown = function (e) {
+        if (e.keyCode == 123) return false; // F12
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 73) return false; // Ctrl+Shift+I
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 74) return false; // Ctrl+Shift+J
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 67) return false; // Ctrl+Shift+C
+        if (e.ctrlKey && e.keyCode == 85) return false; // Ctrl+U
+        if (e.ctrlKey && e.keyCode == 83) return false; // Ctrl+S
+      };
+    </script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-6XKND47T4H"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-6XKND47T4H", {
+        anonymize_ip: true,
+        allow_google_signals: false,
+        allow_ad_personalization_signals: false,
+      });
+    </script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel da Reforma Tributária [Enterprise]</title>
+    <link rel="icon" href="icone.ico" type="image/x-icon" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        /* --- NEXUS THEME (LIGHT MODE) --- */
+        --bg-app: #f2f2f0;
+        --bg-surface: #fafafa;
+        --bg-panel: #fafafa;
+        --bg-sidebar: #fafafa;
+        --bg-input: #f0f2f5;
+        --bg-hover: #fcfcfd;
+        --bg-tooltip: #1e2130;
+
+        --text-primary: #1e2130;
+        --text-secondary: #5e6c84;
+        --text-tertiary: #8f9bb3;
+        --text-inverse: #ffffff;
+
+        --border-subtle: #edf1f7;
+        --border-focus: #887cfd;
+        --border-dashed: #3f3f46;
+
+        --highlight-color: #887cfd;
+        --highlight-bg: rgba(136, 124, 253, 0.25);
+
+        --accent-primary: #5347ce;
+        --accent-glow: rgba(83, 71, 206, 0.2);
+        --accent-surface-hover: rgba(83, 71, 206, 0.05);
+
+        --data-purple: #5347ce;
+        --data-green: #16c8c7;
+        --data-blue: #4896fe;
+        --data-orange: #ffab00;
+        --data-red: #ff5630;
+
+        --badge-green-bg: rgba(22, 200, 199, 0.12);
+        --badge-purple-bg: rgba(83, 71, 206, 0.12);
+        --badge-blue-bg: rgba(72, 150, 254, 0.12);
+        --badge-red-bg: rgba(255, 86, 48, 0.12);
+        --badge-orange-bg: rgba(255, 171, 0, 0.12);
+        --badge-neutral-bg: #f7f9fc;
+
+        --radius-sm: 8px;
+        --radius-md: 16px;
+        --radius-lg: 24px;
+
+        --shadow-card: 0px 4px 20px rgba(0, 0, 0, 0.05);
+        --shadow-float: 0px 8px 30px rgba(0, 0, 0, 0.12);
+        --upload-pattern: radial-gradient(#e4e9f2 1px, transparent 1px);
+
+        --font-ui:
+          "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        --font-code: "JetBrains Mono", monospace;
+      }
+
+      [data-theme="dark"] {
+        --bg-app: #0f111a;
+        --bg-surface: #1e2130;
+        --bg-panel: #1e2130;
+        --bg-sidebar: #151725;
+        --bg-input: #151725;
+        --bg-hover: #2a2e42;
+        --bg-tooltip: #2a2e42;
+
+        --text-primary: #ffffff;
+        --text-secondary: #a0aec0;
+        --text-tertiary: #718096;
+        --text-inverse: #0f111a;
+
+        --border-subtle: #2d3748;
+        --border-focus: #887cfd;
+        --border-dashed: #4a5568;
+
+        --accent-primary: #887cfd;
+        --accent-glow: rgba(136, 124, 253, 0.25);
+        --accent-surface-hover: rgba(255, 255, 255, 0.05);
+
+        --data-purple: #887cfd;
+        --data-green: #2dd4bf;
+        --data-blue: #60a5fa;
+        --data-orange: #fbbf24;
+        --data-red: #f87171;
+
+        --badge-green-bg: rgba(45, 212, 191, 0.15);
+        --badge-purple-bg: rgba(136, 124, 253, 0.15);
+        --badge-blue-bg: rgba(96, 165, 250, 0.15);
+        --badge-red-bg: rgba(248, 113, 113, 0.15);
+        --badge-orange-bg: rgba(251, 191, 36, 0.15);
+        --badge-neutral-bg: #2d3748;
+
+        --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        --shadow-float: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
+        --upload-pattern: radial-gradient(#2d3748 1px, transparent 1px);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        outline: none;
+      }
+
+      body {
+        font-family: var(--font-ui);
+        background-color: var(--bg-app);
+        color: var(--text-primary);
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        -webkit-font-smoothing: antialiased;
+        font-size: 13px;
+        transition:
+          background-color 0.3s ease,
+          color 0.3s ease;
+      }
+
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #d1d5db;
+        border-radius: 3px;
+      }
+      [data-theme="dark"] ::-webkit-scrollbar-thumb {
+        background: #3f3f46;
+      }
+
+      .sidebar {
+        width: 80px;
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        background: var(--bg-sidebar);
+        padding: 2rem 1rem;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        color: var(--text-primary);
+        z-index: 2000;
+        transition:
+          width 0.3s ease,
+          background-color 0.3s ease,
+          padding 0.3s ease,
+          box-shadow 0.3s ease;
+        box-shadow: 1px 0 0 var(--border-subtle);
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .sidebar:hover {
+        width: 240px;
+        padding: 2rem 1.2rem;
+        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.05);
+      }
+      [data-theme="dark"] .sidebar:hover {
+        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.4);
+      }
+
+      /* Oculta textos na sidebar minimizada */
+      .sidebar .logo-text,
+      .sidebar .nav-item span,
+      .sidebar > div:not(.logo) {
+        opacity: 0;
+        visibility: hidden;
+        transition:
+          opacity 0.2s ease,
+          visibility 0.2s ease;
+      }
+      .sidebar > div:not(.logo) {
+        white-space: normal;
+      }
+      .sidebar:hover .logo-text,
+      .sidebar:hover .nav-item span,
+      .sidebar:hover > div:not(.logo) {
+        opacity: 1;
+        visibility: visible;
+        transition-delay: 0.1s;
+      }
+      [data-theme="dark"] .sidebar {
+        box-shadow: 1px 0 0 var(--border-subtle);
+        border-right: none;
+      }
+
+      .logo {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 3rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding-left: 0.5rem;
+        letter-spacing: -0.02em;
+        opacity: 1;
+      }
+      .logo-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+      }
+      .logo-subtitle {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        opacity: 0.6;
+        font-family: var(--font-ui);
+        color: var(--text-secondary);
+        text-transform: uppercase;
+      }
+      .logo i {
+        color: var(--data-purple);
+        font-size: 20px;
+        background: var(--badge-purple-bg);
+        padding: 8px;
+        border-radius: 8px;
+      }
+
+      .nav-item {
+        background: transparent;
+        color: var(--text-secondary);
+        padding: 0.8rem 1rem;
+        margin-bottom: 0.4rem;
+        font-weight: 600;
+        border: none;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transition: all 0.2s ease;
+        font-size: 13px;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .nav-item:hover {
+        background-color: var(--bg-hover);
+        color: var(--data-purple);
+      }
+      .nav-item.active {
+        background-color: var(--badge-purple-bg);
+        color: var(--data-purple);
+      }
+
+      .main-content {
+        margin-left: 80px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+        background: var(--bg-app);
+        background-image: linear-gradient(
+          to bottom,
+          var(--bg-surface) 0%,
+          var(--bg-app) 100%
+        );
+        background-size: 100% 400px;
+        background-repeat: no-repeat;
+        transition: background 0.3s ease;
+      }
+      [data-theme="dark"] .main-content {
+        background-image: none;
+      }
+
+      .scroll-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 2rem 3rem;
+        padding-bottom: 100px;
+      }
+
+      .neo-header {
+        background: transparent;
+        border: none;
+        padding: 0;
+        margin-bottom: 1.5rem;
+        box-shadow: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .neo-header h1 {
+        font-weight: 600;
+        font-size: 18px;
+        color: var(--text-primary);
+        letter-spacing: -0.01em;
+      }
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .theme-toggle {
+        background: transparent;
+        border: 1px solid var(--data-purple);
+        color: var(--data-purple);
+        width: auto;
+        padding: 0 14px;
+        height: 32px;
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 600;
+        font-size: 11px;
+      }
+      .theme-toggle:hover {
+        background: var(--data-purple);
+        color: #ffffff;
+        box-shadow: 0 0 10px rgba(98, 91, 246, 0.4);
+      }
+      [data-theme="dark"] .theme-toggle {
+        border-color: var(--data-purple);
+        color: var(--data-purple);
+      }
+      [data-theme="dark"] .theme-toggle:hover {
+        background: var(--data-purple);
+        color: #fff;
+      }
+
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .metric-card {
+        background: var(--bg-surface);
+        border: none;
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-card);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition:
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+      .metric-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-float);
+      }
+      .metric-icon-bg {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        font-size: 18px;
+      }
+      .metric-title {
+        font-weight: 600;
+        font-size: 12px;
+        color: var(--text-tertiary);
+        margin-bottom: 0.5rem;
+      }
+      .metric-value {
+        font-family: var(--font-ui);
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.02em;
+      }
+      .metric-card.purple .metric-value {
+        color: var(--data-purple);
+      }
+      .metric-card.green .metric-value {
+        color: var(--data-green);
+      }
+      .metric-card.blue .metric-value {
+        color: var(--data-blue);
+      }
+      .metric-card.orange .metric-value {
+        color: var(--data-orange);
+      }
+
+      .upload-area {
+        background: var(--bg-panel);
+        border: 1px dashed var(--border-dashed);
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+        background-image: var(--upload-pattern);
+        background-size: 20px 20px;
+      }
+      .upload-area:hover {
+        border-color: var(--data-blue);
+        background-color: var(--bg-hover);
+      }
+      .upload-label {
+        font-weight: 500;
+        font-size: 12px;
+        color: var(--text-primary);
+      }
+      .upload-label i {
+        color: var(--text-tertiary);
+        margin-bottom: 0.5rem;
+        font-size: 20px;
+        transition: color 0.2s;
+      }
+      .upload-area:hover .upload-label i {
+        color: var(--data-blue);
+      }
+      #xmlInput {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      .filters-container {
+        margin-bottom: 2rem;
+      }
+      .filters-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: flex-end;
+      }
+      .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 12px;
+        color: var(--text-secondary);
+      }
+      .neo-input {
+        width: 100%;
+        padding: 10px 16px;
+        border: 1px solid transparent;
+        border-radius: var(--radius-sm);
+        background: var(--bg-input);
+        font-family: var(--font-ui);
+        font-size: 13px;
+        color: var(--text-primary);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        transition: all 0.2s ease;
+      }
+      .neo-input:hover {
+        background: var(--bg-hover);
+      }
+      .neo-input:focus {
+        background: var(--bg-surface);
+        border-color: var(--border-focus);
+        box-shadow: 0 0 0 4px var(--accent-glow);
+      }
+
+      .crt-toggles {
+        display: flex;
+        background: var(--bg-input);
+        padding: 4px;
+        border-radius: var(--radius-sm);
+        height: 40px;
+        gap: 4px;
+      }
+      .btn-toggle {
+        flex: 1;
+        background: transparent;
+        border: none;
+        font-family: var(--font-ui);
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-tertiary);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-toggle:hover {
+        color: var(--text-primary);
+        background: rgba(0, 0, 0, 0.03);
+      }
+      .btn-toggle.active {
+        background: var(--bg-surface);
+        color: var(--data-purple);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      .btn-filter {
+        background: var(--data-purple);
+        color: #ffffff;
+        border: none;
+        padding: 0 24px;
+        font-family: var(--font-ui);
+        font-weight: 600;
+        border-radius: var(--radius-sm);
+        font-size: 13px;
+        cursor: pointer;
+        height: 40px;
+        transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(83, 71, 206, 0.2);
+      }
+      .btn-filter:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(83, 71, 206, 0.3);
+      }
+      .btn-filter:active {
+        transform: translateY(0);
+      }
+
+      .table-container {
+        width: 100%;
+        overflow-x: hidden;
+        border: none;
+        border-radius: var(--radius-md);
+        background: var(--bg-surface);
+        box-shadow: var(--shadow-card);
+        margin-bottom: 2rem;
+        transition: background-color 0.3s;
+      }
+      table {
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-family: var(--font-ui);
+        font-size: 12px;
+      }
+      thead tr {
+        background: var(--bg-surface);
+      }
+      th {
+        color: var(--text-secondary);
+        padding: 16px 12px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        border-bottom: 1px solid var(--border-subtle);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: var(--bg-surface);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      td {
+        padding: 12px 12px;
+        border-bottom: 1px solid var(--border-subtle);
+        vertical-align: middle;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition: background-color 0.2s;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: var(--bg-hover);
+      }
+
+      .money,
+      td.money {
+        text-align: right;
+        font-family: "Roboto", sans-serif;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: -0.02em;
+        color: var(--text-secondary);
+      }
+      .filled-val {
+        color: var(--text-primary);
+        font-weight: 500;
+      }
+      .center {
+        text-align: center;
+      }
+
+      th:nth-child(1) {
+        width: 6%;
+      } /* Nota */
+      th:nth-child(2) {
+        width: 13%;
+      } /* Emitente */
+      th:nth-child(3) {
+        width: 6%;
+      } /* Regime */
+      th:nth-child(4) {
+        width: 7%;
+      } /* Cód. */
+      th:nth-child(5) {
+        width: 14%;
+      } /* Produto */
+      th:nth-child(6) {
+        width: 7%;
+      } /* NCM */
+      th:nth-child(7) {
+        width: 6%;
+      } /* CST/Class */
+      th:nth-child(8) {
+        width: 10%;
+        text-align: right;
+      } /* V.BC */
+      th:nth-child(9) {
+        width: 5%;
+        text-align: right;
+      } /* % CBS */
+      th:nth-child(10) {
+        width: 4%;
+        text-align: center;
+      } /* Red% */
+      th:nth-child(11) {
+        width: 6%;
+        text-align: right;
+      } /* R$ CBS */
+      th:nth-child(12) {
+        width: 5%;
+        text-align: right;
+      } /* % IBS */
+      th:nth-child(13) {
+        width: 4%;
+        text-align: center;
+      } /* Red% */
+      th:nth-child(14) {
+        width: 6%;
+        text-align: right;
+      } /* R$ IBS */
+      th:nth-child(15) {
+        width: 8%;
+        text-align: center;
+      } /* Status */
+
+      .col-prod {
+        font-weight: 500;
+        color: var(--text-primary);
+        display: block;
+        cursor: pointer;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        padding: 4px 2px;
+        margin: -4px -2px;
+        line-height: normal;
+      }
+      .col-prod:hover {
+        color: var(--data-blue);
+        text-decoration: underline;
+      }
+      .col-emit {
+        font-size: 10px;
+        color: var(--text-secondary);
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2px 6px;
+        border-radius: 99px;
+        font-weight: 600;
+        font-size: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        width: auto;
+        min-width: 50px;
+      }
+      .st-ok {
+        background: var(--badge-blue-bg);
+        color: var(--data-blue);
+      }
+      .st-red {
+        background: var(--badge-red-bg);
+        color: var(--data-red);
+      }
+      .st-zero {
+        background: var(--badge-orange-bg);
+        color: var(--data-orange);
+      }
+      .st-none {
+        background: var(--badge-neutral-bg);
+        color: var(--text-tertiary);
+      }
+      .st-mono {
+        background: rgba(22, 200, 199, 0.15);
+        color: var(--data-green);
+        border: 1px solid rgba(22, 200, 199, 0.3);
+      }
+
+      .badge-crt {
+        padding: 2px 5px;
+        border-radius: 4px;
+        font-size: 8px;
+        font-weight: 600;
+        border: 1px solid transparent;
+      }
+      .crt-simples {
+        background: var(--badge-green-bg);
+        color: var(--data-green);
+        border-color: rgba(46, 184, 138, 0.2);
+      }
+      .crt-normal {
+        background: var(--badge-purple-bg);
+        color: var(--data-purple);
+        border-color: rgba(98, 91, 246, 0.2);
+      }
+      [data-theme="dark"] .badge-crt {
+        border-color: transparent;
+      }
+
+      .tag-cst {
+        background: var(--badge-purple-bg);
+        color: var(--data-purple);
+        padding: 2px 6px;
+        border-radius: 99px;
+        font-family: "Roboto", sans-serif;
+        font-size: 9px;
+        font-weight: 700;
+        border: 1px solid rgba(98, 91, 246, 0.2);
+        display: inline-block;
+      }
+      .highlight-neon {
+        color: #fff;
+        background-color: var(--data-purple);
+        text-shadow: 0 0 2px #fff;
+        box-shadow:
+          0 0 5px var(--accent-primary),
+          0 0 10px var(--accent-primary);
+        border-radius: 2px;
+        padding: 0 2px;
+        font-weight: bold;
+      }
+
+      .footer-controls {
+        background: var(--bg-surface);
+        border-top: 1px solid var(--border-subtle);
+        padding: 0 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: fixed;
+        bottom: 0;
+        left: 80px;
+        right: 0;
+        z-index: 100;
+        height: 60px;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.02);
+        transition: all 0.3s ease;
+      }
+      [data-theme="dark"] .footer-controls {
+        background: var(--bg-surface);
+        border-top: 1px solid var(--border-subtle);
+      }
+
+      .status-bar {
+        font-size: 10px;
+        color: var(--text-secondary);
+        font-family: var(--font-code);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .pagination {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+      }
+      .btn-page {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-primary);
+        width: 22px;
+        height: 22px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        transition: all 0.1s;
+      }
+      .btn-page:hover:not(:disabled) {
+        border-color: var(--text-tertiary);
+        background: var(--bg-hover);
+      }
+      .btn-page:active:not(:disabled) {
+        transform: translateY(1px);
+      }
+      .btn-page:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .page-info {
+        font-size: 10px !important;
+        margin: 0 5px;
+      }
+
+      #floatingTooltip {
+        background: var(--bg-tooltip);
+        color: #fff;
+        border: 1px solid var(--border-subtle);
+        border-radius: 6px;
+        padding: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        max-width: 300px;
+        display: none;
+        position: fixed;
+        z-index: 9999;
+      }
+      .tooltip-header {
+        border-bottom: 1px solid #333;
+        margin-bottom: 8px;
+        padding-bottom: 6px;
+        font-size: 11px;
+        color: #9ca3af;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+      #floatingTooltip strong {
+        color: #d1d5db;
+      }
+      #floatingTooltip .break-text {
+        background: #000;
+        color: var(--data-green);
+        padding: 6px;
+        border-radius: 4px;
+        font-family: var(--font-code);
+        font-size: 10px;
+        border: 1px solid #333;
+        margin-top: 10px;
+        white-space: normal;
+        word-break: normal;
+      }
+      .tooltip-hint {
+        color: #6b7280;
+        font-size: 10px;
+        margin-top: 8px;
+        background: transparent;
+        padding: 0;
+      }
+
+      #lgpdModal > div {
+        background: var(--bg-surface) !important;
+        color: var(--text-primary) !important;
+        border: 1px solid var(--border-subtle) !important;
+        box-shadow: var(--shadow-float) !important;
+        border-radius: 16px !important;
+        font-family: var(--font-ui) !important;
+        padding: 3rem !important;
+        text-align: center;
+      }
+      [data-theme="dark"] #lgpdModal h2 {
+        color: var(--text-primary) !important;
+      }
+      [data-theme="dark"] #lgpdModal p {
+        color: var(--text-secondary) !important;
+      }
+      [data-theme="dark"] #lgpdModal ul {
+        background: var(--bg-panel) !important;
+        color: var(--text-secondary) !important;
+      }
+      [data-theme="dark"] #lgpdModal button {
+        background: var(--data-green) !important;
+        color: #000 !important;
+        border: none !important;
+      }
+
+      @media (max-width: 1024px) {
+        .dashboard-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 768px) {
+        body {
+          flex-direction: column;
+          overflow: auto;
+        }
+        .sidebar {
+          width: 100%;
+          height: auto;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0.8rem 1rem;
+          position: relative;
+        }
+        .sidebar:hover {
+          width: 100%;
+          padding: 0.8rem 1rem;
+        }
+        .logo {
+          margin: 0;
+        }
+        .sidebar nav {
+          display: flex;
+          gap: 10px;
+        }
+        .sidebar div:not(.logo):not(nav) {
+          display: none;
+        }
+        .nav-item span {
+          display: none;
+        }
+        .main-content {
+          margin-left: 0;
+          overflow: visible;
+          height: auto;
+        }
+        .scroll-content {
+          padding: 1rem;
+          padding-bottom: 80px;
+        }
+        .dashboard-grid {
+          grid-template-columns: 1fr;
+        }
+        .filters-grid {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .footer-controls {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          padding: 10px;
+          flex-direction: row;
+          height: auto;
+          flex-wrap: nowrap;
+          justify-content: space-between;
+          gap: 10px;
+        }
+        .table-container {
+          overflow-x: auto;
+        }
+        table {
+          table-layout: auto;
+        }
+      }
+
+      @keyframes statusPulse {
+        0% {
+          opacity: 1;
+          color: var(--data-green);
+          text-shadow: 0 0 5px rgba(46, 184, 138, 0.2);
+        }
+        50% {
+          opacity: 0.7;
+          color: var(--data-green);
+          text-shadow: 0 0 10px rgba(46, 184, 138, 0.5);
+        }
+        100% {
+          opacity: 1;
+          color: var(--data-green);
+          text-shadow: 0 0 5px rgba(46, 184, 138, 0.2);
+        }
+      }
+      .status-safe-pulse {
+        animation: statusPulse 2.5s ease-in-out infinite;
+      }
+
+      .donation-float-btn {
+        position: fixed;
+        bottom: 80px;
+        right: 24px;
+        width: auto;
+        height: 40px;
+        padding: 0 16px;
+        border-radius: 30px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-focus);
+        box-shadow: var(--shadow-float);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        cursor: pointer;
+        z-index: 1000;
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        color: var(--data-purple);
+        font-family: var(--font-ui);
+        font-weight: 600;
+        font-size: 12px;
+      }
+      .donation-float-btn:hover {
+        transform: scale(1.05);
+        background: var(--data-purple);
+        color: #fff;
+      }
+      @keyframes heartBeat {
+        0% {
+          transform: scale(1);
+        }
+        14% {
+          transform: scale(1.1);
+        }
+        28% {
+          transform: scale(1);
+        }
+        42% {
+          transform: scale(1.1);
+        }
+        70% {
+          transform: scale(1);
+        }
+      }
+      .donation-float-btn i.fa-heart {
+        animation: heartBeat 3s infinite;
+      }
+      .donation-float-btn:hover i.fa-heart {
+        animation: none;
+      }
+
+      .whatsapp-float-btn {
+        position: fixed;
+        bottom: 80px;
+        right: 145px; /* Ao lado do botão de doação */
+        width: auto;
+        height: 40px;
+        padding: 0 16px;
+        border-radius: 30px;
+        background: var(--bg-surface);
+        border: 1px solid #25d366; /* Verde WhatsApp */
+        box-shadow: var(--shadow-float);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        cursor: pointer;
+        z-index: 1000;
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        color: #25d366;
+        font-family: var(--font-ui);
+        font-weight: 600;
+        font-size: 12px;
+        text-decoration: none;
+      }
+      .whatsapp-float-btn:hover {
+        transform: scale(1.05);
+        background: #25d366;
+        color: #fff;
+      }
+
+      .donation-popover {
+        position: fixed;
+        bottom: 135px;
+        right: 24px;
+        width: 280px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-float);
+        padding: 16px;
+        z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(10px);
+        transition: all 0.2s ease;
+      }
+      .donation-popover.active {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
+      .donation-popover h4 {
+        margin: 0 0 8px 0;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .donation-popover p {
+        font-size: 11px;
+        color: var(--text-secondary);
+        margin-bottom: 12px;
+        line-height: 1.4;
+      }
+      .pix-key-display {
+        background: var(--bg-panel);
+        border: 1px dashed var(--border-dashed);
+        padding: 8px;
+        font-family: var(--font-code);
+        font-size: 10px;
+        color: var(--text-tertiary);
+        border-radius: var(--radius-sm);
+        margin-bottom: 12px;
+        word-break: break-all;
+        text-align: center;
+      }
+      .btn-donate-action {
+        width: 100%;
+        background: var(--data-purple);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius-sm);
+        height: 30px;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: background 0.2s;
+      }
+      .btn-donate-action:hover {
+        filter: brightness(1.1);
+      }
+      .btn-donate-action:active {
+        transform: scale(0.98);
+      }
+
+      .simulation-box {
+        background: var(--bg-interface);
+        border: 1px solid var(--data-purple);
+        border-radius: var(--radius-md);
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        box-shadow: 0 0 15px rgba(83, 71, 206, 0.1);
+      }
+      .sim-title {
+        font-weight: 700;
+        color: var(--data-purple);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+      }
+      .sim-controls {
+        display: flex;
+        gap: 15px;
+        align-items: flex-end;
+        flex: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="lgpdModal"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      "
+    >
+      <div
+        style="
+          background: #fff;
+          padding: 2rem;
+          border: 4px solid #000;
+          box-shadow: 10px 10px 0 #8b5cf6;
+          max-width: 450px;
+          font-family: &quot;Space Grotesk&quot;;
+        "
+      >
+        <h2
+          style="
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            font-weight: 900;
+          "
+        >
+          Aviso de Privacidade
+        </h2>
+        <p style="font-size: 0.9rem; margin-bottom: 1.5rem; color: #555">
+          Para garantir sua segurança, este sistema opera com processamento 100%
+          local.
+        </p>
+        <ul
+          style="
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+            list-style: none;
+            text-align: left;
+            background: #f9f9f9;
+            padding: 1rem;
+            border-radius: 8px;
+            color: #444;
+          "
+        >
+          <li style="margin-bottom: 8px">✅ Dados processados no navegador</li>
+          <li style="margin-bottom: 8px">✅ Sem upload para nuvem</li>
+          <li>✅ Métricas anônimas</li>
+        </ul>
+        <button
+          onclick="document.getElementById('lgpdModal').style.display = 'none'"
+          style="
+            background: #22c55e;
+            color: #000;
+            border: 3px solid #000;
+            padding: 12px 20px;
+            font-weight: 900;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+          "
+        >
+          Acessar Sistema
+        </button>
+      </div>
+    </div>
+
+    <div id="floatingTooltip" onclick="copiarChaveAtual()"></div>
+
+    <aside class="sidebar">
+      <div class="logo">
+        <i class="fas fa-layer-group" style="font-size: 1.2rem"></i>
+        <div class="logo-text">
+          <span
+            >J.RONCALLI
+            <span style="opacity: 0.5; font-weight: 400">PRO</span></span
+          >
+          <span class="logo-subtitle">think different</span>
+        </div>
+      </div>
+      <nav>
+        <div
+          class="nav-item active"
+          id="navAnalise"
+          onclick="desativarModo2027()"
+        >
+          <i class="fas fa-bolt"></i> <span>Análise Turbo</span>
+        </div>
+        <div class="nav-item" onclick="exportToCSV()">
+          <i class="fas fa-file-csv"></i> <span>Exportar CSV</span>
+        </div>
+        <div class="nav-item" onclick="exportToExcel()">
+          <i class="fas fa-file-excel"></i> <span>Exportar Excel</span>
+        </div>
+        <div class="nav-item" onclick="limparTudo()">
+          <i class="fas fa-eraser"></i> <span>Limpar Sessão</span>
+        </div>
+      </nav>
+
+      <div
+        style="
+          margin-top: 2rem;
+          padding: 10px;
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 6px;
+          font-size: 10px;
+          color: #888;
+          line-height: 1.4;
+        "
+      >
+        <strong
+          class="status-safe-pulse"
+          style="display: block; margin-bottom: 4px"
+          >STATUS: SEGURO</strong
+        >
+        Execução isolada no cliente (Client-Side). Seus dados não saem desta
+        máquina.
+      </div>
+
+      <div
+        style="
+          margin-top: auto;
+          font-size: 10px;
+          color: #444;
+          font-family: monospace;
+        "
+      >
+        BUILD v4.2.5-DARK
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="scroll-content">
+        <header class="neo-header">
+          <div><h1>Painel da Reforma Tributária</h1></div>
+          <div class="header-actions">
+            <div style="text-align: right">
+              <span
+                style="
+                  font-size: 11px;
+                  color: var(--text-tertiary);
+                  font-family: var(--font-code);
+                "
+              >
+                <i
+                  class="fas fa-circle"
+                  style="
+                    color: var(--data-green);
+                    font-size: 8px;
+                    margin-right: 5px;
+                  "
+                ></i>
+                SYSTEM ONLINE
+              </span>
+            </div>
+            <button
+              class="btn-filter"
+              style="
+                background: var(--data-purple);
+                color: #fff;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-right: 10px;
+              "
+              onclick="ativarModo2027()"
+            >
+              <i class="fas fa-magic"></i> SIMULADOR 2027/2028
+            </button>
+            <button id="themeToggle" class="theme-toggle" title="Alternar Tema">
+              <i class="fas fa-moon"></i> <span>Alterar Tema</span>
+            </button>
+          </div>
+        </header>
+
+        <div class="dashboard-grid">
+          <div class="metric-card purple">
+            <div
+              class="metric-icon-bg"
+              style="
+                background: var(--badge-purple-bg);
+                color: var(--data-purple);
+              "
+            >
+              <i class="fas fa-cube"></i>
+            </div>
+            <div>
+              <div class="metric-title">Itens Processados</div>
+              <div class="metric-value" id="totalItens">0</div>
+            </div>
+          </div>
+          <div class="metric-card orange">
+            <div
+              class="metric-icon-bg"
+              style="
+                background: var(--badge-orange-bg);
+                color: var(--data-orange);
+              "
+            >
+              <i class="fas fa-piggy-bank"></i>
+            </div>
+            <div>
+              <div class="metric-title">Benefício Fiscal</div>
+              <div class="metric-value" id="totalReducao">0</div>
+            </div>
+          </div>
+          <div class="metric-card blue">
+            <div
+              class="metric-icon-bg"
+              style="background: var(--badge-blue-bg); color: var(--data-blue)"
+            >
+              <i class="fas fa-file-invoice-dollar"></i>
+            </div>
+            <div>
+              <div class="metric-title">CBS Acumulado (R$)</div>
+              <div class="metric-value" id="totalCbs">0,00</div>
+            </div>
+          </div>
+          <div class="metric-card green">
+            <div
+              class="metric-icon-bg"
+              style="
+                background: var(--badge-green-bg);
+                color: var(--data-green);
+              "
+            >
+              <i class="fas fa-hand-holding-dollar"></i>
+            </div>
+            <div>
+              <div class="metric-title">IBS Acumulado (R$)</div>
+              <div class="metric-value" id="totalIbs">0,00</div>
+            </div>
+          </div>
+          <div class="metric-card purple">
+            <div
+              class="metric-icon-bg"
+              style="
+                background: var(--badge-purple-bg);
+                color: var(--data-purple);
+              "
+            >
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div>
+              <div class="metric-title">Conformidade</div>
+              <div class="metric-value" id="percTagsNormal">0%</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="boxSimulacao" class="simulation-box" style="display: none">
+          <div class="sim-title">
+            <i class="fas fa-history"></i> SIMULADOR 2027 (Híbrido)
+          </div>
+          <div class="sim-controls">
+            <div class="form-group" style="margin-bottom: 0">
+              <label>Alíquota CBS Estimada (%)</label>
+              <input
+                type="number"
+                id="aliqCBS2027"
+                class="neo-input"
+                value="8.8"
+                step="0.1"
+                style="width: 120px; border: 1px solid var(--data-purple)"
+              />
+            </div>
+            <div class="form-group" style="margin-bottom: 0">
+              <label>IBS (Fixo 2027)</label>
+              <input
+                type="text"
+                class="neo-input"
+                value="0.1%"
+                disabled
+                style="width: 80px; opacity: 0.6; background: var(--bg-input)"
+              />
+            </div>
+            <div
+              class="form-group"
+              style="margin-bottom: 0; margin-left: 15px; margin-right: auto"
+            >
+              <label style="color: var(--text-secondary)"
+                >Filtro Variação</label
+              >
+              <select
+                id="filtroVariacao2027"
+                class="neo-input"
+                onchange="renderizar2027()"
+                style="
+                  width: 140px;
+                  border: 1px solid var(--border-subtle);
+                  color: var(--text-primary);
+                "
+              >
+                <option value="all">Todos</option>
+                <option value="green">Mais Baratos (-)</option>
+                <option value="red">Mais Caros (+)</option>
+                <option value="neutral">Neutros (=)</option>
+              </select>
+            </div>
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 5px;
+              "
+            >
+              <div style="display: flex; gap: 10px">
+                <button
+                  class="btn-filter"
+                  style="
+                    background: transparent;
+                    border: 1px solid var(--border-dashed);
+                    color: var(--text-primary);
+                  "
+                  onclick="desativarModo2027()"
+                >
+                  VOLTAR
+                </button>
+                <button class="btn-filter" onclick="renderizar2027()">
+                  <i class="fas fa-sync-alt"></i> RECALCULAR
+                </button>
+              </div>
+              <small style="color: var(--text-tertiary); font-size: 10px"
+                >*IBS fixo 0.1% + ICMS/ISS Integral</small
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="upload-area">
+          <input
+            type="file"
+            id="xmlInput"
+            multiple
+            accept=".xml, .zip"
+            onchange="handleFiles(this.files)"
+          />
+          <div class="upload-label">
+            <i class="fas fa-cloud-upload"></i><br />
+            <span style="color: var(--text-primary); font-weight: 600"
+              >Arraste seus arquivos XML ou ZIP</span
+            >
+            <br /><span
+              style="
+                color: var(--text-tertiary);
+                font-size: 11px;
+                font-weight: 400;
+              "
+              >Suporta múltiplos arquivos e lotes grandes</span
+            >
+          </div>
+        </div>
+
+        <div class="filters-container">
+          <div class="filters-grid">
+            <div class="form-group" style="flex: 2">
+              <label>Busca Inteligente (Produto)</label>
+              <input
+                type="text"
+                id="filtroProd"
+                class="neo-input"
+                placeholder="Digite para filtrar..."
+                oninput="debounceFiltro()"
+              />
+            </div>
+            <div class="form-group">
+              <label>NCM</label>
+              <input
+                type="text"
+                id="filtroNcm"
+                class="neo-input"
+                placeholder="0000.00.00"
+                oninput="debounceFiltro()"
+              />
+            </div>
+            <div class="form-group">
+              <label>CFOP</label>
+              <input
+                type="text"
+                id="filtroCfop"
+                class="neo-input"
+                placeholder="5102"
+                oninput="debounceFiltro()"
+              />
+            </div>
+            <div class="form-group" style="min-width: 180px">
+              <label>Regime Tributário</label>
+              <div class="crt-toggles">
+                <button
+                  class="btn-toggle active"
+                  id="btnCrtAll"
+                  onclick="setRegimeFilter('all')"
+                >
+                  Todos
+                </button>
+                <button
+                  class="btn-toggle"
+                  id="btnCrtSimples"
+                  onclick="setRegimeFilter('SIMPLES')"
+                >
+                  Simples
+                </button>
+                <button
+                  class="btn-toggle"
+                  id="btnCrtNormal"
+                  onclick="setRegimeFilter('NORMAL')"
+                >
+                  Normal
+                </button>
+              </div>
+            </div>
+            <div class="form-group" style="min-width: 180px">
+              <label>Status XML</label>
+              <div class="crt-toggles">
+                <button
+                  class="btn-toggle active"
+                  id="btnTagsAll"
+                  onclick="setTagsFilter('all')"
+                >
+                  Todos
+                </button>
+                <button
+                  class="btn-toggle"
+                  id="btnTagsYes"
+                  onclick="setTagsFilter('yes')"
+                >
+                  Com Tags
+                </button>
+                <button
+                  class="btn-toggle"
+                  id="btnTagsNo"
+                  onclick="setTagsFilter('no')"
+                >
+                  Sem Tags
+                </button>
+              </div>
+            </div>
+            <button class="btn-filter" onclick="aplicarFiltros()">
+              FILTRAR
+            </button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table id="tabelaDados">
+            <thead>
+              <tr>
+                <th>Nota/Data</th>
+                <th>Emitente</th>
+                <th>Regime</th>
+                <th>Cód.</th>
+                <th>Produto</th>
+                <th>NCM/CFOP</th>
+                <th>CST/Class</th>
+                <th>V.BC</th>
+                <th class="money">% CBS</th>
+                <th class="center">Red%</th>
+                <th class="money">R$ CBS</th>
+                <th class="money">% IBS</th>
+                <th class="center">Red%</th>
+                <th class="money">R$ IBS</th>
+                <th class="center">Status</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="footer-controls">
+        <div class="status-bar" id="statusMsg">
+          <span style="color: var(--data-green)">●</span> Pronto.
+        </div>
+        <div class="pagination">
+          <button id="btnPrev" class="btn-page" onclick="mudarPagina(-1)">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <span
+            id="pageInfo"
+            class="page-info"
+            style="font-size: 10px; font-weight: 500; margin: 0 8px"
+            >1 / 1</span
+          >
+          <button id="btnNext" class="btn-page" onclick="mudarPagina(1)">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <a
+      href="https://wa.me/5531986423733?text=Ol%C3%A1%2C%20tenho%20uma%20sugest%C3%A3o%20para%20o%20Painel%20Tribut%C3%A1rio"
+      target="_blank"
+      class="whatsapp-float-btn"
+    >
+      <i class="fab fa-whatsapp" style="font-size: 16px"></i>
+      <span>Sugestões</span>
+    </a>
+
+    <div class="donation-popover" id="donationPopover">
+      <h4>
+        <i class="fas fa-mug-hot" style="color: var(--data-orange)"></i> Café do
+        Desenvolvedor
+      </h4>
+      <p>
+        Este sistema é gratuito e seguro. Contribua via Pix para mantermos as
+        atualizações.
+      </p>
+      <div class="pix-key-display" id="pixKeyContainer"></div>
+      <button class="btn-donate-action" onclick="copiarPixKey()">
+        <i class="fas fa-copy"></i> Copiar Chave Aleatória
+      </button>
+    </div>
+
+    <button class="donation-float-btn" onclick="toggleDonationWidget()">
+      <i class="fas fa-heart" id="iconDonate"></i>
+      <span>Doações</span>
+    </button>
+    <script>
+      const themeToggleBtn = document.getElementById("themeToggle");
+      const themeIcon = themeToggleBtn.querySelector("i");
+      function setTheme(theme) {
+        if (theme === "dark") {
+          document.body.setAttribute("data-theme", "dark");
+          themeIcon.className = "fas fa-sun";
+          localStorage.setItem("theme", "dark");
+        } else {
+          document.body.removeAttribute("data-theme");
+          themeIcon.className = "fas fa-moon";
+          localStorage.setItem("theme", "light");
+        }
+      }
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light") {
+        setTheme("light");
+      } else {
+        setTheme("dark");
+      }
+      themeToggleBtn.addEventListener("click", () => {
+        const currentTheme = document.body.getAttribute("data-theme");
+        setTheme(currentTheme === "dark" ? "light" : "dark");
+      });
+    </script>
+
+    <script>
+      let allItems = [];
+      let filteredItems = [];
+      let currentPage = 1;
+      const itemsPerPage = 200;
+      let debounceTimer;
+      let currentKeyToCopy = "";
+      let modo2027 = false;
+      let filterRegime = "all";
+      let filterTags = "all";
+      let simOriginalItems = [];
+      const tooltip = document.getElementById("floatingTooltip");
+
+      function showTooltip(e, idx) {
+        const start = (currentPage - 1) * itemsPerPage;
+        const item = filteredItems[start + idx];
+        if (!item) return;
+        currentKeyToCopy = item.chNFe;
+        tooltip.innerHTML = `
+          <div class="tooltip-header">Detalhes Fiscais</div>
+          <div style="margin-bottom:4px"><strong>Emitente:</strong> ${item.emitNome}</div>
+          <div style="margin-bottom:4px"><strong>CNPJ:</strong> ${item.emitCNPJ}</div>
+          <div style="margin-bottom:4px"><strong>Regime:</strong> ${item.regimeDesc}</div>
+          <div style="margin-bottom:4px"><strong>Produto:</strong> ${item.xProd}</div>
+          <div style="margin-top:10px; margin-bottom: 8px; font-size:10px; color:#666">CHAVE DE ACESSO:</div>
+          <span class="break-text">${item.chNFe}</span>
+          <div class="tooltip-hint"><i class="fas fa-clone"></i> Clique para copiar</div>
+        `;
+        moveTooltip(e);
+        tooltip.style.display = "block";
+      }
+
+      function moveTooltip(e) {
+        let x = e.clientX + 15;
+        let y = e.clientY + 15;
+        if (x + 300 > window.innerWidth) x = e.clientX - 310;
+        if (y + 200 > window.innerHeight) y = e.clientY - 210;
+        tooltip.style.left = x + "px";
+        tooltip.style.top = y + "px";
+      }
+
+      function hideTooltip() {
+        tooltip.style.display = "none";
+      }
+      function copyingVisualFeedback() {
+        const oldBg = tooltip.style.background;
+        tooltip.style.background = "#22c55e";
+        tooltip.style.borderColor = "#22c55e";
+        setTimeout(() => {
+          tooltip.style.background = "";
+          tooltip.style.borderColor = "";
+          hideTooltip();
+        }, 300);
+      }
+
+      function copiarChaveAtual() {
+        if (!currentKeyToCopy || currentKeyToCopy === "---") return;
+        navigator.clipboard.writeText(currentKeyToCopy).then(() => {
+          copyingVisualFeedback();
+          const status = document.getElementById("statusMsg");
+          status.innerHTML =
+            "<span style='color:var(--data-green)'>✓</span> Chave copiada.";
+          setTimeout(() => {
+            status.innerHTML = "Pronto.";
+          }, 2000);
+        });
+      }
+
+      function copyFromProduct(idx) {
+        const start = (currentPage - 1) * itemsPerPage;
+        const item = filteredItems[start + idx];
+        if (item) {
+          currentKeyToCopy = item.chNFe;
+          copiarChaveAtual();
+        }
+      }
+
+      function formatMoney(value) {
+        return parseFloat(value).toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
+      }
+
+      function calcularVarFilter(item, aliqCBS) {
+        let isSimples = item.regimeDesc === "SIMPLES";
+        let hasXmlTag = item.vBcIbsCbs > 0;
+        if (isSimples || !hasXmlTag) return 0;
+        let baseCalculo = item.vBcIbsCbs;
+        let effAliqCBS =
+          item.pRedCBS > 0 ? aliqCBS * (1 - item.pRedCBS / 100) : aliqCBS;
+        let effAliqIBS =
+          item.pRedIBS > 0 ? 0.1 * (1 - item.pRedIBS / 100) : 0.1;
+        let novoCBS = baseCalculo * (effAliqCBS / 100);
+        let novoIBS = baseCalculo * (effAliqIBS / 100);
+        let custoFinal =
+          baseCalculo + novoCBS + novoIBS + item.vST + (item.vICMS || 0);
+        let custoAtual =
+          item.vProd +
+          item.vIPI +
+          item.vST +
+          item.vFrete +
+          item.vSeg +
+          item.vOutro;
+        return custoFinal - custoAtual;
+      }
+
+      function formatPercent(value) {
+        return (
+          parseFloat(value).toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+          }) + "%"
+        );
+      }
+      function debounceFiltro() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          aplicarFiltros();
+        }, 300);
+      }
+      function setRegimeFilter(type) {
+        filterRegime = type;
+        document.getElementById("btnCrtAll").classList.remove("active");
+        document.getElementById("btnCrtSimples").classList.remove("active");
+        document.getElementById("btnCrtNormal").classList.remove("active");
+        if (type === "all")
+          document.getElementById("btnCrtAll").classList.add("active");
+        if (type === "SIMPLES")
+          document.getElementById("btnCrtSimples").classList.add("active");
+        if (type === "NORMAL")
+          document.getElementById("btnCrtNormal").classList.add("active");
+        aplicarFiltros();
+      }
+      function setTagsFilter(type) {
+        filterTags = type;
+        document.getElementById("btnTagsAll").classList.remove("active");
+        document.getElementById("btnTagsYes").classList.remove("active");
+        document.getElementById("btnTagsNo").classList.remove("active");
+        if (type === "all")
+          document.getElementById("btnTagsAll").classList.add("active");
+        if (type === "yes")
+          document.getElementById("btnTagsYes").classList.add("active");
+        if (type === "no")
+          document.getElementById("btnTagsNo").classList.add("active");
+        aplicarFiltros();
+      }
+      function getTagValue(parent, tagName) {
+        const els = parent.getElementsByTagName(tagName);
+        return els.length > 0 ? els[0].textContent : "";
+      }
+      function getTagValueFloat(parent, tagName) {
+        const val = getTagValue(parent, tagName);
+        return val ? parseFloat(val) : 0;
+      }
+
+      async function handleFiles(files) {
+        const status = document.getElementById("statusMsg");
+        status.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processando ${files.length} arquivos...`;
+        const xmlTextList = [];
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          if (file.name.toLowerCase().endsWith(".xml")) {
+            const text = await file.text();
+            xmlTextList.push(text);
+          } else if (file.name.toLowerCase().endsWith(".zip")) {
+            try {
+              status.innerText = `Descompactando ${file.name}...`;
+              await new Promise((r) => setTimeout(r, 10));
+              const zip = await JSZip.loadAsync(file);
+              const promises = [];
+              zip.forEach((relativePath, zipEntry) => {
+                if (
+                  !zipEntry.dir &&
+                  zipEntry.name.toLowerCase().endsWith(".xml")
+                ) {
+                  promises.push(zipEntry.async("string"));
+                }
+              });
+              const extractedXmls = await Promise.all(promises);
+              extractedXmls.forEach((t) => xmlTextList.push(t));
+            } catch (err) {
+              console.error("Erro ao descompactar", file.name, err);
+            }
+          }
+        }
+        status.innerHTML = `<i class="fas fa-cog fa-spin"></i> Lendo estrutura de ${xmlTextList.length} XMLs...`;
+        await new Promise((r) => setTimeout(r, 50));
+        const parser = new DOMParser();
+        const BATCH_SIZE = 100;
+        let processedCount = 0;
+        for (let i = 0; i < xmlTextList.length; i += BATCH_SIZE) {
+          const batch = xmlTextList.slice(i, i + BATCH_SIZE);
+          let currentBatchEmit = "";
+          batch.forEach((xmlText) => {
+            try {
+              const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+              const emitList = xmlDoc.getElementsByTagName("emit");
+              const emit = emitList.length > 0 ? emitList[0] : null;
+              let emitNome = "Desc. no XML";
+              let emitCNPJ = "---";
+              let crtCode = "";
+              if (emit) {
+                emitNome = getTagValue(emit, "xNome") || emitNome;
+                emitCNPJ = getTagValue(emit, "CNPJ") || emitCNPJ;
+                crtCode = getTagValue(emit, "CRT");
+                currentBatchEmit = emitNome;
+              }
+              let regimeDesc = "OUTROS";
+              if (crtCode === "1" || crtCode === "2") {
+                regimeDesc = "SIMPLES";
+              } else if (crtCode === "3") {
+                regimeDesc = "NORMAL";
+              }
+              let chNFe = "---";
+              const infList = xmlDoc.getElementsByTagName("infNFe");
+              if (infList.length > 0 && infList[0].getAttribute("Id")) {
+                chNFe = infList[0].getAttribute("Id").replace("NFe", "");
+              }
+              const ideList = xmlDoc.getElementsByTagName("ide");
+              let nNF = "???";
+              let dhEmi = "???";
+              if (ideList.length > 0) {
+                nNF = getTagValue(ideList[0], "nNF") || "???";
+                const rawDh = getTagValue(ideList[0], "dhEmi");
+                if (rawDh) dhEmi = rawDh.split("T")[0];
+              }
+              const dets = xmlDoc.getElementsByTagName("det");
+              for (let k = 0; k < dets.length; k++) {
+                const det = dets[k];
+                const prodList = det.getElementsByTagName("prod");
+                if (prodList.length === 0) continue;
+                const prod = prodList[0];
+                const ncm = getTagValue(prod, "NCM");
+                const cfop = getTagValue(prod, "CFOP");
+                const cProd = getTagValue(prod, "cProd");
+                const xProd = getTagValue(prod, "xProd");
+                let vProd = getTagValueFloat(prod, "vProd");
+                let vIPIVal = 0;
+                let vSTVal = 0;
+                let vICMSVal = 0;
+                let vCBS = 0,
+                  pCBS = 0,
+                  pRedCBS = 0;
+                let vIBS = 0,
+                  pIBS = 0,
+                  pRedIBS = 0;
+                let vPisAntigo = 0,
+                  vCofinsAntigo = 0;
+                let cst = "",
+                  cClassTrib = "";
+                let hasNewTags = false;
+                let isMonofasico = false;
+                let vBcIbsCbs = 0;
+                const ibsCbsList = det.getElementsByTagName("IBSCBS");
+                if (ibsCbsList.length > 0) {
+                  const nodeIbsCbs = ibsCbsList[0];
+                  hasNewTags = true;
+                  cst = getTagValue(nodeIbsCbs, "CST").trim();
+                  cClassTrib = getTagValue(nodeIbsCbs, "cClassTrib");
+                  const gIbsCbsList =
+                    nodeIbsCbs.getElementsByTagName("gIBSCBS");
+                  if (gIbsCbsList.length > 0) {
+                    const gIbsCbs = gIbsCbsList[0];
+                    const vBcTags = gIbsCbs.getElementsByTagName("vBC");
+                    if (vBcTags.length > 0) {
+                      vBcIbsCbs = parseFloat(vBcTags[0].textContent) || 0;
+                    }
+                    const gCBSList = gIbsCbs.getElementsByTagName("gCBS");
+                    if (gCBSList.length > 0) {
+                      const gCBS = gCBSList[0];
+                      vCBS = getTagValueFloat(gCBS, "vCBS");
+                      pCBS = getTagValueFloat(gCBS, "pCBS");
+                      const gRedList = gCBS.getElementsByTagName("gRed");
+                      if (gRedList.length > 0) {
+                        const valRed = getTagValueFloat(
+                          gRedList[0],
+                          "pRedAliq",
+                        );
+                        if (valRed > 0) pRedCBS = valRed;
+                      }
+                    }
+                    // IBS extraction fix
+                    vIBS = getTagValueFloat(gIbsCbs, "vIBS");
+
+                    let pIBSUF = 0;
+                    let pIBSMun = 0;
+
+                    const gIBSUFList = gIbsCbs.getElementsByTagName("gIBSUF");
+                    if (gIBSUFList.length > 0) {
+                      const gIBSUF = gIBSUFList[0];
+                      // Try pIBSUF first, fallback to pAliq
+                      pIBSUF = getTagValueFloat(gIBSUF, "pIBSUF");
+                      if (pIBSUF === 0)
+                        pIBSUF = getTagValueFloat(gIBSUF, "pAliq");
+
+                      // If vIBS wasn't found in parent, try summing components
+                      if (vIBS === 0)
+                        vIBS += getTagValueFloat(gIBSUF, "vIBSUF");
+
+                      const gRedList = gIBSUF.getElementsByTagName("gRed");
+                      if (gRedList.length > 0) {
+                        const valRed = getTagValueFloat(
+                          gRedList[0],
+                          "pRedAliq",
+                        );
+                        if (valRed > 0) pRedIBS = valRed;
+                      }
+                    }
+
+                    const gIBSMunList = gIbsCbs.getElementsByTagName("gIBSMun");
+                    if (gIBSMunList.length > 0) {
+                      const gIBSMun = gIBSMunList[0];
+                      pIBSMun = getTagValueFloat(gIBSMun, "pIBSMun");
+                      if (vIBS === 0 && gIBSUFList.length === 0)
+                        vIBS += getTagValueFloat(gIBSMun, "vIBSMun"); // Only add if we rely on component sum
+                      else if (
+                        vIBS === getTagValueFloat(gIBSUFList[0], "vIBSUF")
+                      )
+                        vIBS += getTagValueFloat(gIBSMun, "vIBSMun"); // Add if we started summing
+                    }
+
+                    pIBS = pIBSUF + pIBSMun;
+                  } else if (
+                    cst === "620" ||
+                    nodeIbsCbs.getElementsByTagName("gIBSCBSMono").length > 0
+                  ) {
+                    isMonofasico = true;
+                    const gMonoList =
+                      nodeIbsCbs.getElementsByTagName("gIBSCBSMono");
+                    if (gMonoList.length > 0) {
+                      const qBcMonoTag =
+                        gMonoList[0].getElementsByTagName("qBCMonoRet");
+                      if (qBcMonoTag.length > 0)
+                        vBcIbsCbs = parseFloat(qBcMonoTag[0].textContent) || 0;
+                    }
+                    hasNewTags = true;
+                  } else {
+                    const vBcTags = nodeIbsCbs.getElementsByTagName("vBC");
+                    if (vBcTags.length > 0) {
+                      const foundVal = parseFloat(vBcTags[0].textContent);
+                      if (!isNaN(foundVal) && foundVal > 0)
+                        vBcIbsCbs = foundVal;
+                    }
+                  }
+                }
+                const impostoList = det.getElementsByTagName("imposto");
+                if (impostoList.length > 0) {
+                  const imp = impostoList[0];
+                  const pisTag = imp.getElementsByTagName("vPIS");
+                  if (pisTag.length > 0)
+                    vPisAntigo = parseFloat(pisTag[0].textContent) || 0;
+                  const cofinsTag = imp.getElementsByTagName("vCOFINS");
+                  if (cofinsTag.length > 0)
+                    vCofinsAntigo = parseFloat(cofinsTag[0].textContent) || 0;
+                  const ipiTag = imp.getElementsByTagName("vIPI");
+                  if (ipiTag.length > 0) {
+                    for (let t = 0; t < ipiTag.length; t++) {
+                      const val = parseFloat(ipiTag[t].textContent) || 0;
+                      if (t === 0) vIPIVal = val;
+                    }
+                  }
+                  const stTags = imp.getElementsByTagName("vICMSST");
+                  if (stTags.length > 0) {
+                    vSTVal = parseFloat(stTags[0].textContent) || 0;
+                  }
+                  const icmsTags = imp.getElementsByTagName("vICMS");
+                  if (icmsTags.length > 0) {
+                    vICMSVal = parseFloat(icmsTags[0].textContent) || 0;
+                  }
+                }
+                allItems.push({
+                  emitNome,
+                  emitCNPJ,
+                  regimeDesc,
+                  chNFe,
+                  nNF,
+                  data:
+                    dhEmi !== "???"
+                      ? dhEmi.split("-").reverse().join("/")
+                      : dhEmi,
+                  ncm,
+                  cfop,
+                  cProd,
+                  xProd,
+                  vProd,
+                  vFrete: parseFloat(
+                    prod.getElementsByTagName("vFrete")[0]?.textContent || 0,
+                  ),
+                  vSeg: parseFloat(
+                    prod.getElementsByTagName("vSeg")[0]?.textContent || 0,
+                  ),
+                  vOutro: parseFloat(
+                    prod.getElementsByTagName("vOutro")[0]?.textContent || 0,
+                  ),
+                  vST: 0,
+                  vIPI: 0,
+                  cst,
+                  cClassTrib,
+                  vCBS,
+                  pCBS,
+                  pRedCBS,
+                  vIBS,
+                  pIBS,
+                  pRedIBS,
+                  vPisAntigo,
+                  vCofinsAntigo,
+                  vBcIbsCbs,
+                  pRedCBS,
+                  pRedIBS,
+                  hasTags: hasNewTags,
+                  isMonofasico: isMonofasico,
+                  vST: vSTVal,
+                  vIPI: vIPIVal,
+                  vICMS: vICMSVal,
+                });
+              }
+            } catch (err) {
+              console.error("Erro leitura", err);
+            }
+          });
+          processedCount += batch.length;
+          let displayEmit =
+            currentBatchEmit.length > 20
+              ? currentBatchEmit.substring(0, 20) + "..."
+              : currentBatchEmit;
+          if (!displayEmit) displayEmit = "Lendo...";
+          status.innerText = `Processando: ${displayEmit} (${processedCount} / ${xmlTextList.length})`;
+          if (i + BATCH_SIZE < xmlTextList.length) {
+            await new Promise((r) => setTimeout(r, 0));
+          }
+        }
+        status.innerHTML = `<span style='color:var(--data-green)'>✔</span> ${allItems.length} itens carregados com sucesso.`;
+        aplicarFiltros();
+      }
+
+      function aplicarFiltros() {
+        const fNcm = document.getElementById("filtroNcm")
+          ? document.getElementById("filtroNcm").value.trim().toLowerCase()
+          : "";
+        const fCfop = document.getElementById("filtroCfop")
+          ? document.getElementById("filtroCfop").value.trim().toLowerCase()
+          : "";
+        const fProd = document.getElementById("filtroProd")
+          ? document.getElementById("filtroProd").value.trim().toLowerCase()
+          : "";
+        filteredItems = allItems.filter((item) => {
+          const ncm = (item.ncm || "").toLowerCase();
+          const cfop = (item.cfop || "").toLowerCase();
+          const xProd = (item.xProd || "").toLowerCase();
+          const matchText =
+            ncm.includes(fNcm) && cfop.includes(fCfop) && xProd.includes(fProd);
+          let matchRegime = true;
+          if (filterRegime !== "all")
+            matchRegime = item.regimeDesc === filterRegime;
+          let matchTags = true;
+          if (filterTags === "yes") matchTags = item.hasTags === true;
+          if (filterTags === "no") matchTags = item.hasTags === false;
+          return matchText && matchRegime && matchTags;
+        });
+        if (modo2027) {
+          simOriginalItems = [...filteredItems];
+        }
+        atualizarTotais();
+        currentPage = 1;
+        renderizarTabela();
+      }
+
+      function atualizarTotais() {
+        let totalIbs = 0,
+          totalCbs = 0,
+          totalRed = 0;
+        const notasNormal = new Set();
+        const notasNormalComTags = new Set();
+        for (let i = 0; i < filteredItems.length; i++) {
+          const item = filteredItems[i];
+          totalIbs += item.vIBS;
+          totalCbs += item.vCBS;
+          if (item.hasTags && (item.pRedCBS > 0 || item.pRedIBS > 0))
+            totalRed++;
+          if (item.regimeDesc === "NORMAL") {
+            notasNormal.add(item.chNFe);
+            if (item.hasTags) notasNormalComTags.add(item.chNFe);
+          }
+        }
+        let percentual = 0;
+        if (notasNormal.size > 0)
+          percentual = (notasNormalComTags.size / notasNormal.size) * 100;
+        document.getElementById("totalItens").innerText = filteredItems.length;
+        document.getElementById("totalReducao").innerText = totalRed;
+        document.getElementById("totalIbs").innerText = formatMoney(totalIbs);
+        document.getElementById("totalCbs").innerText = formatMoney(totalCbs);
+        document.getElementById("percTagsNormal").innerText =
+          percentual.toFixed(1) + "%";
+      }
+
+      function highlightTerm(text, term) {
+        if (!term || term.length < 2) return text;
+        const cleanTerm = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const regex = new RegExp(`(${cleanTerm})`, "gi");
+        return String(text).replace(
+          regex,
+          '<span class="highlight-neon">$1</span>',
+        );
+      }
+
+      function renderizarTabela() {
+        if (modo2027) {
+          return renderizar2027();
+        }
+        const tbody = document.querySelector("#tabelaDados tbody");
+        tbody.innerHTML = "";
+        const fProd = document.getElementById("filtroProd").value.trim();
+        const fNcm = document.getElementById("filtroNcm").value.trim();
+        const fCfop = document.getElementById("filtroCfop").value.trim();
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const itemsToRender = filteredItems.slice(start, end);
+        const fragment = document.createDocumentFragment();
+        itemsToRender.forEach((item, index) => {
+          let statusHtml = "";
+          if (!item.hasTags) {
+            if (item.regimeDesc === "NORMAL") {
+              statusHtml = `<div style="display:flex; flex-direction:column; align-items:center; gap:1px;"><div style="color:var(--data-red); font-weight:bold; font-size:10px; line-height:1.2;"><i class="fas fa-exclamation-triangle"></i> SEM TAGS</div><div style="font-size:9px; color:var(--text-tertiary);">Contate o Dev</div></div>`;
+            } else {
+              statusHtml = `<span class="status-badge st-none">SEM TAGS</span>`;
+            }
+          } else if (item.isMonofasico) {
+            statusHtml = `<span class="status-badge st-mono" title="Tributação Monofásica/Ad Rem">MONOFÁSICO</span>`;
+          } else if (item.pRedCBS > 0 || item.pRedIBS > 0) {
+            const maiorRed = Math.max(item.pRedCBS, item.pRedIBS);
+            statusHtml = `<span class="status-badge st-red">REDUÇÃO ${maiorRed}%</span>`;
+          } else if (item.vCBS > 0 || item.vIBS > 0) {
+            statusHtml = `<span class="status-badge st-ok">TRIBUTADO</span>`;
+          } else {
+            statusHtml = `<span class="status-badge st-zero">ZERADO</span>`;
+          }
+          let regimeBadge = "";
+          if (item.regimeDesc === "SIMPLES") {
+            regimeBadge = `<span class="badge-crt crt-simples">SIMPLES</span>`;
+          } else if (item.regimeDesc === "NORMAL") {
+            regimeBadge = `<span class="badge-crt crt-normal">NORMAL</span>`;
+          } else {
+            regimeBadge = `<span class="badge-crt" style="background:#eee;color:#666">${item.regimeDesc}</span>`;
+          }
+          const cbsClass = item.vCBS > 0 ? "filled-val" : "";
+          const ibsClass = item.vIBS > 0 ? "filled-val" : "";
+          const displayClass = item.cClassTrib
+            ? `<span class="tag-cst">${item.cClassTrib}</span>`
+            : "-";
+          const displayCst = item.cst
+            ? `<span class="tag-cst">${item.cst}</span>`
+            : "-";
+          const displayProd = highlightTerm(item.xProd, fProd);
+          const displayNcm = highlightTerm(item.ncm, fNcm);
+          const displayCfop = highlightTerm(item.cfop, fCfop);
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+                <td style="font-weight:600; font-size:11px" title="${item.nNF}">${item.nNF}<br><small style="color:var(--text-tertiary); font-weight:400">${item.data}</small></td>
+                <td><span class="col-emit" title="${item.emitNome}">${item.emitNome}</span><small style="color:var(--text-tertiary)">${item.emitCNPJ}</small></td>
+                <td>${regimeBadge}</td>
+                <td style="font-size:10px; color:var(--text-secondary)" title="${item.cProd}">${item.cProd}</td>
+                <td><span class="col-prod" onclick="copyFromProduct(${index})" onmouseover="showTooltip(event, ${index})" onmousemove="moveTooltip(event)" onmouseout="hideTooltip()">${displayProd}</span></td>
+                <td><span style="font-family:'Roboto', sans-serif;font-size:10px">${displayNcm}</span><br><small style="color:var(--text-tertiary)">${displayCfop}</small></td>
+                <td>${displayCst}<br>${displayClass}</td>
+                <td>${formatMoney(item.vProd)}</td>
+                <td class="money">${formatPercent(item.pCBS)}</td>
+                <td class="center">${item.pRedCBS > 0 ? item.pRedCBS + "%" : "-"}</td>
+                <td class="money ${cbsClass}">${formatMoney(item.vCBS)}</td>
+                <td class="money">${formatPercent(item.pIBS)}</td>
+                <td class="center">${item.pRedIBS > 0 ? item.pRedIBS + "%" : "-"}</td>
+                <td class="money ${ibsClass}">${formatMoney(item.vIBS)}</td>
+                <td class="center">${statusHtml}</td>
+          `;
+          fragment.appendChild(tr);
+        });
+        tbody.appendChild(fragment);
+        atualizarControlesPaginacao();
+      }
+
+      function atualizarControlesPaginacao() {
+        const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
+        document.getElementById("pageInfo").innerText =
+          `${currentPage} / ${totalPages}`;
+        document.getElementById("btnPrev").disabled = currentPage === 1;
+        document.getElementById("btnNext").disabled =
+          currentPage === totalPages;
+      }
+      function mudarPagina(delta) {
+        const totalPages = Math.ceil(filteredItems.length / itemsPerPage) || 1;
+        const newPage = currentPage + delta;
+        if (newPage >= 1 && newPage <= totalPages) {
+          currentPage = newPage;
+          renderizarTabela();
+          document.querySelector(".scroll-content").scrollTop = 0;
+        }
+      }
+      function limparTudo() {
+        allItems = [];
+        filteredItems = [];
+        simOriginalItems = [];
+        document.getElementById("xmlInput").value = "";
+        document.getElementById("filtroNcm").value = "";
+        document.getElementById("filtroCfop").value = "";
+        document.getElementById("filtroProd").value = "";
+
+        if (document.getElementById("aliqCBS2027"))
+          document.getElementById("aliqCBS2027").value = "8.8";
+        if (document.getElementById("filtroVariacao2027"))
+          document.getElementById("filtroVariacao2027").value = "all";
+
+        setRegimeFilter("all");
+        setTagsFilter("all");
+
+        if (modo2027) {
+          desativarModo2027();
+        } else {
+          aplicarFiltros();
+        }
+
+        document.getElementById("statusMsg").innerText = "Sessão limpa.";
+      }
+
+      function exportToCSV() {
+        if (filteredItems.length === 0) {
+          alert("Sem dados para exportar.");
+          return;
+        }
+        if (modo2027) {
+          const aliqCBS =
+            parseFloat(document.getElementById("aliqCBS2027").value) || 8.8;
+          let csv =
+            "data:text/csv;charset=utf-8,sep=;\nNota;Emitente;Regime;Codigo;Produto;NCM;CFOP;Base Calc.;Novos Trib.;ICMS ST;TOTAL 2027;Var. R$\n";
+          filteredItems.forEach((item) => {
+            let isSimples = item.regimeDesc === "SIMPLES";
+            let baseCalculo = 0;
+            let novosTrib = 0;
+            let total2027 = 0;
+            let variacao = 0;
+            if (!isSimples && item.vBcIbsCbs > 0) {
+              baseCalculo = item.vBcIbsCbs;
+              let effectiveAliqCBS = aliqCBS;
+              let effectiveAliqIBS = 0.1;
+              if (item.pRedCBS > 0)
+                effectiveAliqCBS = aliqCBS * (1 - item.pRedCBS / 100);
+              if (item.pRedIBS > 0)
+                effectiveAliqIBS = 0.1 * (1 - item.pRedIBS / 100);
+              const novoCBS = baseCalculo * (effectiveAliqCBS / 100);
+              const novoIBS = baseCalculo * (effectiveAliqIBS / 100);
+              novosTrib = novoCBS + novoIBS;
+              total2027 =
+                baseCalculo + novosTrib + (item.vICMS || 0) + item.vST;
+              const custoAtual =
+                item.vProd +
+                item.vIPI +
+                item.vST +
+                item.vFrete +
+                item.vSeg +
+                item.vOutro;
+              variacao = total2027 - custoAtual;
+            }
+            const prodClean = item.xProd.replace(/;/g, " ");
+            const emitClean = item.emitNome.replace(/;/g, " ");
+            const cProdClean = (item.cProd || "").replace(/;/g, " ");
+            const baseStr =
+              !isSimples && item.vBcIbsCbs > 0
+                ? baseCalculo.toFixed(2)
+                : isSimples
+                  ? "Simples"
+                  : "Sem Tag";
+            const novosStr = isSimples
+              ? "Simples Nacional"
+              : !isSimples && item.vBcIbsCbs > 0
+                ? novosTrib.toFixed(2)
+                : "-";
+            const totalStr =
+              !isSimples && item.vBcIbsCbs > 0 ? total2027.toFixed(2) : "-";
+            const varStr = isSimples
+              ? (item.vProd + item.vST).toFixed(2)
+              : !isSimples && item.vBcIbsCbs > 0
+                ? variacao.toFixed(2)
+                : "-";
+            csv += `${item.nNF};${emitClean};${item.regimeDesc};${cProdClean};${prodClean};${item.ncm};${item.cfop};${baseStr};${novosStr};${item.vST.toFixed(2)};${totalStr};${varStr}\n`;
+          });
+          const link = document.createElement("a");
+          link.href = encodeURI(csv);
+          link.download = "simulacao_2027.csv";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          return;
+        }
+        let csv =
+          "data:text/csv;charset=utf-8,sep=;\nEmitente;Regime;Chave;Nota;Data;Codigo;Produto;NCM;CFOP;CST;ClassTrib;VProd;AliqCBS;RedCBS;ValCBS;AliqIBS;RedIBS;ValIBS;Status\n";
+        filteredItems.forEach((r) => {
+          let status = r.hasTags
+            ? r.pRedCBS > 0 || r.pRedIBS > 0
+              ? "REDUCAO"
+              : r.vCBS == 0
+                ? "ZERADO"
+                : "OK"
+            : "SEM_TAGS";
+          const prodClean = r.xProd.replace(/;/g, " ");
+          const emitClean = r.emitNome.replace(/;/g, " ");
+          const cProdClean = r.cProd ? r.cProd.replace(/;/g, " ") : "";
+          csv += `${emitClean};${r.regimeDesc};'${r.chNFe};${r.nNF};${r.data};${cProdClean};${prodClean};${r.ncm};${r.cfop};${r.cst};${r.cClassTrib};${r.vProd.toFixed(2)};${r.pCBS.toFixed(2)};${r.pRedCBS.toFixed(2)};${r.vCBS.toFixed(2)};${r.pIBS.toFixed(2)};${r.pRedIBS.toFixed(2)};${r.vIBS.toFixed(2)};${status}\n`;
+        });
+        const link = document.createElement("a");
+        link.href = encodeURI(csv);
+        link.download = "auditoria_tax_audit_pro.csv";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      function exportToExcel() {
+        if (filteredItems.length === 0) {
+          alert("Sem dados para exportar.");
+          return;
+        }
+        if (modo2027) {
+          const aliqCBS =
+            parseFloat(document.getElementById("aliqCBS2027").value) || 8.8;
+          const formattedData = filteredItems.map((item) => {
+            let isSimples = item.regimeDesc === "SIMPLES";
+            let baseCalculo = 0;
+            let novosTrib = 0;
+            let total2027 = 0;
+            let variacao = 0;
+            if (!isSimples && item.vBcIbsCbs > 0) {
+              baseCalculo = item.vBcIbsCbs;
+              let effectiveAliqCBS = aliqCBS;
+              let effectiveAliqIBS = 0.1;
+              if (item.pRedCBS > 0)
+                effectiveAliqCBS = aliqCBS * (1 - item.pRedCBS / 100);
+              if (item.pRedIBS > 0)
+                effectiveAliqIBS = 0.1 * (1 - item.pRedIBS / 100);
+              const novoCBS = baseCalculo * (effectiveAliqCBS / 100);
+              const novoIBS = baseCalculo * (effectiveAliqIBS / 100);
+              novosTrib = novoCBS + novoIBS;
+              total2027 =
+                baseCalculo + novosTrib + (item.vICMS || 0) + item.vST;
+              const custoAtual =
+                item.vProd +
+                item.vIPI +
+                item.vST +
+                item.vFrete +
+                item.vSeg +
+                item.vOutro;
+              variacao = total2027 - custoAtual;
+            }
+            return {
+              Nota: item.nNF,
+              Emitente: item.emitNome,
+              Regime: item.regimeDesc,
+              "Cód.": item.cProd,
+              Produto: item.xProd,
+              NCM: item.ncm,
+              CFOP: item.cfop,
+              "Base Calc.":
+                !isSimples && item.vBcIbsCbs > 0
+                  ? baseCalculo
+                  : isSimples
+                    ? "Simples"
+                    : "Sem Tag",
+              "Novos Trib.": isSimples
+                ? "Simples Nacional"
+                : !isSimples && item.vBcIbsCbs > 0
+                  ? novosTrib
+                  : "-",
+              "ICMS ST": item.vST,
+              "TOTAL 2027": !isSimples && item.vBcIbsCbs > 0 ? total2027 : "-",
+              "Var. R$": isSimples
+                ? item.vProd + item.vST
+                : !isSimples && item.vBcIbsCbs > 0
+                  ? variacao
+                  : "-",
+            };
+          });
+          const wb = XLSX.utils.book_new();
+          const ws = XLSX.utils.json_to_sheet(formattedData);
+          const wscols = [
+            { wch: 10 },
+            { wch: 25 },
+            { wch: 10 },
+            { wch: 10 },
+            { wch: 40 },
+            { wch: 10 },
+            { wch: 10 },
+            { wch: 15 },
+            { wch: 15 },
+            { wch: 15 },
+            { wch: 10 },
+            { wch: 15 },
+          ];
+          ws["!cols"] = wscols;
+          XLSX.utils.book_append_sheet(wb, ws, "Simulacao 2027");
+          XLSX.writeFile(wb, "simulacao_2027.xlsx");
+          return;
+        }
+        const formattedData = filteredItems.map((r) => {
+          let statusStr = !r.hasTags
+            ? "SEM_TAGS"
+            : r.pRedCBS > 0 || r.pRedIBS > 0
+              ? "REDUCAO"
+              : r.vCBS == 0 && r.vIBS == 0
+                ? "ZERADO"
+                : "OK";
+          return {
+            Emitente: r.emitNome,
+            CNPJ: r.emitCNPJ,
+            Regime: r.regimeDesc,
+            Chave: r.chNFe,
+            Nota: r.nNF,
+            Data: r.data,
+            Código: r.cProd,
+            Produto: r.xProd,
+            NCM: r.ncm,
+            CFOP: r.cfop,
+            CST: r.cst,
+            ClassTrib: r.cClassTrib,
+            "V.Prod": r.vProd,
+            "% CBS": r.pCBS,
+            "Red% CBS": r.pRedCBS,
+            "R$ CBS": r.vCBS,
+            "% IBS": r.pIBS,
+            "Red% IBS": r.pRedIBS,
+            "R$ IBS": r.vIBS,
+            Status: statusStr,
+          };
+        });
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.json_to_sheet(formattedData);
+        const wscols = [
+          { wch: 20 },
+          { wch: 15 },
+          { wch: 10 },
+          { wch: 44 },
+          { wch: 8 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 40 },
+          { wch: 10 },
+          { wch: 6 },
+          { wch: 6 },
+          { wch: 8 },
+          { wch: 12 },
+          { wch: 6 },
+          { wch: 6 },
+          { wch: 10 },
+          { wch: 6 },
+          { wch: 6 },
+          { wch: 10 },
+          { wch: 10 },
+        ];
+        ws["!cols"] = wscols;
+        XLSX.utils.book_append_sheet(wb, ws, "Auditoria");
+        XLSX.writeFile(wb, "auditoria_tax_audit_pro.xlsx");
+      }
+
+      const MY_PIX_KEY = "553a7d69-3f85-4f42-a8b0-267a6f136fa1";
+      const containerPix = document.getElementById("pixKeyContainer");
+      if (containerPix) {
+        containerPix.innerText = MY_PIX_KEY.substring(0, 32) + "...";
+      }
+      function toggleDonationWidget() {
+        const popover = document.getElementById("donationPopover");
+        const icon = document.getElementById("iconDonate");
+        if (popover.classList.contains("active")) {
+          popover.classList.remove("active");
+          icon.classList.remove("fa-times");
+          icon.classList.add("fa-heart");
+        } else {
+          popover.classList.add("active");
+          icon.classList.remove("fa-heart");
+          icon.classList.add("fa-times");
+        }
+      }
+      function copiarPixKey() {
+        navigator.clipboard.writeText(MY_PIX_KEY).then(() => {
+          const btn = document.querySelector(".btn-donate-action");
+          const originalHTML = btn.innerHTML;
+          btn.style.background = "var(--data-green)";
+          btn.innerHTML = `<i class="fas fa-check"></i> Copiado!`;
+          setTimeout(() => {
+            btn.style.background = "";
+            btn.innerHTML = originalHTML;
+          }, 2000);
+        });
+      }
+      document.addEventListener("click", function (event) {
+        const popover = document.getElementById("donationPopover");
+        const btn = document.querySelector(".donation-float-btn");
+        if (!popover || !btn) return;
+        if (
+          !popover.contains(event.target) &&
+          !btn.contains(event.target) &&
+          popover.classList.contains("active")
+        ) {
+          toggleDonationWidget();
+        }
+      });
+
+      function ativarModo2027() {
+        if (allItems.length === 0)
+          return alert("Por favor, carregue arquivos XML primeiro.");
+        modo2027 = true;
+        document.getElementById("navAnalise").classList.remove("active");
+        document.getElementById("boxSimulacao").style.display = "flex";
+        simOriginalItems = [...filteredItems];
+        renderizar2027();
+      }
+
+      function desativarModo2027() {
+        modo2027 = false;
+        document.querySelectorAll(
+          ".metric-card.blue .metric-title",
+        )[0].innerText = "CBS Acumulado (R$)";
+        document.querySelectorAll(
+          ".metric-card.green .metric-title",
+        )[0].innerText = "IBS Acumulado (R$)";
+        document.querySelectorAll(
+          ".metric-card.orange .metric-title",
+        )[0].innerText = "Benefício Fiscal";
+        document.getElementById("navAnalise").classList.add("active");
+        document.getElementById("boxSimulacao").style.display = "none";
+        document.getElementById("boxSimulacao").style.display = "none";
+
+        document.querySelector("#tabelaDados thead tr").innerHTML = `
+                <th>Nota/Data</th><th>Emitente</th><th>Regime</th><th>Cód.</th><th>Produto</th><th>NCM/CFOP</th><th>CST/Class</th><th>V.BC</th><th class="money">% CBS</th><th class="center">Red%</th><th class="money">R$ CBS</th><th class="money">% IBS</th><th class="center">Red%</th><th class="money">R$ IBS</th><th class="center">Status</th>
+          `;
+        renderizarTabela();
+        atualizarTotais();
+      }
+
+      function renderizar2027() {
+        const aliqCBS =
+          parseFloat(document.getElementById("aliqCBS2027").value) || 8.8;
+        if (simOriginalItems.length > 0) {
+          filteredItems = [...simOriginalItems];
+        }
+        const filtroVar = document.getElementById("filtroVariacao2027")
+          ? document.getElementById("filtroVariacao2027").value
+          : "all";
+
+        if (filtroVar !== "all") {
+          filteredItems = filteredItems.filter((item) => {
+            const varVal = calcularVarFilter(item, aliqCBS);
+            if (filtroVar === "green") return varVal < -0.01;
+            if (filtroVar === "red") return varVal > 0.01;
+            if (filtroVar === "neutral") return Math.abs(varVal) <= 0.01;
+            return true;
+          });
+        }
+
+        let simTotalCBS = 0;
+        let simTotalIBS = 0;
+        let simTotalNovos = 0;
+        const thead = document.querySelector("#tabelaDados thead tr");
+        thead.innerHTML = `
+                <th style="width:60px">Nota/Data</th><th>Emitente</th><th class="center" style="width:80px">Regime</th><th>Cód.</th><th>Produto</th><th>NCM/CFOP</th><th class="money" style="text-align:right; width:90px;">Base Calc.</th><th class="money" style="text-align:right; width:90px;">Novos Trib.</th><th class="money" style="text-align:right; width:90px; color:var(--data-blue)">ICMS ST</th><th class="money" style="text-align:right; width:90px;">Total 2027</th><th class="money" style="text-align:right; width:100px; font-weight:bold; color:var(--data-purple)">Custo Líq.</th><th class="money" style="text-align:right; width:90px; color:var(--data-green)">Créd. Recup.</th><th class="center" style="width:90px;">Var. R$</th>
+            `;
+        const tbody = document.querySelector("#tabelaDados tbody");
+        tbody.innerHTML = "";
+
+        const fProd = document.getElementById("filtroProd")
+          ? document.getElementById("filtroProd").value.trim()
+          : "";
+        const fNcm = document.getElementById("filtroNcm")
+          ? document.getElementById("filtroNcm").value.trim()
+          : "";
+        const fCfop = document.getElementById("filtroCfop")
+          ? document.getElementById("filtroCfop").value.trim()
+          : "";
+
+        const start = (currentPage - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        const itemsToRender = filteredItems.slice(start, end);
+        const fragment = document.createDocumentFragment();
+
+        itemsToRender.forEach((item, index) => {
+          let baseCalculo = 0;
+          let novoCBS = 0;
+          let novoIBS = 0;
+          let totalFedNovo = 0;
+          let custoFinal2027 = 0;
+          let variacao = 0;
+          let creditoRecuperar = 0;
+          let custoLiquido = 0;
+          let isSimples = item.regimeDesc === "SIMPLES";
+          let hasXmlTag = item.vBcIbsCbs > 0 || item.isMonofasico;
+
+          if (!isSimples && hasXmlTag && !item.isMonofasico) {
+            baseCalculo = item.vBcIbsCbs;
+            let effectiveAliqCBS = aliqCBS;
+            let effectiveAliqIBS = 0.1;
+            if (item.pRedCBS > 0)
+              effectiveAliqCBS = aliqCBS * (1 - item.pRedCBS / 100);
+            if (item.pRedIBS > 0)
+              effectiveAliqIBS = 0.1 * (1 - item.pRedIBS / 100);
+            novoCBS = baseCalculo * (effectiveAliqCBS / 100);
+            novoIBS = baseCalculo * (effectiveAliqIBS / 100);
+            totalFedNovo = novoCBS + novoIBS;
+            simTotalCBS += novoCBS;
+            simTotalIBS += novoIBS;
+            simTotalNovos += totalFedNovo;
+
+            // FORMULA VALIDADA: Base Limpa + Novo CBS/IBS + ICMS + ST
+            custoFinal2027 =
+              baseCalculo + totalFedNovo + item.vST + (item.vICMS || 0);
+            creditoRecuperar = totalFedNovo; // IBS + CBS
+            custoLiquido = custoFinal2027 - creditoRecuperar;
+
+            const custoAtual =
+              item.vProd +
+              item.vIPI +
+              item.vST +
+              item.vFrete +
+              item.vSeg +
+              item.vOutro;
+            variacao = custoFinal2027 - custoAtual;
+          }
+
+          const styleVar =
+            variacao > 0 ? "color:var(--data-red)" : "color:var(--data-green)";
+          const sinal = variacao > 0 ? "+" : "";
+          let baseDisplay = "-";
+          if (isSimples) {
+            baseDisplay = "-";
+          } else if (!isSimples && item.isMonofasico) {
+            baseDisplay = `<div>${formatMoney(item.vProd)}</div><div style="color:var(--data-green); font-weight:bold; font-size:9px; margin-top:2px;">MONOFÁSICO</div>`;
+          } else if (hasXmlTag) {
+            let detailsHtml = `<div style="font-size:9px; color:var(--data-green); margin-top:2px;">Origem: XML</div>`;
+            if (item.pRedCBS > 0) {
+              const baseReduzida = baseCalculo * (1 - item.pRedCBS / 100);
+              detailsHtml += `<div style="font-size:9px; color:var(--data-blue); margin-top:1px;">Base Red.: ${formatMoney(baseReduzida)} (-${item.pRedCBS}%)</div>`;
+            }
+            baseDisplay = `<div>${formatMoney(baseCalculo)}</div>${detailsHtml}`;
+          } else {
+            baseDisplay = `<div style="color:var(--data-red); font-weight:bold; font-size:10px; line-height:1.2;"><i class="fas fa-exclamation-triangle"></i> SEM TAGS</div><div style="font-size:9px; color:var(--text-tertiary);">Contate o Dev</div>`;
+          }
+          const novosTribDisplay = isSimples
+            ? '<span style="color:var(--data-green); font-size:10px; font-weight:bold;">Simples Nacional</span>'
+            : !isSimples && hasXmlTag && !item.isMonofasico
+              ? `<div>${formatMoney(totalFedNovo)}</div><div style="font-size:9px; color:var(--text-tertiary); margin-top:2px;">CBS: ${formatMoney(novoCBS)}<br>IBS: ${formatMoney(novoIBS)}<br><span style="color:var(--text-primary); opacity:0.75">+ ICMS: ${formatMoney(item.vICMS || 0)}</span></div>`
+              : item.isMonofasico
+                ? '<span style="color:var(--data-green); font-size:10px; font-weight:bold;">MONOFÁSICO</span>'
+                : "-";
+
+          const creditoDisplay =
+            !isSimples && hasXmlTag && !item.isMonofasico
+              ? formatMoney(creditoRecuperar)
+              : "-";
+          const custoLiquidoDisplay =
+            !isSimples && hasXmlTag && !item.isMonofasico
+              ? formatMoney(custoLiquido)
+              : "-";
+
+          const stDisplay = item.vST > 0 ? formatMoney(item.vST) : "-";
+          const total2027Display =
+            !isSimples && hasXmlTag && !item.isMonofasico
+              ? formatMoney(custoFinal2027)
+              : "-";
+          const custoAnt =
+            item.vProd +
+            item.vIPI +
+            item.vST +
+            item.vFrete +
+            item.vSeg +
+            item.vOutro;
+          const percVar = custoAnt > 0 ? (variacao / custoAnt) * 100 : 0;
+          const percStr = `(${sinal}${Math.abs(percVar).toFixed(1)}%)`;
+          const varDisplay = isSimples
+            ? `<div style="color:var(--data-green)">${formatMoney(item.vProd + item.vST)}</div>`
+            : !isSimples && hasXmlTag && !item.isMonofasico
+              ? `<div><span style="${styleVar}">${sinal}${formatMoney(variacao)}</span></div><div style="font-size:10px; font-weight:600; opacity:0.9; ${styleVar}">${percStr}</div><div style="font-size:9px; color:var(--text-tertiary); margin-top:2px;">Custo Ant.: ${formatMoney(custoAnt)}</div>`
+              : "-";
+          const tr = document.createElement("tr");
+          let regimeLabel =
+            item.regimeDesc === "SIMPLES"
+              ? `<span class="badge-crt crt-simples">SIMPLES</span>`
+              : `<span class="badge-crt crt-normal">NORMAL</span>`;
+
+          const displayProd = highlightTerm(item.xProd, fProd);
+          const displayNcm = highlightTerm(item.ncm, fNcm);
+          const displayCfop = highlightTerm(item.cfop, fCfop);
+
+          tr.innerHTML = `
+                <td style="font-weight:600; font-size:11px" title="${item.nNF}">${item.nNF}<br><small style="color:var(--text-tertiary); font-weight:400">${item.data}</small></td><td title="${item.emitNome}">${item.emitNome}</td><td class="center">${regimeLabel}</td><td style="font-size:10px; color:var(--text-secondary)" title="${item.cProd || "-"}">${item.cProd || "-"}</td><td title="${item.xProd}"><span class="col-prod" onclick="copyFromProduct(${index})" onmouseover="showTooltip(event, ${index})" onmousemove="moveTooltip(event)" onmouseout="hideTooltip()">${displayProd}</span></td><td style="font-size:10px">${displayNcm}<br><span style="color:var(--text-tertiary)">${displayCfop}</span></td><td class="money">${baseDisplay}</td><td class="money" style="color:var(--text-secondary)">${novosTribDisplay}</td><td class="money" style="color:${item.vST > 0 ? "var(--data-blue)" : "inherit"}">${stDisplay}</td><td class="money">${total2027Display}</td><td class="money" style="font-weight:700; color:var(--data-purple)">${custoLiquidoDisplay}</td><td class="money" style="color:var(--data-green); font-weight:600">${creditoDisplay}</td><td class="center" style="font-weight:bold;">${varDisplay}</td>
+                `;
+          fragment.appendChild(tr);
+        });
+        tbody.appendChild(fragment);
+
+        document.getElementById("totalItens").innerText = filteredItems.length;
+        document.querySelectorAll(
+          ".metric-card.blue .metric-title",
+        )[0].innerText = `CBS 2027 (Est.)`;
+        document.querySelectorAll(
+          ".metric-card.green .metric-title",
+        )[0].innerText = `IBS 2027 (Est.)`;
+        document.querySelector(".metric-card.orange .metric-title").innerText =
+          "Simples Ignorado";
+        document.getElementById("totalReducao").innerText = "-";
+
+        // --- CALCULO GERAL DE RESUMO E VILOES ---
+        let fullSimCBS = 0;
+        let fullSimIBS = 0;
+
+        filteredItems.forEach((item) => {
+          let isSimples = item.regimeDesc === "SIMPLES";
+          let hasXmlTag = item.vBcIbsCbs > 0;
+
+          if (!isSimples && hasXmlTag && !item.isMonofasico) {
+            let base = item.vBcIbsCbs;
+            let effCBS =
+              item.pRedCBS > 0 ? aliqCBS * (1 - item.pRedCBS / 100) : aliqCBS;
+            let effIBS =
+              item.pRedIBS > 0 ? 0.1 * (1 - item.pRedIBS / 100) : 0.1;
+            fullSimCBS += base * (effCBS / 100);
+            fullSimIBS += base * (effIBS / 100);
+          }
+        });
+
+        document.getElementById("totalCbs").innerText = formatMoney(fullSimCBS);
+        document.getElementById("totalIbs").innerText = formatMoney(fullSimIBS);
+
+        atualizarControlesPaginacao();
+
+        atualizarControlesPaginacao();
+      }
+    </script>
+  </body>
+</html>
