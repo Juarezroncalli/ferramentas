@@ -156,46 +156,98 @@
 
       /* SIDEBAR */
       .sidebar {
-        width: 200px;
+        width: 60px;
         background: var(--bg-sidebar);
         border-right: 1px solid var(--border-subtle);
-        padding: 1.5rem 0.8rem;
+        padding: 1.5rem 0.5rem;
         display: flex;
         flex-direction: column;
+        align-items: center;
         flex-shrink: 0;
         color: #fff;
         z-index: 20;
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
       .logo {
-        font-size: 13px;
+        font-size: 18px;
         font-weight: 600;
         color: #fff;
         margin-bottom: 2.5rem;
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding-left: 0.2rem;
+        justify-content: center;
         opacity: 0.9;
+        cursor: default;
+      }
+      .logo span,
+      .nav-item span,
+      .version-text {
+        display: none;
       }
       .nav-item {
         background: transparent;
         color: #9ca3af;
-        padding: 0.5rem 0.6rem;
-        margin-bottom: 0.25rem;
+        width: 42px;
+        height: 42px;
+        margin-bottom: 0.5rem;
         font-weight: 500;
         border: none;
-        border-radius: var(--radius-sm);
+        border-radius: var(--radius-md);
         cursor: pointer;
         display: flex;
         align-items: center;
-        gap: 10px;
-        transition: all 0.2s;
-        font-size: 12px;
+        justify-content: center;
+        transition: all 0.2s ease;
+        font-size: 16px;
+        position: relative;
       }
       .nav-item:hover,
       .nav-item.active {
         background-color: rgba(255, 255, 255, 0.1);
         color: #fff;
+      }
+
+      /* TOOLTIP BALLOON */
+      [data-tooltip]::before {
+        content: attr(data-tooltip);
+        position: absolute;
+        left: calc(100% + 15px);
+        top: 50%;
+        transform: translateY(-50%) translateX(-10px);
+        background: var(--bg-tooltip);
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 500;
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+      }
+      [data-tooltip]::after {
+        content: "";
+        position: absolute;
+        left: calc(100% + 5px);
+        top: 50%;
+        transform: translateY(-50%) translateX(-10px);
+        border-width: 5px;
+        border-style: solid;
+        border-color: transparent var(--bg-tooltip) transparent transparent;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: none;
+        z-index: 1000;
+      }
+      [data-tooltip]:hover::before,
+      [data-tooltip]:hover::after {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(-50%) translateX(0);
       }
 
       /* MAIN */
@@ -613,7 +665,7 @@
         align-items: center;
         position: fixed;
         bottom: 0;
-        left: 200px;
+        left: 60px;
         right: 0;
         z-index: 100;
         height: 36px;
@@ -695,24 +747,26 @@
     <div id="floatingTooltip"></div>
 
     <aside class="sidebar">
-      <div class="logo">
+      <div class="logo" data-tooltip="Auditor Fiscal XML">
         <i class="fas fa-coins" style="color: var(--data-green)"></i>
         <span>AUDITOR XML <small style="opacity: 0.6">PRO</small></span>
       </div>
       <nav>
-        <div class="nav-item active">
-          <i class="fas fa-table"></i> Análise Geral
+        <div class="nav-item active" data-tooltip="Análise Geral">
+          <i class="fas fa-table"></i> <span>Análise Geral</span>
         </div>
-        <div class="nav-item" onclick="exportToCSV()">
-          <i class="fas fa-file-csv"></i> Exportar CSV
+        <div
+          class="nav-item"
+          onclick="exportToCSV()"
+          data-tooltip="Exportar CSV"
+        >
+          <i class="fas fa-file-csv"></i> <span>Exportar CSV</span>
         </div>
-        <div class="nav-item" onclick="limparTudo()">
-          <i class="fas fa-trash"></i> Limpar Tudo
+        <div class="nav-item" onclick="limparTudo()" data-tooltip="Limpar Tudo">
+          <i class="fas fa-trash"></i> <span>Limpar Tudo</span>
         </div>
       </nav>
-      <div style="margin-top: auto; font-size: 10px; opacity: 0.5">
-        Versão 5.0 (ICMS+PIS+COF)
-      </div>
+      <div class="version-text">Versão 5.0 (ICMS+PIS+COF)</div>
     </aside>
 
     <main class="main-content">
@@ -782,6 +836,16 @@
                 id="filtroProd"
                 class="neo-input"
                 placeholder="Ex: Cimento..."
+                onkeyup="debounceFiltro()"
+              />
+            </div>
+            <div class="form-group" style="flex: 2">
+              <label>Fornecedor</label>
+              <input
+                type="text"
+                id="filtroFornecedor"
+                class="neo-input"
+                placeholder="Nome do Fornecedor..."
                 onkeyup="debounceFiltro()"
               />
             </div>
@@ -1240,6 +1304,9 @@
 
       function aplicarFiltros() {
         const fProd = document.getElementById("filtroProd").value.toLowerCase();
+        const fForn = document
+          .getElementById("filtroFornecedor")
+          .value.toLowerCase();
         const fNcm = document.getElementById("filtroNcm").value.toLowerCase();
         const fCfop = document.getElementById("filtroCfop").value.toLowerCase();
         const fCstIcms = document
@@ -1252,6 +1319,7 @@
         filteredItems = allItems.filter((item) => {
           return (
             item.xProd.toLowerCase().includes(fProd) &&
+            item.emitNome.toLowerCase().includes(fForn) &&
             item.ncm.includes(fNcm) &&
             item.cfop.includes(fCfop) &&
             item.cstIcms.toLowerCase().includes(fCstIcms) &&
@@ -1419,6 +1487,7 @@
         filteredItems = [];
         document.getElementById("xmlInput").value = "";
         document.getElementById("filtroProd").value = "";
+        document.getElementById("filtroFornecedor").value = "";
         document.getElementById("filtroNcm").value = "";
         document.getElementById("filtroCfop").value = "";
         document.getElementById("filtroCstIcms").value = "";
