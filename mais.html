@@ -362,6 +362,11 @@
           </div>
         </div>
 
+        <div class="highlight-box animate-on-scroll">
+          <h3>Total Projetado (Lucro Real)</h3>
+          <div class="counter" data-target="5080.85">R$ 0,00</div>
+        </div>
+
         <div
           class="chart-container animate-on-scroll"
           style="margin-bottom: 2rem"
@@ -649,12 +654,10 @@
               entry.target.classList.add("visible");
 
               // Dispara contador se houver
-              if (entry.target.classList.contains("highlight-box")) {
-                const counterEl = entry.target.querySelector(".counter");
-                if (counterEl && !counterEl.classList.contains("animated")) {
-                  animateCounter(counterEl);
-                  counterEl.classList.add("animated");
-                }
+              const counterEl = entry.target.querySelector(".counter");
+              if (counterEl && !counterEl.classList.contains("animated")) {
+                animateCounter(counterEl);
+                counterEl.classList.add("animated");
               }
 
               // Inicializa gráficos na primeira vez que aparecem
