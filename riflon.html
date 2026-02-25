@@ -94,14 +94,14 @@
       <div class="grid md:grid-cols-3 gap-8 items-center">
         <div class="space-y-6">
           <div
-            class="glass-card rounded-2xl p-6 shadow-sm border-l-4 border-brand-500"
+            class="bg-brand-600 rounded-2xl p-6 shadow-lg border border-brand-500 transform hover:scale-105 transition duration-300"
           >
             <p
-              class="text-sm text-dark-500 font-semibold uppercase tracking-wider mb-1"
+              class="text-sm text-brand-100 font-semibold uppercase tracking-wider mb-1"
             >
               Faturamento Anual Base
             </p>
-            <p class="text-3xl font-bold text-dark-900">R$ 5.757.017,56</p>
+            <p class="text-3xl font-bold text-white">R$ 5.757.017,56</p>
           </div>
           <div
             class="glass-card rounded-2xl p-6 shadow-sm border-l-4 border-gray-400"
@@ -177,28 +177,40 @@
             >
               RECOMENDADO
             </div>
-            <div class="bg-brand-50 p-6 border-b border-gray-100">
-              <h3 class="text-2xl font-bold text-dark-900">Lucro Presumido</h3>
-              <p class="text-sm text-dark-500">
+            <div class="bg-brand-600 p-6 border-b border-brand-500">
+              <h3 class="text-2xl font-bold text-white">Lucro Presumido</h3>
+              <p class="text-sm text-brand-100">
                 Imposto calculado sobre margem fixa de 8%
               </p>
             </div>
             <div class="p-6 space-y-4">
               <div class="flex justify-between border-b border-gray-100 pb-2">
                 <span class="text-dark-500">IRPJ</span
-                ><span class="font-semibold" id="val-iprj-presumido"></span>
+                ><span
+                  class="font-semibold text-dark-900"
+                  id="val-iprj-presumido"
+                ></span>
               </div>
               <div class="flex justify-between border-b border-gray-100 pb-2">
                 <span class="text-dark-500">CSLL</span
-                ><span class="font-semibold" id="val-csll-presumido"></span>
+                ><span
+                  class="font-semibold text-dark-900"
+                  id="val-csll-presumido"
+                ></span>
               </div>
               <div class="flex justify-between border-b border-gray-100 pb-2">
                 <span class="text-dark-500">PIS</span
-                ><span class="font-semibold" id="val-pis-presumido"></span>
+                ><span
+                  class="font-semibold text-dark-900"
+                  id="val-pis-presumido"
+                ></span>
               </div>
               <div class="flex justify-between border-b border-gray-100 pb-2">
                 <span class="text-dark-500">COFINS</span
-                ><span class="font-semibold" id="val-cofins-presumido"></span>
+                ><span
+                  class="font-semibold text-dark-900"
+                  id="val-cofins-presumido"
+                ></span>
               </div>
             </div>
             <div class="bg-gray-50 p-6 border-t border-gray-100 text-center">
@@ -349,17 +361,19 @@
 
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div
-            class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition"
+            class="bg-brand-600 p-6 rounded-2xl shadow-lg border border-brand-500 hover:shadow-xl transition transform hover:-translate-y-1"
             data-aos="fade-up"
             data-aos-delay="100"
           >
             <div
-              class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl mb-4"
+              class="w-12 h-12 bg-white/20 text-white rounded-xl flex items-center justify-center text-xl mb-4"
             >
               <i class="fa-solid fa-box"></i>
             </div>
-            <h3 class="font-bold text-lg mb-2">O que é Lucro Presumido?</h3>
-            <p class="text-dark-500 text-sm">
+            <h3 class="font-bold text-lg mb-2 text-white">
+              O que é Lucro Presumido?
+            </h3>
+            <p class="text-brand-100 text-sm leading-relaxed">
               O governo "chuta" que seu lucro é de 8% do faturamento e cobra
               impostos em cima apenas dessa fatia, ignorando seu lucro de
               verdade.

@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Planejamento Tributário - MAIS ESPAÇO</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+      /* Variáveis de Cores (Azul Marinho e Laranja) */
+      :root {
+        --primary-navy: #002147;
+        --secondary-navy: #003366;
+        --primary-orange: #ff8c00;
+        --secondary-orange: #e67e22;
+        --bg-light: #f8f9fa;
+        --bg-gray: #edf2f7;
+        --text-dark: #2d3748;
+        --text-muted: #718096;
+        --white: #ffffff;
+        --danger-red: #e74c3c;
+        --card-shadow:
+          0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --transition: all 0.3s ease;
+      }
+
+      /* Reset Básico */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", sans-serif;
+      }
+
+      body {
+        background-color: var(--bg-light);
+        color: var(--text-dark);
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      /* Tipografia e Estrutura */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 4rem 2rem;
+      }
+
+      h2 {
+        font-size: 2.2rem;
+        color: var(--primary-navy);
+        margin-bottom: 0.5rem;
+        text-align: center;
+      }
+
+      p.section-subtitle {
+        text-align: center;
+        color: var(--text-muted);
+        margin-bottom: 3rem;
+        font-size: 1.1rem;
+      }
+
+      /* Seção 1: Capa */
+      #hero {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(
+          135deg,
+          var(--primary-navy),
+          var(--secondary-navy)
+        );
+        color: var(--white);
+        text-align: center;
+        padding: 2rem;
+      }
+
+      #hero h1 {
+        font-size: 4rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        letter-spacing: -1px;
+      }
+
+      #hero h3 {
+        font-size: 1.8rem;
+        font-weight: 300;
+        margin-bottom: 2rem;
+        color: #e2e8f0;
+      }
+
+      .hero-details {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        margin-bottom: 3rem;
+        backdrop-filter: blur(5px);
+      }
+
+      .hero-details p {
+        font-size: 1.1rem;
+        margin: 0.5rem 0;
+      }
+
+      .btn {
+        display: inline-block;
+        background-color: var(--primary-orange);
+        color: var(--white);
+        padding: 1rem 2.5rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 50px;
+        transition: var(--transition);
+        box-shadow: 0 4px 15px rgba(255, 140, 0, 0.4);
+      }
+
+      .btn:hover {
+        background-color: var(--secondary-orange);
+        transform: translateY(-2px);
+      }
+
+      /* Seções Gerais */
+      section:nth-child(even) {
+        background-color: var(--white);
+      }
+
+      section:nth-child(odd) {
+        background-color: var(--bg-gray);
+      }
+
+      /* Cards e Grids */
+      .grid-4 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+      }
+
+      .card {
+        background: var(--white);
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+        text-align: center;
+        border-top: 4px solid var(--primary-navy);
+        transition: var(--transition);
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      .card.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      }
+
+      .card i {
+        font-size: 2rem;
+        color: var(--primary-navy);
+        margin-bottom: 1rem;
+      }
+
+      .card h4 {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+      }
+
+      .card .value {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        white-space: nowrap;
+      }
+
+      .card.orange-border {
+        border-top-color: var(--primary-orange);
+      }
+      .card.orange-border i {
+        color: var(--primary-orange);
+      }
+
+      /* Destaques e Contadores */
+      .highlight-box {
+        background: var(--primary-navy);
+        color: var(--white);
+        padding: 2.5rem;
+        border-radius: 12px;
+        text-align: center;
+        margin: 2rem auto;
+        max-width: 600px;
+        box-shadow: var(--card-shadow);
+      }
+
+      .highlight-box.orange-bg {
+        background: var(--primary-orange);
+      }
+
+      .highlight-box h3 {
+        font-size: 1.5rem;
+        font-weight: 400;
+        margin-bottom: 1rem;
+      }
+
+      .highlight-box .counter {
+        font-size: 3.5rem;
+        font-weight: 700;
+      }
+
+      /* Gráficos */
+      .chart-container {
+        position: relative;
+        height: 40vh;
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 1rem;
+        background: var(--white);
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+      }
+
+      /* Textos Explicativos */
+      .info-text {
+        background: #fff4e5;
+        border-left: 5px solid var(--primary-orange);
+        padding: 1.5rem;
+        border-radius: 0 8px 8px 0;
+        margin-top: 2rem;
+        font-size: 1.1rem;
+        color: #b35900;
+      }
+
+      /* Responsividade */
+      @media (max-width: 768px) {
+        #hero h1 {
+          font-size: 2.5rem;
+        }
+        #hero h3 {
+          font-size: 1.2rem;
+        }
+        .highlight-box .counter {
+          font-size: 2.5rem;
+        }
+        .chart-container {
+          height: 30vh;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section id="hero">
+      <h1>Planejamento Tributário</h1>
+      <h3>Estudo comparativo entre Lucro Presumido e Lucro Real</h3>
+
+      <div class="hero-details">
+        <p>
+          <i class="fa-solid fa-building"></i> <strong>Empresas:</strong> MAIS
+          ESPAÇO e PWMA
+        </p>
+        <p>
+          <i class="fa-solid fa-calendar-alt"></i>
+          <strong>Base:</strong> Novembro / 2025
+        </p>
+      </div>
+
+      <a href="#situacao-atual" class="btn"
+        ><i class="fa-solid fa-chart-line"></i> Ver análise</a
+      >
+    </section>
+
+    <section id="situacao-atual">
+      <div class="container">
+        <h2>Cenário Atual: MAIS ESPAÇO</h2>
+        <p class="section-subtitle">Tributação baseada no Lucro Presumido</p>
+
+        <div class="grid-4">
+          <div class="card animate-on-scroll">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+            <h4>IRPJ</h4>
+            <div class="value">R$ 8.464,87</div>
+          </div>
+          <div class="card animate-on-scroll">
+            <i class="fa-solid fa-file-invoice"></i>
+            <h4>CSLL</h4>
+            <div class="value">R$ 3.767,36</div>
+          </div>
+          <div class="card animate-on-scroll">
+            <i class="fa-solid fa-percentage"></i>
+            <h4>PIS</h4>
+            <div class="value">R$ 850,27</div>
+          </div>
+          <div class="card animate-on-scroll">
+            <i class="fa-solid fa-chart-pie"></i>
+            <h4>COFINS</h4>
+            <div class="value">R$ 3.924,33</div>
+          </div>
+        </div>
+
+        <div class="highlight-box animate-on-scroll">
+          <h3>Total Pago no Mês</h3>
+          <div class="counter" data-target="17006.83">R$ 0,00</div>
+        </div>
+
+        <div class="chart-container animate-on-scroll">
+          <canvas id="chartPieCurrent"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section id="novo-cenario">
+      <div class="container">
+        <h2>Novo Cenário: MAIS ESPAÇO</h2>
+        <p class="section-subtitle">
+          Migração para Lucro Real com locação de R$ 80.000,00
+        </p>
+
+        <div class="grid-4">
+          <div class="card orange-border animate-on-scroll">
+            <i class="fa-solid fa-arrow-trend-down"></i>
+            <h4>IRPJ</h4>
+            <div class="value" style="color: var(--primary-orange)">
+              R$ 612,14
+            </div>
+          </div>
+          <div class="card orange-border animate-on-scroll">
+            <i class="fa-solid fa-arrow-trend-down"></i>
+            <h4>CSLL</h4>
+            <div class="value" style="color: var(--primary-orange)">
+              R$ 367,28
+            </div>
+          </div>
+          <div class="card animate-on-scroll">
+            <i class="fa-solid fa-percentage"></i>
+            <h4>PIS</h4>
+            <div class="value">R$ 731,61</div>
+          </div>
+          <div class="card animate-on-scroll">
+            <i class="fa-solid fa-chart-pie"></i>
+            <h4>COFINS</h4>
+            <div class="value">R$ 3.369,82</div>
+          </div>
+        </div>
+
+        <div
+          class="chart-container animate-on-scroll"
+          style="margin-bottom: 2rem"
+        >
+          <canvas id="chartBarComparison"></canvas>
+        </div>
+
+        <div class="info-text animate-on-scroll">
+          <i class="fa-solid fa-circle-info"></i>
+          <strong>Nota explicativa:</strong> Com a migração para o Lucro Real,
+          PIS e COFINS passam a ser calculados pelas alíquotas de 1,65% e 7,6%.
+          Porém, a empresa passa a aproveitar créditos vinculados aos custos da
+          locação, o que reduz drasticamente a base de cálculo e,
+          consequentemente, a carga tributária efetiva de IRPJ e CSLL.
+        </div>
+      </div>
+    </section>
+
+    <section id="pwma">
+      <div class="container">
+        <h2>Tributação: Empresa PWMA</h2>
+        <p class="section-subtitle">Impacto na empresa locadora</p>
+
+        <div
+          class="grid-4"
+          style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))"
+        >
+          <div
+            class="card animate-on-scroll"
+            style="border-top-color: var(--primary-orange)"
+          >
+            <i
+              class="fa-solid fa-hand-holding-dollar"
+              style="color: var(--primary-orange)"
+            ></i>
+            <h4>Receita Locação</h4>
+            <div class="value">R$ 80.000,00</div>
+          </div>
+          <div class="card animate-on-scroll">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+            <h4>IRPJ</h4>
+            <div class="value">R$ 4.400,00</div>
+          </div>
+          <div class="card animate-on-scroll">
+            <i class="fa-solid fa-file-invoice"></i>
+            <h4>CSLL</h4>
+            <div class="value">R$ 2.304,00</div>
+          </div>
+          <div class="card animate-on-scroll">
+            <i class="fa-solid fa-percentage"></i>
+            <h4>PIS</h4>
+            <div class="value">R$ 520,00</div>
+          </div>
+          <div class="card animate-on-scroll">
+            <i class="fa-solid fa-chart-pie"></i>
+            <h4>COFINS</h4>
+            <div class="value">R$ 2.400,00</div>
+          </div>
+        </div>
+
+        <div
+          class="highlight-box animate-on-scroll"
+          style="background-color: var(--text-dark)"
+        >
+          <h3>Total de Tributos Gerados (PWMA)</h3>
+          <div class="counter" data-target="9624.00">R$ 0,00</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="consolidado">
+      <div class="container">
+        <h2>Resultado Consolidado do Grupo</h2>
+        <p class="section-subtitle">Balanço final da operação</p>
+
+        <div class="grid-4" style="grid-template-columns: 1fr 1fr">
+          <div class="card orange-border animate-on-scroll">
+            <i
+              class="fa-solid fa-arrow-down"
+              style="color: var(--primary-orange)"
+            ></i>
+            <h4>Redução na MAIS ESPAÇO</h4>
+            <div class="value" style="color: var(--primary-orange)">
+              R$ 11.925,98
+            </div>
+          </div>
+          <div
+            class="card animate-on-scroll"
+            style="border-top-color: var(--danger-red)"
+          >
+            <i
+              class="fa-solid fa-arrow-up"
+              style="color: var(--danger-red)"
+            ></i>
+            <h4>Novos Impostos na PWMA</h4>
+            <div class="value" style="color: var(--danger-red)">
+              R$ 9.624,00
+            </div>
+          </div>
+        </div>
+
+        <div class="highlight-box orange-bg animate-on-scroll">
+          <h3>Benefício Final Mensal Líquido</h3>
+          <div class="counter" data-target="2301.98">R$ 0,00</div>
+        </div>
+
+        <div class="chart-container animate-on-scroll">
+          <canvas id="chartFinal"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section id="conclusao">
+      <div class="container">
+        <h2>Conclusão</h2>
+        <p class="section-subtitle">Resumo estratégico do planejamento</p>
+
+        <div
+          class="card animate-on-scroll"
+          style="
+            text-align: left;
+            padding: 3rem;
+            border-top: none;
+            border-left: 5px solid var(--primary-orange);
+          "
+        >
+          <p
+            style="font-size: 1.2rem; color: var(--text-dark); line-height: 1.8"
+          >
+            O pagamento de aluguel gera dedutibilidade imediata na apuração do
+            <strong>Lucro Real</strong> e permite a compensação de créditos de
+            <strong>PIS e COFINS</strong>, reduzindo de forma considerável a
+            carga tributária global do grupo econômico. <br /><br />
+            Mesmo considerando a nova incidência tributária gerada na empresa
+            <strong>PWMA</strong> em função do recebimento da receita de
+            aluguel, o resultado consolidado da estratégia comprova uma
+            <strong>economia financeira mensal efetiva</strong>, tornando a
+            migração de regime e o rearranjo societário altamente vantajosos.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      // 1. Rolagem suave para os links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          document.querySelector(this.getAttribute("href")).scrollIntoView({
+            behavior: "smooth",
+          });
+        });
+      });
+
+      // 2. Formatador de Moeda
+      const formatCurrency = (value) => {
+        return new Intl.NumberFormat("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        }).format(value);
+      };
+
+      // 3. Animação de Contadores Numericos
+      const animateCounter = (el) => {
+        const target = +el.getAttribute("data-target");
+        const duration = 2000; // 2 segundos
+        const stepTime = Math.abs(Math.floor(duration / 50));
+        let current = 0;
+        const increment = target / 50;
+
+        const timer = setInterval(() => {
+          current += increment;
+          if (current >= target) {
+            el.innerText = formatCurrency(target);
+            clearInterval(timer);
+          } else {
+            el.innerText = formatCurrency(current);
+          }
+        }, stepTime);
+      };
+
+      // 4. Configuração dos Gráficos (Chart.js)
+      let chartPie, chartBar, chartFinal;
+
+      const initCharts = () => {
+        // Gráfico de Pizza - Seção 2
+        const ctxPie = document
+          .getElementById("chartPieCurrent")
+          .getContext("2d");
+        chartPie = new Chart(ctxPie, {
+          type: "doughnut",
+          data: {
+            labels: ["IRPJ", "CSLL", "PIS", "COFINS"],
+            datasets: [
+              {
+                data: [8464.87, 3767.36, 850.27, 3924.33],
+                backgroundColor: ["#002147", "#003366", "#004080", "#005090"],
+                borderWidth: 0,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: "right" },
+              title: {
+                display: true,
+                text: "Distribuição dos Impostos Atuais (Presumido)",
+              },
+            },
+          },
+        });
+
+        // Gráfico de Barras Comparativo - Seção 3
+        const ctxBar = document
+          .getElementById("chartBarComparison")
+          .getContext("2d");
+        chartBar = new Chart(ctxBar, {
+          type: "bar",
+          data: {
+            labels: ["IRPJ", "CSLL", "PIS", "COFINS"],
+            datasets: [
+              {
+                label: "Lucro Presumido (Atual)",
+                data: [8464.87, 3767.36, 850.27, 3924.33],
+                backgroundColor: "#002147",
+              },
+              {
+                label: "Lucro Real (Projetado)",
+                data: [612.14, 367.28, 731.61, 3369.82],
+                backgroundColor: "#FF8C00",
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              title: {
+                display: true,
+                text: "Comparativo de Tributos: Presumido vs Real",
+              },
+            },
+          },
+        });
+
+        // Gráfico Consolidado Final - Seção 5
+        const ctxFinal = document.getElementById("chartFinal").getContext("2d");
+        chartFinal = new Chart(ctxFinal, {
+          type: "bar",
+          data: {
+            labels: [
+              "Custo Atual (MAIS ESPAÇO)",
+              "Custo Projetado Global",
+              "Economia Obtida",
+            ],
+            datasets: [
+              {
+                label: "Valores em R$",
+                data: [17006.83, 14704.85, 2301.98],
+                backgroundColor: ["#002147", "#004080", "#FF8C00"],
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              title: {
+                display: true,
+                text: "Análise de Viabilidade Financeira",
+              },
+            },
+          },
+        });
+      };
+
+      // 5. Intersection Observer para Animar Elementos ao Rolar
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+
+              // Dispara contador se houver
+              if (entry.target.classList.contains("highlight-box")) {
+                const counterEl = entry.target.querySelector(".counter");
+                if (counterEl && !counterEl.classList.contains("animated")) {
+                  animateCounter(counterEl);
+                  counterEl.classList.add("animated");
+                }
+              }
+
+              // Inicializa gráficos na primeira vez que aparecem
+              if (
+                entry.target.classList.contains("chart-container") &&
+                !chartPie
+              ) {
+                initCharts();
+              }
+            }
+          });
+        },
+        { threshold: 0.2 },
+      );
+
+      // Aplicar observer a todos os elementos com a classe animate-on-scroll
+      document
+        .querySelectorAll(".animate-on-scroll")
+        .forEach((el) => observer.observe(el));
+    </script>
+  </body>
+</html>
