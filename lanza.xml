@@ -1,0 +1,70 @@
+<Notas>
+
+<ConsultarNfseResposta xmlns="http://www.abrasf.org.br/ABRASF/arquivos/nfse.xsd">
+ <ListaNfse>
+  <CompNfse>
+   <Nfse>
+    <InfNfse>
+     <Numero>000000000021961</Numero>
+     <CodigoVerificacao>31b3e8d6</CodigoVerificacao>
+     <DataEmissao>2025-03-06T16:49:35</DataEmissao>
+     <ValoresNfse>
+      <BaseCalculo>400.00</BaseCalculo>
+      <ValorLiquidoNfse>400.00</ValorLiquidoNfse>
+     </ValoresNfse>
+     <PrestadorServico>
+      <RazaoSocial>LANZA ODONTOLOGIA LTDA</RazaoSocial>
+      <NomeFantasia>LANZA ODONTOLOGIA.</NomeFantasia>
+      <Endereco>
+       <Endereco>RUA SANTA JULIANA</Endereco>
+       <Numero>2282</Numero>
+       <Complemento>LETRA A</Complemento>
+       <Bairro>SAO VICENTE</Bairro>
+       <CodigoMunicipio>3167202</CodigoMunicipio>
+       <Uf>MG</Uf>
+       <Cep>35701351</Cep>
+      </Endereco>
+      <Contato>
+       <Email>cristina@hebermoreira.com.br</Email>
+      </Contato>
+     </PrestadorServico>
+     <OrgaoGerador>
+      <CodigoMunicipio>3167202</CodigoMunicipio>
+      <Uf>MG</Uf>
+     </OrgaoGerador>
+     <DeclaracaoPrestacaoServico>
+      <InfDeclaracaoPrestacaoServico>
+       <Competencia>2025-03-06</Competencia>
+       <Servico>
+        <Valores>
+         <ValorServicos>400.00</ValorServicos>
+        </Valores>
+        <IssRetido>2</IssRetido>
+        <ItemListaServico>04.12</ItemListaServico>
+        <CodigoCnae>8630504</CodigoCnae>
+        <CodigoTributacaoMunicipio>557</CodigoTributacaoMunicipio>
+        <Discriminacao>TRATAMENTO ODONTOLOGICO</Discriminacao>
+        <CodigoMunicipio>3167202</CodigoMunicipio>
+        <CodigoPais>01058</CodigoPais>
+        <ExigibilidadeISS>1</ExigibilidadeISS>
+        <MunicipioIncidencia>3167202</MunicipioIncidencia>
+       </Servico>
+       <Prestador>
+        <CpfCnpj>
+         <Cnpj>26256341000116</Cnpj>
+        </CpfCnpj>
+        <InscricaoMunicipal>03676072</InscricaoMunicipal>
+       </Prestador>
+       <RegimeEspecialTributacao>6</RegimeEspecialTributacao>
+       <OptanteSimplesNacional>1</OptanteSimplesNacional>
+       <IncentivoFiscal>2</IncentivoFiscal>
+      </InfDeclaracaoPrestacaoServico>
+     </DeclaracaoPrestacaoServico>
+    </InfNfse>
+   </Nfse>
+  </CompNfse>
+  <CompNfse>
+
+</NFSe>
+
+</Notas>
