@@ -575,6 +575,74 @@
         transform: translateY(0);
       }
 
+      /* Filter Chips */
+      .cfop-filter-container {
+        display: none;
+        background: var(--bg-surface);
+        padding: 1rem;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-card);
+        margin-bottom: 1.5rem;
+      }
+      .filter-title {
+        font-weight: 600;
+        color: var(--text-secondary);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .filter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .filter-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .btn-helper {
+        background: var(--bg-input);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-secondary);
+        font-size: 10px;
+        padding: 4px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .btn-helper:hover {
+        background: var(--badge-purple-bg);
+        color: var(--data-purple);
+        border-color: var(--data-purple);
+      }
+      .chips-area {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .cfop-chip {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid var(--border-subtle);
+        background: var(--bg-input);
+        color: var(--text-tertiary);
+        user-select: none;
+      }
+      .cfop-chip.active {
+        background: var(--badge-purple-bg);
+        color: var(--data-purple);
+        border-color: var(--data-purple);
+        box-shadow: 0 2px 8px rgba(83, 71, 206, 0.15);
+      }
+
       .table-container {
         width: 100%;
         overflow-x: hidden;
@@ -1577,6 +1645,23 @@
           </div>
         </div>
 
+        <div id="cfopFilterSection" class="cfop-filter-container">
+          <div class="filter-header">
+            <div class="filter-title" style="margin-bottom: 0">
+              <i class="fas fa-filter"></i> Selecione os CFOPs para o cálculo:
+            </div>
+            <div class="filter-actions">
+              <button class="btn-helper" onclick="selecionarTodosCfops()">
+                Marcar Todos
+              </button>
+              <button class="btn-helper" onclick="desmarcarTodosCfops()">
+                Desmarcar Todos
+              </button>
+            </div>
+          </div>
+          <div id="cfopChipsArea" class="chips-area"></div>
+        </div>
+
         <div class="filters-container">
           <div class="filters-grid">
             <div class="form-group" style="flex: 2">
@@ -1771,6 +1856,8 @@
     <script>
       let allItems = [];
       let filteredItems = [];
+      let uniqueCfops = new Set();
+      let activeCfops = new Set();
       let currentPage = 1;
       const itemsPerPage = 200;
       let debounceTimer;
@@ -1924,6 +2011,9 @@
       }
 
       async function handleFiles(files) {
+        allItems = [];
+        uniqueCfops.clear();
+        activeCfops.clear();
         const status = document.getElementById("statusMsg");
         status.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processando ${files.length} arquivos...`;
         const xmlTextList = [];
@@ -2183,6 +2273,11 @@
                   vIPI: vIPIVal,
                   vICMS: vICMSVal,
                 });
+
+                if (cfop) {
+                  uniqueCfops.add(cfop);
+                  activeCfops.add(cfop);
+                }
               }
             } catch (err) {
               console.error("Erro leitura", err);
@@ -2200,6 +2295,51 @@
           }
         }
         status.innerHTML = `<span style='color:var(--data-green)'>✔</span> ${allItems.length} itens carregados com sucesso.`;
+        renderCfopChips();
+        aplicarFiltros();
+      }
+
+      function renderCfopChips() {
+        const section = document.getElementById("cfopFilterSection");
+        const area = document.getElementById("cfopChipsArea");
+        area.innerHTML = "";
+
+        if (uniqueCfops.size === 0) {
+          section.style.display = "none";
+          return;
+        }
+
+        section.style.display = "block";
+        const sortedCfops = Array.from(uniqueCfops).sort();
+
+        sortedCfops.forEach((cfop) => {
+          const chip = document.createElement("div");
+          chip.className = `cfop-chip ${activeCfops.has(cfop) ? "active" : ""}`;
+          chip.innerText = cfop;
+          chip.onclick = () => toggleCfop(cfop);
+          area.appendChild(chip);
+        });
+      }
+
+      function toggleCfop(cfop) {
+        if (activeCfops.has(cfop)) {
+          activeCfops.delete(cfop);
+        } else {
+          activeCfops.add(cfop);
+        }
+        renderCfopChips();
+        aplicarFiltros();
+      }
+
+      function selecionarTodosCfops() {
+        uniqueCfops.forEach((cfop) => activeCfops.add(cfop));
+        renderCfopChips();
+        aplicarFiltros();
+      }
+
+      function desmarcarTodosCfops() {
+        activeCfops.clear();
+        renderCfopChips();
         aplicarFiltros();
       }
 
@@ -2219,17 +2359,18 @@
           const xProd = (item.xProd || "").toLowerCase();
           const matchText =
             ncm.includes(fNcm) && cfop.includes(fCfop) && xProd.includes(fProd);
+
+          const matchInteractiveCfop = activeCfops.has(item.cfop);
+
           let matchRegime = true;
           if (filterRegime !== "all")
             matchRegime = item.regimeDesc === filterRegime;
           let matchTags = true;
           if (filterTags === "yes") matchTags = item.hasTags === true;
           if (filterTags === "no") matchTags = item.hasTags === false;
-          return matchText && matchRegime && matchTags;
+          return matchText && matchRegime && matchTags && matchInteractiveCfop;
         });
-        if (modo2027) {
-          simOriginalItems = [...filteredItems];
-        }
+
         atualizarTotais();
         currentPage = 1;
         renderizarTabela();
@@ -2676,7 +2817,7 @@
         modo2027 = true;
         document.getElementById("navAnalise").classList.remove("active");
         document.getElementById("boxSimulacao").style.display = "flex";
-        simOriginalItems = [...filteredItems];
+        document.getElementById("boxSimulacao").style.display = "flex";
         renderizar2027();
       }
 
@@ -2705,9 +2846,9 @@
       function renderizar2027() {
         const aliqCBS =
           parseFloat(document.getElementById("aliqCBS2027").value) || 8.8;
-        if (simOriginalItems.length > 0) {
-          filteredItems = [...simOriginalItems];
-        }
+
+        // Mantém os filtros base (NCM, CFOP chips, etc) já aplicados em aplicarFiltros()
+        // O filteredItems já está correto.
         const filtroVar = document.getElementById("filtroVariacao2027")
           ? document.getElementById("filtroVariacao2027").value
           : "all";

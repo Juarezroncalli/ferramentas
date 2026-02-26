@@ -234,7 +234,7 @@
       /* Metrics */
       .dashboard-grid {
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(6, 1fr);
         gap: 1rem;
         margin-bottom: 1.5rem;
       }
@@ -418,36 +418,39 @@
         width: 5%;
       }
       th:nth-child(2) {
-        width: 12%;
+        width: 10%;
       }
       th:nth-child(3) {
-        width: 15%;
+        width: 12%;
       }
       th:nth-child(4) {
-        width: 7%;
-      }
-      th:nth-child(5) {
         width: 6%;
       }
+      th:nth-child(5) {
+        width: 5%;
+      }
       th:nth-child(6) {
-        width: 8%;
+        width: 7%;
       }
       th:nth-child(7) {
-        width: 8%;
+        width: 7%;
       }
       th:nth-child(8) {
-        width: 7%;
+        width: 6%;
       }
       th:nth-child(9) {
-        width: 8%;
-      }
-      th:nth-child(10) {
         width: 7%;
       }
+      th:nth-child(10) {
+        width: 6%;
+      }
       th:nth-child(11) {
-        width: 8%;
+        width: 7%;
       }
       th:nth-child(12) {
+        width: 8%;
+      }
+      th:nth-child(13) {
         width: 10%;
       }
 
@@ -605,6 +608,16 @@
             <div class="metric-title">Delta Tributário (%)</div>
             <div class="metric-value" id="totalImpacto">0,00%</div>
           </div>
+          <div class="metric-card">
+            <div class="metric-title">Custo Mín. Compra Total (R$)</div>
+            <div
+              class="metric-value"
+              id="totalComp"
+              style="color: var(--data-green)"
+            >
+              0,00
+            </div>
+          </div>
         </div>
 
         <section class="config-box">
@@ -731,9 +744,25 @@
               </div>
             </div>
           </div>
-          <button class="btn-simular" onclick="recalcularTudo()">
-            <i class="fas fa-bolt"></i> Simular Impacto Tributário
-          </button>
+          <div class="form-group">
+            <label>Meta Custo Min. Compra (%)</label>
+            <input
+              type="number"
+              id="inputEquiv"
+              class="neo-input"
+              placeholder="Cálculo automático..."
+            />
+          </div>
+          <div class="form-group" style="grid-column: span 2; display: flex">
+            <button
+              class="btn-simular"
+              onclick="recalcularTudo()"
+              style="margin-top: 0; flex: 1"
+            >
+              <i class="fas fa-bolt"></i> Simular Impacto Tributário &
+              Equivalência
+            </button>
+          </div>
         </section>
 
         <div class="upload-area">
@@ -784,6 +813,7 @@
                 <th class="money">% CBS</th>
                 <th class="money">R$ CBS</th>
                 <th class="money">Impacto</th>
+                <th class="money">Custo Mín. Compra</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -1017,6 +1047,16 @@
         const simplesRate = calculosSimples[anexo](rbt12);
         const effShareRate = simplesRate * (share / 100);
 
+        // Automação da Meta Equivalência (%)
+        const ibsTotal = aliqIbs + aliqCbs;
+        let metaEquiv = 0;
+        if (ibsTotal > 0) {
+          metaEquiv = ((ibsTotal - effShareRate) / ibsTotal) * 100;
+        }
+
+        // Preenche o campo automaticamente (pode ser editado depois)
+        document.getElementById("inputEquiv").value = metaEquiv.toFixed(2);
+
         document.getElementById("displayAliqSimples").innerText =
           simplesRate.toFixed(2) + "%";
         document.getElementById("displayAliqEf").innerText =
@@ -1029,10 +1069,14 @@
         const tbody = document.querySelector("#tabelaDados tbody");
         tbody.innerHTML = "";
 
+        const equivPerc =
+          parseFloat(document.getElementById("inputEquiv").value) || 0;
+
         let sumBcOrig = 0,
           sumIbs = 0,
           sumCbs = 0,
-          sumTotal = 0;
+          sumTotal = 0,
+          sumEquiv = 0;
 
         let filteredCount = 0;
 
@@ -1045,18 +1089,21 @@
           let newBc = 0,
             valIbs = 0,
             valCbs = 0,
-            totalFinal = 0;
+            totalFinal = 0,
+            valEquiv = 0;
 
           if (isSimulado) {
             newBc = item.vProd * (1 - params.effShareRate / 100);
             valIbs = newBc * (params.aliqIbs / 100);
             valCbs = newBc * (params.aliqCbs / 100);
             totalFinal = newBc + valIbs + valCbs;
+            valEquiv = totalFinal * (equivPerc / 100);
 
             sumBcOrig += item.vProd;
             sumIbs += valIbs;
             sumCbs += valCbs;
             sumTotal += totalFinal;
+            sumEquiv += valEquiv;
           }
 
           const tr = document.createElement("tr");
@@ -1073,6 +1120,7 @@
             <td class="money">${isSimulado ? params.aliqCbs.toFixed(2) + "%" : "---"}</td>
             <td class="money">${isSimulado ? formatMoney(valCbs) : "---"}</td>
             <td class="money highlight" style="color:${isSimulado ? "var(--data-purple)" : "inherit"}">${isSimulado ? formatMoney(totalFinal) : "---"}</td>
+            <td class="money" style="font-weight:700; color:var(--data-green)">${isSimulado && equivPerc > 0 ? formatMoney(valEquiv) : "---"}</td>
           `;
           tbody.appendChild(tr);
         });
@@ -1084,6 +1132,8 @@
             formatMoney(sumBcOrig);
           document.getElementById("totalIbs").innerText = formatMoney(sumIbs);
           document.getElementById("totalCbs").innerText = formatMoney(sumCbs);
+          document.getElementById("totalComp").innerText =
+            formatMoney(sumEquiv);
           const impacto = sumBcOrig > 0 ? (sumTotal / sumBcOrig - 1) * 100 : 0;
           document.getElementById("totalImpacto").innerText =
             (impacto > 0 ? "+" : "") + impacto.toFixed(2) + "%";
@@ -1096,6 +1146,7 @@
           document.getElementById("totalBcOrig").innerText = "0,00";
           document.getElementById("totalIbs").innerText = "0,00";
           document.getElementById("totalCbs").innerText = "0,00";
+          document.getElementById("totalComp").innerText = "0,00";
           document.getElementById("totalImpacto").innerText = "0,00%";
           document.getElementById("displayValEf").innerText = "---";
         }
@@ -1119,7 +1170,7 @@
       function exportToCSV() {
         if (allItems.length === 0) return alert("Sem dados para exportar");
         let csv =
-          "sep=;\nNota;Emitente;Produto;NCM;CFOP;Valor Bruto;BC Liquida;Aliq IBS;Val IBS;Aliq CBS;Val CBS;Impacto Final\n";
+          "sep=;\nNota;Emitente;Produto;NCM;CFOP;Valor Bruto;BC Liquida;Aliq IBS;Val IBS;Aliq CBS;Val CBS;Impacto Final;Custo Min. Compra\n";
 
         const rbt12 =
           parseFloat(document.getElementById("inputRbt12").value) || 0;
@@ -1130,6 +1181,9 @@
           parseFloat(document.getElementById("inputAliqIbs").value) || 0;
         const aliqCbs =
           parseFloat(document.getElementById("inputAliqCbs").value) || 0;
+        const equivPerc =
+          parseFloat(document.getElementById("inputEquiv").value) || 0;
+
         const simplesRate = calculosSimples[anexo](rbt12);
         const effShareRate = simplesRate * (share / 100);
 
@@ -1139,7 +1193,9 @@
           const valIbs = newBc * (aliqIbs / 100);
           const valCbs = newBc * (aliqCbs / 100);
           const total = newBc + valIbs + valCbs;
-          csv += `${item.nNF};${item.emitNome};${item.xProd};${item.ncm};${item.cfop};${item.vProd.toFixed(2).replace(".", ",")};${newBc.toFixed(2).replace(".", ",")};${aliqIbs};${valIbs.toFixed(2).replace(".", ",")};${aliqCbs};${valCbs.toFixed(2).replace(".", ",")};${total.toFixed(2).replace(".", ",")}\n`;
+          const valEquiv = total * (equivPerc / 100);
+
+          csv += `${item.nNF};${item.emitNome};${item.xProd};${item.ncm};${item.cfop};${item.vProd.toFixed(2).replace(".", ",")};${newBc.toFixed(2).replace(".", ",")};${aliqIbs.toFixed(2).replace(".", ",")};${valIbs.toFixed(2).replace(".", ",")};${aliqCbs.toFixed(2).replace(".", ",")};${valCbs.toFixed(2).replace(".", ",")};${total.toFixed(2).replace(".", ",")};${valEquiv.toFixed(2).replace(".", ",")}\n`;
         });
 
         const blob = new Blob(["\uFEFF" + csv], {
