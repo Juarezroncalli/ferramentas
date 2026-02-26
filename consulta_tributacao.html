@@ -457,7 +457,7 @@
       /* TABLE */
       .table-container {
         width: 100%;
-        overflow-x: auto;
+        overflow-x: hidden;
         border: 1px solid var(--border-subtle);
         border-radius: var(--radius-md);
         background: var(--bg-surface);
@@ -546,9 +546,12 @@
 
       /* Column Styling */
       .col-prod {
-        max-width: 180px;
+        display: block;
+        width: 200px;
+        max-width: 200px;
         overflow: hidden;
         text-overflow: ellipsis;
+        white-space: nowrap;
         cursor: pointer;
         font-weight: 500;
       }
@@ -927,9 +930,9 @@
             <thead>
               <tr>
                 <th>Nota</th>
-                <th>Emitente</th>
+                <th style="width: 100px">Emitente</th>
                 <th>Regime</th>
-                <th>Produto</th>
+                <th style="width: 200px">Produto</th>
                 <th>NCM/CFOP</th>
                 <th>V.Item</th>
 
@@ -1376,7 +1379,7 @@
 
           tr.innerHTML = `
             <td style="font-weight:600">${item.nNF}</td>
-            <td><span style="display:block; max-width:120px; overflow:hidden; text-overflow:ellipsis" title="${item.emitNome}">${item.emitNome}</span></td>
+            <td><span style="display:block; max-width:100px; overflow:hidden; text-overflow:ellipsis" title="${item.emitNome}">${item.emitNome}</span></td>
             <td>
               <span class="badge-crt ${
                 item.regimeDesc === "SIMPLES"
