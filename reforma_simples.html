@@ -1,0 +1,1155 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+  <head>
+    <script>
+      // Desabilita o clique direito
+      document.addEventListener("contextmenu", (event) =>
+        event.preventDefault(),
+      );
+
+      // Desabilita atalhos de teclado comuns para desenvolvedores
+      document.onkeydown = function (e) {
+        if (e.keyCode == 123) return false; // F12
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 73) return false; // Ctrl+Shift+I
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 74) return false; // Ctrl+Shift+J
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 67) return false; // Ctrl+Shift+C
+        if (e.ctrlKey && e.keyCode == 85) return false; // Ctrl+U
+        if (e.ctrlKey && e.keyCode == 83) return false; // Ctrl+S
+      };
+    </script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simulador Simples Reforma [Enterprise]</title>
+    <link rel="icon" href="icone.ico" type="image/x-icon" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg-app: #f2f2f0;
+        --bg-surface: #fafafa;
+        --bg-panel: #fafafa;
+        --bg-sidebar: #fafafa;
+        --bg-input: #f0f2f5;
+        --bg-hover: #fcfcfd;
+        --bg-tooltip: #1e2130;
+        --text-primary: #1e2130;
+        --text-secondary: #5e6c84;
+        --text-tertiary: #8f9bb3;
+        --border-subtle: #edf1f7;
+        --border-focus: #887cfd;
+        --border-dashed: #3f3f46;
+        --accent-primary: #5347ce;
+        --accent-glow: rgba(83, 71, 206, 0.2);
+        --data-purple: #5347ce;
+        --data-green: #16c8c7;
+        --data-blue: #4896fe;
+        --data-orange: #ffab00;
+        --data-red: #ff5630;
+        --badge-purple-bg: rgba(83, 71, 206, 0.12);
+        --badge-blue-bg: rgba(72, 150, 254, 0.12);
+        --radius-sm: 8px;
+        --radius-md: 16px;
+        --shadow-card: 0px 4px 20px rgba(0, 0, 0, 0.05);
+        --shadow-float: 0px 8px 30px rgba(0, 0, 0, 0.12);
+        --upload-pattern: radial-gradient(#e4e9f2 1px, transparent 1px);
+        --font-ui: "Inter", sans-serif;
+      }
+
+      [data-theme="dark"] {
+        --bg-app: #0f111a;
+        --bg-surface: #1e2130;
+        --bg-panel: #1e2130;
+        --bg-sidebar: #151725;
+        --bg-input: #151725;
+        --bg-hover: #2a2e42;
+        --bg-tooltip: #2a2e42;
+        --text-primary: #ffffff;
+        --text-secondary: #a0aec0;
+        --text-tertiary: #718096;
+        --border-subtle: #2d3748;
+        --border-dashed: #4a5568;
+        --accent-primary: #887cfd;
+        --upload-pattern: radial-gradient(#2d3748 1px, transparent 1px);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        outline: none;
+      }
+      body {
+        font-family: var(--font-ui);
+        background-color: var(--bg-app);
+        color: var(--text-primary);
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        font-size: 13px;
+        transition:
+          background 0.3s,
+          color 0.3s;
+      }
+
+      /* Scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #d1d5db;
+        border-radius: 3px;
+      }
+      [data-theme="dark"] ::-webkit-scrollbar-thumb {
+        background: #3f3f46;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 60px;
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        background: var(--bg-sidebar);
+        padding: 2rem 0.5rem;
+        display: flex;
+        flex-direction: column;
+        z-index: 2000;
+        transition: width 0.3s ease;
+        box-shadow: 1px 0 0 var(--border-subtle);
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .sidebar:hover {
+        width: 240px;
+        padding: 2rem 1.2rem;
+      }
+      .sidebar .logo-text,
+      .sidebar span {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s;
+      }
+      .sidebar:hover .logo-text,
+      .sidebar:hover span {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .logo {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 3rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .logo i {
+        color: var(--data-purple);
+        font-size: 20px;
+        background: var(--badge-purple-bg);
+        padding: 8px;
+        border-radius: 8px;
+      }
+      .logo-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+      }
+      .logo-subtitle {
+        font-size: 10px;
+        opacity: 0.6;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .nav-item {
+        background: transparent;
+        color: var(--text-secondary);
+        padding: 0.8rem 0.6rem;
+        margin-bottom: 0.4rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transition: all 0.2s;
+      }
+      .nav-item:hover {
+        background: var(--bg-hover);
+        color: var(--data-purple);
+      }
+      .nav-item.active {
+        background: var(--badge-purple-bg);
+        color: var(--data-purple);
+      }
+
+      /* Main Content */
+      .main-content {
+        margin-left: 60px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+        background: var(--bg-app);
+      }
+      .scroll-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 2rem 3rem;
+        padding-bottom: 100px;
+      }
+
+      .neo-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+      .neo-header h1 {
+        font-size: 36px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+
+      /* Metrics */
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .metric-card {
+        background: var(--bg-surface);
+        padding: 1.5rem;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-card);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: transform 0.2s ease;
+      }
+      .metric-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-float);
+      }
+      .metric-title {
+        font-weight: 600;
+        font-size: 11px;
+        color: var(--text-tertiary);
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+      }
+      .metric-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      /* Config / Form */
+      .config-box {
+        background: var(--bg-surface);
+        border: 2px solid var(--data-purple);
+        border-radius: var(--radius-md);
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        box-shadow: 0 10px 40px rgba(83, 71, 206, 0.1);
+      }
+      .form-group {
+        position: relative;
+      }
+      .form-group label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 10px;
+        font-size: 13px;
+        color: var(--data-purple);
+        text-transform: uppercase;
+      }
+      .neo-input {
+        width: 100%;
+        padding: 14px 18px;
+        border: 1px solid var(--border-subtle);
+        border-radius: 12px;
+        background: var(--bg-input);
+        color: var(--text-primary);
+        font-size: 16px;
+        font-weight: 600;
+        transition: border-color 0.2s;
+      }
+      .neo-input:focus {
+        border-color: var(--data-purple);
+        box-shadow: 0 0 0 4px var(--accent-glow);
+      }
+      .input-error {
+        border: 2px solid var(--data-red) !important;
+        background: rgba(255, 86, 48, 0.05) !important;
+      }
+
+      /* Button Simulation */
+      .btn-simular {
+        grid-column: span 3;
+        background: var(--data-purple);
+        color: #fff;
+        border: none;
+        padding: 18px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+      .btn-simular:hover {
+        transform: scale(1.01);
+        filter: brightness(1.1);
+        box-shadow: 0 8px 25px rgba(83, 71, 206, 0.4);
+      }
+      .btn-simular:active {
+        transform: scale(0.99);
+      }
+
+      /* Upload Area */
+      .upload-area {
+        background: var(--bg-panel);
+        border: 1px dashed var(--border-dashed);
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+        cursor: pointer;
+        position: relative;
+        background-image: var(--upload-pattern);
+        background-size: 20px 20px;
+        transition: all 0.2s;
+      }
+      .upload-area:hover {
+        border-color: var(--data-blue);
+        background-color: var(--bg-hover);
+      }
+      #xmlInput {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+        z-index: 10;
+      }
+
+      /* Results Table */
+      .table-container {
+        background: var(--bg-surface);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-card);
+        overflow: hidden;
+        margin-bottom: 2rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: separate;
+        table-layout: fixed;
+        border-spacing: 0;
+      }
+      th {
+        background: var(--bg-surface);
+        color: var(--text-secondary);
+        padding: 16px 12px;
+        text-align: left;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+      td {
+        padding: 14px 12px;
+        border-bottom: 1px solid var(--border-subtle);
+        font-size: 12px;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      tr:hover td {
+        background: var(--bg-hover);
+      }
+      .money {
+        text-align: right;
+        font-family: "Roboto", sans-serif;
+        font-variant-numeric: tabular-nums;
+        color: var(--text-secondary);
+      }
+      .money.highlight {
+        color: var(--text-primary);
+        font-weight: 600;
+      }
+
+      /* Column Widths */
+      th:nth-child(1) {
+        width: 5%;
+      }
+      th:nth-child(2) {
+        width: 12%;
+      }
+      th:nth-child(3) {
+        width: 15%;
+      }
+      th:nth-child(4) {
+        width: 7%;
+      }
+      th:nth-child(5) {
+        width: 6%;
+      }
+      th:nth-child(6) {
+        width: 8%;
+      }
+      th:nth-child(7) {
+        width: 8%;
+      }
+      th:nth-child(8) {
+        width: 7%;
+      }
+      th:nth-child(9) {
+        width: 8%;
+      }
+      th:nth-child(10) {
+        width: 7%;
+      }
+      th:nth-child(11) {
+        width: 8%;
+      }
+      th:nth-child(12) {
+        width: 10%;
+      }
+
+      /* Filter Chips */
+      .cfop-filter-container {
+        background: var(--bg-panel);
+        border: 1px solid var(--border-subtle);
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 20px;
+        display: none;
+      }
+      .filter-title {
+        font-weight: 700;
+        font-size: 11px;
+        color: var(--text-tertiary);
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .chips-area {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .cfop-chip {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: 0.2s;
+        color: var(--text-secondary);
+      }
+      .cfop-chip.active {
+        background: var(--badge-purple-bg);
+        border-color: var(--data-purple);
+        color: var(--data-purple);
+      }
+      .cfop-chip input {
+        display: none;
+      }
+
+      /* Tooltip */
+      #floatingTooltip {
+        position: fixed;
+        display: none;
+        background: var(--bg-tooltip);
+        color: #fff;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 11px;
+        z-index: 9999;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        max-width: 300px;
+      }
+      .tooltip-header {
+        text-transform: uppercase;
+        color: #887cfd;
+        font-weight: 700;
+        margin-bottom: 5px;
+        font-size: 9px;
+      }
+
+      .theme-btn {
+        background: transparent;
+        border: 1px solid var(--data-purple);
+        color: var(--data-purple);
+        padding: 6px 15px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .theme-btn:hover {
+        background: var(--data-purple);
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="floatingTooltip"></div>
+
+    <aside class="sidebar">
+      <div class="logo">
+        <i class="fas fa-calculator"></i>
+        <div class="logo-text">
+          <span>SIMPLES REFORMA</span>
+          <span class="logo-subtitle">Simulador Tributário</span>
+        </div>
+      </div>
+      <nav>
+        <div class="nav-item active">
+          <i class="fas fa-microchip"></i> <span>Fator Simples</span>
+        </div>
+        <div class="nav-item" onclick="exportToCSV()">
+          <i class="fas fa-file-export"></i> <span>Exportar CSV</span>
+        </div>
+        <div class="nav-item" onclick="location.reload()">
+          <i class="fas fa-sync"></i> <span>Limpar Sessão</span>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="scroll-content">
+        <header class="neo-header">
+          <h1>Simples Nacional 2027/2028 - Híbrido</h1>
+          <div style="display: flex; gap: 15px; align-items: center">
+            <span
+              id="statusMsg"
+              style="color: var(--text-tertiary); font-size: 11px"
+              >Aguardando Importação via XML</span
+            >
+            <button class="theme-btn" onclick="toggleTheme()">Lux Theme</button>
+          </div>
+        </header>
+
+        <div class="dashboard-grid">
+          <div class="metric-card">
+            <div class="metric-title">Materiais Processados</div>
+            <div class="metric-value" id="totalItens">0</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-title">Montante Original (R$)</div>
+            <div class="metric-value" id="totalBcOrig">0,00</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-title">IBS Projetado (R$)</div>
+            <div
+              class="metric-value"
+              id="totalIbs"
+              style="color: var(--data-green)"
+            >
+              0,00
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-title">CBS Projetado (R$)</div>
+            <div
+              class="metric-value"
+              id="totalCbs"
+              style="color: var(--data-blue)"
+            >
+              0,00
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-title">Delta Tributário (%)</div>
+            <div class="metric-value" id="totalImpacto">0,00%</div>
+          </div>
+        </div>
+
+        <section class="config-box">
+          <div class="form-group">
+            <label>Faturamento RBT12 Bruto</label>
+            <input
+              type="number"
+              id="inputRbt12"
+              class="neo-input"
+              placeholder="Ex: 1000000"
+            />
+          </div>
+          <div class="form-group">
+            <label>Enquadramento (Anexo)</label>
+            <select id="inputAnexo" class="neo-input">
+              <option value="">Selecione...</option>
+              <option value="I">Anexo I - Comércio</option>
+              <option value="II">Anexo II - Indústria</option>
+              <option value="III">Anexo III - Projetos/Serviços</option>
+              <option value="IV">Anexo IV - Obras/Civil</option>
+              <option value="V">Anexo V - Tecnologia/Fator R</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fração IBS/CBS Efetivo (%)</label>
+            <input
+              type="number"
+              id="inputShare"
+              class="neo-input"
+              placeholder="Ex: 15.5"
+            />
+          </div>
+          <div class="form-group">
+            <label>Referência Alíquota IBS (%)</label>
+            <input
+              type="number"
+              id="inputAliqIbs"
+              class="neo-input"
+              placeholder="Ex: 17.7"
+            />
+          </div>
+          <div class="form-group">
+            <label>Referência Alíquota CBS (%)</label>
+            <input
+              type="number"
+              id="inputAliqCbs"
+              class="neo-input"
+              placeholder="Ex: 8.8"
+            />
+          </div>
+          <div class="form-group" style="display: flex; align-items: flex-end">
+            <div
+              style="
+                background: var(--badge-purple-bg);
+                padding: 16px;
+                border-radius: 12px;
+                width: 100%;
+                font-size: 13px;
+                border: 1px solid rgba(83, 71, 206, 0.3);
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                "
+              >
+                <span style="font-weight: 600; color: var(--text-secondary)"
+                  >ALÍQUOTA NOMINAL SIMPLES:</span
+                >
+                <strong
+                  id="displayAliqSimples"
+                  style="
+                    font-size: 22px;
+                    color: var(--data-purple);
+                    text-shadow: 0 0 10px rgba(83, 71, 206, 0.2);
+                  "
+                  >---</strong
+                >
+              </div>
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  border-top: 1px dashed rgba(83, 71, 206, 0.2);
+                  padding-top: 8px;
+                "
+              >
+                <span style="font-weight: 600; color: var(--text-secondary)"
+                  >PESO TRIBUTÁRIO REDUZIDO:</span
+                >
+                <strong
+                  id="displayAliqEf"
+                  style="
+                    font-size: 22px;
+                    color: var(--data-green);
+                    text-shadow: 0 0 10px rgba(22, 200, 199, 0.2);
+                  "
+                  >---</strong
+                >
+              </div>
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  border-top: 1px dashed rgba(83, 71, 206, 0.2);
+                  padding-top: 8px;
+                "
+              >
+                <span style="font-weight: 600; color: var(--text-secondary)"
+                  >VALOR ENCARGO RETIRADO:</span
+                >
+                <strong
+                  id="displayValEf"
+                  style="font-size: 22px; color: var(--data-green)"
+                  >---</strong
+                >
+              </div>
+            </div>
+          </div>
+          <button class="btn-simular" onclick="recalcularTudo()">
+            <i class="fas fa-bolt"></i> Simular Impacto Tributário
+          </button>
+        </section>
+
+        <div class="upload-area">
+          <input
+            type="file"
+            id="xmlInput"
+            multiple
+            accept=".xml,.zip"
+            onchange="handleFiles(this.files)"
+          />
+          <i
+            class="fas fa-file-import"
+            style="
+              font-size: 32px;
+              color: var(--data-purple);
+              margin-bottom: 15px;
+            "
+          ></i
+          ><br />
+          <span style="font-weight: 700; font-size: 18px"
+            >Importação de Acervo XML</span
+          ><br />
+          <span style="font-size: 14px; opacity: 0.7"
+            >Selecione arquivos .xml ou pacotes .zip</span
+          >
+        </div>
+
+        <div id="cfopFilterSection" class="cfop-filter-container">
+          <div class="filter-title">
+            <i class="fas fa-filter"></i> Selecione os CFOPs para o cálculo:
+          </div>
+          <div id="cfopChipsArea" class="chips-area"></div>
+        </div>
+
+        <div class="table-container">
+          <table id="tabelaDados">
+            <thead>
+              <tr>
+                <th>Nº Nota</th>
+                <th>Origem</th>
+                <th>Especificação</th>
+                <th>NCM</th>
+                <th>CFOP</th>
+                <th class="money">V. Bruto</th>
+                <th class="money">BC Líq.</th>
+                <th class="money">% IBS</th>
+                <th class="money">R$ IBS</th>
+                <th class="money">% CBS</th>
+                <th class="money">R$ CBS</th>
+                <th class="money">Impacto</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      let allItems = [];
+      let uniqueCfops = new Set();
+      let activeCfops = new Set();
+
+      const formatMoney = (v) =>
+        v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+      function toggleTheme() {
+        document.body.dataset.theme =
+          document.body.dataset.theme === "dark" ? "light" : "dark";
+      }
+
+      function getEffectiveRate(acumulado, aliquotaNominal, parcelaDeducao) {
+        if (acumulado <= 180000) return aliquotaNominal * 100;
+        return (
+          ((acumulado * aliquotaNominal - parcelaDeducao) / acumulado) * 100
+        );
+      }
+
+      const calculosSimples = {
+        I: (a) =>
+          a <= 180000
+            ? 4
+            : a <= 360000
+              ? getEffectiveRate(a, 0.073, 5940)
+              : a <= 720000
+                ? getEffectiveRate(a, 0.095, 13860)
+                : a <= 1800000
+                  ? getEffectiveRate(a, 0.107, 22500)
+                  : a <= 3600000
+                    ? getEffectiveRate(a, 0.143, 87300)
+                    : getEffectiveRate(a, 0.19, 378000),
+        II: (a) =>
+          a <= 180000
+            ? 4.5
+            : a <= 360000
+              ? getEffectiveRate(a, 0.078, 5940)
+              : a <= 720000
+                ? getEffectiveRate(a, 0.1, 13860)
+                : a <= 1800000
+                  ? getEffectiveRate(a, 0.112, 22500)
+                  : a <= 3600000
+                    ? getEffectiveRate(a, 0.147, 85500)
+                    : getEffectiveRate(a, 0.3, 720000),
+        III: (a) =>
+          a <= 180000
+            ? 6
+            : a <= 360000
+              ? getEffectiveRate(a, 0.112, 9360)
+              : a <= 720000
+                ? getEffectiveRate(a, 0.135, 17640)
+                : a <= 1800000
+                  ? getEffectiveRate(a, 0.16, 35640)
+                  : a <= 3600000
+                    ? getEffectiveRate(a, 0.21, 125640)
+                    : getEffectiveRate(a, 0.33, 648000),
+        IV: (a) =>
+          a <= 180000
+            ? 4.5
+            : a <= 360000
+              ? getEffectiveRate(a, 0.09, 8100)
+              : a <= 720000
+                ? getEffectiveRate(a, 0.102, 12420)
+                : a <= 1800000
+                  ? getEffectiveRate(a, 0.14, 39780)
+                  : a <= 3600000
+                    ? getEffectiveRate(a, 0.22, 183780)
+                    : getEffectiveRate(a, 0.33, 828000),
+        V: (a) =>
+          a <= 180000
+            ? 15.5
+            : a <= 360000
+              ? getEffectiveRate(a, 0.18, 4500)
+              : a <= 720000
+                ? getEffectiveRate(a, 0.195, 9900)
+                : a <= 1800000
+                  ? getEffectiveRate(a, 0.205, 17100)
+                  : a <= 3600000
+                    ? getEffectiveRate(a, 0.23, 62100)
+                    : getEffectiveRate(a, 0.305, 540000),
+      };
+
+      async function handleFiles(files) {
+        const msg = document.getElementById("statusMsg");
+        msg.innerText = "Carregando XMLs...";
+        const xmlTextList = [];
+        for (let file of files) {
+          if (file.name.endsWith(".xml")) xmlTextList.push(await file.text());
+          else if (file.name.endsWith(".zip")) {
+            const zipContent = await JSZip.loadAsync(file);
+            for (let name in zipContent.files) {
+              if (name.endsWith(".xml"))
+                xmlTextList.push(await zipContent.files[name].async("text"));
+            }
+          }
+        }
+
+        const parser = new DOMParser();
+        xmlTextList.forEach((xmlText) => {
+          try {
+            const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+            const emit = xmlDoc.getElementsByTagName("emit")[0];
+            const xEmit = emit
+              ? emit.getElementsByTagName("xNome")[0].textContent
+              : "---";
+            const nNF = xmlDoc.getElementsByTagName("nNF")[0].textContent;
+            const dets = xmlDoc.getElementsByTagName("det");
+            for (let det of dets) {
+              const prod = det.getElementsByTagName("prod")[0];
+              const cfop =
+                prod.getElementsByTagName("CFOP")[0]?.textContent || "---";
+              const ncm =
+                prod.getElementsByTagName("NCM")[0]?.textContent || "---";
+
+              uniqueCfops.add(cfop);
+              activeCfops.add(cfop);
+
+              allItems.push({
+                nNF,
+                emitNome: xEmit,
+                xProd: prod.getElementsByTagName("xProd")[0].textContent,
+                vProd: parseFloat(
+                  prod.getElementsByTagName("vProd")[0].textContent,
+                ),
+                cfop,
+                ncm,
+              });
+            }
+          } catch (e) {}
+        });
+
+        renderCfopChips();
+        document.getElementById("totalItens").innerText = allItems.length;
+        msg.innerText =
+          allItems.length +
+          " Itens Carregados. Clique em SIMULAR para processar.";
+
+        renderizarTabela(false); // Show preview
+      }
+
+      function renderCfopChips() {
+        const container = document.getElementById("cfopFilterSection");
+        const area = document.getElementById("cfopChipsArea");
+
+        if (uniqueCfops.size === 0) {
+          container.style.display = "none";
+          return;
+        }
+
+        container.style.display = "block";
+        area.innerHTML = "";
+
+        // Sort CFOPs
+        const sorted = Array.from(uniqueCfops).sort();
+
+        sorted.forEach((cfop) => {
+          const chip = document.createElement("div");
+          chip.className = `cfop-chip ${activeCfops.has(cfop) ? "active" : ""}`;
+          chip.innerHTML = `<i class="fas ${activeCfops.has(cfop) ? "fa-check-circle" : "fa-circle"}"></i> ${cfop}`;
+          chip.onclick = () => toggleCfop(cfop);
+          area.appendChild(chip);
+        });
+      }
+
+      function toggleCfop(cfop) {
+        if (activeCfops.has(cfop)) {
+          activeCfops.delete(cfop);
+        } else {
+          activeCfops.add(cfop);
+        }
+        renderCfopChips();
+        // If already simulated, re-run with new filter
+        const isSimulado =
+          document.querySelector("#tabelaDados tbody tr td:nth-child(5)")
+            ?.innerText !== "---";
+        if (isSimulado) {
+          recalcularTudo();
+        } else {
+          renderizarTabela(false);
+        }
+      }
+
+      function recalcularTudo() {
+        if (allItems.length === 0)
+          return alert("Por favor, importe arquivos XML primeiro.");
+
+        const fields = [
+          "inputRbt12",
+          "inputAnexo",
+          "inputShare",
+          "inputAliqIbs",
+          "inputAliqCbs",
+        ];
+        let hasError = false;
+
+        fields.forEach((id) => {
+          const el = document.getElementById(id);
+          if (!el.value) {
+            el.classList.add("input-error");
+            hasError = true;
+          } else {
+            el.classList.remove("input-error");
+          }
+        });
+
+        if (hasError) {
+          return alert(
+            "Atenção: Por favor, preencha todos os campos obrigatórios da simulação.",
+          );
+        }
+
+        const rbt12 =
+          parseFloat(document.getElementById("inputRbt12").value) || 0;
+        const anexo = document.getElementById("inputAnexo").value;
+        const share =
+          parseFloat(document.getElementById("inputShare").value) || 0;
+        const aliqIbs =
+          parseFloat(document.getElementById("inputAliqIbs").value) || 0;
+        const aliqCbs =
+          parseFloat(document.getElementById("inputAliqCbs").value) || 0;
+
+        const simplesRate = calculosSimples[anexo](rbt12);
+        const effShareRate = simplesRate * (share / 100);
+
+        document.getElementById("displayAliqSimples").innerText =
+          simplesRate.toFixed(2) + "%";
+        document.getElementById("displayAliqEf").innerText =
+          effShareRate.toFixed(2) + "%";
+
+        renderizarTabela(true, { effShareRate, aliqIbs, aliqCbs });
+      }
+
+      function renderizarTabela(isSimulado, params = {}) {
+        const tbody = document.querySelector("#tabelaDados tbody");
+        tbody.innerHTML = "";
+
+        let sumBcOrig = 0,
+          sumIbs = 0,
+          sumCbs = 0,
+          sumTotal = 0;
+
+        let filteredCount = 0;
+
+        allItems.forEach((item) => {
+          // Filter by CFOP
+          if (!activeCfops.has(item.cfop)) return;
+
+          filteredCount++;
+
+          let newBc = 0,
+            valIbs = 0,
+            valCbs = 0,
+            totalFinal = 0;
+
+          if (isSimulado) {
+            newBc = item.vProd * (1 - params.effShareRate / 100);
+            valIbs = newBc * (params.aliqIbs / 100);
+            valCbs = newBc * (params.aliqCbs / 100);
+            totalFinal = newBc + valIbs + valCbs;
+
+            sumBcOrig += item.vProd;
+            sumIbs += valIbs;
+            sumCbs += valCbs;
+            sumTotal += totalFinal;
+          }
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${item.nNF}</td>
+            <td onmouseover="showTooltip(event, '${item.emitNome.replace(/'/g, "\\'")}')" onmousemove="moveTooltip(event)" onmouseout="hideTooltip()">${item.emitNome}</td>
+            <td onmouseover="showTooltip(event, '${item.xProd.replace(/'/g, "\\'")}')" onmousemove="moveTooltip(event)" onmouseout="hideTooltip()">${item.xProd}</td>
+            <td>${item.ncm}</td>
+            <td>${item.cfop}</td>
+            <td class="money">${formatMoney(item.vProd)}</td>
+            <td class="money highlight">${isSimulado ? formatMoney(newBc) : "---"}</td>
+            <td class="money">${isSimulado ? params.aliqIbs.toFixed(2) + "%" : "---"}</td>
+            <td class="money">${isSimulado ? formatMoney(valIbs) : "---"}</td>
+            <td class="money">${isSimulado ? params.aliqCbs.toFixed(2) + "%" : "---"}</td>
+            <td class="money">${isSimulado ? formatMoney(valCbs) : "---"}</td>
+            <td class="money highlight" style="color:${isSimulado ? "var(--data-purple)" : "inherit"}">${isSimulado ? formatMoney(totalFinal) : "---"}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        document.getElementById("totalItens").innerText = filteredCount;
+
+        if (isSimulado) {
+          document.getElementById("totalBcOrig").innerText =
+            formatMoney(sumBcOrig);
+          document.getElementById("totalIbs").innerText = formatMoney(sumIbs);
+          document.getElementById("totalCbs").innerText = formatMoney(sumCbs);
+          const impacto = sumBcOrig > 0 ? (sumTotal / sumBcOrig - 1) * 100 : 0;
+          document.getElementById("totalImpacto").innerText =
+            (impacto > 0 ? "+" : "") + impacto.toFixed(2) + "%";
+
+          // NOVO: Cálculo do Valor Encargo Retirado (Base Total Filtrada * Alíquota Efetiva)
+          const valEf = sumBcOrig * (params.effShareRate / 100);
+          document.getElementById("displayValEf").innerText =
+            formatMoney(valEf);
+        } else {
+          document.getElementById("totalBcOrig").innerText = "0,00";
+          document.getElementById("totalIbs").innerText = "0,00";
+          document.getElementById("totalCbs").innerText = "0,00";
+          document.getElementById("totalImpacto").innerText = "0,00%";
+          document.getElementById("displayValEf").innerText = "---";
+        }
+      }
+
+      function showTooltip(event, text) {
+        const tooltip = document.getElementById("floatingTooltip");
+        tooltip.innerHTML = `<div class="tooltip-header">Detalhamento</div>${text}`;
+        tooltip.style.display = "block";
+        moveTooltip(event);
+      }
+      function moveTooltip(event) {
+        const tooltip = document.getElementById("floatingTooltip");
+        tooltip.style.left = event.clientX + 15 + "px";
+        tooltip.style.top = event.clientY + 15 + "px";
+      }
+      function hideTooltip() {
+        document.getElementById("floatingTooltip").style.display = "none";
+      }
+
+      function exportToCSV() {
+        if (allItems.length === 0) return alert("Sem dados para exportar");
+        let csv =
+          "sep=;\nNota;Emitente;Produto;NCM;CFOP;Valor Bruto;BC Liquida;Aliq IBS;Val IBS;Aliq CBS;Val CBS;Impacto Final\n";
+
+        const rbt12 =
+          parseFloat(document.getElementById("inputRbt12").value) || 0;
+        const anexo = document.getElementById("inputAnexo").value;
+        const share =
+          parseFloat(document.getElementById("inputShare").value) || 0;
+        const aliqIbs =
+          parseFloat(document.getElementById("inputAliqIbs").value) || 0;
+        const aliqCbs =
+          parseFloat(document.getElementById("inputAliqCbs").value) || 0;
+        const simplesRate = calculosSimples[anexo](rbt12);
+        const effShareRate = simplesRate * (share / 100);
+
+        allItems.forEach((item) => {
+          if (!activeCfops.has(item.cfop)) return;
+          const newBc = item.vProd * (1 - effShareRate / 100);
+          const valIbs = newBc * (aliqIbs / 100);
+          const valCbs = newBc * (aliqCbs / 100);
+          const total = newBc + valIbs + valCbs;
+          csv += `${item.nNF};${item.emitNome};${item.xProd};${item.ncm};${item.cfop};${item.vProd.toFixed(2).replace(".", ",")};${newBc.toFixed(2).replace(".", ",")};${aliqIbs};${valIbs.toFixed(2).replace(".", ",")};${aliqCbs};${valCbs.toFixed(2).replace(".", ",")};${total.toFixed(2).replace(".", ",")}\n`;
+        });
+
+        const blob = new Blob(["\uFEFF" + csv], {
+          type: "text/csv;charset=utf-8;",
+        });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "simulacao_simples_detalhada.csv";
+        link.click();
+      }
+    </script>
+  </body>
+</html>
