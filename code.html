@@ -1,475 +1,387 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard Dinâmico - Lançamentos por Usuário</title>
-    <!-- Incluindo Chart.js via CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-      /* CSS incorporado */
-      body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f4f4f4;
-        color: #333;
-      }
-      .container {
-        max-width: 1200px;
-        margin: 20px auto;
-        padding: 15px;
-        background-color: #fff;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        border-radius: 8px;
-      }
-      h1,
-      h2 {
-        text-align: center;
-        color: #0056b3; /* Azul escuro */
-      }
-      h2 {
-        color: #333; /* Cor mais suave para títulos de gráfico */
-        margin-top: 30px;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 5px;
-      }
-      .filter-container {
-        text-align: center;
-        margin-bottom: 30px;
-        padding: 15px;
-        background-color: #e9ecef;
-        border-radius: 5px;
-      }
-      .filter-container label {
-        margin-right: 10px;
-        font-weight: bold;
-      }
-      .filter-container select {
-        padding: 8px 12px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        min-width: 200px;
-      }
-      .charts-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-        gap: 25px;
-        margin-top: 20px;
-      }
-      .chart-container {
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        position: relative; /* Necessário para Chart.js responsivo */
-        min-height: 350px; /* Altura mínima para visualização */
-      }
-      .kpi-container {
-        display: flex;
-        justify-content: space-around;
-        flex-wrap: wrap;
-        gap: 15px;
-        margin-bottom: 30px;
-        padding: 15px;
-        background-color: #f8f9fa;
-        border-radius: 5px;
-      }
-      .kpi-card {
-        background-color: #007bff; /* Azul primário */
-        color: white;
-        padding: 15px 20px;
-        border-radius: 5px;
-        text-align: center;
-        min-width: 180px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-      .kpi-card .value {
-        font-size: 1.8em;
-        font-weight: bold;
-        display: block; /* Quebra de linha */
-        margin-bottom: 5px;
-      }
-      .kpi-card .label {
-        font-size: 0.9em;
-        opacity: 0.9;
-      }
-
-      /* Estilos específicos para KPIs de Lançamentos Manuais */
-      .kpi-card.manual {
-        background-color: #dc3545; /* Vermelho */
-      }
-      .kpi-card.percentage {
-        background-color: #ffc107; /* Amarelo */
-        color: #333;
-      }
-
-      /* Media query para telas menores */
-      @media (max-width: 600px) {
-        .charts-grid {
-          grid-template-columns: 1fr; /* Uma coluna em telas pequenas */
-        }
-        .kpi-container {
-          flex-direction: column;
-          align-items: center;
-        }
-        .kpi-card {
-          width: 80%; /* Ocupa mais largura */
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>Dashboard Dinâmico de Lançamentos</h1>
-
-      <!-- KPIs -->
-      <div class="kpi-container">
-        <div class="kpi-card">
-          <span class="value" id="kpi-total-geral">--</span>
-          <span class="label">Quantidade Total Geral</span>
-        </div>
-        <div class="kpi-card manual">
-          <span class="value" id="kpi-total-manual">--</span>
-          <span class="label">Total Lanç. Manuais</span>
-        </div>
-        <div class="kpi-card percentage">
-          <span class="value" id="kpi-perc-manual">--</span>
-          <span class="label">% Médio Manual</span>
-        </div>
-        <div class="kpi-card">
-          <span class="value" id="kpi-num-usuarios">--</span>
-          <span class="label">Nº de Usuários</span>
-        </div>
-      </div>
-
-      <!-- Filtro -->
-      <div class="filter-container">
-        <label for="user-select">Filtrar por Usuário:</label>
-        <select id="user-select">
-          <option value="TODOS">-- Todos os Usuários --</option>
-          <!-- Opções serão preenchidas via JavaScript -->
-        </select>
-      </div>
-
-      <!-- Grid de Gráficos -->
-      <div class="charts-grid">
-        <div class="chart-container">
-          <h2>Quantidade Total por Usuário</h2>
-          <canvas id="totalQuantityChart"></canvas>
-        </div>
-        <div class="chart-container">
-          <h2>Lançamentos Manuais por Usuário</h2>
-          <canvas id="manualEntriesChart"></canvas>
-        </div>
-        <div class="chart-container">
-          <h2>% de Lançamentos Manuais por Usuário</h2>
-          <canvas id="percentageManualChart"></canvas>
-        </div>
-        <div class="chart-container">
-          <h2>Comparativo: Total vs Manual</h2>
-          <canvas id="comparisonChart"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <script>
-      // JavaScript Incorporado
-
-      // 1. Dados Originais
-      const originalData = [
-        {
-          USUARIO: "GERENTE",
-          "QUANTIDADE TOTAL": 681963,
-          "LANÇAMENTOS MANUAIS": 155458,
-        },
-        {
-          USUARIO: "ANA PAULA",
-          "QUANTIDADE TOTAL": 29952,
-          "LANÇAMENTOS MANUAIS": 7348,
-        },
-        {
-          USUARIO: "FABIANE",
-          "QUANTIDADE TOTAL": 85989,
-          "LANÇAMENTOS MANUAIS": 13858,
-        },
-        {
-          USUARIO: "GUSTAVO",
-          "QUANTIDADE TOTAL": 27437,
-          "LANÇAMENTOS MANUAIS": 2088,
-        },
-        {
-          USUARIO: "JACK",
-          "QUANTIDADE TOTAL": 71326,
-          "LANÇAMENTOS MANUAIS": 17106,
-        },
-        {
-          USUARIO: "LECA",
-          "QUANTIDADE TOTAL": 45765,
-          "LANÇAMENTOS MANUAIS": 20754,
-        },
-        {
-          USUARIO: "MARIA",
-          "QUANTIDADE TOTAL": 27829,
-          "LANÇAMENTOS MANUAIS": 19269,
-        },
-        {
-          USUARIO: "SILMARA",
-          "QUANTIDADE TOTAL": 288732,
-          "LANÇAMENTOS MANUAIS": 34955,
-        },
-      ];
-
-      // Função para formatar números (adiciona pontos como separador de milhar)
-      function formatNumber(num) {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      }
-
-      // Função para calcular métricas e adicionar aos dados
-      function preprocessData(data) {
-        return data.map((item) => ({
-          ...item, // Copia propriedades existentes
-          "% MANUAL": item["QUANTIDADE TOTAL"]
-            ? (item["LANÇAMENTOS MANUAIS"] / item["QUANTIDADE TOTAL"]) * 100
-            : 0,
-          "QUANTIDADE NAO MANUAL":
-            item["QUANTIDADE TOTAL"] - item["LANÇAMENTOS MANUAIS"],
-        }));
-      }
-
-      // Preprocessa os dados originais
-      const dashboardData = preprocessData(originalData);
-
-      // 2. Referências aos Elementos HTML
-      const userSelect = document.getElementById("user-select");
-      const ctxTotal = document
-        .getElementById("totalQuantityChart")
-        ?.getContext("2d");
-      const ctxManual = document
-        .getElementById("manualEntriesChart")
-        ?.getContext("2d");
-      const ctxPercent = document
-        .getElementById("percentageManualChart")
-        ?.getContext("2d");
-      const ctxComparison = document
-        .getElementById("comparisonChart")
-        ?.getContext("2d");
-      const kpiTotalGeral = document.getElementById("kpi-total-geral");
-      const kpiTotalManual = document.getElementById("kpi-total-manual");
-      const kpiPercManual = document.getElementById("kpi-perc-manual");
-      const kpiNumUsuarios = document.getElementById("kpi-num-usuarios");
-
-      // 3. Variáveis para guardar as instâncias dos gráficos Chart.js
-      let totalChart, manualChart, percentChart, comparisonChart;
-
-      // 4. Função para criar/atualizar os gráficos
-      function createOrUpdateCharts(filteredData) {
-        if (!ctxTotal || !ctxManual || !ctxPercent || !ctxComparison) {
-          console.error("Um ou mais elementos canvas não foram encontrados!");
-          return;
-        }
-
-        // Destruir gráficos antigos se existirem
-        if (totalChart) totalChart.destroy();
-        if (manualChart) manualChart.destroy();
-        if (percentChart) percentChart.destroy();
-        if (comparisonChart) comparisonChart.destroy();
-
-        // Preparar dados para os gráficos
-        const labels = filteredData.map((item) => item.USUARIO);
-        const totalQuantities = filteredData.map(
-          (item) => item["QUANTIDADE TOTAL"]
-        );
-        const manualEntries = filteredData.map(
-          (item) => item["LANÇAMENTOS MANUAIS"]
-        );
-        const percentages = filteredData.map((item) => item["% MANUAL"]);
-        const nonManualQuantities = filteredData.map(
-          (item) => item["QUANTIDADE NAO MANUAL"]
-        );
-
-        // Cores consistentes
-        const colorTotal = "rgba(54, 162, 235, 0.7)"; // Azul
-        const colorManual = "rgba(255, 99, 132, 0.7)"; // Vermelho
-        const colorPercent = "rgba(255, 206, 86, 0.7)"; // Amarelo
-        const colorNonManual = "rgba(75, 192, 192, 0.7)"; // Verde-água
-
-        // Gráfico 1: Quantidade Total
-        totalChart = new Chart(ctxTotal, {
-          type: "bar",
-          data: {
-            labels: labels,
-            datasets: [
-              {
-                label: "Quantidade Total",
-                data: totalQuantities,
-                backgroundColor: colorTotal,
-                borderColor: "rgba(54, 162, 235, 1)",
-                borderWidth: 1,
-              },
-            ],
+<html class="dark"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#7414b8",
+            "gold": "#C5A059",
+            "charcoal": "#1a1121",
+            "background-light": "#fcfaf7",
+            "background-dark": "#0f0a14",
           },
-          options: { responsive: true, scales: { y: { beginAtZero: true } } },
-        });
-
-        // Gráfico 2: Lançamentos Manuais
-        manualChart = new Chart(ctxManual, {
-          type: "bar",
-          data: {
-            labels: labels,
-            datasets: [
-              {
-                label: "Lançamentos Manuais",
-                data: manualEntries,
-                backgroundColor: colorManual,
-                borderColor: "rgba(255, 99, 132, 1)",
-                borderWidth: 1,
-              },
-            ],
+          fontFamily: {
+            "display": ["Manrope", "sans-serif"],
+            "serif": ["Playfair Display", "serif"]
           },
-          options: {
-            responsive: true,
-            //maintainAspectRatio: false,
-            scales: { y: { beginAtZero: true } },
-          },
-        });
+          borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style type="text/tailwindcss">
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+      font-size: 20px;
+    }
+    .thin-border { border-color: rgba(197, 160, 89, 0.15); }
+    .gold-gradient-text {
+      background: linear-gradient(to right, #C5A059, #F2D091);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+</style>
+</head>
+<body class="bg-background-dark font-display text-slate-100 antialiased selection:bg-gold/30">
+<div class="flex min-h-screen">
+<aside class="w-72 flex flex-col border-r thin-border bg-background-dark/80 backdrop-blur-xl sticky top-0 h-screen z-50">
+<div class="p-8">
+<div class="flex items-center gap-3 mb-12">
+<div class="size-10 rounded-full bg-primary flex items-center justify-center text-white font-serif italic text-xl">
+          M
+        </div>
+<div>
+<h1 class="font-serif text-xl tracking-wide">Maison Luxe</h1>
+<p class="text-[10px] uppercase tracking-[0.2em] text-gold font-bold">Paris • Milan</p>
+</div>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg bg-primary/10 text-primary border border-primary/20" href="#overview">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium tracking-wide">Overview</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-slate-500 hover:text-gold transition-colors" href="#regions">
+<span class="material-symbols-outlined">public</span>
+<span class="text-sm font-medium tracking-wide">Global Reach</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-slate-500 hover:text-gold transition-colors" href="#collections">
+<span class="material-symbols-outlined">auto_awesome_motion</span>
+<span class="text-sm font-medium tracking-wide">Collections</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-slate-500 hover:text-gold transition-colors" href="#calendar">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="text-sm font-medium tracking-wide">Fiscal Calendar</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-8 border-t thin-border">
+<div class="flex items-center gap-3 mb-6">
+<div class="size-10 rounded-full bg-slate-800 bg-cover bg-center border border-gold/20" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDZQHzO4relejxOi01Aqvjg9A_IxSoorBHCXaLlsLbW1IhINIZ1WAB6_KppWa3y6NgF_E9nHuotRceyS2V1_6QOYbK6gq6rGaVmXVc07CsAmBpaTJdwbd5_e8DLRa6WOC5BDEEZFP24ix_Cn0VheCVmFae6lNnwxUyWCGX2BHdKsL0BpSoVRvuehvk0lIqiWYruACRoovZA-lOKBTBp2YPk82sBkJgUzg3HStc5wMJIAbu3HECSt9Spd_ibZoLiiuyV3qq1dSpPynLP')"></div>
+<div>
+<p class="text-sm font-bold">Julian Vasseur</p>
+<p class="text-[10px] uppercase text-slate-500 tracking-wider">CFO • Maison Luxe</p>
+</div>
+</div>
+<button class="w-full py-3 rounded-lg border border-gold/30 text-gold text-xs font-bold uppercase tracking-widest hover:bg-gold hover:text-white transition-all">
+        Download Report
+      </button>
+</div>
+</aside>
+<main class="flex-1 bg-background-dark p-10 max-w-7xl mx-auto overflow-x-hidden">
+<header class="flex justify-between items-end mb-16 scroll-mt-10" id="overview">
+<div>
+<h2 class="font-serif text-6xl mb-4 text-slate-50">Executive Analytics</h2>
+<p class="text-slate-500 font-light tracking-widest italic text-lg">Q3 Fiscal Performance &amp; Global Growth Insights</p>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="pl-10 pr-4 py-2 bg-transparent border-b thin-border focus:border-gold outline-none text-sm transition-all w-48 focus:w-64" placeholder="Search data..." type="text"/>
+</div>
+<button class="size-10 rounded-full border thin-border flex items-center justify-center text-slate-500 hover:text-gold transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+</header>
+<section class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+<div class="bg-charcoal p-10 border thin-border relative overflow-hidden group">
+<div class="absolute -top-4 -right-4 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+<span class="material-symbols-outlined text-8xl">payments</span>
+</div>
+<p class="text-[10px] uppercase tracking-[0.3em] text-gold font-bold mb-6">Total Revenue</p>
+<p class="text-5xl font-light font-display mb-3">$4.2M</p>
+<div class="flex items-center gap-2 text-emerald-500 text-xs font-medium tracking-wide">
+<span class="material-symbols-outlined !text-sm">trending_up</span>
+<span>+5.2% VS LAST QUARTER</span>
+</div>
+</div>
+<div class="bg-charcoal p-10 border thin-border relative overflow-hidden">
+<p class="text-[10px] uppercase tracking-[0.3em] text-gold font-bold mb-6">Tax Liability</p>
+<p class="text-5xl font-light font-display mb-3">24.5%</p>
+<div class="flex items-center gap-2 text-slate-400 text-xs font-medium tracking-wide">
+<span class="material-symbols-outlined !text-sm">remove</span>
+<span>STABLE TRAJECTORY</span>
+</div>
+</div>
+<div class="bg-charcoal p-10 border thin-border relative overflow-hidden">
+<p class="text-[10px] uppercase tracking-[0.3em] text-gold font-bold mb-6">Market Expansion</p>
+<p class="text-5xl font-light font-display mb-3">+12.8%</p>
+<div class="flex items-center gap-2 text-emerald-500 text-xs font-medium tracking-wide">
+<span class="material-symbols-outlined !text-sm">trending_up</span>
+<span>+1.5% VS INDUSTRY AVG</span>
+</div>
+</div>
+</section>
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-20">
+<div class="lg:col-span-2 bg-charcoal p-10 border thin-border">
+<div class="flex justify-between items-center mb-10">
+<h3 class="font-serif text-3xl italic">Revenue Trends</h3>
+<select class="bg-transparent border thin-border px-4 py-1 text-[10px] text-gold uppercase tracking-[0.2em] font-bold focus:ring-0">
+<option>Last 6 Months</option>
+<option>Yearly</option>
+</select>
+</div>
+<div class="h-64 w-full relative">
+<svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 800 200">
+<defs>
+<linearGradient id="line-grad" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:var(--gold);stop-opacity:0.2"></stop>
+<stop offset="100%" style="stop-color:var(--gold);stop-opacity:0"></stop>
+</linearGradient>
+</defs>
+<path d="M0,150 Q100,140 150,80 T300,100 T450,40 T600,60 T800,20 V200 H0 Z" fill="url(#line-grad)"></path>
+<path d="M0,150 Q100,140 150,80 T300,100 T450,40 T600,60 T800,20" fill="none" stroke="#C5A059" stroke-width="2"></path>
+<circle cx="150" cy="80" fill="#C5A059" r="4"></circle>
+<circle cx="450" cy="40" fill="#C5A059" r="4"></circle>
+<circle cx="800" cy="20" fill="#C5A059" r="4"></circle>
+</svg>
+<div class="flex justify-between mt-6 text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold">
+<span>January</span><span>February</span><span>March</span><span>April</span><span>May</span><span>June</span>
+</div>
+</div>
+</div>
+<div class="bg-charcoal p-10 border thin-border flex flex-col items-center justify-center text-center">
+<h3 class="font-serif text-3xl mb-12 w-full text-left italic">Tax Distribution</h3>
+<div class="relative size-56">
+<svg class="size-full -rotate-90" viewBox="0 0 36 36">
+<circle cx="18" cy="18" fill="transparent" r="15.9" stroke="#251b2e" stroke-width="2.5"></circle>
+<circle cx="18" cy="18" fill="transparent" r="15.9" stroke="#C5A059" stroke-dasharray="70 100" stroke-linecap="round" stroke-width="2.5"></circle>
+<circle cx="18" cy="18" fill="transparent" r="13" stroke="#7414b8" stroke-dasharray="30 100" stroke-dashoffset="-70" stroke-linecap="round" stroke-width="1.5"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-3xl font-light font-display">$1.02M</span>
+<span class="text-[10px] uppercase text-slate-400 tracking-widest mt-1">Net Allocation</span>
+</div>
+</div>
+<div class="mt-12 grid grid-cols-2 gap-8 w-full border-t thin-border pt-8">
+<div class="flex items-center gap-3">
+<div class="size-2 rounded-full bg-gold"></div>
+<span class="text-xs text-slate-500 uppercase tracking-widest font-bold">VAT (70%)</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="size-2 rounded-full bg-primary"></div>
+<span class="text-xs text-slate-500 uppercase tracking-widest font-bold">Corp (30%)</span>
+</div>
+</div>
+</div>
+</section>
+<section class="mb-20 scroll-mt-20" id="regions">
+<div class="flex justify-between items-baseline mb-12 border-b thin-border pb-6">
+<h3 class="font-serif text-4xl italic">Revenue by Global Region</h3>
+<p class="text-gold text-[10px] uppercase tracking-[0.3em] font-bold">International Logistics Hub</p>
+</div>
+<div class="bg-charcoal p-10 border thin-border">
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
+<div class="lg:col-span-3 h-[400px] relative bg-background-dark/30 rounded-lg overflow-hidden flex items-center justify-center">
+<svg class="w-full h-full opacity-20" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg">
+<path d="M150,150 Q200,100 250,150 T350,180 T450,140 T550,160 T650,120 T750,150 T850,100" fill="none" stroke="#C5A059" stroke-dasharray="4 4" stroke-width="1"></path>
+<circle cx="210" cy="160" fill="#C5A059" r="5"></circle>
+<circle cx="480" cy="140" fill="#C5A059" r="8"></circle>
+<circle cx="780" cy="180" fill="#C5A059" r="12"></circle>
+<circle cx="580" cy="350" fill="#C5A059" r="6"></circle>
+</svg>
+<div class="absolute top-1/2 left-1/4 -translate-y-1/2 p-4 bg-charcoal/80 backdrop-blur-md border border-gold/20">
+<p class="text-[10px] text-gold uppercase tracking-widest mb-1">EMEA</p>
+<p class="text-xl font-serif">€1.8M</p>
+</div>
+<div class="absolute top-1/3 right-1/4 -translate-y-1/2 p-4 bg-charcoal/80 backdrop-blur-md border border-gold/20">
+<p class="text-[10px] text-gold uppercase tracking-widest mb-1">APAC</p>
+<p class="text-xl font-serif">¥142M</p>
+</div>
+</div>
+<div class="space-y-8 flex flex-col justify-center">
+<div>
+<p class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold mb-2">North America</p>
+<p class="text-2xl font-light">$1.24M</p>
+<div class="w-full bg-slate-800 h-1 mt-2">
+<div class="bg-gold h-1 w-[35%]"></div>
+</div>
+</div>
+<div>
+<p class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold mb-2">Europe (Mainland)</p>
+<p class="text-2xl font-light">€1.12M</p>
+<div class="w-full bg-slate-800 h-1 mt-2">
+<div class="bg-gold h-1 w-[28%]"></div>
+</div>
+</div>
+<div>
+<p class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold mb-2">Asia Pacific</p>
+<p class="text-2xl font-light">$0.98M</p>
+<div class="w-full bg-slate-800 h-1 mt-2">
+<div class="bg-gold h-1 w-[22%]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="mb-20 scroll-mt-20" id="collections">
+<div class="flex justify-between items-baseline mb-12 border-b thin-border pb-6">
+<h3 class="font-serif text-4xl italic">Top Performing Collections</h3>
+<p class="text-gold text-[10px] uppercase tracking-[0.3em] font-bold">Artisanal Footwear metrics</p>
+</div>
+<div class="grid grid-cols-1 gap-12">
+<div class="bg-charcoal border thin-border flex flex-col lg:flex-row overflow-hidden group">
+<div class="lg:w-1/2 relative overflow-hidden h-[400px]">
+<img class="h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-100" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6O6HbkrIk1zDggxtiYwLqC7MD8gRaobhuM-gSpKO8Q2JdBtCYHHM9CtJ7iGZdUjIH26olsJF6dxeBA5X2ybEXR-K7XbDJkjXDMnriaLnKpIKj2JDGlc_8hWamP7jcGtuWQRo1hFsDVed7lHb_yXsum1rWedTHhYyueofWRJk5r6SwddyGf0ideTFkicO2MRRexDmXWy8a0HQqPTLJ8a6ks8bn0eV4dRaLdui2Cfx5-jzmSYM47TPYZjlciJmJoaEM08VFr2pA79jD"/>
+<div class="absolute inset-0 bg-gradient-to-t from-charcoal/80 to-transparent"></div>
+<div class="absolute bottom-10 left-10">
+<h4 class="font-serif text-5xl text-white italic">The Stiletto Collection</h4>
+<p class="text-gold tracking-[0.4em] uppercase text-xs mt-2">Signature High Heel Series</p>
+</div>
+</div>
+<div class="lg:w-1/2 p-12 flex flex-col justify-center">
+<div class="grid grid-cols-2 gap-8 mb-10">
+<div class="p-6 border thin-border bg-background-dark/50">
+<p class="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Quarterly Revenue</p>
+<p class="text-3xl font-display font-light">$1,240,000</p>
+</div>
+<div class="p-6 border thin-border bg-background-dark/50">
+<p class="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Effective Tax Rate</p>
+<p class="text-3xl font-display font-light">18.2%</p>
+</div>
+<div class="p-6 border thin-border bg-background-dark/50">
+<p class="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Tax Contribution</p>
+<p class="text-3xl font-display font-light">$225,680</p>
+</div>
+<div class="p-6 border thin-border bg-background-dark/50">
+<p class="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Units Distributed</p>
+<p class="text-3xl font-display font-light">2,400</p>
+</div>
+</div>
+<p class="text-slate-400 font-light leading-relaxed">
+              Consistently leading our portfolio, the Stiletto Collection continues to outperform projections in the EMEA market, driven by limited edition releases in Milan and Paris.
+            </p>
+</div>
+</div>
+<div class="bg-charcoal border thin-border flex flex-col lg:flex-row-reverse overflow-hidden group">
+<div class="lg:w-1/2 relative overflow-hidden h-[400px]">
+<img class="h-full w-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-100" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARZGhrr-Z2eaiV697ochUxPjbi9wej7mZXdUr7bBHYRty8NdoeeRI1smN0EtiK_Ld6g4zRH3H1FAjifdm8dEheEmTYd8RE4YhMQbjw1xpfYxhCkNXsdYSnpXqHqWApBOUwUnY4DYBhH0mz8Olwmeo-AjW7m5MGvJGAy3qLwON4d7kcr6RODzFvgGSl9Mj18YX8qUkY273hC9Rk8JAHS0txwNWEWBQYIxz0xlIvJTK4_I_RSPhEYmEHR3iXCwKeTTJ3sHgG-r5KJDWI"/>
+<div class="absolute inset-0 bg-gradient-to-t from-charcoal/80 to-transparent"></div>
+<div class="absolute bottom-10 right-10 text-right">
+<h4 class="font-serif text-5xl text-white italic">Oxford Heritage</h4>
+<p class="text-gold tracking-[0.4em] uppercase text-xs mt-2">Artisanal Hand-Crafted Leather</p>
+</div>
+</div>
+<div class="lg:w-1/2 p-12 flex flex-col justify-center">
+<div class="grid grid-cols-2 gap-8 mb-10">
+<div class="p-6 border thin-border bg-background-dark/50">
+<p class="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Quarterly Revenue</p>
+<p class="text-3xl font-display font-light">$892,000</p>
+</div>
+<div class="p-6 border thin-border bg-background-dark/50">
+<p class="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Effective Tax Rate</p>
+<p class="text-3xl font-display font-light">21.5%</p>
+</div>
+<div class="p-6 border thin-border bg-background-dark/50">
+<p class="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Tax Contribution</p>
+<p class="text-3xl font-display font-light">$191,780</p>
+</div>
+<div class="p-6 border thin-border bg-background-dark/50">
+<p class="text-[10px] text-slate-500 uppercase tracking-widest mb-1">Inventory Turn</p>
+<p class="text-3xl font-display font-light">4.8x</p>
+</div>
+</div>
+<p class="text-slate-400 font-light leading-relaxed">
+              The Oxford Heritage line shows exceptional resilience in the North American market, maintaining premium margins despite global supply chain headwinds.
+            </p>
+</div>
+</div>
+</div>
+</section>
+<section class="mb-20 scroll-mt-20" id="calendar">
+<div class="flex justify-between items-baseline mb-12 border-b thin-border pb-6">
+<h3 class="font-serif text-4xl italic">Fiscal Calendar</h3>
+<p class="text-gold text-[10px] uppercase tracking-[0.3em] font-bold">Q4 Compliance &amp; Deadlines</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="bg-charcoal border thin-border p-8 hover:border-gold/50 transition-colors">
+<p class="text-gold font-bold text-xs mb-6 font-display tracking-widest">OCT 15</p>
+<h5 class="font-serif text-xl mb-3">Q3 Corporate Tax</h5>
+<p class="text-slate-500 text-sm leading-relaxed mb-4">Final submission for European Union subsidiaries.</p>
+<span class="text-[10px] py-1 px-2 border border-primary/40 text-primary uppercase font-bold tracking-tighter">High Priority</span>
+</div>
+<div class="bg-charcoal border thin-border p-8 hover:border-gold/50 transition-colors">
+<p class="text-slate-400 font-bold text-xs mb-6 font-display tracking-widest">OCT 31</p>
+<h5 class="font-serif text-xl mb-3">VAT Reconciliation</h5>
+<p class="text-slate-500 text-sm leading-relaxed mb-4">Monthly audit for all international retail locations.</p>
+<span class="text-[10px] py-1 px-2 border border-slate-700 text-slate-500 uppercase font-bold tracking-tighter">Scheduled</span>
+</div>
+<div class="bg-charcoal border thin-border p-8 hover:border-gold/50 transition-colors">
+<p class="text-slate-400 font-bold text-xs mb-6 font-display tracking-widest">NOV 15</p>
+<h5 class="font-serif text-xl mb-3">Audit Review</h5>
+<p class="text-slate-500 text-sm leading-relaxed mb-4">Internal performance audit for the Stiletto collection.</p>
+<span class="text-[10px] py-1 px-2 border border-slate-700 text-slate-500 uppercase font-bold tracking-tighter">Preparation</span>
+</div>
+<div class="bg-charcoal border thin-border p-8 hover:border-gold/50 transition-colors">
+<p class="text-gold font-bold text-xs mb-6 font-display tracking-widest">DEC 10</p>
+<h5 class="font-serif text-xl mb-3">Year-End Forecast</h5>
+<p class="text-slate-500 text-sm leading-relaxed mb-4">Final board presentation for the upcoming fiscal year.</p>
+<span class="text-[10px] py-1 px-2 border border-gold/40 text-gold uppercase font-bold tracking-tighter">Board Review</span>
+</div>
+</div>
+</section>
+<footer class="mt-40 border-t thin-border pt-16 pb-12">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+<div class="col-span-1 md:col-span-1">
+<div class="flex items-center gap-3 mb-6">
+<div class="size-8 rounded-full bg-primary flex items-center justify-center text-white font-serif italic text-sm">M</div>
+<span class="font-serif text-lg tracking-wide">Maison Luxe</span>
+</div>
+<p class="text-slate-500 text-xs leading-relaxed max-w-xs font-light">
+                    The leading global standard in luxury fashion financial reporting and analytics. Headquartered in Paris, serving elite houses worldwide.
+                </p>
+</div>
+<div>
+<h6 class="text-gold text-[10px] uppercase tracking-[0.3em] font-bold mb-6">Contact</h6>
+<ul class="text-slate-400 text-xs space-y-3 font-light">
+<li>Avenue Montaigne, 75008 Paris</li>
+<li>+33 (0) 1 40 70 00 00</li>
+<li class="hover:text-gold cursor-pointer transition-colors">executive@maisonluxe.com</li>
+</ul>
+</div>
+<div>
+<h6 class="text-gold text-[10px] uppercase tracking-[0.3em] font-bold mb-6">Offices</h6>
+<ul class="text-slate-400 text-xs space-y-3 font-light">
+<li>Paris • Milan • London</li>
+<li>New York • Tokyo • Dubai</li>
+<li>Hong Kong • Shanghai</li>
+</ul>
+</div>
+<div>
+<h6 class="text-gold text-[10px] uppercase tracking-[0.3em] font-bold mb-6">Legal</h6>
+<ul class="text-slate-400 text-xs space-y-3 font-light">
+<li class="hover:text-gold cursor-pointer transition-colors">Privacy Policy</li>
+<li class="hover:text-gold cursor-pointer transition-colors">Terms of Compliance</li>
+<li class="hover:text-gold cursor-pointer transition-colors">Global Tax Standards</li>
+</ul>
+</div>
+</div>
+<div class="flex flex-col md:flex-row justify-between items-center border-t border-slate-900 pt-8 gap-4">
+<p class="text-[10px] text-slate-600 uppercase tracking-widest">© 2024 MAISON LUXE FINANCIAL GROUP. ALL RIGHTS RESERVED.</p>
+<div class="flex gap-8">
+<span class="text-[10px] text-slate-600 uppercase tracking-[0.3em]">SECURE ACCESS ONLY</span>
+<span class="text-[10px] text-slate-600 uppercase tracking-[0.3em]">AES-256 ENCRYPTED</span>
+</div>
+</div>
+</footer>
+</main>
+</div>
 
-        // Gráfico 3: Percentual Manual
-        percentChart = new Chart(ctxPercent, {
-          type: "bar",
-          data: {
-            labels: labels,
-            datasets: [
-              {
-                label: "% Manual",
-                data: percentages,
-                backgroundColor: colorPercent,
-                borderColor: "rgba(255, 206, 86, 1)",
-                borderWidth: 1,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            //maintainAspectRatio: false,
-            scales: {
-              y: {
-                beginAtZero: true,
-                ticks: { callback: (value) => value.toFixed(1) + "%" }, // Formata eixo Y
-              },
-            },
-            plugins: {
-              tooltip: {
-                callbacks: {
-                  label: (context) =>
-                    `${context.dataset.label}: ${context.parsed.y.toFixed(1)}%`,
-                },
-              },
-            }, // Formata tooltip
-          },
-        });
-
-        // Gráfico 4: Comparativo Empilhado ou Agrupado
-        comparisonChart = new Chart(ctxComparison, {
-          type: "bar", // Pode ser 'bar' (agrupado) ou deixar empilhado (ver opções)
-          data: {
-            labels: labels,
-            datasets: [
-              {
-                label: "Lanç. Manuais",
-                data: manualEntries,
-                backgroundColor: colorManual,
-                borderColor: "rgba(255, 99, 132, 1)",
-                borderWidth: 1,
-              },
-              {
-                label: "Outros Lançamentos",
-                data: nonManualQuantities,
-                backgroundColor: colorNonManual,
-                borderColor: "rgba(75, 192, 192, 1)",
-                borderWidth: 1,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            //maintainAspectRatio: false,
-            scales: {
-              x: { stacked: true }, // Empilha no eixo X
-              y: { stacked: true, beginAtZero: true }, // Empilha no eixo Y
-            },
-            // Se quiser barras agrupadas em vez de empilhadas, remova 'stacked: true' das opções de scales.
-          },
-        });
-      }
-
-      // 5. Função para atualizar os KPIs
-      function updateKPIs(data) {
-        const totalGeral = data.reduce(
-          (sum, item) => sum + item["QUANTIDADE TOTAL"],
-          0
-        );
-        const totalManual = data.reduce(
-          (sum, item) => sum + item["LANÇAMENTOS MANUAIS"],
-          0
-        );
-        const percMedioManual =
-          totalGeral > 0 ? (totalManual / totalGeral) * 100 : 0;
-        const numUsuarios = new Set(data.map((item) => item.USUARIO)).size; // Conta usuários únicos nos dados filtrados
-
-        if (kpiTotalGeral) kpiTotalGeral.textContent = formatNumber(totalGeral);
-        if (kpiTotalManual)
-          kpiTotalManual.textContent = formatNumber(totalManual);
-        if (kpiPercManual)
-          kpiPercManual.textContent = percMedioManual.toFixed(1) + "%";
-
-        // O KPI de número de usuários deve mostrar o total OU 1 se filtrado
-        if (kpiNumUsuarios) {
-          const selectedUser = userSelect.value;
-          kpiNumUsuarios.textContent =
-            selectedUser === "TODOS"
-              ? originalData.length
-              : data.length > 0
-              ? "1"
-              : "0";
-        }
-      }
-
-      // 6. Função para preencher o filtro de usuários
-      function populateUserFilter() {
-        const uniqueUsers = [
-          ...new Set(originalData.map((item) => item.USUARIO)),
-        ];
-        uniqueUsers.sort().forEach((user) => {
-          const option = document.createElement("option");
-          option.value = user;
-          option.textContent = user;
-          userSelect.appendChild(option);
-        });
-      }
-
-      // 7. Função para lidar com a mudança no filtro
-      function handleFilterChange() {
-        const selectedUser = userSelect.value;
-        let filteredData;
-
-        if (selectedUser === "TODOS") {
-          filteredData = dashboardData; // Usa os dados pré-processados completos
-        } else {
-          filteredData = dashboardData.filter(
-            (item) => item.USUARIO === selectedUser
-          );
-        }
-
-        createOrUpdateCharts(filteredData);
-        updateKPIs(filteredData); // Atualiza KPIs com base nos dados filtrados
-      }
-
-      // 8. Inicialização do Dashboard
-      populateUserFilter(); // Preenche o dropdown de usuários
-      createOrUpdateCharts(dashboardData); // Cria os gráficos iniciais com todos os dados
-      updateKPIs(dashboardData); // Calcula e exibe os KPIs iniciais
-      userSelect.addEventListener("change", handleFilterChange); // Adiciona o listener para o filtro
-    </script>
-  </body>
-</html>
+</body></html>
