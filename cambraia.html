@@ -1,0 +1,1415 @@
+<!doctype html>
+<html lang="pt-BR" class="dark scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Impacto da Reforma Tributária - Cambraia e Marques</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#2A2420",
+              secondary: "#3D2F28",
+              gold: "#E8C97D",
+              "gold-dim": "#C2A85A",
+              platinum: "#C2B8AE",
+              "background-dark": "#141210",
+              charcoal: "#1A1714",
+            },
+            fontFamily: {
+              display: ["Manrope", "sans-serif"],
+              serif: ["Playfair Display", "serif"],
+            },
+          },
+        },
+      };
+    </script>
+
+    <style type="text/tailwindcss">
+      @layer utilities {
+        .thin-border {
+          @apply border-gold/15 border;
+        }
+        .glass-panel {
+          @apply bg-charcoal/80 backdrop-blur-xl border border-gold/10 hover:border-gold/25 transition-all duration-300 rounded-xl;
+        }
+        .gold-text {
+          @apply bg-gradient-to-r from-[#C2A85A] to-[#E8C97D] bg-clip-text text-transparent;
+        }
+        .nav-link {
+          @apply flex items-center gap-4 px-4 py-3 rounded-lg text-stone-400 hover:text-gold hover:bg-gold/5 transition-all w-full text-left;
+        }
+      }
+
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 1,
+          "wght" 200,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+
+      /* Custom Animations */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes glowPulse {
+        0%,
+        100% {
+          filter: drop-shadow(0 0 5px rgba(232, 201, 125, 0.2));
+        }
+        50% {
+          filter: drop-shadow(0 0 15px rgba(232, 201, 125, 0.45));
+        }
+      }
+
+      @keyframes shimmer {
+        0% {
+          transform: translateX(-100%);
+        }
+        100% {
+          transform: translateX(100%);
+        }
+      }
+
+      .animate-entrance {
+        animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+
+      .stagger-1 {
+        animation-delay: 0.1s;
+      }
+      .stagger-2 {
+        animation-delay: 0.2s;
+      }
+      .stagger-3 {
+        animation-delay: 0.3s;
+      }
+
+      .glass-panel {
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* shimmer contido dentro do card via clip-path no container de badge */
+      .glass-panel::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.04),
+          transparent
+        );
+        transform: translateX(-100%);
+        transition: 0.5s;
+        pointer-events: none;
+      }
+
+      .glass-panel:hover::after {
+        animation: shimmer 1.5s infinite;
+      }
+
+      .glass-panel:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+      }
+
+      /* ── Welcome Screen ──────────────────────────────────────── */
+      #welcome-screen {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(28px) saturate(0.6);
+        -webkit-backdrop-filter: blur(28px) saturate(0.6);
+        background: rgba(14, 12, 10, 0.75);
+        transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                    backdrop-filter 0.8s ease,
+                    visibility 0.8s ease;
+      }
+
+      #welcome-screen.dismissed {
+        opacity: 0;
+        backdrop-filter: blur(0px);
+        -webkit-backdrop-filter: blur(0px);
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      #welcome-screen .welcome-card {
+        text-align: center;
+        max-width: 560px;
+        padding: 0 2rem;
+        animation: fadeSlideUp 1s cubic-bezier(0.34, 1.0, 0.64, 1) both;
+        animation-delay: 0.2s;
+      }
+
+      @keyframes fadeSlideUp {
+        from { opacity: 0; transform: translateY(28px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      #welcome-screen .welcome-logo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 1.5px solid rgba(232, 201, 125, 0.4);
+        background: rgba(20, 18, 16, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        color: #E8C97D;
+        margin: 0 auto 2rem;
+        box-shadow: 0 0 40px rgba(232, 201, 125, 0.18),
+                    inset 0 0 20px rgba(232, 201, 125, 0.05);
+        animation: glowPulse 3s infinite ease-in-out;
+      }
+
+      #welcome-screen .welcome-firm {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        color: #F0E8DC;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        line-height: 1.1;
+        margin-bottom: 2rem;
+        white-space: nowrap;
+      }
+
+      #welcome-screen .welcome-amp {
+        font-size: 1rem;
+        color: rgba(232, 201, 125, 0.5);
+        font-style: italic;
+        letter-spacing: 0;
+        margin: 0 0.4em;
+        vertical-align: middle;
+      }
+
+      #welcome-screen .welcome-divider {
+        width: 40px;
+        height: 1px;
+        background: linear-gradient(to right, transparent, rgba(232,201,125,0.5), transparent);
+        margin: 0 auto 2rem;
+      }
+
+      #welcome-screen .welcome-msg {
+        font-size: 0.9rem;
+        color: rgba(194, 184, 174, 0.65);
+        letter-spacing: 0.05em;
+        margin-bottom: 3rem;
+        line-height: 1.7;
+      }
+
+      #btn-iniciar {
+        position: relative;
+        padding: 14px 52px;
+        background: transparent;
+        border: 1px solid rgba(232, 201, 125, 0.5);
+        border-radius: 2px;
+        color: #E8C97D;
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        cursor: pointer;
+        overflow: hidden;
+        transition: color 0.4s ease, box-shadow 0.4s ease;
+      }
+
+      #btn-iniciar::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(232, 201, 125, 0.08);
+        transform: translateX(-101%);
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      #btn-iniciar:hover {
+        color: #F5E8C0;
+        box-shadow: 0 0 24px rgba(232, 201, 125, 0.15);
+      }
+
+      #btn-iniciar:hover::before {
+        transform: translateX(0);
+      }
+
+      /* Logo topo melhorado */
+      #top-logo {
+        position: fixed;
+        top: 24px;
+        left: 36px;
+        z-index: 9998;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      /* Entrance Animation Utility */
+      .reveal-text {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .reveal-text::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #E8C97D;
+        transform: translateX(-101%);
+        transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1);
+      }
+
+      .reveal-text.active::after {
+        transform: translateX(101%);
+      }
+
+      html, body {
+        overflow-x: hidden;
+        max-width: 100%;
+      }
+
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #141210;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #3D2F28;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #C2A85A;
+      }
+    </style>
+  </head>
+
+  <body
+    class="bg-background-dark text-stone-200 font-display min-h-screen flex flex-col antialiased selection:bg-gold/20 overflow-x-hidden w-full"
+  >
+    <div id="progress-bar"></div>
+    <div
+      class="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden z-[-1]"
+    >
+      <div
+        class="absolute top-[-15%] right-[-10%] w-[600px] h-[600px] rounded-full blur-[160px] animate-pulse"
+        style="background: radial-gradient(circle, rgba(232,201,125,0.06) 0%, rgba(194,168,90,0.03) 60%, transparent 100%); animation-delay: 0s;"
+      ></div>
+      <div
+        class="absolute bottom-[-15%] left-[-10%] w-[500px] h-[500px] rounded-full blur-[140px] animate-pulse"
+        style="background: radial-gradient(circle, rgba(61,47,40,0.2) 0%, rgba(42,36,32,0.1) 60%, transparent 100%); animation-delay: 2s;"
+      ></div>
+    </div>
+    <!-- Tela de Boas-vindas -->
+    <div id="welcome-screen">
+      <div class="welcome-card">
+        <div class="welcome-logo">C</div>
+        <p class="welcome-firm">
+          Cambraia <span class="welcome-amp">&amp;</span> Marques
+        </p>
+        <div class="welcome-divider"></div>
+        <p class="welcome-msg">
+          Bem-vindo ao seu painel tributário exclusivo.<br>
+          Impacto da Reforma Tributária — Jan/2026.
+        </p>
+        <button id="btn-iniciar">Iniciar</button>
+      </div>
+    </div>
+
+    <!-- Logo fixo topo esquerdo -->
+    <div id="top-logo" class="animate-entrance stagger-1">
+      <div
+        class="size-14 rounded-full bg-background-dark flex items-center justify-center text-gold font-serif text-2xl border border-gold/30 shadow-[0_0_28px_rgba(232,201,125,0.2)] logo-glow shrink-0"
+      >
+        C
+      </div>
+      <div>
+        <p class="font-serif text-xl tracking-wide text-stone-100 leading-tight">Cambraia</p>
+        <p class="text-[10px] uppercase tracking-[0.3em] text-gold/70 font-semibold">& Marques</p>
+      </div>
+    </div>
+
+    <main
+      class="flex-1 px-8 lg:px-20 xl:px-28 w-full max-w-[1440px] mx-auto overflow-x-hidden pt-24"
+    >
+      <!-- 1. Capa -->
+      <section
+        id="capa"
+        class="min-h-[90vh] flex flex-col justify-center relative pb-20 pt-10 scroll-mt-24"
+      >
+        <div
+          class="absolute right-0 top-10 opacity-[0.03] z-0 pointer-events-none"
+        >
+          <span class="material-symbols-outlined text-[400px]"
+            >account_balance</span
+          >
+        </div>
+
+        <div class="relative z-10">
+          <p
+            class="text-gold uppercase tracking-[0.4em] text-xs font-bold mb-6 flex items-center gap-3 animate-entrance stagger-1"
+          >
+            <span class="w-8 h-[1px] bg-gold"></span> Estudo de Impacto -
+            Jan/2026
+          </p>
+          <h1
+            class="font-serif text-6xl lg:text-8xl xl:text-9xl mb-4 text-stone-100 leading-[1.05] tracking-tight animate-entrance stagger-2"
+          >
+            Impacto da<br /><span class="gold-text italic"
+              >Reforma Tributária</span
+            >
+          </h1>
+          <p
+            class="text-stone-400 text-xl lg:text-2xl font-light tracking-wide max-w-3xl mt-8 animate-entrance stagger-3 leading-relaxed"
+          >
+            Análise comparativa e projeção econômica do novo regime IBS/CBS em
+            relação ao modelo atual para a
+            <strong class="text-stone-100">Cambraia e Marques</strong>.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20 z-10">
+          <div
+            class="glass-panel p-8 group"
+            data-aos="fade-up"
+            data-aos-delay="100"
+          >
+            <div
+              class="flex items-center gap-3 mb-6 opacity-50 group-hover:opacity-100 transition-opacity"
+            >
+              <span class="material-symbols-outlined text-gold"
+                >point_of_sale</span
+              >
+              <span
+                class="text-[10px] uppercase tracking-[0.3em] text-gold font-bold"
+                >Faturamento Base</span
+              >
+            </div>
+            <p class="text-4xl xl:text-5xl font-bold font-display">
+              R$ <span
+                class="counter"
+                data-target="134595.70"
+                data-format="currency"
+                >0</span>
+            </p>
+          </div>
+
+          <div
+            class="glass-panel p-8 group"
+            data-aos="fade-up"
+            data-aos-delay="200"
+          >
+            <div
+              class="flex items-center gap-3 mb-6 opacity-50 group-hover:opacity-100 transition-opacity"
+            >
+              <span class="material-symbols-outlined text-platinum">gavel</span>
+              <span
+                class="text-[10px] uppercase tracking-[0.3em] text-platinum font-bold"
+                >Regime Atual</span
+              >
+            </div>
+            <p class="text-3xl lg:text-4xl font-bold font-display mb-2 text-stone-100">
+              Simples Nacional
+            </p>
+            <p class="text-sm text-stone-500 tracking-widest uppercase font-medium">
+              4ª Faixa
+            </p>
+          </div>
+
+          <div
+            class="glass-panel p-8 group"
+            data-aos="fade-up"
+            data-aos-delay="300"
+          >
+            <div
+              class="flex items-center gap-3 mb-6 opacity-50 group-hover:opacity-100 transition-opacity"
+            >
+              <span class="material-symbols-outlined text-emerald-400"
+                >percent</span
+              >
+              <span
+                class="text-[10px] uppercase tracking-[0.3em] text-emerald-400 font-bold"
+                >Alíquota Vigente</span
+              >
+            </div>
+            <p class="text-4xl xl:text-5xl font-bold font-display text-stone-100">
+              <span class="counter" data-target="9.09" data-format="number"
+                >0</span
+              >%
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. Situação Atual -->
+      <section id="atual" class="py-24 border-t thin-border scroll-mt-24">
+        <div
+          class="flex flex-col md:flex-row justify-between items-baseline mb-16 gap-4"
+        >
+          <div>
+            <h2 class="font-serif text-5xl lg:text-6xl mb-3 text-stone-100">Situação Atual</h2>
+            <p
+              class="text-gold text-[10px] uppercase tracking-[0.35em] font-bold mt-1"
+            >
+              Análise do Simples Nacional
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div class="space-y-8" data-aos="fade-right">
+            <div class="glass-panel p-8 relative overflow-hidden">
+              <div
+                class="absolute right-0 top-0 w-1/2 h-full bg-gradient-to-l from-secondary/15 to-transparent pointer-events-none"
+              ></div>
+              <p class="text-sm text-stone-400 mb-3">
+                Dentro da alíquota geral de 9,09%:
+              </p>
+              <p class="text-2xl lg:text-3xl font-light mb-6">
+                <span class="text-gold font-bold">15,50%</span> correspondem a
+                IBS e CBS.
+              </p>
+              <div
+                class="bg-background-dark p-6 rounded-lg border border-slate-800 flex justify-between items-center"
+              >
+                <span class="text-xs uppercase tracking-widest text-slate-400"
+                  >Alíquota Efetiva IBS/CBS</span
+                >
+                <span class="text-4xl text-stone-100 font-serif italic">1,41%</span>
+              </div>
+            </div>
+
+            <div class="glass-panel p-8 border-l-4 border-l-gold">
+              <p
+                class="text-xs uppercase tracking-[0.2em] text-slate-500 font-bold mb-4"
+              >
+                Valor recolhido no Simples (IBS e CBS)
+              </p>
+              <p class="text-5xl lg:text-6xl font-bold text-stone-100">
+                R$ <span
+                  class="counter"
+                  data-target="1896.26"
+                  data-format="currency"
+                  >0</span>
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="glass-panel p-10 flex flex-col items-center justify-center min-h-[400px]"
+            data-aos="fade-left"
+          >
+            <h3
+              class="font-serif text-xl mb-8 w-full text-center text-slate-300"
+            >
+              Composição da Alíquota (9,09%)
+            </h3>
+            <div class="relative w-64 h-64">
+              <canvas id="chartAtual"></canvas>
+              <div
+                class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
+              >
+                <span class="text-2xl font-bold text-white">9,09%</span>
+                <span
+                  class="text-[10px] uppercase text-slate-400 tracking-widest"
+                  >Total</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Simulação Reforma -->
+      <section
+        id="simulacao"
+        class="py-24 border-t thin-border scroll-mt-24 relative overflow-visible pt-10"
+      >
+        <div class="mb-16">
+          <h2 class="font-serif text-5xl lg:text-6xl mb-3 text-stone-100">
+            Simulação Substitutiva
+          </h2>
+          <p class="text-gold text-[10px] uppercase tracking-[0.35em] font-bold mt-1">
+            Regime Híbrido - Transição 2027
+          </p>
+        </div>
+
+        <div class="glass-panel p-10 mb-12" data-aos="zoom-in">
+          <h3
+            class="text-lg text-slate-300 mb-6 font-medium flex items-center gap-3"
+          >
+            <span class="material-symbols-outlined text-gold"
+              >auto_fix_high</span
+            >
+            Metodologia de Cálculo ("Retirada por dentro")
+          </h3>
+          <p class="text-sm font-light leading-relaxed text-slate-400 mb-8">
+            No novo regime, há o expurgo dos tributos da base de cálculo para
+            encontrar a verdadeira base tributável e aplicar as novas parcelas
+            de IBS e CBS.
+          </p>
+
+          <div
+            class="flex items-center justify-between border-b border-slate-800 pb-4 mb-8"
+          >
+            <span class="text-sm uppercase tracking-widest text-slate-500"
+              >Faturamento Bruto</span
+            >
+            <span class="text-2xl font-bold">R$ 134.595,70</span>
+          </div>
+          <div
+            class="flex items-center justify-between bg-secondary/20 p-6 rounded-lg border border-secondary/40"
+          >
+            <span
+              class="text-sm uppercase tracking-widest text-platinum font-bold"
+              >Nova Base (Sem IBS/CBS)</span
+            >
+            <span class="text-3xl font-serif text-stone-100 italic"
+              >R$ 132.699,46</span
+            >
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+          <div
+            class="glass-panel p-8 border-t-4 border-t-platinum/60"
+            data-aos="fade-up"
+            data-aos-delay="100"
+          >
+            <div class="flex justify-between items-start mb-8">
+              <div>
+                <p class="text-3xl font-serif mb-1">IBS</p>
+                <p class="text-xs uppercase text-stone-400 tracking-widest">
+                  Alíquota: 0,10%
+                </p>
+              </div>
+              <span class="material-symbols-outlined text-platinum text-3xl"
+                >account_balance</span
+              >
+            </div>
+            <p class="text-5xl font-bold">R$ 132,70</p>
+          </div>
+
+          <div
+            class="glass-panel p-8 border-t-4 border-t-gold/60"
+            data-aos="fade-up"
+            data-aos-delay="200"
+          >
+            <div class="flex justify-between items-start mb-8">
+              <div>
+                <p class="text-3xl font-serif mb-1">CBS</p>
+                <p class="text-xs uppercase text-stone-400 tracking-widest">
+                  Alíquota: 8,80%
+                </p>
+              </div>
+              <span class="material-symbols-outlined text-gold text-3xl"
+                >corporate_fare</span
+              >
+            </div>
+            <p class="text-5xl font-bold">R$ 11.677,55</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div
+            class="glass-panel p-8 bg-gradient-to-br from-charcoal to-secondary/20"
+            data-aos="fade-right"
+          >
+            <p
+              class="text-xs uppercase tracking-widest text-stone-400 font-bold mb-4"
+            >
+              Total de Débito Gerado
+            </p>
+            <p
+              class="text-5xl lg:text-6xl font-bold text-stone-100 flex flex-col items-start gap-1"
+            >
+              <span class="line-through text-stone-600 text-2xl whitespace-nowrap"
+                >R$ 1.896,26</span
+              >
+              <span class="whitespace-nowrap">R$ 11.810,25</span>
+            </p>
+          </div>
+          <div
+            class="glass-panel p-8 bg-gradient-to-br from-charcoal to-secondary/10"
+            data-aos="fade-left"
+          >
+            <p class="text-xs uppercase tracking-widest text-stone-400 mb-4">
+              Valor Final Estimado (Mercadorias + Imposto)
+            </p>
+            <p class="text-5xl lg:text-6xl font-bold text-platinum">R$ 144.509,71</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Créditos -->
+      <section id="creditos" class="py-24 border-t thin-border scroll-mt-24">
+        <div class="mb-16 text-center lg:text-left">
+          <h2 class="font-serif text-5xl lg:text-6xl mb-3 text-stone-100">
+            Créditos de Compras
+          </h2>
+          <p class="text-gold text-[10px] uppercase tracking-[0.35em] font-bold mt-1">
+            Abatimentos e Carga Final
+          </p>
+        </div>
+
+        <div
+          class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16"
+          data-aos="fade-up"
+        >
+          <div class="glass-panel p-8 border border-slate-800">
+            <div class="text-slate-500 mb-4 flex items-center gap-2">
+              <span class="material-symbols-outlined text-sm">storefront</span>
+              <span class="text-xs uppercase tracking-widest"
+                >Compras do Simples</span
+              >
+            </div>
+            <p class="text-4xl font-bold text-stone-100">R$ 4.046,00</p>
+            <p class="text-[10px] text-slate-500 mt-2 uppercase tracking-wide">
+              *(Baixa geração de crédito)*
+            </p>
+          </div>
+
+          <div
+            class="glass-panel p-8 col-span-1 md:col-span-2 relative overflow-hidden"
+          >
+            <div
+              class="absolute right-0 top-0 h-full w-48 bg-gold/4 blur-3xl pointer-events-none"
+            ></div>
+            <div class="text-gold mb-6 flex items-center gap-2">
+              <span class="material-symbols-outlined text-sm">add_circle</span>
+              <span class="text-xs uppercase tracking-widest font-bold"
+                >Créditos Gerados pelas Demais Compras</span
+              >
+            </div>
+
+            <div
+              class="flex flex-col md:flex-row gap-8 justify-between items-center"
+            >
+              <div class="flex gap-8">
+                <div>
+                  <p class="text-[10px] uppercase text-slate-500 mb-1">
+                    Crédito IBS
+                  </p>
+                  <p class="text-3xl font-bold">R$ 2,29</p>
+                </div>
+                <div class="w-px bg-secondary/50"></div>
+                <div>
+                  <p class="text-[10px] uppercase text-stone-500 mb-1">
+                    Crédito CBS
+                  </p>
+                  <p class="text-3xl font-bold">R$ 201,12</p>
+                </div>
+              </div>
+
+              <div
+                class="bg-gold/8 px-6 py-4 rounded-lg border border-gold/20 text-center"
+              >
+                <p
+                  class="text-[10px] uppercase text-gold font-bold mb-1 tracking-widest"
+                >
+                  Total de Crédito
+                </p>
+                <p class="text-4xl font-serif italic text-gold">
+                  R$ 203,41
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-20">
+          <h3 class="text-center font-serif text-2xl text-white mb-10 italic">
+            Comparativo de Impacto Tributário Real
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div
+              class="glass-panel text-center p-12 border-b-4 border-b-platinum/50 flex flex-col items-center"
+              data-aos="zoom-in"
+              data-aos-delay="100"
+            >
+              <div
+                class="bg-platinum/10 text-platinum text-[10px] px-3 py-1 rounded-full uppercase tracking-widest font-bold border border-platinum/20 mb-6"
+              >
+                Regime Atual (Simples)
+              </div>
+              <p class="text-sm text-stone-400 uppercase tracking-widest mb-4">
+                Total a Pagar
+              </p>
+              <p class="text-4xl lg:text-5xl font-bold text-stone-100 mb-2">R$ 1.896,26</p>
+              <p class="text-xs text-stone-500 italic mt-auto pt-6">
+                Carga significativamente menor
+              </p>
+            </div>
+
+            <div
+              class="glass-panel glass-panel-badge text-center p-12 border-b-4 border-b-gold/80 transform md:-translate-y-4 shadow-[0_0_40px_rgba(232,201,125,0.12)] flex flex-col items-center relative z-10 pt-10"
+              data-aos="zoom-in"
+              data-aos-delay="200"
+            >
+              <div
+                class="absolute -top-4 bg-gold text-charcoal text-[10px] px-4 py-1.5 rounded-full uppercase tracking-widest font-bold shadow-lg"
+              >
+                Aumento Expressivo
+              </div>
+              <div
+                class="bg-gold/10 text-gold text-[10px] px-3 py-1 rounded-full uppercase tracking-widest font-bold border border-gold/20 mb-6 mt-4"
+              >
+                Simulação Híbrido
+              </div>
+              <p class="text-sm text-gold/80 uppercase tracking-widest mb-4">
+                Total a Pagar
+              </p>
+              <p class="text-4xl lg:text-5xl font-bold text-stone-100 mb-2">R$ 11.606,46</p>
+              <p
+                class="text-xs text-gold/70 italic mt-auto pt-6 flex items-center justify-center gap-1"
+              >
+                <span class="material-symbols-outlined text-[14px]"
+                  >trending_up</span
+                >
+                Crescimento de ~512%
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. Ponto de Equilíbrio -->
+      <section id="equilibrio" class="py-24 border-t thin-border scroll-mt-24">
+        <div class="mb-12">
+          <h2 class="font-serif text-5xl lg:text-6xl mb-4 text-stone-100">
+            Visualizador: Ponto de Equilíbrio
+          </h2>
+          <p class="text-stone-400 max-w-3xl text-base leading-relaxed">
+            O Ponto de Equilíbrio mostra qual deve ser o volume de
+            <span class="text-gold">compras tributadas</span> necessário para
+            gerar crédito suficiente e empatar com o imposto pago hoje no
+            Simples Nacional.
+          </p>
+        </div>
+
+        <div
+          class="glass-panel p-6 md:p-10 mb-12 shadow-2xl relative overflow-hidden"
+          data-aos="fade-up"
+        >
+          <div
+            class="absolute top-0 right-0 p-32 bg-primary/20 blur-[100px] rounded-full pointer-events-none"
+          ></div>
+
+          <div
+            class="bg-charcoal/80 border thin-border rounded-xl p-6 md:p-8 mb-10 relative z-10"
+          >
+            <label
+              class="block text-gold text-xs uppercase tracking-[0.2em] font-bold mb-4 flex items-center gap-2"
+            >
+              <span class="material-symbols-outlined text-sm">edit</span> Insira
+              o valor da Venda Desejada (R$):
+            </label>
+            <div class="relative">
+              <span
+                class="absolute left-6 top-1/2 -translate-y-1/2 text-2xl text-slate-500"
+                >R$</span
+              >
+              <input
+                type="number"
+                id="inputVenda"
+                value="500"
+                class="w-full bg-background-dark/80 text-3xl md:text-5xl font-light py-4 md:py-6 pl-16 pr-6 text-white rounded-lg border border-gold/40 focus:border-gold focus:ring-4 focus:ring-gold/10 outline-none transition-all"
+                oninput="calculateEquilibrium()"
+              />
+            </div>
+            <p class="text-[10px] text-slate-500 mt-3 ml-2">
+              *Os valores calcularão a compra necessária com base em uma
+              alíquota de IBS/CBS combinada de 8,9% e imposto alvo de 1,41%.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+            <div
+              class="border border-secondary/50 rounded-lg p-6 bg-background-dark/50"
+            >
+              <h4
+                class="text-xs uppercase tracking-widest text-platinum font-bold mb-6 flex items-center gap-2 border-b border-secondary/50 pb-3"
+              >
+                <span class="material-symbols-outlined text-[16px]"
+                  >shopping_bag</span
+                >
+                1. Faturamento
+              </h4>
+              <div class="space-y-4">
+                <div class="flex justify-between items-end">
+                  <span class="text-sm text-stone-400"
+                    >Base Venda (sem imposto)</span
+                  >
+                  <span class="text-xl font-serif text-stone-100" id="calcBaseVenda"
+                    >R$ 459,14</span
+                  >
+                </div>
+                <div class="flex justify-between items-end">
+                  <span class="text-sm text-stone-400"
+                    >Débito IBS/CBS (8,9%)</span
+                  >
+                  <span
+                    class="text-xl font-serif text-stone-300"
+                    id="calcImpostoVenda"
+                    >R$ 40,86</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="border border-secondary/50 rounded-lg p-6 bg-background-dark/50"
+            >
+              <h4
+                class="text-xs uppercase tracking-widest text-gold font-bold mb-6 flex items-center gap-2 border-b border-secondary/50 pb-3"
+              >
+                <span class="material-symbols-outlined text-[16px]"
+                  >inventory_2</span
+                >
+                2. Compra Necessária
+              </h4>
+              <div class="space-y-4">
+                <div class="flex justify-between items-end">
+                  <span class="text-sm text-stone-400">Crédito Necessário</span>
+                  <span
+                    class="text-xl font-serif text-gold"
+                    id="calcCredito"
+                    >R$ 33,81</span
+                  >
+                </div>
+                <div class="flex justify-between items-end">
+                  <span class="text-sm text-stone-400"
+                    >Base Compra exigida</span
+                  >
+                  <span
+                    class="text-xl font-serif text-stone-100"
+                    id="calcBaseCompra"
+                    >R$ 379,89</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="mt-8 bg-gradient-to-r from-secondary/20 to-background-dark border border-secondary/30 rounded-lg p-8 flex flex-col md:flex-row items-center justify-between gap-6 relative z-10"
+          >
+            <div>
+              <p class="text-xs uppercase text-stone-400 tracking-widest mb-1">
+                Cálculo de Verificação
+              </p>
+              <p class="text-sm text-stone-300">
+                Débito (R$ <span id="verifDebito">40,86</span>) - Crédito (R$
+                <span id="verifCredito">33,81</span>) =
+                <span class="font-bold text-stone-100 italic" id="calcImpostoFinal"
+                  >R$ 7,05</span
+                >
+              </p>
+              <p
+                class="text-[10px] text-gold/70 mt-1 uppercase tracking-widest"
+              >
+                Exatamente igual a 1,41% de R$ 500,00
+              </p>
+            </div>
+
+            <div class="text-right">
+              <p
+                class="text-[10px] uppercase text-gold tracking-[0.3em] font-bold mb-2"
+              >
+                Compra Bruta (Total NF)
+              </p>
+              <p
+                class="text-4xl md:text-5xl font-bold text-white"
+                id="calcCompraNecessaria"
+              >
+                R$ 420,79
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. Análise de Margem e Conclusão -->
+      <section id="margem" class="py-24 border-t thin-border scroll-mt-24">
+        <div class="mb-16">
+          <h2 class="font-serif text-5xl lg:text-6xl mb-3 text-stone-100">Análise de Margem</h2>
+          <p class="text-gold text-[10px] uppercase tracking-[0.35em] font-bold mt-1">
+            Viabilidade do Regime Híbrido
+          </p>
+        </div>
+
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20"
+          data-aos="fade-up"
+        >
+          <div class="glass-panel p-10 flex flex-col justify-center">
+            <div class="mb-8">
+              <span
+                class="text-[10px] uppercase tracking-widest text-slate-500 font-bold"
+                >Markup Atual da Empresa</span
+              >
+              <p class="text-7xl font-serif italic text-gold mt-2">
+                2.2<span class="text-3xl text-stone-500 font-light ml-2"
+                  >x</span
+                >
+              </p>
+            </div>
+
+            <div
+              class="bg-charcoal/50 border border-slate-800 rounded-lg p-6 space-y-4 mb-4"
+            >
+              <div class="flex justify-between border-b border-slate-800 pb-2">
+                <span class="text-sm text-slate-400"
+                  >Exemplo de Compra Bruta</span
+                >
+                <span class="text-sm font-bold text-white">R$ 413,70</span>
+              </div>
+              <div class="flex justify-between items-center pt-2">
+                <div>
+                  <span class="text-sm text-slate-400"
+                    >Preço de Venda Resultante</span
+                  >
+                  <div
+                    class="text-[10px] text-slate-500 uppercase tracking-widest mt-1"
+                  >
+                    (Markup 2.2)
+                  </div>
+                </div>
+                <span class="text-xl font-serif italic text-gold"
+                  >R$ 910,14</span
+                >
+              </div>
+            </div>
+
+            <p
+              class="text-xs text-slate-400 font-light mt-4 leading-relaxed border-l-2 border-gold pl-4"
+            >
+              A alta margem de lucro embutida na venda significa que o imposto
+              gerado sempre superará o escasso crédito gerado pela compra.
+            </p>
+          </div>
+
+          <div
+            class="glass-panel p-10 flex flex-col items-center justify-center text-center relative"
+          >
+            <h4
+              class="text-sm uppercase tracking-[0.2em] text-white font-bold mb-10 w-full text-left"
+            >
+              Termômetro de Viabilidade Híbrida
+            </h4>
+
+            <div
+              class="relative w-64 h-32 overflow-hidden flex justify-center mt-4"
+            >
+              <div
+                class="w-64 h-64 rounded-full border-[1.5rem] border-stone-600/80 absolute top-0"
+              ></div>
+              <div
+                class="w-64 h-64 rounded-full border-[1.5rem] border-platinum/60 absolute top-0"
+                style="
+                  clip-path: polygon(0 0, 100% 0, 100% 25%, 0 50%);
+                  transform: rotate(180deg);
+                "
+              ></div>
+              <div
+                class="w-64 h-64 rounded-full border-[1.5rem] border-gold/70 absolute top-0"
+                style="clip-path: polygon(50% 50%, 0 0, 30% 0)"
+              ></div>
+
+              <div
+                class="absolute bottom-0 w-2 h-28 bg-stone-200 origin-bottom z-10 rounded-full shadow-lg transition-transform duration-1000 ease-out"
+                id="gauge-needle"
+                style="transform: rotate(-75deg); left: calc(50% - 4px)"
+              ></div>
+              <div
+                class="absolute bottom-[-10px] w-6 h-6 rounded-full bg-charcoal border-4 border-stone-200 shadow-[0_0_15px_rgba(194,184,174,0.4)] z-20"
+              ></div>
+            </div>
+
+            <div
+              class="flex justify-between w-full text-[10px] font-bold uppercase tracking-widest px-4 mt-6"
+            >
+              <span class="text-stone-500">Inviável</span>
+              <span class="text-platinum">Neutro</span>
+              <span class="text-gold">Vantajoso</span>
+            </div>
+
+            <div
+              class="mt-8 bg-charcoal/50 border border-secondary/40 p-6 rounded-lg w-full text-left"
+            >
+              <div class="flex justify-between items-center mb-2">
+                <p class="text-[10px] text-stone-400 uppercase tracking-widest">
+                  Markup Necessário
+                </p>
+              </div>
+              <p class="text-sm font-light text-stone-300 leading-relaxed">
+                Para o regime híbrido valer a pena, a empresa precisaria
+                praticar um markup máximo de
+                <span class="text-platinum font-bold">0.20</span> (vender abaixo
+                do custo).
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="conclusao"
+          class="glass-panel p-12 lg:p-16 relative overflow-hidden text-center"
+          data-aos="zoom-in"
+        >
+          <div
+            class="absolute inset-0 bg-gradient-to-br from-charcoal to-secondary/30 opacity-60"
+          ></div>
+
+          <span
+            class="material-symbols-outlined text-6xl text-gold mb-8 relative z-10"
+            >warning</span
+          >
+
+          <h2
+            class="font-serif text-4xl lg:text-5xl text-stone-100 mb-8 relative z-10 leading-snug"
+          >
+            Conclusão:<br />
+            <span class="gold-text italic">Regime Híbrido Desfavorável</span>
+          </h2>
+
+          <p
+            class="text-xl lg:text-2xl text-stone-300 font-light max-w-3xl mx-auto leading-relaxed relative z-10 mb-6 font-serif"
+          >
+            "Com baixa geração de créditos, o regime híbrido aumenta
+            significativamente a carga tributária."
+          </p>
+
+          <p
+            class="text-sm text-slate-400 font-light max-w-3xl mx-auto leading-relaxed relative z-10"
+          >
+            A empresa possui margem muito superior ao ponto de equilíbrio. O
+            alto valor agregado e a natureza dos fornecedores inviabilizam o
+            novo modelo, tornando o regime híbrido economicamente punitivo para
+            a operação.
+          </p>
+        </div>
+      </section>
+
+      <!-- Footer Corporativo -->
+      <footer class="mt-10 border-t thin-border pt-12 pb-8">
+        <div
+          class="flex flex-col md:flex-row justify-between items-center gap-6"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="size-8 rounded-full bg-background-dark border border-gold/30 flex items-center justify-center text-gold font-serif text-sm relative overflow-hidden group"
+            >
+              C
+              <div
+                class="absolute inset-0 bg-gold/20 -translate-x-full group-hover:translate-x-0 transition-transform"
+              ></div>
+            </div>
+            <span class="font-serif tracking-widest text-sm text-slate-400"
+              >CAMBRAIA E MARQUES</span
+            >
+          </div>
+
+          <p
+            class="text-[10px] text-slate-600 uppercase tracking-[0.2em] text-center"
+          >
+            Estudo Econômico e Tributário CONFIDENCIAL • Base Jan/2026
+          </p>
+
+          <div class="flex gap-6">
+            <span
+              class="text-[10px] text-slate-600 uppercase tracking-[0.1em] flex items-center gap-1"
+              ><span class="material-symbols-outlined text-[12px] opacity-50"
+                >lock</span
+              >
+              Uso Exclusivo</span
+            >
+          </div>
+        </div>
+      </footer>
+    </main>
+
+    <script>
+      AOS.init({
+        duration: 800,
+        once: true,
+        offset: 50,
+      });
+
+
+      const observerOptions = {
+        threshold: 0.5,
+      };
+
+      const counterObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const counter = entry.target;
+            const target = parseFloat(counter.getAttribute("data-target"));
+            const format = counter.getAttribute("data-format");
+            const duration = 2000;
+            const startTime = performance.now();
+
+            const updateCounter = (currentTime) => {
+              const elapsedTime = currentTime - startTime;
+              const progress = Math.min(elapsedTime / duration, 1);
+              // Cubic-out easing
+              const easeProgress = 1 - Math.pow(1 - progress, 3);
+              const current = target * easeProgress;
+
+              if (format === "currency" || format === "number") {
+                counter.innerText = current.toLocaleString("pt-BR", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                });
+              }
+
+              if (progress < 1) {
+                requestAnimationFrame(updateCounter);
+              } else {
+                counter.innerText = target.toLocaleString("pt-BR", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                });
+              }
+            };
+            requestAnimationFrame(updateCounter);
+            observer.unobserve(counter);
+          }
+        });
+      }, observerOptions);
+
+      document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".counter").forEach((counter) => {
+          counterObserver.observe(counter);
+        });
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const ctxText = document.getElementById("chartAtual");
+        if (ctxText) {
+          new Chart(ctxText, {
+            type: "doughnut",
+            data: {
+              labels: [
+                "IBS e CBS",
+                "Outros Tributos (PIS, COFINS, IRPJ, CSLL, CPP)",
+              ],
+              datasets: [
+                {
+                  data: [15.5, 84.5],
+                  backgroundColor: ["#E8C97D", "#3D2F28"],
+                  borderWidth: 1,
+                  borderColor: "#1A1714",
+                  hoverOffset: 4,
+                },
+              ],
+            },
+            options: {
+              cutout: "75%",
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  display: true,
+                  position: "bottom",
+                  labels: {
+                    color: "#A89F96",
+                    font: { family: "Manrope", size: 10 },
+                    usePointStyle: true,
+                    padding: 15,
+                  },
+                },
+                tooltip: {
+                  callbacks: {
+                    label: function (context) {
+                      return " " + context.label + ": " + context.raw + "%";
+                    },
+                  },
+                  backgroundColor: "rgba(26, 23, 20, 0.95)",
+                  titleFont: { family: "Manrope", size: 12 },
+                  bodyFont: { family: "Manrope", size: 12 },
+                  padding: 10,
+                  borderColor: "rgba(232, 201, 125, 0.2)",
+                  borderWidth: 1,
+                },
+              },
+            },
+          });
+        }
+      });
+
+      function calculateEquilibrium() {
+        const inputVenda = document.getElementById("inputVenda").value;
+        const vendaBruta = parseFloat(inputVenda);
+
+        if (isNaN(vendaBruta) || vendaBruta <= 0) return;
+
+        const aliquotaVenda = 0.089;
+        const aliquotaCompra = 1.10766;
+
+        const baseVenda = vendaBruta / (1 + aliquotaVenda);
+        const impostoVenda = vendaBruta - baseVenda;
+
+        const impostoAlvo = vendaBruta * 0.0141;
+
+        const creditoNecessario = impostoVenda - impostoAlvo;
+
+        const baseCompra = creditoNecessario / aliquotaVenda;
+
+        const compraBruta = baseCompra * aliquotaCompra;
+
+        document.getElementById("calcBaseVenda").innerText =
+          "R$ " +
+          baseVenda.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+        document.getElementById("calcImpostoVenda").innerText =
+          "R$ " +
+          impostoVenda.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+
+        document.getElementById("calcCredito").innerText =
+          "R$ " +
+          creditoNecessario.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+        document.getElementById("calcBaseCompra").innerText =
+          "R$ " +
+          baseCompra.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+
+        document.getElementById("calcImpostoFinal").innerText =
+          "R$ " +
+          impostoAlvo.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+        document.getElementById("calcCompraNecessaria").innerText =
+          "R$ " +
+          compraBruta.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+
+        document.getElementById("verifDebito").innerText =
+          impostoVenda.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+        document.getElementById("verifCredito").innerText =
+          creditoNecessario.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+
+        const resultElements = [
+          "calcBaseVenda",
+          "calcImpostoVenda",
+          "calcCredito",
+          "calcBaseCompra",
+          "calcImpostoFinal",
+          "calcCompraNecessaria",
+          "verifDebito",
+          "verifCredito",
+        ];
+
+        resultElements.forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.style.transition = "color 0.3s ease, transform 0.3s ease";
+            el.style.color = "#C5A059";
+            el.style.transform = "scale(1.05)";
+            setTimeout(() => {
+              el.style.color = "";
+              el.style.transform = "";
+            }, 300);
+          }
+        });
+      }
+
+      // Gauge animation on load
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          const needle = document.getElementById("gauge-needle");
+          if (needle) {
+            needle.style.transform = "rotate(-85deg)";
+          }
+        }, 1000);
+      });
+
+      // Progress bar logic
+      window.addEventListener("scroll", () => {
+        const winScroll =
+          document.body.scrollTop || document.documentElement.scrollTop;
+        const height =
+          document.documentElement.scrollHeight -
+          document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        document.getElementById("progress-bar").style.width = scrolled + "%";
+      });
+
+      // ── Welcome Screen dismiss ──────────────────────────────────
+      const welcomeScreen = document.getElementById('welcome-screen');
+      const btnIniciar = document.getElementById('btn-iniciar');
+
+      // Prevent body scroll while welcome is active
+      document.body.style.overflow = 'hidden';
+
+      btnIniciar.addEventListener('click', () => {
+        welcomeScreen.classList.add('dismissed');
+        document.body.style.overflow = '';
+        // Remove from DOM after transition ends
+        welcomeScreen.addEventListener('transitionend', () => {
+          welcomeScreen.remove();
+        }, { once: true });
+      });
+    </script>
+  </body>
+</html>
