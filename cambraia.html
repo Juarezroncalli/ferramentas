@@ -606,10 +606,17 @@
               >
                 <span class="text-2xl font-bold text-white">9,09%</span>
                 <span
-                  class="text-[10px] uppercase text-slate-400 tracking-widest"
-                  >Total</span
+                  class="text-[10px] uppercase text-slate-400 tracking-widest mt-1"
+                  >Alíquota Total</span
                 >
               </div>
+            </div>
+            <div class="mt-6 flex items-center gap-3 bg-gold/8 border border-gold/20 rounded-lg px-4 py-2">
+              <span class="w-3 h-3 rounded-full bg-[#E8C97D] shrink-0"></span>
+              <p class="text-[11px] text-slate-300 leading-snug">
+                <span class="text-gold font-bold">15,5%</span> da alíquota de 9,09% corresponde a IBS/CBS
+                <span class="text-slate-500 ml-1">(= 1,41% efetivo)</span>
+              </p>
             </div>
           </div>
         </div>
@@ -1456,21 +1463,21 @@
             type: "doughnut",
             data: {
               labels: [
-                "IBS e CBS",
-                "Outros Tributos (PIS, COFINS, IRPJ, CSLL, CPP)",
+                "IBS e CBS (15,5% da alíquota = 1,41% efetivo)",
+                "Demais Tributos do Simples (84,5% da alíquota)",
               ],
               datasets: [
                 {
                   data: [15.5, 84.5],
-                  backgroundColor: ["#E8C97D", "#3D2F28"],
-                  borderWidth: 1,
-                  borderColor: "#1A1714",
-                  hoverOffset: 4,
+                  backgroundColor: ["#E8C97D", "#2A2420"],
+                  borderWidth: 2,
+                  borderColor: ["#C9A84C", "#1A1714"],
+                  hoverOffset: 8,
                 },
               ],
             },
             options: {
-              cutout: "75%",
+              cutout: "72%",
               responsive: true,
               maintainAspectRatio: false,
               plugins: {
@@ -1481,20 +1488,29 @@
                     color: "#A89F96",
                     font: { family: "Manrope", size: 10 },
                     usePointStyle: true,
-                    padding: 15,
+                    pointStyleWidth: 8,
+                    padding: 14,
                   },
                 },
                 tooltip: {
                   callbacks: {
+                    title: function (context) {
+                      return "Alíquota Total: 9,09%";
+                    },
                     label: function (context) {
-                      return " " + context.label + ": " + context.raw + "%";
+                      const val = context.raw;
+                      const efetivo = ((val / 100) * 9.09).toFixed(2);
+                      return [
+                        " " + (context.dataIndex === 0 ? "IBS e CBS" : "Demais Tributos") + ": " + val + "%",
+                        " Parcela efetiva: " + efetivo + "% da alíquota",
+                      ];
                     },
                   },
                   backgroundColor: "rgba(26, 23, 20, 0.95)",
-                  titleFont: { family: "Manrope", size: 12 },
-                  bodyFont: { family: "Manrope", size: 12 },
-                  padding: 10,
-                  borderColor: "rgba(232, 201, 125, 0.2)",
+                  titleFont: { family: "Manrope", size: 12, weight: "bold" },
+                  bodyFont: { family: "Manrope", size: 11 },
+                  padding: 12,
+                  borderColor: "rgba(232, 201, 125, 0.3)",
                   borderWidth: 1,
                 },
               },
