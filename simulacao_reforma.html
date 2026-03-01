@@ -153,46 +153,23 @@
         </header>
 
         <!-- KPI & DREs -->
-        <div class="grid grid-cols-1 xl:grid-cols-3 gap-10 text-center lg:text-left">
+        <div class="grid grid-cols-1 xl:grid-cols-4 gap-8 text-center lg:text-left">
             
             <!-- RESULTADO DE IMPACTO -->
-            <div class="xl:col-span-1 p-12 flat-panel result-box flex flex-col items-center justify-center shadow-sm relative group">
-                <span id="markupLabel" class="text-[10px] font-black text-purple-600 uppercase tracking-widest mb-8 italic text-center">Markup de Equilíbrio</span>
-                <div id="mainMarkup" class="text-8xl font-black text-slate-900 tracking-tighter mb-4 transition-transform group-hover:scale-110">---</div>
-                <div id="markupSubLabel" class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-4">Ponto de Ruptura Tributária</div>
+            <div class="xl:col-span-1 p-10 flat-panel result-box flex flex-col items-center justify-center shadow-sm relative group">
+                <span id="markupLabel" class="text-[10px] font-black text-purple-600 uppercase tracking-widest mb-6 italic text-center">Markup de Equilíbrio</span>
+                <div id="mainMarkup" class="text-7xl font-black text-slate-900 tracking-tighter mb-3 transition-transform group-hover:scale-110">---</div>
+                <div id="markupSubLabel" class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-3">Ponto de Ruptura Tributária</div>
                 
                 <!-- ALERTA DE SETA (NOVO) -->
-                <div id="markupNotice" class="hidden mt-6 p-3 bg-purple-50 border border-purple-100 rounded-xl flex items-center gap-3 animate-fade-up">
+                <div id="markupNotice" class="hidden mt-5 p-3 bg-purple-50 border border-purple-100 rounded-xl flex items-center gap-3 animate-fade-up">
                     <svg id="markupIcon" class="w-5 h-5 text-purple-600 flex-shrink-0 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
                     <p id="markupWarningText" class="text-[10px] font-black text-purple-900 leading-tight text-left uppercase">Acima deste valor, o sistema hibrido pode não valer a pena</p>
                 </div>
             </div>
 
-            <!-- Receita Personalizada (aparece após cálculo) -->
-            <div id="customRevenueCard" class="xl:col-span-3 hidden animate-fade-up">
-                <div class="flat-panel p-6 shadow-sm border-t-4 border-purple-400 bg-gradient-to-r from-purple-50/50 to-white">
-                    <div class="flex flex-col lg:flex-row items-center gap-6">
-                        <div class="flex-1">
-                            <h4 class="text-[10px] font-black text-purple-600 uppercase tracking-widest mb-1">Simular com sua Receita Real</h4>
-                            <p class="text-[9px] text-slate-400 italic">Informe o valor da sua receita para ver o impacto real na DRE. O markup já calculado será mantido.</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <div class="relative">
-                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-purple-600 font-black text-sm">R$</span>
-                                <input id="customRevenueInput" type="text" placeholder="Ex: 50.000"
-                                       class="w-48 pl-10 pr-4 py-3 bg-white border-2 border-purple-100 rounded-xl input-focus font-black text-lg text-slate-800"
-                                       oninput="formatRevenue(this)">
-                            </div>
-                            <button onclick="clearCustomRevenue()" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 rounded-xl text-[9px] font-black text-slate-500 uppercase tracking-widest transition-all">
-                                Resetar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- DREs -->
-            <div class="xl:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- DREs ao lado do Markup -->
+            <div class="xl:col-span-3 grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <!-- Simples -->
                 <div class="flat-panel p-10 shadow-sm border-t-8 border-slate-400 animate-fade-up" style="animation-delay: 0.2s;">
                     <header class="flex justify-between items-center mb-8 border-b border-slate-100 pb-4">
@@ -249,6 +226,29 @@
                     </div>
                 </div>
 
+            </div>
+        </div>
+
+        <!-- Receita Personalizada (aparece após cálculo) -->
+        <div id="customRevenueCard" class="hidden animate-fade-up">
+            <div class="flat-panel p-6 shadow-sm border-t-4 border-purple-400 bg-gradient-to-r from-purple-50/50 to-white">
+                <div class="flex flex-col lg:flex-row items-center gap-6">
+                    <div class="flex-1">
+                        <h4 class="text-[10px] font-black text-purple-600 uppercase tracking-widest mb-1">Simular com sua Receita Real</h4>
+                        <p class="text-[9px] text-slate-400 italic">Informe o valor da sua receita para ver o impacto real na DRE. O markup já calculado será mantido.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-purple-600 font-black text-sm">R$</span>
+                            <input id="customRevenueInput" type="text" placeholder="Ex: 50.000"
+                                   class="w-48 pl-10 pr-4 py-3 bg-white border-2 border-purple-100 rounded-xl input-focus font-black text-lg text-slate-800"
+                                   oninput="formatRevenue(this)">
+                        </div>
+                        <button onclick="clearCustomRevenue()" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 rounded-xl text-[9px] font-black text-slate-500 uppercase tracking-widest transition-all">
+                            Resetar
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
