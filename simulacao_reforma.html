@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>TaxExpert Master: Diagnóstico Estratégico</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <style>
+        body { 
+            background-color: #f8fafc; 
+            color: #1e293b; 
+            font-family: 'Public Sans', sans-serif; 
+            overflow: hidden;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; color: #1e293b; transition: all 0.5s ease; box-shadow: 10px 0 15px -3px rgba(0, 0, 0, 0.05); }
+        .flat-panel { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 1rem; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .flat-panel:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05); border-color: #9333ea; }
+        .result-box { border-bottom: 8px solid #9333ea; background: #ffffff; animation: scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .input-focus:focus { border-color: #9333ea; box-shadow: 0 0 0 6px rgba(147, 51, 234, 0.1); outline: none; background: white; }
+        ::placeholder { color: #94a3b8 !important; }
+        .modal-overlay { background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(8px); }
+        .dre-label { font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.1em; }
+        .dre-value { font-weight: 700; color: #1e293b; }
+        
+        /* Animations */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes slideInLeft {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+        .animate-fade-up { animation: fadeUp 0.8s ease forwards; }
+        .animate-slide-left { animation: slideInLeft 0.6s ease-out; }
+        
+        /* Tooltip Style */
+        .tooltip-container { position: relative; border-bottom: 1px dashed #cbd5e1; cursor: help; }
+        .tooltip-box { 
+            visibility: hidden; width: 260px; background-color: #ffffff; color: #1e293b; text-align: left; 
+            padding: 16px; border-radius: 12px; position: absolute; z-index: 50; bottom: 130%; left: 50%; 
+            margin-left: -130px; opacity: 0; transition: all 0.3s ease; font-size: 11px; line-height: 1.6;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); border: 1px solid #e2e8f0;
+        }
+        .tooltip-container:hover .tooltip-box { visibility: visible; opacity: 1; transform: translateY(-5px); }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+    </style>
+</head>
+<body class="antialiased font-medium">
+
+<div class="flex flex-col lg:flex-row h-screen overflow-hidden">
+    
+    <!-- Sidebar -->
+    <aside class="w-full lg:w-96 sidebar p-8 flex flex-col z-20 overflow-y-auto custom-scrollbar animate-slide-left">
+        <div class="mb-12 text-center lg:text-left">
+            <h2 class="text-2xl font-black tracking-tighter uppercase italic leading-none text-slate-900 border-b-4 border-purple-600 pb-2 inline-block">Tax<span class="text-purple-600">Expert</span></h2>
+            <p class="text-[10px] font-black text-slate-400 mt-4 tracking-[0.25em] leading-none uppercase">Engenharia Tributária Master</p>
+        </div>
+
+        <div class="space-y-8">
+            <div>
+                <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 text-center lg:text-left">Faturamento Real (Máx: 3.6Mi)</label>
+                <div class="relative group">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-purple-600 font-black transition-transform group-focus-within:scale-125">R$</span>
+                    <input id="fatInput" type="text" value="" placeholder="Ex: 1.200.000"
+                           class="w-full pl-12 pr-4 py-5 bg-slate-50 border-2 border-slate-100 rounded-xl input-focus transition-all font-black text-2xl text-slate-800" 
+                           oninput="formatInput(this)">
+                </div>
+                <p id="limitWarning" class="text-[9px] text-purple-600 mt-2 font-bold uppercase tracking-tighter hidden animate-pulse italic text-center">Limite máximo atingido (Teto do Simples Nacional)</p>
+            </div>
+
+            <!-- Memória Lateral -->
+            <div id="aliqMemoryCard" class="p-6 bg-purple-600 text-white rounded-2xl shadow-xl shadow-purple-100 hidden animate-fade-up">
+                <h4 class="text-[10px] font-black uppercase mb-4 tracking-tighter border-b border-purple-400/30 pb-2 italic text-purple-100 italic font-black">Memória de Cálculo</h4>
+                <div class="space-y-4 font-bold text-xs">
+                    <div class="flex justify-between items-center opacity-80">
+                        <span>Aliquota Nominal Ef.</span>
+                        <span id="memAliqNom">0.00%</span>
+                    </div>
+                    <div class="flex justify-between items-center font-black">
+                        <span>(-) Redução Legal</span>
+                        <span class="bg-purple-700/50 px-2 py-0.5 rounded">15,5%</span>
+                    </div>
+                    <hr class="border-purple-400/30">
+                    <div class="flex justify-between items-center text-white font-black pt-1">
+                        <span class="uppercase tracking-widest text-[9px]">Aliquota Final Final</span>
+                        <span id="memAliqFinal" class="text-xl">0.00%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 bg-slate-50 border border-slate-200 rounded-2xl transform transition-transform hover:scale-[1.02]">
+                <h4 class="text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest border-b border-slate-200 pb-2">Parâmetros de Mercado</h4>
+                <div class="space-y-3 font-bold text-[10px]">
+                    <div class="flex justify-between items-center uppercase"><span>Divisor Financeiro</span><span class="text-slate-900 font-extrabold">1.089</span></div>
+                    <div class="flex justify-between items-center uppercase"><span>Alíquota IBS/CBS</span><span class="text-slate-900 font-extrabold">8.9%</span></div>
+                    <div class="flex justify-between items-center uppercase"><span>Teto Simples</span><span class="text-purple-600 font-extrabold">R$ 3.6Mi</span></div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto p-6 lg:p-12 space-y-12 bg-slate-50 custom-scrollbar animate-fade-up">
+        
+        <header class="flex flex-col lg:flex-row lg:justify-between lg:items-end gap-6 text-center lg:text-left">
+            <div>
+                <h1 class="text-6xl font-black text-slate-900 tracking-tighter leading-none italic uppercase">Painel de <span class="text-purple-600">Decisão</span></h1>
+                <p id="statusHeader" class="text-slate-400 mt-5 font-bold text-xs uppercase tracking-[0.3em] font-black">Aguardando definição estratégica do usuário...</p>
+            </div>
+            <div class="bg-white px-10 py-6 rounded-2xl border border-slate-200 shadow-sm transform transition-transform hover:rotate-1">
+                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Simulação Base</span>
+                <span class="text-4xl font-black text-purple-600 underline decoration-purple-100 decoration-8 underline-offset-4">R$ 1.000,00</span>
+            </div>
+        </header>
+
+        <!-- KPI & DREs -->
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-10 text-center lg:text-left">
+            
+            <!-- RESULTADO DE IMPACTO -->
+            <div class="xl:col-span-1 p-12 flat-panel result-box flex flex-col items-center justify-center shadow-sm relative group">
+                <span class="text-[10px] font-black text-purple-600 uppercase tracking-widest mb-8 italic">Markup de Equilíbrio</span>
+                <div id="mainMarkup" class="text-8xl font-black text-slate-900 tracking-tighter mb-4 transition-transform group-hover:scale-110">---</div>
+                <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-4">Ponto de Ruptura Tributária</div>
+                
+                <!-- ALERTA DE SETA (NOVO) -->
+                <div id="markupNotice" class="hidden mt-6 p-3 bg-purple-50 border border-purple-100 rounded-xl flex items-center gap-3 animate-fade-up">
+                    <svg class="w-5 h-5 text-purple-600 flex-shrink-0 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                    <p class="text-[10px] font-black text-purple-900 leading-tight text-left uppercase">Acima deste valor, o sistema hibrido pode não valer a pena</p>
+                </div>
+            </div>
+
+            <!-- DREs -->
+            <div class="xl:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Simples -->
+                <div class="flat-panel p-10 shadow-sm border-t-8 border-slate-400 animate-fade-up" style="animation-delay: 0.2s;">
+                    <header class="flex justify-between items-center mb-8 border-b border-slate-100 pb-4">
+                        <h3 class="text-xs font-black text-slate-800 uppercase italic tracking-widest">DRE: Simples Nacional</h3>
+                        <div class="flex gap-1"><span class="w-1.5 h-1.5 bg-slate-200 rounded-full"></span><span class="w-1.5 h-1.5 bg-slate-400 rounded-full"></span></div>
+                    </header>
+                    <div class="space-y-5 text-sm font-medium">
+                        <div class="flex justify-between"><span class="dre-label">Faturamento Base</span><span class="dre-value text-slate-900 text-xl font-black">R$ 1.000,00</span></div>
+                        <div class="flex justify-between"><span class="dre-label">(-) Imposto Efetivo</span><span id="dreSimpImp" class="dre-value text-red-500 font-extrabold">- R$ 0,00</span></div>
+                        <div class="flex justify-between"><span class="dre-label">(-) Custo (CMV)</span><span id="dreSimpCmv" class="dre-value text-slate-400">- R$ 0,00</span></div>
+                        <hr class="border-slate-100">
+                        <div class="flex justify-between pt-4">
+                            <span class="text-[10px] font-black uppercase text-slate-400 italic">Resultado Final</span>
+                            <span id="dreSimpProfit" class="text-3xl font-black text-slate-900 transition-all">R$ 0,00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reforma -->
+                <div class="flat-panel p-10 shadow-sm border-l-8 border-purple-600 animate-fade-up" style="animation-delay: 0.4s;">
+                    <header class="flex justify-between items-center mb-8 border-b border-slate-100 pb-4 text-purple-600">
+                        <h3 class="text-xs font-black uppercase italic tracking-widest font-black">DRE: Reforma Inteligente</h3>
+                        <span class="w-3 h-3 bg-purple-600 rounded-full"></span>
+                    </header>
+                    <div class="space-y-5 text-sm font-medium">
+                        <div class="flex justify-between"><span class="dre-label">Receita Líquida</span><span id="dreRefRev" class="dre-value text-purple-600 text-xl font-black">R$ 0,00</span></div>
+                        <div class="flex justify-between tooltip-container group">
+                            <span class="dre-label flex items-center gap-2 group-hover:text-purple-600 transition-colors">(-) CMV Líquido ⓘ</span>
+                            <span id="dreRefCmv" class="dre-value text-slate-400">- R$ 0,00</span>
+                            <div class="tooltip-box">
+                                <p class="font-black mb-3 uppercase text-purple-600">Memória de Cálculo:</p>
+                                <p>• CMV Bruto = 1.000 / Markup de Equilíbrio</p>
+                                <p class="mt-2">• CMV Líquido = CMV Bruto / 1.089</p>
+                                <p class="mt-4 text-[9px] text-slate-400 leading-tight italic">Este ajuste elimina o imposto invisível que hoje é embutido no seu custo de compra.</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-between italic text-slate-300"><span class="dre-label tracking-tighter">Neutralidade Créditos</span><span class="text-[9px] font-black uppercase tracking-widest text-purple-400 bg-purple-50 px-2 py-0.5 rounded-full">Automático</span></div>
+                        <hr class="border-slate-100">
+                        <div class="flex justify-between pt-4">
+                            <span class="text-[10px] font-black uppercase text-slate-400 italic">Resultado Final</span>
+                            <span id="dreRefProfit" class="text-3xl font-black text-purple-600 transition-all">R$ 0,00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRAFICO CLEAN -->
+        <div class="flat-panel p-10 shadow-sm relative animate-fade-up" style="animation-delay: 0.6s;">
+            <h3 class="text-xs font-black uppercase text-slate-400 mb-12 flex items-center justify-center lg:justify-start gap-4 font-black">
+                <span class="w-12 h-1 bg-purple-600 rounded-full"></span> Tendência de Markup Crítico
+            </h3>
+            <div class="relative h-[280px]">
+                <canvas id="markupChart"></canvas>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Welcome Modal (Clean Purple) -->
+<div id="welcomeModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay overflow-hidden">
+    <div class="bg-white w-full max-w-xl rounded-3xl shadow-2xl p-10 lg:p-14 space-y-10 animate-fade-up border border-slate-200">
+        <header class="border-b-4 border-slate-50 pb-8 text-center">
+            <h2 class="text-4xl font-black text-slate-900 tracking-tighter uppercase italic"><span class="text-purple-600">Tax</span>Expert</h2>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mt-3">Análise de Viabilidade da Reforma</p>
+        </header>
+        
+        <div class="space-y-8 text-sm font-semibold text-slate-600 leading-relaxed">
+            <p class="text-center font-bold text-slate-900 text-lg">Entenda o impacto no seu negócio em 3 passos:</p>
+            
+            <div class="flex gap-6 items-start">
+                <span class="w-10 h-10 shrink-0 bg-purple-600 rounded-2xl flex items-center justify-center text-[12px] font-black italic text-white shadow-lg shadow-purple-100 italic">1</span>
+                <div>
+                    <h4 class="font-black text-slate-900 uppercase text-[11px] tracking-widest mb-1">Entrada de Dados</h4>
+                    <p>Você informa seu <span class="text-slate-900">faturamento acumulado</span>. Com isso, o sistema encontra sua alíquota real do Simples Nacional hoje.</p>
+                </div>
+            </div>
+
+            <div class="flex gap-6 items-start">
+                <span class="w-10 h-10 shrink-0 bg-purple-100 rounded-2xl flex items-center justify-center text-[12px] font-black italic text-purple-600 italic">2</span>
+                <div>
+                    <h4 class="font-black text-slate-900 uppercase text-[11px] tracking-widest mb-1">Cálculo de Ruptura</h4>
+                    <p>O site calcula o <span class="text-purple-600">Markup Crítico</span>: o ponto exato onde a Reforma (IBS/CBS) deixa de ser vantajosa e o Simples vence.</p>
+                </div>
+            </div>
+
+            <div class="flex gap-6 items-start">
+                <span class="w-10 h-10 shrink-0 bg-purple-100 rounded-2xl flex items-center justify-center text-[12px] font-black italic text-purple-600 italic">3</span>
+                <div>
+                    <h4 class="font-black text-slate-900 uppercase text-[11px] tracking-widest mb-1">O Veredito Final</h4>
+                    <p>Apresentamos duas <span class="text-slate-900">DREs comparativas</span> que provam, centavo por centavo, qual regime coloca mais lucro no seu bolso.</p>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="closeModal()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-black py-6 rounded-2xl uppercase tracking-[0.2em] text-[11px] transition-all active:scale-95 shadow-xl shadow-purple-100">
+            Acessar Diagnóstico Master
+        </button>
+    </div>
+</div>
+
+<script>
+    const faixas_sn = [
+        { limite: 180000.00, al_nom: 0.0400, deduc: 0.00 },
+        { limite: 360000.00, al_nom: 0.0730, deduc: 5940.00 },
+        { limite: 720000.00, al_nom: 0.0950, deduc: 13860.00 },
+        { limite: 1800000.00, al_nom: 0.1070, deduc: 22500.00 },
+        { limite: 3600000.00, al_nom: 0.1430, deduc: 87300.00 }
+    ];
+
+    let myChart = null;
+
+    function getAliqEfetiva(acumulado) {
+        if (acumulado <= 0) return 0.04;
+        for (let faixa of faixas_sn) {
+            if (acumulado <= faixa.limite) {
+                return (acumulado * faixa.al_nom - faixa.deduc) / acumulado;
+            }
+        }
+        return 0.1430;
+    }
+
+    function formatInput(el) {
+        let value = el.value.replace(/\D/g, '');
+        const warning = document.getElementById('limitWarning');
+        
+        if (!value) { 
+            el.value = ""; 
+            warning.classList.add('hidden');
+            updateSimulation(); 
+            return; 
+        }
+
+        if (parseInt(value) > 3600000) {
+            value = "3600000";
+            warning.classList.remove('hidden');
+        } else {
+            warning.classList.add('hidden');
+        }
+
+        el.value = new Intl.NumberFormat('pt-BR').format(parseInt(value));
+        updateSimulation();
+    }
+
+    function updateSimulation() {
+        const rawValue = document.getElementById('fatInput').value.replace(/\./g, '');
+        if (!rawValue || rawValue === "0") { resetUI(); renderInitialChart(); return; }
+
+        const fatUser = parseFloat(rawValue);
+        const aliqOriginalEf = getAliqEfetiva(fatUser);
+        const aliqFinal = aliqOriginalEf * 0.155;
+
+        // Visual Lateral
+        document.getElementById('aliqMemoryCard').classList.remove('hidden');
+        document.getElementById('memAliqNom').innerText = (aliqOriginalEf * 100).toFixed(2) + '%';
+        document.getElementById('memAliqFinal').innerText = (aliqFinal * 100).toFixed(2) + '%';
+
+        // Formula do Equilibrio
+        const impSimplesAmount = 1000 * aliqFinal;
+        const cmvPreciso = (89 - (1.089 * impSimplesAmount)) / 0.089;
+        const mkpExato = 1000 / cmvPreciso;
+
+        document.getElementById('mainMarkup').innerText = mkpExato > 0 ? mkpExato.toFixed(4) : '-';
+        document.getElementById('markupNotice').classList.toggle('hidden', mkpExato <= 0);
+        document.getElementById('statusHeader').innerText = `DIAGNÓSTICO TÉCNICO: FATURAMENTO R$ ${fatUser.toLocaleString('pt-BR')}`;
+        document.getElementById('statusHeader').classList.remove('text-slate-400');
+        document.getElementById('statusHeader').classList.add('text-purple-600');
+
+        // DREs
+        const venda = 1000;
+        document.getElementById('dreSimpImp').innerText = `- R$ ${impSimplesAmount.toFixed(2)}`;
+        document.getElementById('dreSimpCmv').innerText = `- R$ ${cmvPreciso.toFixed(2)}`;
+        document.getElementById('dreSimpProfit').innerText = `R$ ${(venda - impSimplesAmount - cmvPreciso).toFixed(2)}`;
+
+        const revRef = venda / 1.089;
+        const cmvRef = cmvPreciso / 1.089;
+        document.getElementById('dreRefRev').innerText = `R$ ${revRef.toFixed(2)}`;
+        document.getElementById('dreRefCmv').innerText = `- R$ ${cmvRef.toFixed(2)}`;
+        document.getElementById('dreRefProfit').innerText = `R$ ${(revRef - cmvRef).toFixed(2)}`;
+
+        // Gráfico
+        const labels = []; const data = [];
+        for (let f = 0; f <= 3600000; f += 50000) {
+            const a = getAliqEfetiva(f);
+            const i = 1000 * (a * 0.155);
+            const c = (89 - (1.089 * i)) / 0.089;
+            const m = 1000 / c;
+            labels.push(f);
+            data.push(m > 0 ? m : 0);
+        }
+        renderChart(labels, data, fatUser);
+    }
+
+    function resetUI() {
+        document.getElementById('mainMarkup').innerText = "---";
+        document.getElementById('statusHeader').innerText = "Aguardando definição estratégica do usuário...";
+        document.getElementById('statusHeader').classList.add('text-slate-400');
+        document.getElementById('statusHeader').classList.remove('text-purple-600');
+        document.getElementById('aliqMemoryCard').classList.add('hidden');
+        document.getElementById('markupNotice').classList.add('hidden');
+        ["dreSimpImp", "dreSimpCmv", "dreSimpProfit", "dreRefRev", "dreRefCmv", "dreRefProfit"].forEach(id => document.getElementById(id).innerText = "R$ 0,00");
+    }
+
+    function renderInitialChart() {
+        const labels = []; const data = [];
+        for (let f = 0; f <= 3600000; f += 50000) {
+            const a = getAliqEfetiva(f);
+            const i = 1000 * (a * 0.155);
+            const c = (89 - (1.089 * i)) / 0.089;
+            const m = 1000 / c;
+            labels.push(f);
+            data.push(m > 0 ? m : 0);
+        }
+        renderChart(labels, data, null);
+    }
+
+    function renderChart(labels, data, userValue) {
+        const ctx = document.getElementById('markupChart').getContext('2d');
+        if (myChart) myChart.destroy();
+        myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Tendência Mercado', data: data, borderColor: '#e2e8f0', borderDash: [5, 5], borderWidth: 2, pointRadius: 0, fill: false, tension: 0.1
+                }, {
+                    label: 'Sua Posição',
+                    data: userValue !== null ? labels.map(l => Math.abs(l - userValue) < 25000 ? data[labels.indexOf(l)] : null) : [],
+                    borderColor: '#9333ea', borderWidth: 0, pointRadius: 10, pointBackgroundColor: '#9333ea', pointBorderColor: '#fff', pointBorderWidth: 4, showLine: false
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { 
+                        min: 1.0, max: 2.5, grid: { color: '#f1f5f9' }, 
+                        ticks: { font: { weight: 'bold', size: 10 }, color: '#94a3b8' } 
+                    },
+                    x: { 
+                        grid: { display: false }, 
+                        ticks: { color: '#94a3b8', font: { weight: 'bold', size: 10 }, callback: function(v) { return this.getLabelForValue(v) % 800000 === 0 ? 'R$ ' + (this.getLabelForValue(v)/1000) + 'k' : ''; } } 
+                    }
+                }
+            }
+        });
+    }
+
+    function closeModal() { document.getElementById('welcomeModal').classList.add('hidden'); }
+    window.onload = () => { renderInitialChart(); };
+
+    // PROTEÇÃO DE CÓDIGO FONTE
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    document.onkeydown = function(e) {
+        if (e.keyCode == 123) return false; // F12
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
+        if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false;
+    };
+    document.addEventListener('dragstart', function(e) { e.preventDefault(); });
+</script>
+</body>
+</html>
