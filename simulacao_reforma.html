@@ -82,6 +82,8 @@
                 <p id="limitWarning" class="text-[9px] text-purple-600 mt-2 font-bold uppercase tracking-tighter hidden animate-pulse italic text-center">Limite máximo atingido (Teto do Simples Nacional)</p>
             </div>
 
+
+
             <!-- Memória Lateral -->
             <div id="aliqMemoryCard" class="p-6 bg-purple-600 text-white rounded-2xl shadow-xl shadow-purple-100 hidden animate-fade-up">
                 <h4 class="text-[10px] font-black uppercase mb-4 tracking-tighter border-b border-purple-400/30 pb-2 italic text-purple-100 italic font-black">Memória de Cálculo</h4>
@@ -145,8 +147,9 @@
             </div>
             <div class="bg-white px-10 py-6 rounded-2xl border border-slate-200 shadow-sm transform transition-transform hover:rotate-1">
                 <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Simulação Base</span>
-                <span class="text-4xl font-black text-purple-600 underline decoration-purple-100 decoration-8 underline-offset-4">R$ 1.000,00</span>
+                <span id="headerBaseDisplay" class="text-4xl font-black text-purple-600 underline decoration-purple-100 decoration-8 underline-offset-4">R$ 1.000,00</span>
             </div>
+
         </header>
 
         <!-- KPI & DREs -->
@@ -165,6 +168,28 @@
                 </div>
             </div>
 
+            <!-- Receita Personalizada (aparece após cálculo) -->
+            <div id="customRevenueCard" class="xl:col-span-3 hidden animate-fade-up">
+                <div class="flat-panel p-6 shadow-sm border-t-4 border-purple-400 bg-gradient-to-r from-purple-50/50 to-white">
+                    <div class="flex flex-col lg:flex-row items-center gap-6">
+                        <div class="flex-1">
+                            <h4 class="text-[10px] font-black text-purple-600 uppercase tracking-widest mb-1">Simular com sua Receita Real</h4>
+                            <p class="text-[9px] text-slate-400 italic">Informe o valor da sua receita para ver o impacto real na DRE. O markup já calculado será mantido.</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-purple-600 font-black text-sm">R$</span>
+                                <input id="customRevenueInput" type="text" placeholder="Ex: 50.000"
+                                       class="w-48 pl-10 pr-4 py-3 bg-white border-2 border-purple-100 rounded-xl input-focus font-black text-lg text-slate-800"
+                                       oninput="formatRevenue(this)">
+                            </div>
+                            <button onclick="clearCustomRevenue()" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 rounded-xl text-[9px] font-black text-slate-500 uppercase tracking-widest transition-all">
+                                Resetar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- DREs -->
             <div class="xl:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -175,8 +200,10 @@
                         <div class="flex gap-1"><span class="w-1.5 h-1.5 bg-slate-200 rounded-full"></span><span class="w-1.5 h-1.5 bg-slate-400 rounded-full"></span></div>
                     </header>
                     <div class="space-y-5 text-sm font-medium">
-                        <div class="flex justify-between"><span class="dre-label">Faturamento Base</span><span class="dre-value text-slate-900 text-xl font-black">R$ 1.000,00</span></div>
+                        <div class="flex justify-between"><span class="dre-label">Faturamento Base</span><span id="dreSimpFat" class="dre-value text-slate-900 text-xl font-black">R$ 1.000,00</span></div>
+
                         <div class="flex justify-between"><span class="dre-label">(-) Imposto Efetivo</span><span id="dreSimpImp" class="dre-value text-red-500 font-extrabold">- R$ 0,00</span></div>
+
                         <div class="flex justify-between"><span class="dre-label">(-) Custo (CMV)</span><span id="dreSimpCmv" class="dre-value text-slate-400">- R$ 0,00</span></div>
                         <hr class="border-slate-100">
                         <div class="flex justify-between pt-4 items-end">
@@ -201,12 +228,14 @@
                         <div class="flex justify-between tooltip-container group">
                             <span class="dre-label flex items-center gap-2 group-hover:text-purple-600 transition-colors">(-) CMV Líquido ⓘ</span>
                             <span id="dreRefCmv" class="dre-value text-slate-400">- R$ 0,00</span>
-                            <div class="tooltip-box">
-                                <p class="font-black mb-3 uppercase text-purple-600">Memória de Cálculo:</p>
-                                <p>• CMV Bruto = 1.000 / Markup de Equilíbrio</p>
-                                <p class="mt-2">• CMV Líquido = CMV Bruto / 1.089</p>
-                                <p class="mt-4 text-[9px] text-slate-400 leading-tight italic">Este ajuste elimina o imposto invisível que hoje é embutido no seu custo de compra.</p>
-                            </div>
+                             <div class="tooltip-box">
+                                 <p class="font-black mb-3 uppercase text-purple-600">Memória de Cálculo:</p>
+                                 <p>• CMV Bruto = 1.000 / Markup</p>
+                                 <p class="mt-2">• CMV Líquido = CMV Bruto / 1.089</p>
+                                 <p class="mt-4 text-[9px] text-slate-400 leading-tight italic">Este ajuste elimina o imposto invisível que hoje é embutido no seu custo de compra.</p>
+                             </div>
+
+
                         </div>
                         <div class="flex justify-between italic text-slate-300"><span class="dre-label tracking-tighter">Neutralidade Créditos</span><span class="text-[9px] font-black uppercase tracking-widest text-purple-400 bg-purple-50 px-2 py-0.5 rounded-full">Automático</span></div>
                         <hr class="border-slate-100">
@@ -317,6 +346,10 @@
 
     let myChart = null;
 
+    function formatBRL(value) {
+        return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
     function getAliqEfetiva(acumulado) {
         if (acumulado <= 0) return 0.04;
         for (let faixa of faixas_sn) {
@@ -349,6 +382,18 @@
         updateSimulation();
     }
 
+    function formatRevenue(el) {
+        let value = el.value.replace(/\D/g, '');
+        if (!value) { el.value = ""; updateSimulation(); return; }
+        el.value = new Intl.NumberFormat('pt-BR').format(parseInt(value));
+        updateSimulation();
+    }
+
+    function clearCustomRevenue() {
+        document.getElementById('customRevenueInput').value = "";
+        updateSimulation();
+    }
+
     function updateSimulation() {
         const rawValue = document.getElementById('fatInput').value.replace(/\./g, '');
         if (!rawValue || rawValue === "0") { resetUI(); renderInitialChart(); return; }
@@ -360,26 +405,34 @@
         // Visual Lateral
         document.getElementById('aliqMemoryCard').classList.remove('hidden');
         document.getElementById('manualMarkupCard').classList.remove('hidden');
+        document.getElementById('customRevenueCard').classList.remove('hidden');
         document.getElementById('memAliqNom').innerText = (aliqOriginalEf * 100).toFixed(2) + '%';
         document.getElementById('memAliqFinal').innerText = (aliqFinal * 100).toFixed(2) + '%';
 
-        // Formula do Equilibrio
-        const impSimplesAmount = 1000 * aliqFinal;
-        const cmvEquilibrio = (89 - (1.089 * impSimplesAmount)) / 0.089;
+        // Formula do Equilibrio (sempre base 1000)
+        const impSimplesBase = 1000 * aliqFinal;
+        const cmvEquilibrio = (89 - (1.089 * impSimplesBase)) / 0.089;
         const mkpExato = 1000 / cmvEquilibrio;
 
         // Markup Manual
         const manualInput = document.getElementById('manualMarkupInput').value.replace(',', '.');
         const isManual = manualInput !== "" && !isNaN(parseFloat(manualInput));
         const mkpCenario = isManual ? parseFloat(manualInput) : mkpExato;
-        const cmvCenario = 1000 / mkpCenario;
+
+        // Receita personalizada
+        const revenueRaw = document.getElementById('customRevenueInput').value.replace(/\./g, '');
+        const hasCustomRevenue = revenueRaw !== "" && !isNaN(parseFloat(revenueRaw)) && parseFloat(revenueRaw) > 0;
+        const venda = hasCustomRevenue ? parseFloat(revenueRaw) : 1000;
+        const cmvCenario = venda / mkpCenario;
+
+        // Header base display
+        document.getElementById('headerBaseDisplay').innerText = `R$ ${formatBRL(venda)}`;
 
         // Botão Reset
         document.getElementById('resetMarkupBtn').classList.toggle('hidden', !isManual);
 
         // UI central
         document.getElementById('mainMarkup').innerText = mkpCenario > 0 ? mkpCenario.toFixed(2) : '-';
-
         document.getElementById('markupLabel').innerText = isManual ? "Markup Personalizado" : "Markup de Equilíbrio";
         document.getElementById('markupSubLabel').innerText = isManual ? "Configuração do Usuário" : "Ponto de Ruptura Tributária";
         
@@ -412,62 +465,57 @@
         document.getElementById('statusHeader').classList.remove('text-slate-400');
         document.getElementById('statusHeader').classList.add('text-purple-600');
 
-        // DREs
-        const venda = 1000;
-        document.getElementById('dreSimpImp').innerText = `- R$ ${impSimplesAmount.toFixed(2)}`;
-        document.getElementById('dreSimpCmv').innerText = `- R$ ${cmvCenario.toFixed(2)}`;
+        // DREs (usam a venda personalizada ou 1000)
+        const impSimplesAmount = venda * aliqFinal;
+        document.getElementById('dreSimpFat').innerText = `R$ ${formatBRL(venda)}`;
+        document.getElementById('dreSimpImp').innerText = `- R$ ${formatBRL(impSimplesAmount)}`;
+        document.getElementById('dreSimpCmv').innerText = `- R$ ${formatBRL(cmvCenario)}`;
         const profitSimples = venda - impSimplesAmount - cmvCenario;
-        document.getElementById('dreSimpProfit').innerText = `R$ ${profitSimples.toFixed(2)}`;
+        document.getElementById('dreSimpProfit').innerText = `R$ ${formatBRL(profitSimples)}`;
 
         const revRef = venda / 1.089;
         const cmvRef = cmvCenario / 1.089;
-        document.getElementById('dreRefRev').innerText = `R$ ${revRef.toFixed(2)}`;
-        document.getElementById('dreRefCmv').innerText = `- R$ ${cmvRef.toFixed(2)}`;
+        document.getElementById('dreRefRev').innerText = `R$ ${formatBRL(revRef)}`;
+        document.getElementById('dreRefCmv').innerText = `- R$ ${formatBRL(cmvRef)}`;
         const profitReforma = revRef - cmvRef;
-        document.getElementById('dreRefProfit').innerText = `R$ ${profitReforma.toFixed(2)}`;
+        document.getElementById('dreRefProfit').innerText = `R$ ${formatBRL(profitReforma)}`;
 
         // Apuração IBS/CBS
-        const debitoIbs = 1000 - revRef;
+        const debitoIbs = venda - revRef;
         const creditoIbs = cmvCenario - cmvRef;
         const netIbs = debitoIbs - creditoIbs;
-        document.getElementById('cmvGrossRef').innerText = `R$ ${cmvCenario.toFixed(2)}`;
-        document.getElementById('reformaDebito').innerText = `R$ ${debitoIbs.toFixed(2)}`;
-        document.getElementById('reformaCredito').innerText = `R$ ${creditoIbs.toFixed(2)}`;
-        document.getElementById('reformaNetPay').innerText = `R$ ${netIbs.toFixed(2)}`;
+        document.getElementById('cmvGrossRef').innerText = `R$ ${formatBRL(cmvCenario)}`;
+        document.getElementById('reformaDebito').innerText = `R$ ${formatBRL(debitoIbs)}`;
+        document.getElementById('reformaCredito').innerText = `R$ ${formatBRL(creditoIbs)}`;
+        document.getElementById('reformaNetPay').innerText = `R$ ${formatBRL(netIbs)}`;
 
-        // Cores Dinâmicas e Comparativo de Carga Tributária (NOVO)
+
+        // Cores Dinâmicas e Comparativo de Carga Tributária
         const diffSimpEl = document.getElementById('diffSimp');
         const diffRefEl = document.getElementById('diffRef');
-        
-        // Impostos Totais
         const impSimples = impSimplesAmount;
         const impReforma = netIbs;
-        
         const taxDiff = Math.abs(impReforma - impSimples);
         const maxTax = Math.max(impSimples, impReforma);
         const taxSavingsPercent = maxTax > 0 ? ((taxDiff / maxTax) * 100).toFixed(1) : 0;
 
         if (impReforma < impSimples) {
-            // Reforma é mais barata em imposto
             document.getElementById('dreRefProfit').classList.add('text-purple-600');
             document.getElementById('dreRefProfit').classList.remove('text-slate-900');
             document.getElementById('dreSimpProfit').classList.remove('text-purple-600');
             document.getElementById('dreSimpProfit').classList.add('text-slate-900');
-            
             diffRefEl.innerText = `-${taxSavingsPercent}% de Imposto`;
             diffRefEl.classList.remove('hidden', 'text-red-500');
-            diffRefEl.classList.add('text-purple-600'); // Cor de sucesso/destaque
+            diffRefEl.classList.add('text-purple-600');
             diffSimpEl.classList.add('hidden');
         } else if (impSimples < impReforma) {
-            // Simples é mais barato em imposto
             document.getElementById('dreRefProfit').classList.remove('text-purple-600');
             document.getElementById('dreRefProfit').classList.add('text-slate-900');
             document.getElementById('dreSimpProfit').classList.add('text-purple-600');
             document.getElementById('dreSimpProfit').classList.remove('text-slate-900');
-
             diffSimpEl.innerText = `-${taxSavingsPercent}% de Imposto`;
             diffSimpEl.classList.remove('hidden', 'text-red-500');
-            diffSimpEl.classList.add('text-purple-600'); // Usando roxo como destaque de vantagem
+            diffSimpEl.classList.add('text-purple-600');
             diffRefEl.classList.add('hidden');
         } else {
             document.getElementById('dreRefProfit').classList.remove('text-purple-600');
@@ -477,7 +525,6 @@
             diffRefEl.classList.add('hidden');
             diffSimpEl.classList.add('hidden');
         }
-
 
         // Gráfico
         const labels = []; const data = [];
@@ -519,9 +566,13 @@
         document.getElementById('markupSubLabel').innerText = "Ponto de Ruptura Tributária";
         document.getElementById('diffSimp').classList.add('hidden');
         document.getElementById('diffRef').classList.add('hidden');
-
-
+        document.getElementById('customRevenueCard').classList.add('hidden');
+        document.getElementById('customRevenueInput').value = "";
+        document.getElementById('headerBaseDisplay').innerText = "R$ 1.000,00";
+        document.getElementById('dreSimpFat').innerText = "R$ 1.000,00";
         document.getElementById('cmvGrossRef').innerText = "R$ 0,00";
+
+
         ["reformaDebito", "reformaCredito", "reformaNetPay"].forEach(id => document.getElementById(id).innerText = "R$ 0,00");
         ["dreSimpImp", "dreSimpCmv", "dreSimpProfit", "dreRefRev", "dreRefCmv", "dreRefProfit"].forEach(id => document.getElementById(id).innerText = "R$ 0,00");
     }
