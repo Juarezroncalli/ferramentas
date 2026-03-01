@@ -44,6 +44,40 @@
         .animate-fade-up { animation: fadeUp 0.8s ease forwards; }
         .animate-slide-left { animation: slideInLeft 0.6s ease-out; }
         
+        @keyframes float {
+            0% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-8px) scale(1.02); }
+            100% { transform: translateY(0px) scale(1); }
+        }
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(147, 51, 234, 0.7); border-color: #d8b4fe; }
+            50% { box-shadow: 0 0 25px 0 rgba(147, 51, 234, 0.4); border-color: #9333ea; }
+            100% { box-shadow: 0 0 0 0 rgba(147, 51, 234, 0); border-color: #e2e8f0; }
+        }
+        @keyframes bgSweep {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes subtlePop {
+            0% { transform: scale(1); text-shadow: 0 0 0 rgba(147, 51, 234, 0); }
+            50% { transform: scale(1.06); color: #7e22ce; text-shadow: 0 4px 15px rgba(147, 51, 234, 0.4); }
+            100% { transform: scale(1); text-shadow: 0 0 0 rgba(147, 51, 234, 0); }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .animate-float { animation: float 5s ease-in-out infinite; }
+        .animate-pulse-glow { animation: pulseGlow 3s infinite; border-radius: 1rem; }
+        .bg-sweep { background-size: 200% 200%; animation: bgSweep 4s ease infinite; }
+        .animate-pop { display: inline-block; animation: subtlePop 2.5s ease-in-out infinite; }
+        .shimmer-effect {
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 3s infinite;
+        }
+        
         /* Tooltip Style */
         .tooltip-container { position: relative; border-bottom: 1px dashed #cbd5e1; cursor: help; }
         .tooltip-box { 
@@ -145,9 +179,9 @@
                 <h1 class="text-6xl font-black text-slate-900 tracking-tighter leading-none italic uppercase">Painel de <span class="text-purple-600">Decisão</span></h1>
                 <p id="statusHeader" class="text-slate-400 mt-5 font-bold text-xs uppercase tracking-[0.3em] font-black">Aguardando definição estratégica do usuário...</p>
             </div>
-            <div class="bg-white px-10 py-6 rounded-2xl border border-slate-200 shadow-sm transform transition-transform hover:rotate-1">
+            <div class="bg-white px-10 py-6 rounded-2xl border border-slate-200 shadow-sm animate-pulse-glow hover:rotate-1 transition-all">
                 <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Simulação Base</span>
-                <span id="headerBaseDisplay" class="text-4xl font-black text-purple-600 underline decoration-purple-100 decoration-8 underline-offset-4">R$ 1.000,00</span>
+                <span id="headerBaseDisplay" class="text-4xl font-black text-purple-600 underline decoration-purple-100 decoration-8 underline-offset-4 inline-block">R$ 1.000,00</span>
             </div>
 
         </header>
@@ -156,9 +190,12 @@
         <div class="grid grid-cols-1 xl:grid-cols-4 gap-8 text-center lg:text-left">
             
             <!-- RESULTADO DE IMPACTO -->
-            <div class="xl:col-span-1 p-10 flat-panel result-box flex flex-col items-center justify-center shadow-sm relative group">
+            <div class="xl:col-span-1 p-10 flat-panel border-4 border-transparent hover:border-purple-300 result-box flex flex-col items-center justify-center shadow-xl relative group animate-float bg-gradient-to-br from-white to-purple-50">
                 <span id="markupLabel" class="text-[10px] font-black text-purple-600 uppercase tracking-widest mb-6 italic text-center">Markup de Equilíbrio</span>
-                <div id="mainMarkup" class="text-7xl font-black text-slate-900 tracking-tighter mb-3 transition-transform group-hover:scale-110">---</div>
+                <div class="relative">
+                    <div id="mainMarkup" class="text-7xl font-black text-slate-900 tracking-tighter mb-3 transition-transform group-hover:scale-110 animate-pop">---</div>
+                    <div class="absolute inset-0 shimmer-effect pointer-events-none rounded-full blur-md"></div>
+                </div>
                 <div id="markupSubLabel" class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-3">Ponto de Ruptura Tributária</div>
                 
                 <!-- ALERTA DE SETA (NOVO) -->
@@ -186,9 +223,9 @@
                         <div class="flex justify-between pt-4 items-end">
                             <div class="flex flex-col">
                                 <span class="text-[10px] font-black uppercase text-slate-400 italic">Resultado Final</span>
-                                <span id="diffSimp" class="text-[9px] font-black text-red-500 uppercase hidden"></span>
+                                <span id="diffSimp" class="text-[9px] font-black text-red-500 uppercase hidden animate-pulse"></span>
                             </div>
-                            <span id="dreSimpProfit" class="text-3xl font-black text-slate-900 transition-all">R$ 0,00</span>
+                            <span id="dreSimpProfit" class="text-3xl font-black text-slate-900 transition-all hover:scale-110 cursor-default">R$ 0,00</span>
                         </div>
                     </div>
                 </div>
@@ -219,9 +256,9 @@
                         <div class="flex justify-between pt-4 items-end">
                             <div class="flex flex-col">
                                 <span class="text-[10px] font-black uppercase text-slate-400 italic">Resultado Final</span>
-                                <span id="diffRef" class="text-[9px] font-black text-purple-600 uppercase hidden"></span>
+                                <span id="diffRef" class="text-[9px] font-black text-purple-600 uppercase hidden animate-pulse"></span>
                             </div>
-                            <span id="dreRefProfit" class="text-3xl font-black text-purple-600 transition-all">R$ 0,00</span>
+                            <span id="dreRefProfit" class="text-3xl font-black text-purple-600 transition-all hover:scale-110 hover:text-purple-700 cursor-default">R$ 0,00</span>
                         </div>
                     </div>
                 </div>
@@ -231,7 +268,7 @@
 
         <!-- Receita Personalizada (aparece após cálculo) -->
         <div id="customRevenueCard" class="hidden animate-fade-up">
-            <div class="flat-panel p-6 shadow-sm border-t-4 border-purple-400 bg-gradient-to-r from-purple-50/50 to-white">
+            <div class="flat-panel p-6 shadow-sm border-t-4 border-purple-400 bg-gradient-to-r from-purple-50 via-white to-purple-50 bg-sweep">
                 <div class="flex flex-col lg:flex-row items-center gap-6">
                     <div class="flex-1">
                         <h4 class="text-[10px] font-black text-purple-600 uppercase tracking-widest mb-1">Simular com sua Receita Real</h4>
