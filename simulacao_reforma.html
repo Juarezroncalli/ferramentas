@@ -102,6 +102,28 @@
                 </div>
             </div>
 
+            <!-- Simulação Manual (NOVO) -->
+            <div id="manualMarkupCard" class="p-6 bg-white border-2 border-slate-100 rounded-2xl hidden animate-fade-up">
+                <h4 class="text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest border-b border-slate-100 pb-2">Cenário Personalizado</h4>
+                <div class="space-y-4">
+                    <label class="block text-[9px] font-black text-slate-500 uppercase tracking-widest">Ajustar Markup Manual</label>
+                    <div class="relative">
+                        <input id="manualMarkupInput" type="text" placeholder="Ex: 1.65"
+                               class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-100 rounded-xl input-focus font-black text-xl text-slate-800"
+                               oninput="validateMarkup(this)">
+                        <button onclick="clearManualMarkup()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-purple-600 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                    <p class="text-[9px] text-slate-400 italic leading-tight">Informe seu markup real para ver o impacto direto no lucro das duas opções.</p>
+                    <button id="resetMarkupBtn" onclick="clearManualMarkup()" class="w-full mt-2 py-2 border-2 border-purple-50 border-dashed rounded-xl text-[9px] font-black text-purple-400 uppercase tracking-widest hover:bg-purple-50 hover:text-purple-600 transition-all hidden">
+                        ↺ Voltar ao Markup de Equilíbrio
+                    </button>
+                </div>
+            </div>
+
+
+
             <div class="p-6 bg-slate-50 border border-slate-200 rounded-2xl transform transition-transform hover:scale-[1.02]">
                 <h4 class="text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest border-b border-slate-200 pb-2">Parâmetros de Mercado</h4>
                 <div class="space-y-3 font-bold text-[10px]">
@@ -132,16 +154,17 @@
             
             <!-- RESULTADO DE IMPACTO -->
             <div class="xl:col-span-1 p-12 flat-panel result-box flex flex-col items-center justify-center shadow-sm relative group">
-                <span class="text-[10px] font-black text-purple-600 uppercase tracking-widest mb-8 italic">Markup de Equilíbrio</span>
+                <span id="markupLabel" class="text-[10px] font-black text-purple-600 uppercase tracking-widest mb-8 italic text-center">Markup de Equilíbrio</span>
                 <div id="mainMarkup" class="text-8xl font-black text-slate-900 tracking-tighter mb-4 transition-transform group-hover:scale-110">---</div>
-                <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-4">Ponto de Ruptura Tributária</div>
+                <div id="markupSubLabel" class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-4">Ponto de Ruptura Tributária</div>
                 
                 <!-- ALERTA DE SETA (NOVO) -->
                 <div id="markupNotice" class="hidden mt-6 p-3 bg-purple-50 border border-purple-100 rounded-xl flex items-center gap-3 animate-fade-up">
-                    <svg class="w-5 h-5 text-purple-600 flex-shrink-0 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
-                    <p class="text-[10px] font-black text-purple-900 leading-tight text-left uppercase">Acima deste valor, o sistema hibrido pode não valer a pena</p>
+                    <svg id="markupIcon" class="w-5 h-5 text-purple-600 flex-shrink-0 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                    <p id="markupWarningText" class="text-[10px] font-black text-purple-900 leading-tight text-left uppercase">Acima deste valor, o sistema hibrido pode não valer a pena</p>
                 </div>
             </div>
+
 
             <!-- DREs -->
             <div class="xl:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -156,12 +179,16 @@
                         <div class="flex justify-between"><span class="dre-label">(-) Imposto Efetivo</span><span id="dreSimpImp" class="dre-value text-red-500 font-extrabold">- R$ 0,00</span></div>
                         <div class="flex justify-between"><span class="dre-label">(-) Custo (CMV)</span><span id="dreSimpCmv" class="dre-value text-slate-400">- R$ 0,00</span></div>
                         <hr class="border-slate-100">
-                        <div class="flex justify-between pt-4">
-                            <span class="text-[10px] font-black uppercase text-slate-400 italic">Resultado Final</span>
+                        <div class="flex justify-between pt-4 items-end">
+                            <div class="flex flex-col">
+                                <span class="text-[10px] font-black uppercase text-slate-400 italic">Resultado Final</span>
+                                <span id="diffSimp" class="text-[9px] font-black text-red-500 uppercase hidden"></span>
+                            </div>
                             <span id="dreSimpProfit" class="text-3xl font-black text-slate-900 transition-all">R$ 0,00</span>
                         </div>
                     </div>
                 </div>
+
 
                 <!-- Reforma -->
                 <div class="flat-panel p-10 shadow-sm border-l-8 border-purple-600 animate-fade-up" style="animation-delay: 0.4s;">
@@ -183,12 +210,16 @@
                         </div>
                         <div class="flex justify-between italic text-slate-300"><span class="dre-label tracking-tighter">Neutralidade Créditos</span><span class="text-[9px] font-black uppercase tracking-widest text-purple-400 bg-purple-50 px-2 py-0.5 rounded-full">Automático</span></div>
                         <hr class="border-slate-100">
-                        <div class="flex justify-between pt-4">
-                            <span class="text-[10px] font-black uppercase text-slate-400 italic">Resultado Final</span>
+                        <div class="flex justify-between pt-4 items-end">
+                            <div class="flex flex-col">
+                                <span class="text-[10px] font-black uppercase text-slate-400 italic">Resultado Final</span>
+                                <span id="diffRef" class="text-[9px] font-black text-purple-600 uppercase hidden"></span>
+                            </div>
                             <span id="dreRefProfit" class="text-3xl font-black text-purple-600 transition-all">R$ 0,00</span>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
 
@@ -328,16 +359,55 @@
 
         // Visual Lateral
         document.getElementById('aliqMemoryCard').classList.remove('hidden');
+        document.getElementById('manualMarkupCard').classList.remove('hidden');
         document.getElementById('memAliqNom').innerText = (aliqOriginalEf * 100).toFixed(2) + '%';
         document.getElementById('memAliqFinal').innerText = (aliqFinal * 100).toFixed(2) + '%';
 
         // Formula do Equilibrio
         const impSimplesAmount = 1000 * aliqFinal;
-        const cmvPreciso = (89 - (1.089 * impSimplesAmount)) / 0.089;
-        const mkpExato = 1000 / cmvPreciso;
+        const cmvEquilibrio = (89 - (1.089 * impSimplesAmount)) / 0.089;
+        const mkpExato = 1000 / cmvEquilibrio;
 
-        document.getElementById('mainMarkup').innerText = mkpExato > 0 ? mkpExato.toFixed(4) : '-';
-        document.getElementById('markupNotice').classList.toggle('hidden', mkpExato <= 0);
+        // Markup Manual
+        const manualInput = document.getElementById('manualMarkupInput').value.replace(',', '.');
+        const isManual = manualInput !== "" && !isNaN(parseFloat(manualInput));
+        const mkpCenario = isManual ? parseFloat(manualInput) : mkpExato;
+        const cmvCenario = 1000 / mkpCenario;
+
+        // Botão Reset
+        document.getElementById('resetMarkupBtn').classList.toggle('hidden', !isManual);
+
+        // UI central
+        document.getElementById('mainMarkup').innerText = mkpCenario > 0 ? mkpCenario.toFixed(2) : '-';
+
+        document.getElementById('markupLabel').innerText = isManual ? "Markup Personalizado" : "Markup de Equilíbrio";
+        document.getElementById('markupSubLabel').innerText = isManual ? "Configuração do Usuário" : "Ponto de Ruptura Tributária";
+        
+        const notice = document.getElementById('markupNotice');
+        const icon = document.getElementById('markupIcon');
+        const warnText = document.getElementById('markupWarningText');
+
+        if (isManual) {
+            notice.classList.remove('hidden');
+            if (mkpCenario > mkpExato) {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>';
+                icon.classList.add('text-purple-600');
+                icon.classList.remove('text-red-500');
+                warnText.innerText = "Markup acima do equilíbrio: Reforma Inteligente é mais vantajosa!";
+            } else if (mkpCenario < mkpExato) {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>';
+                icon.classList.add('text-red-500');
+                icon.classList.remove('text-purple-600');
+                warnText.innerText = "Markup abaixo do equilíbrio: Simples Nacional é mais vantajoso!";
+            } else {
+                notice.classList.add('hidden');
+            }
+        } else {
+            notice.classList.toggle('hidden', mkpExato <= 0);
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>';
+            warnText.innerText = "Acima deste valor, a Reforma Inteligente vale mais a pena";
+        }
+
         document.getElementById('statusHeader').innerText = `DIAGNÓSTICO TÉCNICO: FATURAMENTO R$ ${fatUser.toLocaleString('pt-BR')}`;
         document.getElementById('statusHeader').classList.remove('text-slate-400');
         document.getElementById('statusHeader').classList.add('text-purple-600');
@@ -345,23 +415,69 @@
         // DREs
         const venda = 1000;
         document.getElementById('dreSimpImp').innerText = `- R$ ${impSimplesAmount.toFixed(2)}`;
-        document.getElementById('dreSimpCmv').innerText = `- R$ ${cmvPreciso.toFixed(2)}`;
-        document.getElementById('dreSimpProfit').innerText = `R$ ${(venda - impSimplesAmount - cmvPreciso).toFixed(2)}`;
+        document.getElementById('dreSimpCmv').innerText = `- R$ ${cmvCenario.toFixed(2)}`;
+        const profitSimples = venda - impSimplesAmount - cmvCenario;
+        document.getElementById('dreSimpProfit').innerText = `R$ ${profitSimples.toFixed(2)}`;
 
         const revRef = venda / 1.089;
-        const cmvRef = cmvPreciso / 1.089;
+        const cmvRef = cmvCenario / 1.089;
         document.getElementById('dreRefRev').innerText = `R$ ${revRef.toFixed(2)}`;
         document.getElementById('dreRefCmv').innerText = `- R$ ${cmvRef.toFixed(2)}`;
-        document.getElementById('dreRefProfit').innerText = `R$ ${(revRef - cmvRef).toFixed(2)}`;
+        const profitReforma = revRef - cmvRef;
+        document.getElementById('dreRefProfit').innerText = `R$ ${profitReforma.toFixed(2)}`;
 
         // Apuração IBS/CBS
         const debitoIbs = 1000 - revRef;
-        const creditoIbs = cmvPreciso - cmvRef;
+        const creditoIbs = cmvCenario - cmvRef;
         const netIbs = debitoIbs - creditoIbs;
-        document.getElementById('cmvGrossRef').innerText = `R$ ${cmvPreciso.toFixed(2)}`;
+        document.getElementById('cmvGrossRef').innerText = `R$ ${cmvCenario.toFixed(2)}`;
         document.getElementById('reformaDebito').innerText = `R$ ${debitoIbs.toFixed(2)}`;
         document.getElementById('reformaCredito').innerText = `R$ ${creditoIbs.toFixed(2)}`;
         document.getElementById('reformaNetPay').innerText = `R$ ${netIbs.toFixed(2)}`;
+
+        // Cores Dinâmicas e Comparativo de Carga Tributária (NOVO)
+        const diffSimpEl = document.getElementById('diffSimp');
+        const diffRefEl = document.getElementById('diffRef');
+        
+        // Impostos Totais
+        const impSimples = impSimplesAmount;
+        const impReforma = netIbs;
+        
+        const taxDiff = Math.abs(impReforma - impSimples);
+        const maxTax = Math.max(impSimples, impReforma);
+        const taxSavingsPercent = maxTax > 0 ? ((taxDiff / maxTax) * 100).toFixed(1) : 0;
+
+        if (impReforma < impSimples) {
+            // Reforma é mais barata em imposto
+            document.getElementById('dreRefProfit').classList.add('text-purple-600');
+            document.getElementById('dreRefProfit').classList.remove('text-slate-900');
+            document.getElementById('dreSimpProfit').classList.remove('text-purple-600');
+            document.getElementById('dreSimpProfit').classList.add('text-slate-900');
+            
+            diffRefEl.innerText = `-${taxSavingsPercent}% de Imposto`;
+            diffRefEl.classList.remove('hidden', 'text-red-500');
+            diffRefEl.classList.add('text-purple-600'); // Cor de sucesso/destaque
+            diffSimpEl.classList.add('hidden');
+        } else if (impSimples < impReforma) {
+            // Simples é mais barato em imposto
+            document.getElementById('dreRefProfit').classList.remove('text-purple-600');
+            document.getElementById('dreRefProfit').classList.add('text-slate-900');
+            document.getElementById('dreSimpProfit').classList.add('text-purple-600');
+            document.getElementById('dreSimpProfit').classList.remove('text-slate-900');
+
+            diffSimpEl.innerText = `-${taxSavingsPercent}% de Imposto`;
+            diffSimpEl.classList.remove('hidden', 'text-red-500');
+            diffSimpEl.classList.add('text-purple-600'); // Usando roxo como destaque de vantagem
+            diffRefEl.classList.add('hidden');
+        } else {
+            document.getElementById('dreRefProfit').classList.remove('text-purple-600');
+            document.getElementById('dreRefProfit').classList.add('text-slate-900');
+            document.getElementById('dreSimpProfit').classList.remove('text-purple-600');
+            document.getElementById('dreSimpProfit').classList.add('text-slate-900');
+            diffRefEl.classList.add('hidden');
+            diffSimpEl.classList.add('hidden');
+        }
+
 
         // Gráfico
         const labels = []; const data = [];
@@ -373,8 +489,21 @@
             labels.push(f);
             data.push(m > 0 ? m : 0);
         }
-        renderChart(labels, data, fatUser);
+        renderChart(labels, data, fatUser, isManual ? mkpCenario : null);
     }
+
+    function validateMarkup(el) {
+        el.value = el.value.replace(/[^0-9,.]/g, '').replace('.', ',');
+        const parts = el.value.split(',');
+        if (parts.length > 2) el.value = parts[0] + ',' + parts[1];
+        updateSimulation();
+    }
+
+    function clearManualMarkup() {
+        document.getElementById('manualMarkupInput').value = "";
+        updateSimulation();
+    }
+
 
     function resetUI() {
         document.getElementById('mainMarkup').innerText = "---";
@@ -382,7 +511,16 @@
         document.getElementById('statusHeader').classList.add('text-slate-400');
         document.getElementById('statusHeader').classList.remove('text-purple-600');
         document.getElementById('aliqMemoryCard').classList.add('hidden');
+        document.getElementById('manualMarkupCard').classList.add('hidden');
+        document.getElementById('manualMarkupInput').value = "";
+        document.getElementById('resetMarkupBtn').classList.add('hidden');
         document.getElementById('markupNotice').classList.add('hidden');
+        document.getElementById('markupLabel').innerText = "Markup de Equilíbrio";
+        document.getElementById('markupSubLabel').innerText = "Ponto de Ruptura Tributária";
+        document.getElementById('diffSimp').classList.add('hidden');
+        document.getElementById('diffRef').classList.add('hidden');
+
+
         document.getElementById('cmvGrossRef').innerText = "R$ 0,00";
         ["reformaDebito", "reformaCredito", "reformaNetPay"].forEach(id => document.getElementById(id).innerText = "R$ 0,00");
         ["dreSimpImp", "dreSimpCmv", "dreSimpProfit", "dreRefRev", "dreRefCmv", "dreRefProfit"].forEach(id => document.getElementById(id).innerText = "R$ 0,00");
@@ -401,24 +539,35 @@
         renderChart(labels, data, null);
     }
 
-    function renderChart(labels, data, userValue) {
+    function renderChart(labels, data, userValue, manualMarkup) {
         const ctx = document.getElementById('markupChart').getContext('2d');
         if (myChart) myChart.destroy();
+
+        const datasets = [{
+            label: 'Tendência Mercado', data: data, borderColor: '#e2e8f0', borderDash: [5, 5], borderWidth: 2, pointRadius: 0, fill: false, tension: 0.1
+        }, {
+            label: 'Sua Posição (Teto)',
+            data: userValue !== null ? labels.map(l => Math.abs(l - userValue) < 25000 ? data[labels.indexOf(l)] : null) : [],
+            borderColor: '#9333ea', borderWidth: 0, pointRadius: 10, pointBackgroundColor: '#9333ea', pointBorderColor: '#fff', pointBorderWidth: 4, showLine: false
+        }];
+
+        if (manualMarkup) {
+            datasets.push({
+                label: 'Seu Markup',
+                data: labels.map(l => manualMarkup),
+                borderColor: '#c084fc', borderDash: [2, 2], borderWidth: 1, pointRadius: 0, fill: false
+            });
+        }
+
         myChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labels,
-                datasets: [{
-                    label: 'Tendência Mercado', data: data, borderColor: '#e2e8f0', borderDash: [5, 5], borderWidth: 2, pointRadius: 0, fill: false, tension: 0.1
-                }, {
-                    label: 'Sua Posição',
-                    data: userValue !== null ? labels.map(l => Math.abs(l - userValue) < 25000 ? data[labels.indexOf(l)] : null) : [],
-                    borderColor: '#9333ea', borderWidth: 0, pointRadius: 10, pointBackgroundColor: '#9333ea', pointBorderColor: '#fff', pointBorderWidth: 4, showLine: false
-                }]
+                datasets: datasets
             },
             options: {
                 responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                plugins: { legend: { display: !!manualMarkup, position: 'top', labels: { boxWidth: 10, font: { weight: 'bold', size: 9 } } } },
                 scales: {
                     y: { 
                         min: 1.0, max: 2.5, grid: { color: '#f1f5f9' }, 
@@ -432,6 +581,7 @@
             }
         });
     }
+
 
     function closeModal() { document.getElementById('welcomeModal').classList.add('hidden'); }
     window.onload = () => { renderInitialChart(); };
