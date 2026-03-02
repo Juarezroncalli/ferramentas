@@ -60,72 +60,22 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono:wght@400;700&display=swap"
       rel="stylesheet"
     />
 
     <style>
       :root {
-        --primary: #FF5C00;
-        --accent: #FF5C00;
-        --sidebar-dark: #18181b; /* Zinc 900 */
-        --bg-light: #f4f4f5; /* Zinc 100 */
+        --bg-body: #06b6d4;
         --card-bg: #ffffff;
-        --color-primary: #FF5C00;
-        --color-secondary: #71717a; /* Zinc 500 */
-        --color-accent: #FF5C00;
+        --border-black: #000000;
+        --color-primary: #8b5cf6;
+        --color-secondary: #f472b6;
+        --color-accent: #facc15;
         --color-success: #22c55e;
         --color-danger: #ef4444;
-      }
-
-      .search-container {
-        position: relative;
-        width: 100%;
-        max-width: 500px;
-        margin-top: 1rem;
-      }
-      .search-container i {
-        position: absolute;
-        left: 14px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #71717a;
-        font-size: 0.9rem;
-      }
-      .search-container input {
-        width: 100%;
-        padding: 12px 12px 12px 42px;
-        border: 1px solid #e4e4e7;
-        border-radius: 4px;
-        font-size: 0.85rem;
-        font-family: "Inter", sans-serif;
-        outline: none;
-        transition: all 0.2s;
-        background: #fafafa;
-      }
-      .search-container input:focus {
-        border-color: var(--primary);
-        background: #fff;
-        box-shadow: 0 4px 12px rgba(255, 92, 0, 0.08);
-      }
-      .search-mode h2 {
-        display: none !important;
-      }
-      .search-mode .tab-pane {
-        display: block !important;
-        opacity: 1 !important;
-        margin-bottom: 0 !important;
-        padding-top: 0 !important;
-      }
-      .no-results {
-        display: none;
-        text-align: center;
-        padding: 3rem;
-        color: #71717a;
-        font-family: "Outfit", sans-serif;
-      }
-      .no-results.visible {
-        display: block;
+        --shadow-dist: 6px;
+        --border-width: 3px;
       }
 
       * {
@@ -135,148 +85,126 @@
       }
 
       body {
-        font-family: "Inter", sans-serif;
-        background-color: var(--bg-light);
-        color: #18181b;
+        font-family: "Space Grotesk", sans-serif;
+        background-color: var(--bg-body);
+        background-image:
+          linear-gradient(#fff 2px, transparent 2px),
+          linear-gradient(90deg, #fff 2px, transparent 2px);
+        background-size: 40px 40px;
+        background-position: -2px -2px;
+        color: var(--border-black);
         height: 100vh;
         overflow: hidden;
         display: flex;
       }
 
-      /* === Custom Scrollbar === */
-      ::-webkit-scrollbar {
-        width: 6px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #d4d4d8; /* Zinc 300 */
-        border-radius: 4px;
-      }
-
-      /* === SIDEBAR === */
       .sidebar {
-        width: 280px;
-        background: var(--sidebar-dark);
+        width: 300px;
+        background: var(--color-accent);
+        border-right: var(--border-width) solid var(--border-black);
         display: flex;
         flex-direction: column;
-        padding: 1.5rem 1rem;
+        padding: 2rem 1.5rem;
         flex-shrink: 0;
         overflow-y: auto;
         z-index: 10;
-        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+        box-shadow: 4px 0 0 rgba(0, 0, 0, 0.2);
       }
 
       .logo {
-        font-family: "Outfit", sans-serif;
-        font-weight: 700;
-        font-size: 1.4rem;
+        font-weight: 900;
+        font-size: 1.8rem;
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 15px;
         margin-bottom: 0.5rem;
         text-decoration: none;
-        color: #ffffff;
-        letter-spacing: -1px;
+        color: var(--border-black);
         text-transform: uppercase;
+        letter-spacing: -1px;
       }
 
       .logo i {
-        background: var(--primary);
+        background: var(--color-primary);
         color: #fff;
         padding: 10px;
-        border-radius: 4px;
-        font-size: 1.1rem;
+        border: var(--border-width) solid var(--border-black);
+        box-shadow: 4px 4px 0 0 black;
+        font-size: 1.2rem;
       }
 
       .slogan {
-        font-family: "Inter", sans-serif;
-        font-size: 0.75rem;
-        color: #71717a; /* Zinc 500 */
-        margin-bottom: 2rem;
-        font-weight: 500;
+        font-family: "Space Mono", monospace;
+        font-size: 0.85rem;
+        color: #000;
+        margin-bottom: 2.5rem;
+        font-weight: 700;
         line-height: 1.4;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        padding-bottom: 1rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
+        border-bottom: 3px solid #000;
+        padding-bottom: 10px;
       }
 
-      /* === NAVIGATION === */
       .nav-group {
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 15px;
       }
 
       .nav-item {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 12px 14px;
-        font-weight: 500;
-        color: #a1a1aa; /* Zinc 400 */
+        gap: 15px;
+        padding: 15px;
+        font-weight: 800;
+        color: #000;
         cursor: pointer;
-        transition: all 0.2s ease;
-        border: none;
-        background: transparent;
-        border-radius: 4px;
-        font-size: 0.85rem;
+        transition: 0.1s;
+        border: var(--border-width) solid var(--border-black);
+        background: #fff;
+        box-shadow: 4px 4px 0 0 black;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        font-size: 0.9rem;
       }
 
       .nav-item:hover {
-        background: rgba(255, 255, 255, 0.08);
-        color: #ffffff;
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 0 black;
       }
 
       .nav-item.active {
-        background-color: var(--primary);
+        background-color: var(--color-primary);
         color: #fff;
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 0 black;
       }
 
       .nav-item[data-tab="tab-sped"].active {
-        background-color: #3f3f46; /* Zinc 700 */
+        background-color: var(--color-secondary);
       }
       .nav-item[data-tab="tab-importacao"].active {
-        background-color: #52525b; /* Zinc 600 */
+        background-color: #3b82f6;
       }
       .nav-item[data-tab="tab-analise"].active {
-        background-color: #FF5C00;
+        background-color: var(--color-danger);
       }
       .nav-item[data-tab="tab-cartoes"].active {
-        background-color: #27272a; /* Zinc 800 */
-        color: #fff;
-      }
-      .nav-item[data-tab="tab-reforma"].active {
-        background-color: #f97316;
-      }
-      .nav-item[data-tab="tab-xml"].active {
-        background-color: #52525b;
-      }
-      .nav-item[data-tab="tab-ofx"].active {
-        background-color: #3f3f46;
+        background-color: var(--color-success);
+        color: #000;
       }
 
-      /* === MAIN CONTENT === */
       .main-content {
         flex: 1;
         padding: 2rem;
         overflow-y: auto;
         position: relative;
-        background: var(--bg-light);
       }
 
-      /* === HEADER === */
       .header-section {
-        margin-bottom: 2rem;
+        margin-bottom: 2.5rem;
         background: #fff;
-        border: 1px solid #e4e4e7;
-        padding: 1.5rem 2rem;
-        border-radius: 4px;
-        box-shadow: none;
+        border: var(--border-width) solid var(--border-black);
+        padding: 2rem;
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -285,28 +213,22 @@
       }
 
       .header-text h1 {
-        font-family: "Outfit", sans-serif;
-        font-weight: 700;
-        font-size: 1.6rem;
-        margin-bottom: 0.3rem;
-        color: #09090b;
+        font-weight: 900;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
         text-transform: uppercase;
-        letter-spacing: -0.5px;
       }
 
       .header-text p {
-        font-family: "Inter", sans-serif;
-        font-weight: 500;
-        color: #52525b;
+        font-family: "Space Mono", monospace;
+        font-weight: 700;
+        color: #000;
+        background: var(--color-accent);
         display: inline-block;
-        padding: 4px 12px;
-        background: #fff;
-        border-radius: 4px;
-        font-size: 0.85rem;
-        border: 1px solid #e4e4e7;
+        padding: 5px 10px;
+        border: 2px solid #000;
       }
 
-      /* === TABS === */
       .tab-pane {
         display: none;
         animation: slideUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
@@ -319,7 +241,7 @@
       @keyframes slideUp {
         from {
           opacity: 0;
-          transform: translateY(12px);
+          transform: translateY(20px);
         }
         to {
           opacity: 1;
@@ -328,49 +250,32 @@
       }
 
       .tab-pane h2 {
-        font-family: "Outfit", sans-serif;
-        background: transparent;
-        color: #0f172a;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 0;
+        background: #000;
+        color: #fff;
+        display: inline-block;
+        padding: 10px 20px;
         margin-bottom: 1.5rem;
         text-transform: uppercase;
-        font-size: 1rem;
-        font-weight: 700;
-        letter-spacing: 0.05em;
-        box-shadow: none;
-        transform: none;
+        font-size: 1.5rem;
+        box-shadow: 4px 4px 0 var(--color-success);
+        transform: rotate(-1deg);
       }
 
-      .tab-pane h2::before {
-        content: "";
-        display: inline-block;
-        width: 4px;
-        height: 22px;
-        background: var(--primary);
-        border-radius: 4px;
-      }
-
-      /* === TOOLS GRID === */
       .tools-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 20px;
-        padding-bottom: 2rem;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 30px;
+        padding-bottom: 4rem;
       }
 
-      /* === TOOL CARD === */
       .tool-card {
         background-color: var(--card-bg);
-        border: 1px solid #e2e8f0;
-        padding: 1.25rem;
-        border-radius: 16px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        border: var(--border-width) solid var(--border-black);
+        padding: 1.5rem;
+        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
         transition:
-          transform 0.2s ease,
-          box-shadow 0.2s ease;
+          transform 0.1s,
+          box-shadow 0.1s;
         display: flex;
         flex-direction: column;
         cursor: pointer;
@@ -378,257 +283,184 @@
       }
 
       .tool-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        transform: translate(-4px, -4px);
+        box-shadow: 10px 10px 0 0 #000;
         z-index: 5;
       }
 
-      /* === TOOL ICON === */
       .tool-icon {
-        font-size: 1.5rem;
+        font-size: 2rem;
         margin-bottom: 1rem;
-        color: var(--primary);
-        width: 48px;
-        height: 48px;
+        color: #000;
+        width: 60px;
+        height: 60px;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #fff;
-        border: 1px solid #e4e4e7;
-        border-radius: 4px;
-        box-shadow: none;
+        background: var(--color-accent);
+        border: var(--border-width) solid #000;
+        box-shadow: 3px 3px 0 0 #000;
       }
 
       .tool-card:hover .tool-icon {
-        background: var(--primary);
+        background: var(--color-primary);
         color: #fff;
       }
 
-      /* === TOOL NAME === */
       .tool-name {
-        font-family: "Outfit", sans-serif;
-        font-size: 0.95rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        line-height: 1.3;
+        font-size: 1.2rem;
+        font-weight: 800;
+        margin-bottom: 0.8rem;
+        line-height: 1.2;
         text-transform: uppercase;
-        letter-spacing: -0.2px;
-        color: #09090b;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        min-height: 2.6em;
       }
 
-      .tool-card:hover .tool-name {
-        color: var(--primary);
-      }
-
-      /* === TOOL DESCRIPTION === */
       .tool-description {
-        font-family: "Inter", sans-serif;
-        font-size: 0.8rem;
-        color: #71717a;
-        margin-bottom: 0.5rem;
-        flex-grow: 0;
-        line-height: 1.5;
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        min-height: calc(1.5em * 3);
+        font-family: "Space Mono", monospace;
+        font-size: 0.85rem;
+        color: #000;
+        margin-bottom: 1.5rem;
+        flex-grow: 1;
+        line-height: 1.4;
       }
 
-      .tool-description.expanded {
-        -webkit-line-clamp: unset;
-        line-clamp: unset;
-        display: block;
-        overflow: visible;
-      }
-
-      /* === READ MORE TOGGLE === */
-      .read-more-toggle {
-        display: none;
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: #52525b;
-        cursor: pointer;
-        margin-bottom: 1rem;
-        padding: 0;
-        background: none;
-        border: none;
-        font-family: "Inter", sans-serif;
-        transition: color 0.2s;
-      }
-
-      .read-more-toggle:hover {
-        color: var(--primary);
-        text-decoration: underline;
-      }
-
-      .read-more-toggle.visible {
-        display: inline-block;
-      }
-
-      /* === BADGE === */
       .custom-solution-badge {
         position: absolute;
-        top: 12px;
-        right: 12px;
-        background-color: var(--accent);
+        top: -10px;
+        right: -10px;
+        background-color: var(--color-secondary);
         color: #fff;
-        border: none;
-        padding: 3px 10px;
-        font-size: 0.65rem;
-        font-weight: 700;
+        border: var(--border-width) solid #000;
+        padding: 5px 10px;
+        font-size: 0.75rem;
+        font-weight: 800;
         text-transform: uppercase;
-        border-radius: 20px;
-        box-shadow: none;
-        transform: none;
-        letter-spacing: 0.03em;
+        box-shadow: 3px 3px 0 0 #000;
+        transform: rotate(3deg);
       }
 
-      /* === ACCESS BUTTON === */
       .access-btn {
-        background: var(--primary);
-        color: #fff;
-        border: none;
-        padding: 10px;
-        font-weight: 700;
+        background: #fff;
+        color: #000;
+        border: var(--border-width) solid #000;
+        padding: 12px;
+        font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
         cursor: pointer;
         text-align: center;
         margin-top: auto;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 6px;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        box-shadow: none;
-        transition: all 0.2s ease;
+        gap: 8px;
+        box-shadow: 3px 3px 0 0 #000;
       }
 
       .tool-card:hover .access-btn {
-        background: #18181b;
-        color: #fff;
-        box-shadow: none;
-        transform: none;
+        background: var(--color-success);
+        box-shadow: 5px 5px 0 0 #000;
+        transform: translate(-2px, -2px);
       }
 
-      /* === FOOTER === */
       footer {
         margin-top: auto;
-        padding: 1rem 2rem;
-        border-top: 1px solid #e2e8f0;
+        padding: 2rem 0;
+        border-top: var(--border-width) solid #000;
         text-align: center;
-        font-family: "Inter", sans-serif;
-        font-weight: 500;
-        font-size: 0.75rem;
-        color: #94a3b8;
+        font-family: "Space Mono", monospace;
+        font-weight: 700;
         background: #fff;
       }
 
       .footer-links a {
-        color: #64748b;
+        color: #000;
         margin: 0 10px;
         text-decoration: none;
-        background: transparent;
-        padding: 0;
-        border: none;
-        font-size: 0.75rem;
-        transition: color 0.2s;
+        background: var(--color-accent);
+        padding: 2px 5px;
+        border: 2px solid #000;
       }
 
-      .footer-links a:hover {
-        color: var(--primary);
-      }
-
-      /* === WHATSAPP FLOAT === */
+      /* === NOVO: BOTÃO WHATSAPP com Destaque Máximo === */
       .whatsapp-float {
         position: fixed;
-        bottom: 24px;
-        right: 24px;
+        bottom: 30px;
+        right: 30px;
         left: auto;
         z-index: 1000;
         display: flex;
         align-items: center;
-        flex-direction: row-reverse;
-        gap: 12px;
+        flex-direction: row-reverse; /* Ícone na direita, texto na esquerda */
+        gap: 15px;
         text-decoration: none;
-        font-family: "Inter", sans-serif;
-        transition: transform 0.2s ease;
+        font-family: "Space Grotesk", sans-serif;
+        transition: transform 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
       }
 
+      /* Ícone Quadrado */
       .whatsapp-icon {
         background-color: #25d366;
-        color: #fff;
-        width: 56px;
-        height: 56px;
-        border: none;
-        box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+        color: #000;
+        width: 65px;
+        height: 65px;
+        border: var(--border-width) solid var(--border-black);
+        box-shadow: 6px 6px 0 #000;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 28px;
-        border-radius: 50%;
+        font-size: 32px;
+        border-radius: 0;
         position: relative;
-        transition: box-shadow 0.2s ease;
       }
 
+      /* Bolinha vermelha de notificação */
       .whatsapp-icon::after {
         content: "!";
         position: absolute;
-        top: -4px;
-        right: -4px;
+        top: -8px;
+        right: -8px;
         background: var(--color-danger);
         color: #fff;
-        width: 20px;
-        height: 20px;
-        border: 2px solid #fff;
-        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        border: 2px solid #000;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 700;
-        font-size: 11px;
-        box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
+        font-weight: 800;
+        font-size: 14px;
+        box-shadow: 2px 2px 0 #000;
         animation: bounce 2s infinite;
       }
 
+      /* Balão de Texto Destacado */
       .whatsapp-text {
-        background-color: #fff;
-        color: #1e293b;
-        padding: 12px 16px;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        font-weight: 600;
-        font-size: 0.85rem;
-        max-width: 240px;
-        line-height: 1.4;
+        background-color: var(--color-accent); /* Amarelo vibrante! */
+        color: #000;
+        padding: 15px 20px;
+        border: var(--border-width) solid var(--border-black);
+        box-shadow: 8px 8px 0 #000; /* Sombra pesada */
+        font-weight: 800;
+        font-size: 1rem;
+        max-width: 260px;
+        line-height: 1.3;
         text-align: right;
         margin-right: 5px;
         display: none;
+
+        /* Animação: Chacoalha a cada 4 segundos */
         animation: attention-shake 4s ease-in-out infinite;
         transform-origin: right center;
       }
 
+      /* Texto "Eu crio a automação" em caixa branca para contraste */
       .whatsapp-text span {
-        background: #f4f4f5;
-        color: var(--primary);
-        padding: 3px 8px;
-        border: none;
-        border-radius: 4px;
+        background: #fff;
+        padding: 2px 6px;
+        border: 2px solid #000;
         display: inline-block;
-        margin-top: 4px;
-        box-shadow: none;
-        font-weight: 700;
-        font-size: 0.8rem;
+        margin-top: 6px;
+        box-shadow: 3px 3px 0 #000;
       }
 
       @media (min-width: 768px) {
@@ -641,10 +473,7 @@
         transform: scale(1.05);
       }
 
-      .whatsapp-float:hover .whatsapp-icon {
-        box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
-      }
-
+      /* Animação do balão chacoalhando */
       @keyframes attention-shake {
         0%,
         80%,
@@ -652,27 +481,27 @@
           transform: rotate(0deg);
         }
         85% {
-          transform: rotate(2deg);
+          transform: rotate(3deg);
         }
         90% {
-          transform: rotate(-2deg);
+          transform: rotate(-3deg);
         }
         95% {
-          transform: rotate(1deg);
+          transform: rotate(2deg);
         }
       }
 
+      /* Animação do pontinho vermelho */
       @keyframes bounce {
         0%,
         100% {
           transform: translateY(0);
         }
         50% {
-          transform: translateY(-3px);
+          transform: translateY(-5px);
         }
       }
 
-      /* === RESPONSIVE === */
       @media (max-width: 900px) {
         body {
           flex-direction: column;
@@ -682,18 +511,14 @@
           width: 100%;
           height: auto;
           border-right: none;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          border-bottom: var(--border-width) solid #000;
         }
         .nav-group {
           flex-direction: row;
           overflow-x: auto;
-          gap: 6px;
-          padding-bottom: 4px;
         }
         .nav-item {
           white-space: nowrap;
-          font-size: 0.8rem;
-          padding: 10px 12px;
         }
       }
     </style>
@@ -724,13 +549,13 @@
           <i class="fas fa-credit-card"></i> Cartões
         </div>
         <div class="nav-item" data-tab="tab-reforma">
-          <i class="fas fa-scale-balanced"></i> Reforma Tributária
+          <i class="fas fa-credit-card"></i> Reforma Tributária
         </div>
         <div class="nav-item" data-tab="tab-xml">
-          <i class="fas fa-code"></i> Editor XML
+          <i class="fas fa-credit-card"></i> Editor XML
         </div>
         <div class="nav-item" data-tab="tab-ofx">
-          <i class="fas fa-landmark"></i> Gerador OFX
+          <i class="fas fa-credit-card"></i> Gerador OFX
         </div>
       </nav>
     </aside>
@@ -740,15 +565,6 @@
         <div class="header-text">
           <h1>Olá, Contador! 👋</h1>
           <p>Centralize sua rotina. Escolha uma categoria ao lado.</p>
-
-          <div class="search-container">
-            <i class="fas fa-search"></i>
-            <input
-              type="text"
-              id="global-search"
-              placeholder="Busque por ferramenta, descrição ou funcionalidade..."
-            />
-          </div>
         </div>
         <div
           style="
@@ -760,12 +576,6 @@
           <i class="fas fa-cubes-stacked"></i>
         </div>
       </section>
-
-      <div id="no-results-msg" class="no-results">
-        <i class="fas fa-search-minus" style="font-size: 3rem; margin-bottom: 1rem; display: block; opacity: 0.5;"></i>
-        <h3>Nenhum resultado encontrado</h3>
-        <p>Tente outros termos ou navegue pelas categorias.</p>
-      </div>
 
       <div id="tab-calculos" class="tab-pane active">
         <h2>Cálculos e Simulações</h2>
@@ -862,7 +672,7 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/sped_fiscal_editor.html"
           >
-            <div class="tool-icon"><i class="fas fa-sliders"></i></div>
+            <div class="tool-icon"><i class="fas fa-calculator"></i></div>
             <h3 class="tool-name">Padronização automática de Uso e Consumo</h3>
             <p class="tool-description">
               Ferramenta para padronização automática de itens de Uso e Consumo
@@ -880,7 +690,7 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/sped_tipo_item_07.html"
           >
-            <div class="tool-icon"><i class="fas fa-tags"></i></div>
+            <div class="tool-icon"><i class="fas fa-calculator"></i></div>
             <h3 class="tool-name">corretor de Tipo de Item 07</h3>
             <p class="tool-description">
               Corretor de Tipo de Item 07 Identifica automaticamente produtos
@@ -896,7 +706,7 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/h010.html"
           >
-            <div class="tool-icon"><i class="fas fa-boxes-stacked"></i></div>
+            <div class="tool-icon"><i class="fas fa-calculator"></i></div>
             <h3 class="tool-name">Editor H010 (SPED)</h3>
             <p class="tool-description">
               Inclua automaticamente a conta contábil no registro H010
@@ -1055,7 +865,7 @@
             data-url="https://ferramentas-seven.vercel.app/Ideal.html"
           >
             <span class="custom-solution-badge">Auto</span>
-            <div class="tool-icon"><i class="fas fa-wand-magic-sparkles"></i></div>
+            <div class="tool-icon"><i class="fas fa-robot"></i></div>
             <h3 class="tool-name">Importador Financeiro</h3>
             <p class="tool-description">
               Importa movimentação financeira do cliente para o Domínio.
@@ -1176,7 +986,7 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/consulta_tributacao.html"
           >
-            <div class="tool-icon"><i class="fas fa-receipt"></i></div>
+            <div class="tool-icon"><i class="fas fa-file-invoice"></i></div>
             <h3 class="tool-name">Consulta Tributação de XML</h3>
             <p class="tool-description">
               Consulte a tributação de produtos que estão no XML. Pis, Cofins e ICMS.
@@ -1190,7 +1000,7 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/financiamentos.html"
           >
-            <div class="tool-icon"><i class="fas fa-timeline"></i></div>
+            <div class="tool-icon"><i class="fas fa-file-invoice"></i></div>
             <h3 class="tool-name">Separador Curto/Longo Prazo</h3>
             <p class="tool-description">
               Separe automaticamente saldos de empréstimos.
@@ -1243,7 +1053,7 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/classificador.html"
           >
-            <div class="tool-icon"><i class="fas fa-layer-group"></i></div>
+            <div class="tool-icon"><i class="fas fa-pen"></i></div>
             <h3 class="tool-name">Classificador Inteligente</h3>
             <p class="tool-description">
               Compare planilhas para identificar classificações de lançamentos.
@@ -1284,7 +1094,7 @@
             data-url="https://ferramentas-seven.vercel.app/cte.html"
           >
             <span class="custom-solution-badge">Beta</span>
-            <div class="tool-icon"><i class="fas fa-truck-fast"></i></div>
+            <div class="tool-icon"><i class="fas fa-truck"></i></div>
             <h3 class="tool-name">Relatório CTe</h3>
             <p class="tool-description">
               Dados consolidados de XMLs de CTe em tabela.
@@ -1298,7 +1108,7 @@
             data-url="https://ferramentas-seven.vercel.app/conciliador.html"
           >
             <span class="custom-solution-badge">Beta</span>
-            <div class="tool-icon"><i class="fas fa-handshake"></i></div>
+            <div class="tool-icon"><i class="fas fa-truck"></i></div>
             <h3 class="tool-name">Condição de Pagamento XML</h3>
             <p class="tool-description">
               Compara a condição de pagamento do XML com o sistema.
@@ -1328,7 +1138,7 @@
             data-url="https://ferramentas-seven.vercel.app/bonificacoes.html"
           >
             <span class="custom-solution-badge">Audit</span>
-            <div class="tool-icon"><i class="fas fa-clipboard-check"></i></div>
+            <div class="tool-icon"><i class="fas fa-pen"></i></div>
             <h3 class="tool-name">Análise Contas a Pagar</h3>
             <p class="tool-description">
               Verifica duplicatas para CFOPs específicos (1.910, 1.949).
@@ -1343,7 +1153,7 @@
             data-url="https://ferramentas-seven.vercel.app/extrator_obs.html"
           >
             <span class="custom-solution-badge">observações NFS-e</span>
-            <div class="tool-icon"><i class="fas fa-comment-dots"></i></div>
+            <div class="tool-icon"><i class="fas fa-pen"></i></div>
             <h3 class="tool-name">Extrair observações da NFS-e Nacional</h3>
             <p class="tool-description">
               Extrai o campo de observações das notas fiscais de serviço da
@@ -1359,7 +1169,7 @@
             data-url="https://ferramentas-seven.vercel.app/regentrada.html"
           >
             <span class="custom-solution-badge">Registro de Entradas</span>
-            <div class="tool-icon"><i class="fas fa-book-open"></i></div>
+            <div class="tool-icon"><i class="fas fa-pen"></i></div>
             <h3 class="tool-name">Simula o livro Registro de Entradas de ICMS</h3>
             <p class="tool-description">
               Cria um registro de entradas com base nos xmls informados.
@@ -1374,7 +1184,7 @@
             data-url="https://ferramentas-seven.vercel.app/gabriel1.html"
           >
             <span class="custom-solution-badge">Gabriel</span>
-            <div class="tool-icon"><i class="fas fa-database"></i></div>
+            <div class="tool-icon"><i class="fas fa-pen"></i></div>
             <h3 class="tool-name">Compare a Base Nacional com a Base Domínio</h3>
             <p class="tool-description">
               Compare a Base Nacional com a Base Domínio
@@ -1389,7 +1199,7 @@
             data-url="https://ferramentas-seven.vercel.app/gabriel2.html"
           >
             <span class="custom-solution-badge">Gabriel</span>
-            <div class="tool-icon"><i class="fas fa-copy"></i></div>
+            <div class="tool-icon"><i class="fas fa-pen"></i></div>
             <h3 class="tool-name">Análise de Notas Duplicadas</h3>
             <p class="tool-description">
               Análise de Notas Duplicadas
@@ -1411,8 +1221,8 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/stone.html"
           >
-            <div class="tool-icon" style="background: #fff; color: #FF5C00">
-              <i class="fas fa-gem"></i>
+            <div class="tool-icon" style="background: #2ddd98; color: #000">
+              <i class="fas fa-credit-card"></i>
             </div>
             <h3 class="tool-name">Stone > Domínio</h3>
             <p class="tool-description">
@@ -1426,8 +1236,8 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/Alelo.html"
           >
-            <div class="tool-icon" style="background: #fff; color: #FF5C00">
-              <i class="fas fa-utensils"></i>
+            <div class="tool-icon" style="background: #007f5f; color: #fff">
+              <i class="fas fa-credit-card"></i>
             </div>
             <h3 class="tool-name">Alelo > Domínio</h3>
             <p class="tool-description">
@@ -1441,7 +1251,7 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/BrasilCard.html"
           >
-            <div class="tool-icon"><i class="fas fa-id-card"></i></div>
+            <div class="tool-icon"><i class="fas fa-credit-card"></i></div>
             <h3 class="tool-name">Brasil Card > Domínio</h3>
             <p class="tool-description">
               Conversor de vendas Brasil Card para importação contábil.
@@ -1454,7 +1264,7 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/BoltCard.html"
           >
-            <div class="tool-icon"><i class="fas fa-bolt"></i></div>
+            <div class="tool-icon"><i class="fas fa-credit-card"></i></div>
             <h3 class="tool-name">Bolt Card > Domínio</h3>
             <p class="tool-description">
               Conversor de vendas Bolt Card para importação contábil.
@@ -1467,7 +1277,7 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/Rede.html"
           >
-            <div class="tool-icon"><i class="fas fa-wifi"></i></div>
+            <div class="tool-icon"><i class="fas fa-credit-card"></i></div>
             <h3 class="tool-name">Rede > Domínio</h3>
             <p class="tool-description">
               Conversor de vendas Rede para importação contábil.
@@ -1494,7 +1304,7 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/conversor-pagbank.html"
           >
-            <div class="tool-icon"><i class="fas fa-money-bill-transfer"></i></div>
+            <div class="tool-icon"><i class="fas fa-globe"></i></div>
             <h3 class="tool-name">Conversor do extrato financeiro (PagBank)</h3>
             <p class="tool-description">
               Converta vendas do extrato financeiro do PagBank. Não é o extrato
@@ -1514,8 +1324,8 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/reforma2.html"
           >
-            <div class="tool-icon" style="background: #fff; color: #FF5C00">
-              <i class="fas fa-file-waveform"></i>
+            <div class="tool-icon" style="background: #2ddd98; color: #000">
+              <i class="fas fa-robot"></i>
             </div>
             <h3 class="tool-name">Analisador de XMLS</h3>
             <p class="tool-description">Analise as Tags da reforma.</p>
@@ -1528,8 +1338,8 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/reforma1.html"
           >
-            <div class="tool-icon" style="background: #fff; color: #FF5C00">
-              <i class="fas fa-arrows-spin"></i>
+            <div class="tool-icon" style="background: #2ddd98; color: #000">
+              <i class="fas fa-robot"></i>
             </div>
             <h3 class="tool-name">Alíquotas de transição</h3>
             <p class="tool-description">
@@ -1549,8 +1359,8 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/correcao_xml.html"
           >
-            <div class="tool-icon" style="background: #fff; color: #FF5C00">
-              <i class="fas fa-map-location-dot"></i>
+            <div class="tool-icon" style="background: #2ddd98; color: #000">
+              <i class="fas fa-robot"></i>
             </div>
             <h3 class="tool-name">
               Inclusão da Tag de endereço no xml da NFS-e.
@@ -1568,8 +1378,8 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/separador_xml.html"
           >
-            <div class="tool-icon" style="background: #fff; color: #FF5C00">
-              <i class="fas fa-scissors"></i>
+            <div class="tool-icon" style="background: #2ddd98; color: #000">
+              <i class="fas fa-robot"></i>
             </div>
             <h3 class="tool-name">
               Extrai NFS-e de arquivo XML único da Prefeitura de Sete Lagoas.
@@ -1591,8 +1401,8 @@
             data-url="https://ferramentas-seven.vercel.app/retencao_xml.html"
           >
             <span class="custom-solution-badge">Em andamento</span>
-            <div class="tool-icon" style="background: #fff; color: #FF5C00">
-              <i class="fas fa-shield-halved"></i>
+            <div class="tool-icon" style="background: #2ddd98; color: #000">
+              <i class="fas fa-robot"></i>
             </div>
             <h3 class="tool-name">
               Analisa as retenções nas notas fiscais de serviço eletrônicas (NFS-e).
@@ -1615,8 +1425,8 @@
             class="tool-card"
             data-url="https://jroncalli.pythonanywhere.com/"
           >
-            <div class="tool-icon" style="background: #fff; color: #FF5C00">
-              <i class="fas fa-file-pdf"></i>
+            <div class="tool-icon" style="background: #2ddd98; color: #000">
+              <i class="fas fa-robot"></i>
             </div>
             <h3 class="tool-name">
               OFX do Roncalli: Converta Extratos Bancários PDF em OFX.
@@ -1635,7 +1445,7 @@
       <footer>
         <div class="footer-container">
           <p style="margin-bottom: 10px">
-            © 2025 J.Roncalli - High Efficiency Grid
+            © 2025 J.Roncalli - Design Brutalista
           </p>
           <div class="footer-links">
             <a href="#">Termos</a>
@@ -1676,9 +1486,7 @@
 
         const toolCards = document.querySelectorAll(".tool-card");
         toolCards.forEach((card) => {
-          card.addEventListener("click", function (e) {
-            // Se clicou no botão de ler mais, não navega
-            if (e.target.classList.contains("read-more-toggle")) return;
+          card.addEventListener("click", function () {
             const url = card.getAttribute("data-url");
             if (url) {
               window.open(url, "_blank");
@@ -1687,80 +1495,6 @@
               alert(`Ferramenta "${toolName}" em breve!`);
             }
           });
-        });
-
-        // === READ MORE: Injeta botão e detecta overflow ===
-        document.querySelectorAll(".tool-description").forEach((desc) => {
-          const toggle = document.createElement("button");
-          toggle.className = "read-more-toggle";
-          toggle.textContent = "Ler mais ›";
-          desc.after(toggle);
-
-          // Verifica se o texto está truncado
-          function checkOverflow() {
-            desc.classList.remove("expanded");
-            toggle.textContent = "Ler mais ›";
-            if (desc.scrollHeight > desc.clientHeight + 1) {
-              toggle.classList.add("visible");
-            } else {
-              toggle.classList.remove("visible");
-            }
-          }
-
-          checkOverflow();
-          window.addEventListener("resize", checkOverflow);
-
-          toggle.addEventListener("click", function (e) {
-            e.stopPropagation();
-            const isExpanded = desc.classList.toggle("expanded");
-            toggle.textContent = isExpanded ? "Ler menos ‹" : "Ler mais ›";
-          });
-        });
-
-        // === GLOBAL SEARCH LOGIC ===
-        const searchInput = document.getElementById("global-search");
-        const noResultsMsg = document.getElementById("no-results-msg");
-        const mainContent = document.querySelector(".main-content");
-
-        searchInput.addEventListener("input", function (e) {
-          const term = e.target.value.toLowerCase().trim();
-          const panes = document.querySelectorAll(".tab-pane");
-          const cards = document.querySelectorAll(".tool-card");
-          
-          if (term === "") {
-            mainContent.classList.remove("search-mode");
-            noResultsMsg.classList.remove("visible");
-            
-            // Restore active tab
-            const activeTabId = document.querySelector(".nav-item.active").getAttribute("data-tab");
-            panes.forEach(p => {
-              p.style.display = "";
-            });
-            cards.forEach(c => c.style.display = "");
-            return;
-          }
-
-          // Search Mode Active
-          mainContent.classList.add("search-mode");
-          let hasResults = false;
-
-          cards.forEach(card => {
-            const title = card.querySelector(".tool-name").textContent.toLowerCase();
-            const desc = card.querySelector(".tool-description").textContent.toLowerCase();
-            
-            if (title.includes(term) || desc.includes(term)) {
-              card.style.display = "";
-              hasResults = true;
-            } else {
-              card.style.display = "none";
-            }
-          });
-
-          if (hasResults) {
-            noResultsMsg.classList.remove("visible");
-          } else {
-            noResultsMsg.classList.add("visible");
-          }
         });
       });
     </script>
