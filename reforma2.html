@@ -387,7 +387,7 @@
 
       .dashboard-grid {
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1rem;
         margin-bottom: 1.5rem;
       }
@@ -1482,6 +1482,18 @@
               <div class="metric-value" id="totalItens">0</div>
             </div>
           </div>
+          <div class="metric-card blue">
+            <div
+              class="metric-icon-bg"
+              style="background: var(--badge-blue-bg); color: var(--data-blue)"
+            >
+              <i class="fas fa-coins"></i>
+            </div>
+            <div>
+              <div class="metric-title">Valor Total (Notas)</div>
+              <div class="metric-value" id="totalValorNotas">R$ 0,00</div>
+            </div>
+          </div>
           <div class="metric-card orange">
             <div
               class="metric-icon-bg"
@@ -2243,6 +2255,22 @@
                   cProd,
                   xProd,
                   vProd,
+                  vItemTotal:
+                    vProd +
+                    vIPIVal +
+                    vSTVal +
+                    parseFloat(
+                      prod.getElementsByTagName("vFrete")[0]?.textContent || 0,
+                    ) +
+                    parseFloat(
+                      prod.getElementsByTagName("vSeg")[0]?.textContent || 0,
+                    ) +
+                    parseFloat(
+                      prod.getElementsByTagName("vOutro")[0]?.textContent || 0,
+                    ) -
+                    parseFloat(
+                      prod.getElementsByTagName("vDesc")[0]?.textContent || 0,
+                    ),
                   vFrete: parseFloat(
                     prod.getElementsByTagName("vFrete")[0]?.textContent || 0,
                   ),
@@ -2379,13 +2407,15 @@
       function atualizarTotais() {
         let totalIbs = 0,
           totalCbs = 0,
-          totalRed = 0;
+          totalRed = 0,
+          totalValor = 0;
         const notasNormal = new Set();
         const notasNormalComTags = new Set();
         for (let i = 0; i < filteredItems.length; i++) {
           const item = filteredItems[i];
           totalIbs += item.vIBS;
           totalCbs += item.vCBS;
+          totalValor += item.vItemTotal || item.vProd;
           if (item.hasTags && (item.pRedCBS > 0 || item.pRedIBS > 0))
             totalRed++;
           if (item.regimeDesc === "NORMAL") {
@@ -2398,6 +2428,8 @@
           percentual = (notasNormalComTags.size / notasNormal.size) * 100;
         document.getElementById("totalItens").innerText = filteredItems.length;
         document.getElementById("totalReducao").innerText = totalRed;
+        document.getElementById("totalValorNotas").innerText =
+          formatMoney(totalValor);
         document.getElementById("totalIbs").innerText = formatMoney(totalIbs);
         document.getElementById("totalCbs").innerText = formatMoney(totalCbs);
         document.getElementById("percTagsNormal").innerText =
@@ -2513,6 +2545,7 @@
         document.getElementById("filtroNcm").value = "";
         document.getElementById("filtroCfop").value = "";
         document.getElementById("filtroProd").value = "";
+        document.getElementById("totalValorNotas").innerText = "R$ 0,00";
 
         if (document.getElementById("aliqCBS2027"))
           document.getElementById("aliqCBS2027").value = "8.8";
@@ -3016,8 +3049,10 @@
         // --- CALCULO GERAL DE RESUMO E VILOES ---
         let fullSimCBS = 0;
         let fullSimIBS = 0;
+        let fullTotalValor = 0;
 
         filteredItems.forEach((item) => {
+          fullTotalValor += item.vItemTotal || item.vProd;
           let isSimples = item.regimeDesc === "SIMPLES";
           let hasXmlTag = item.vBcIbsCbs > 0;
 
@@ -3032,6 +3067,8 @@
           }
         });
 
+        document.getElementById("totalValorNotas").innerText =
+          formatMoney(fullTotalValor);
         document.getElementById("totalCbs").innerText = formatMoney(fullSimCBS);
         document.getElementById("totalIbs").innerText = formatMoney(fullSimIBS);
 
