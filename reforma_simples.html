@@ -624,10 +624,11 @@
           <div class="form-group">
             <label>Faturamento RBT12 Bruto</label>
             <input
-              type="number"
+              type="text"
               id="inputRbt12"
               class="neo-input"
-              placeholder="Ex: 1000000"
+              placeholder="Ex: 1.000.000,00"
+              oninput="mascaraMoeda(this)"
             />
           </div>
           <div class="form-group">
@@ -858,6 +859,25 @@
       const formatMoney = (v) =>
         v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
+      function mascaraMoeda(input) {
+        let value = input.value.replace(/\D/g, "");
+        if (!value) {
+          input.value = "";
+          return;
+        }
+        // Converte para o formato brasileiro (1.234,56)
+        let formatted = (parseFloat(value) / 100).toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+        input.value = formatted;
+      }
+
+      function getRawValue(id) {
+        let el = document.getElementById(id);
+        return parseFloat(el.value.replace(/\./g, "").replace(",", ".")) || 0;
+      }
+
       function toggleTheme() {
         document.body.dataset.theme =
           document.body.dataset.theme === "dark" ? "light" : "dark";
@@ -1062,8 +1082,7 @@
           );
         }
 
-        const rbt12 =
-          parseFloat(document.getElementById("inputRbt12").value) || 0;
+        const rbt12 = getRawValue("inputRbt12");
         const anexo = document.getElementById("inputAnexo").value;
         const share =
           parseFloat(document.getElementById("inputShare").value) || 0;
