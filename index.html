@@ -81,8 +81,7 @@
       .search-container {
         position: relative;
         width: 100%;
-        max-width: 500px;
-        margin-top: 1rem;
+        max-width: 400px;
       }
       .search-container i {
         position: absolute;
@@ -276,12 +275,11 @@
         border: 1px solid #e4e4e7;
         padding: 1.5rem 2rem;
         border-radius: 4px;
-        box-shadow: none;
         display: flex;
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
-        gap: 1rem;
+        gap: 1.5rem;
       }
 
       .header-text h1 {
@@ -298,12 +296,12 @@
         font-family: "Inter", sans-serif;
         font-weight: 500;
         color: #52525b;
-        display: inline-block;
         padding: 4px 12px;
         background: #fff;
         border-radius: 4px;
         font-size: 0.85rem;
         border: 1px solid #e4e4e7;
+        display: inline-block;
       }
 
       /* === TABS === */
@@ -740,21 +738,23 @@
         <div class="header-text">
           <h1>Olá, Contador! 👋</h1>
           <p>Centralize sua rotina. Escolha uma categoria ao lado.</p>
-
-          <div class="search-container">
-            <i class="fas fa-search"></i>
-            <input
-              type="text"
-              id="global-search"
-              placeholder="Busque por ferramenta, descrição ou funcionalidade..."
-            />
-          </div>
         </div>
-        <div
+
+        <div class="search-container">
+          <i class="fas fa-search"></i>
+          <input
+            type="text"
+            id="global-search"
+            placeholder="Busque por ferramenta..."
+          />
+        </div>
+
+        <div 
+          class="header-icon"
           style="
-            font-size: 3.5rem;
+            font-size: 2.5rem;
             color: var(--color-primary);
-            filter: drop-shadow(4px 4px 0px #000);
+            filter: drop-shadow(2px 2px 0px #18181b);
           "
         >
           <i class="fas fa-cubes-stacked"></i>
