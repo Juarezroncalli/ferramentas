@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
@@ -11,231 +11,299 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
 
     <style>
       :root {
-        --bg-body: #8b5cf6;
-        --card-bg: #ffffff;
-        --border-black: #000000;
-        --color-primary: #06b6d4;
-        --color-secondary: #f472b6;
-        --color-accent: #facc15;
-        --color-success: #22c55e;
-        --shadow-dist: 6px;
-        --border-width: 3px;
+        --bg-app: #f2f2f0;
+        --bg-surface: #fafafa;
+        --bg-panel: #fafafa;
+        --bg-sidebar: #fafafa;
+        --bg-input: #f0f2f5;
+        --bg-hover: #fcfcfd;
+        --bg-tooltip: #1e2130;
+        --text-primary: #1e2130;
+        --text-secondary: #5e6c84;
+        --text-tertiary: #8f9bb3;
+        --border-subtle: #edf1f7;
+        --border-focus: #887cfd;
+        --border-dashed: #3f3f46;
+        --accent-primary: #5347ce;
+        --accent-glow: rgba(83, 71, 206, 0.2);
+        --data-purple: #5347ce;
+        --data-green: #16c8c7;
+        --data-blue: #4896fe;
+        --data-orange: #ffab00;
+        --data-red: #ff5630;
+        --badge-purple-bg: rgba(83, 71, 206, 0.12);
+        --badge-blue-bg: rgba(72, 150, 254, 0.12);
+        --radius-sm: 8px;
+        --radius-md: 16px;
+        --shadow-card: 0px 4px 20px rgba(0, 0, 0, 0.05);
+        --shadow-float: 0px 8px 30px rgba(0, 0, 0, 0.12);
+        --font-ui: "Inter", sans-serif;
+      }
+
+      [data-theme="dark"] {
+        --bg-app: #0f111a;
+        --bg-surface: #1e2130;
+        --bg-panel: #1e2130;
+        --bg-sidebar: #151725;
+        --bg-input: #151725;
+        --bg-hover: #2a2e42;
+        --bg-tooltip: #2a2e42;
+        --text-primary: #ffffff;
+        --text-secondary: #a0aec0;
+        --text-tertiary: #718096;
+        --border-subtle: #2d3748;
+        --border-dashed: #4a5568;
+        --accent-primary: #887cfd;
       }
 
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+        outline: none;
       }
-
       body {
-        font-family: "Space Grotesk", sans-serif;
-        background-color: var(--bg-body);
-        background-image: linear-gradient(#fff 2px, transparent 2px),
-          linear-gradient(90deg, #fff 2px, transparent 2px);
-        background-size: 40px 40px;
-        color: var(--border-black);
+        font-family: var(--font-ui);
+        background-color: var(--bg-app);
+        color: var(--text-primary);
         height: 100vh;
         overflow: hidden;
         display: flex;
+        font-size: 13px;
+        transition:
+          background 0.3s,
+          color 0.3s;
       }
 
+      /* Sidebar */
       .sidebar {
-        width: 280px;
-        background: var(--color-accent);
-        border-right: var(--border-width) solid var(--border-black);
+        width: 60px;
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        background: var(--bg-sidebar);
+        padding: 2rem 0.5rem;
         display: flex;
         flex-direction: column;
-        padding: 2rem 1.5rem;
-        flex-shrink: 0;
-        overflow-y: auto;
+        z-index: 2000;
+        transition: width 0.3s ease;
+        box-shadow: 1px 0 0 var(--border-subtle);
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .sidebar:hover {
+        width: 240px;
+        padding: 2rem 1.2rem;
+      }
+      .sidebar span {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s;
+      }
+      .sidebar:hover span {
+        opacity: 1;
+        visibility: visible;
       }
 
       .logo {
-        font-weight: 900;
-        font-size: 1.4rem;
-        display: flex;
-        align-items: center;
-        gap: 15px;
+        font-size: 16px;
+        font-weight: 700;
         margin-bottom: 3rem;
-        text-decoration: none;
-        color: var(--border-black);
-        text-transform: uppercase;
-      }
-
-      .logo i {
-        background: var(--color-secondary);
-        color: #fff;
-        padding: 10px;
-        border: var(--border-width) solid var(--border-black);
-        box-shadow: 4px 4px 0 0 black;
-      }
-
-      .nav-item {
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 15px;
-        margin-bottom: 1rem;
-        font-weight: 800;
-        color: #000;
-        border: var(--border-width) solid var(--border-black);
-        background: #fff;
-        box-shadow: 4px 4px 0 0 black;
-        text-transform: uppercase;
-        font-size: 0.85rem;
         text-decoration: none;
+        color: var(--text-primary);
+      }
+      .logo i {
+        color: var(--data-purple);
+        font-size: 20px;
+        background: var(--badge-purple-bg);
+        padding: 8px;
+        border-radius: 8px;
       }
 
+      .nav-item {
+        background: transparent;
+        color: var(--text-secondary);
+        padding: 0.8rem 0.6rem;
+        margin-bottom: 0.4rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transition: all 0.2s;
+        text-decoration: none;
+      }
+      .nav-item:hover {
+        background: var(--bg-hover);
+        color: var(--data-purple);
+      }
+      .nav-item.active {
+        background: var(--badge-purple-bg);
+        color: var(--data-purple);
+      }
+
+      /* Main Content */
       .main-content {
+        margin-left: 60px;
         flex: 1;
-        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+        background: var(--bg-app);
+      }
+      .scroll-content {
+        flex: 1;
         overflow-y: auto;
+        padding: 2rem 3rem;
+        padding-bottom: 100px;
       }
 
       .neo-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 2.5rem;
-        background: #fff;
-        border: var(--border-width) solid var(--border-black);
-        padding: 2rem;
-        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
-      }
-      .header-title h1 {
-        font-weight: 900;
-        font-size: 2rem;
-        text-transform: uppercase;
-      }
-      .header-title span {
-        font-family: "Space Mono", monospace;
-        font-size: 0.9rem;
-        font-weight: 700;
-        background: var(--color-secondary);
-        color: #fff;
-        padding: 5px 10px;
-        border: 2px solid #000;
-      }
-
-      .neo-card {
-        background: #fff;
-        border: var(--border-width) solid var(--border-black);
-        padding: 2rem;
-        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
-        margin-bottom: 2rem;
-      }
-
-      .card-title {
-        font-weight: 900;
-        font-size: 1.2rem;
         margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        text-transform: uppercase;
-        border-bottom: 3px solid #000;
-        padding-bottom: 10px;
+      }
+      .neo-header h1 {
+        font-size: 32px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
       }
 
-      .form-grid {
+      /* Cards / Config Box */
+      .config-box {
+        background: var(--bg-surface);
+        border: 2px solid var(--data-purple);
+        border-radius: var(--radius-md);
+        padding: 2rem;
+        margin-bottom: 1.5rem;
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        box-shadow: 0 10px 40px rgba(83, 71, 206, 0.1);
       }
 
+      .form-group {
+        position: relative;
+      }
       .form-group label {
-        font-weight: 800;
         display: block;
-        margin-bottom: 0.5rem;
-        font-size: 0.8rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        font-size: 11px;
+        color: var(--data-purple);
         text-transform: uppercase;
-        font-family: "Space Mono", monospace;
       }
-
       .neo-input {
         width: 100%;
-        padding: 12px;
-        font-family: "Space Mono", monospace;
-        font-weight: bold;
-        border: var(--border-width) solid var(--border-black);
-        background: #f3f4f6;
-        outline: none;
+        padding: 12px 16px;
+        border: 1px solid var(--border-subtle);
+        border-radius: 12px;
+        background: var(--bg-input);
+        color: var(--text-primary);
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.2s;
       }
       .neo-input:focus {
-        background-color: #fff;
-        box-shadow: 4px 4px 0 0 var(--color-primary);
-        transform: translate(-2px, -2px);
+        border-color: var(--data-purple);
+        background: var(--bg-surface);
+        box-shadow: 0 0 0 4px var(--accent-glow);
       }
 
       .neo-btn {
-        padding: 1rem 2rem;
-        font-weight: 800;
-        font-family: "Space Grotesk", sans-serif;
-        border: var(--border-width) solid var(--border-black);
+        background: var(--data-purple);
+        color: #fff;
+        border: none;
+        padding: 16px 24px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 14px;
         cursor: pointer;
-        box-shadow: 5px 5px 0 0 black;
+        transition: all 0.3s;
         text-transform: uppercase;
-        background-color: var(--color-success);
+        letter-spacing: 0.05em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
         width: 100%;
-        margin-top: 1rem;
+        margin-top: 10px;
+      }
+      .neo-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(83, 71, 206, 0.4);
       }
       .neo-btn:active {
-        transform: translate(4px, 4px);
-        box-shadow: 0 0 0 0 black;
+        transform: scale(0.98);
       }
 
-      .results-container {
-        margin-top: 2rem;
-        overflow-x: auto;
+      /* Results Table */
+      .table-container {
+        background: var(--bg-surface);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-card);
+        overflow: hidden;
       }
       table {
         width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-        border: var(--border-width) solid #000;
-        background: #fff;
-        box-shadow: 8px 8px 0 0 #000;
+        border-collapse: collapse;
       }
       th {
-        background: var(--color-accent);
-        padding: 1.2rem;
-        border-bottom: var(--border-width) solid #000;
-        border-right: 2px solid #000;
+        background: var(--bg-surface);
+        color: var(--text-secondary);
+        padding: 16px;
+        text-align: left;
+        font-size: 11px;
+        font-weight: 700;
         text-transform: uppercase;
-        font-weight: 900;
-        font-size: 0.8rem;
+        border-bottom: 1px solid var(--border-subtle);
       }
       td {
-        padding: 1rem;
-        border-bottom: 2px solid #000;
-        border-right: 2px solid #000;
-        font-family: "Space Mono", monospace;
-        font-weight: 700;
-        text-align: center;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border-subtle);
+        font-size: 13px;
+        color: var(--text-primary);
       }
-      .total-col {
-        background-color: #f0e6fa;
-        font-weight: 900;
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background-color: var(--bg-hover);
       }
 
-      @media (max-width: 768px) {
-        body {
-          flex-direction: column;
-        }
-        .sidebar {
-          width: 100%;
-          border-right: none;
-          border-bottom: 3px solid black;
-          flex-direction: row;
-          height: auto;
-        }
+      .total-col {
+        background-color: var(--badge-purple-bg);
+        font-weight: 700;
+        color: var(--data-purple);
+      }
+
+      .theme-btn {
+        background: transparent;
+        border: 1px solid var(--data-purple);
+        color: var(--data-purple);
+        padding: 6px 15px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .theme-btn:hover {
+        background: var(--data-purple);
+        color: #fff;
       }
     </style>
   </head>
@@ -243,28 +311,33 @@
     <aside class="sidebar">
       <a href="#" class="logo">
         <i class="fa-solid fa-scale-balanced"></i>
-        <span>Tax Reform</span>
+        <div class="logo-text">
+          <span>TAX REFORM</span>
+        </div>
       </a>
       <nav>
-        <a href="#" class="nav-item">
-          <i class="fas fa-calculator"></i> Transição
+        <a href="#" class="nav-item active">
+          <i class="fas fa-calculator"></i> <span>Transição</span>
         </a>
+        <div class="nav-item" onclick="location.reload()">
+          <i class="fas fa-sync"></i> <span>Limpar</span>
+        </div>
       </nav>
     </aside>
 
     <main class="main-content">
-      <div class="neo-header">
-        <div class="header-title">
+      <div class="scroll-content">
+        <header class="neo-header">
           <h1>Calculadora Transição ⚖️</h1>
-          <span>Simulação Efetiva (2027-2033)</span>
-        </div>
-      </div>
+          <div style="display: flex; gap: 15px; align-items: center">
+            <span style="color: var(--text-tertiary); font-size: 11px"
+              >Simulação Efetiva (2027-2033)</span
+            >
+            <button class="theme-btn" onclick="toggleTheme()">Lux Theme</button>
+          </div>
+        </header>
 
-      <div class="neo-card">
-        <div class="card-title">
-          <i class="fas fa-sliders-h"></i> Parâmetros da Reforma
-        </div>
-        <div class="form-grid">
+        <section class="config-box">
           <div class="form-group">
             <label>Padrão IBS (%)</label>
             <input
@@ -313,32 +386,39 @@
               class="neo-input"
               placeholder="Ex: 60"
               step="0.01"
+              value="0"
             />
           </div>
-        </div>
-        <button id="calcularBtn" class="neo-btn">
-          <i class="fa-solid fa-bolt"></i> CALCULAR TRANSIÇÃO
-        </button>
-      </div>
+          <div style="grid-column: 1 / -1">
+            <button id="calcularBtn" class="neo-btn">
+              <i class="fa-solid fa-bolt"></i> CALCULAR IMPACTO DA TRANSIÇÃO
+            </button>
+          </div>
+        </section>
 
-      <div class="results-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Ano</th>
-              <th>CBS (Novo)</th>
-              <th>IBS (Novo)</th>
-              <th>ISS (Antigo)</th>
-              <th>ICMS (Antigo)</th>
-              <th class="total-col">TOTAL (%)</th>
-            </tr>
-          </thead>
-          <tbody id="tabelaResultados"></tbody>
-        </table>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Ano</th>
+                <th>CBS (Novo)</th>
+                <th>IBS (Novo)</th>
+                <th>ISS (Antigo)</th>
+                <th>ICMS (Antigo)</th>
+                <th class="total-col">TOTAL (%)</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaResultados"></tbody>
+          </table>
+        </div>
       </div>
     </main>
 
     <script>
+      function toggleTheme() {
+        document.body.dataset.theme =
+          document.body.dataset.theme === "dark" ? "light" : "dark";
+      }
       const ANOS_TRANSICAO = [2027, 2028, 2029, 2030, 2031, 2032, 2033];
       const ESCALA_IBS = {
         2029: 0.1,
