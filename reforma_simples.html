@@ -668,6 +668,16 @@
               placeholder="Ex: 8.8"
             />
           </div>
+          <div class="form-group">
+            <label>Redução Reforma (%)</label>
+            <input
+              type="number"
+              id="inputReducao"
+              class="neo-input"
+              placeholder="Ex: 60"
+              value="0"
+            />
+          </div>
           <div class="form-group" style="display: flex; align-items: flex-end">
             <div
               style="
@@ -679,14 +689,32 @@
                 border: 1px solid rgba(83, 71, 206, 0.3);
                 display: flex;
                 flex-direction: column;
-                gap: 8px;
+                gap: 5px;
               "
             >
               <div
                 style="
                   display: flex;
                   justify-content: space-between;
+                  font-size: 11px;
+                  opacity: 0.8;
+                  margin-bottom: 2px;
+                "
+              >
+                <span
+                  >IBS Reduzido: <strong id="displayIbsRed">0.00%</strong></span
+                >
+                <span
+                  >CBS Reduzido: <strong id="displayCbsRed">0.00%</strong></span
+                >
+              </div>
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
                   align-items: center;
+                  border-top: 1px dashed rgba(83, 71, 206, 0.2);
+                  padding-top: 5px;
                 "
               >
                 <span style="font-weight: 600; color: var(--text-secondary)"
@@ -753,7 +781,7 @@
               placeholder="Cálculo automático..."
             />
           </div>
-          <div class="form-group" style="grid-column: span 2; display: flex">
+          <div class="form-group" style="grid-column: span 3; display: flex">
             <button
               class="btn-simular"
               onclick="recalcularTudo()"
@@ -1043,12 +1071,18 @@
           parseFloat(document.getElementById("inputAliqIbs").value) || 0;
         const aliqCbs =
           parseFloat(document.getElementById("inputAliqCbs").value) || 0;
+        const reducao =
+          parseFloat(document.getElementById("inputReducao").value) || 0;
+
+        const fatorReducao = 1 - reducao / 100;
+        const aliqIbsRed = aliqIbs * fatorReducao;
+        const aliqCbsRed = aliqCbs * fatorReducao;
 
         const simplesRate = calculosSimples[anexo](rbt12);
         const effShareRate = simplesRate * (share / 100);
 
         // Automação da Meta Equivalência (%)
-        const ibsTotal = aliqIbs + aliqCbs;
+        const ibsTotal = aliqIbsRed + aliqCbsRed;
         let metaEquiv = 0;
         if (ibsTotal > 0) {
           metaEquiv = ((ibsTotal - effShareRate) / ibsTotal) * 100;
@@ -1062,7 +1096,16 @@
         document.getElementById("displayAliqEf").innerText =
           effShareRate.toFixed(2) + "%";
 
-        renderizarTabela(true, { effShareRate, aliqIbs, aliqCbs });
+        document.getElementById("displayIbsRed").innerText =
+          aliqIbsRed.toFixed(2) + "%";
+        document.getElementById("displayCbsRed").innerText =
+          aliqCbsRed.toFixed(2) + "%";
+
+        renderizarTabela(true, {
+          effShareRate,
+          aliqIbs: aliqIbsRed,
+          aliqCbs: aliqCbsRed,
+        });
       }
 
       function renderizarTabela(isSimulado, params = {}) {
@@ -1093,7 +1136,7 @@
             valEquiv = 0;
 
           if (isSimulado) {
-            newBc = item.vProd * (1 - params.effShareRate / 100);
+            newBc = item.vProd / (1 + params.effShareRate / 100);
             valIbs = newBc * (params.aliqIbs / 100);
             valCbs = newBc * (params.aliqCbs / 100);
             totalFinal = newBc + valIbs + valCbs;
@@ -1177,19 +1220,25 @@
         const anexo = document.getElementById("inputAnexo").value;
         const share =
           parseFloat(document.getElementById("inputShare").value) || 0;
-        const aliqIbs =
+        const aliqIbsBase =
           parseFloat(document.getElementById("inputAliqIbs").value) || 0;
-        const aliqCbs =
+        const aliqCbsBase =
           parseFloat(document.getElementById("inputAliqCbs").value) || 0;
+        const reducao =
+          parseFloat(document.getElementById("inputReducao").value) || 0;
         const equivPerc =
           parseFloat(document.getElementById("inputEquiv").value) || 0;
+
+        const fatorReducao = 1 - reducao / 100;
+        const aliqIbs = aliqIbsBase * fatorReducao;
+        const aliqCbs = aliqCbsBase * fatorReducao;
 
         const simplesRate = calculosSimples[anexo](rbt12);
         const effShareRate = simplesRate * (share / 100);
 
         allItems.forEach((item) => {
           if (!activeCfops.has(item.cfop)) return;
-          const newBc = item.vProd * (1 - effShareRate / 100);
+          const newBc = item.vProd / (1 + effShareRate / 100);
           const valIbs = newBc * (aliqIbs / 100);
           const valCbs = newBc * (aliqCbs / 100);
           const total = newBc + valIbs + valCbs;
