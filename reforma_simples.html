@@ -27,6 +27,7 @@
       rel="stylesheet"
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -552,8 +553,8 @@
         <div class="nav-item active">
           <i class="fas fa-microchip"></i> <span>Fator Simples</span>
         </div>
-        <div class="nav-item" onclick="exportToCSV()">
-          <i class="fas fa-file-export"></i> <span>Exportar CSV</span>
+        <div class="nav-item" onclick="exportToExcel()">
+          <i class="fas fa-file-excel"></i> <span>Exportar Excel</span>
         </div>
         <div class="nav-item" onclick="location.reload()">
           <i class="fas fa-sync"></i> <span>Limpar Sessão</span>
@@ -605,15 +606,21 @@
             </div>
           </div>
           <div class="metric-card">
-            <div class="metric-title">Delta Tributário (%)</div>
-            <div class="metric-value" id="totalImpacto">0,00%</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-title">Custo Mín. Compra Total (R$)</div>
+            <div class="metric-title">Total Tributos (IBS + CBS)</div>
             <div
               class="metric-value"
-              id="totalComp"
-              style="color: var(--data-green)"
+              id="totalTributos"
+              style="color: var(--data-red)"
+            >
+              0,00
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-title">Valor Final (BC + Trib.)</div>
+            <div
+              class="metric-value"
+              id="totalFinalCalculado"
+              style="color: var(--text-primary)"
             >
               0,00
             </div>
@@ -841,8 +848,8 @@
                 <th class="money">R$ IBS</th>
                 <th class="money">% CBS</th>
                 <th class="money">R$ CBS</th>
-                <th class="money">Impacto</th>
-                <th class="money">Custo Mín. Compra</th>
+                <th class="money">Soma IBS + CBS</th>
+                <th class="money">Valor Total</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -972,34 +979,123 @@
         xmlTextList.forEach((xmlText) => {
           try {
             const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-            const emit = xmlDoc.getElementsByTagName("emit")[0];
-            const xEmit = emit
-              ? emit.getElementsByTagName("xNome")[0].textContent
-              : "---";
-            const nNF = xmlDoc.getElementsByTagName("nNF")[0].textContent;
+
+            // --- 1. DETECÇÃO DE NF-e (Nota de Mercadoria) ---
             const dets = xmlDoc.getElementsByTagName("det");
-            for (let det of dets) {
-              const prod = det.getElementsByTagName("prod")[0];
-              const cfop =
-                prod.getElementsByTagName("CFOP")[0]?.textContent || "---";
-              const ncm =
-                prod.getElementsByTagName("NCM")[0]?.textContent || "---";
+            if (dets.length > 0) {
+              const emit = xmlDoc.getElementsByTagName("emit")[0];
+              const xEmit = emit
+                ? emit.getElementsByTagName("xNome")[0]?.textContent
+                : "---";
+              const nNF =
+                xmlDoc.getElementsByTagName("nNF")[0]?.textContent || "---";
 
-              uniqueCfops.add(cfop);
-              activeCfops.add(cfop);
+              for (let det of dets) {
+                const prod = det.getElementsByTagName("prod")[0];
+                const cfop =
+                  prod.getElementsByTagName("CFOP")[0]?.textContent || "---";
+                const ncm =
+                  prod.getElementsByTagName("NCM")[0]?.textContent || "---";
 
-              allItems.push({
-                nNF,
-                emitNome: xEmit,
-                xProd: prod.getElementsByTagName("xProd")[0].textContent,
-                vProd: parseFloat(
-                  prod.getElementsByTagName("vProd")[0].textContent,
-                ),
-                cfop,
-                ncm,
-              });
+                uniqueCfops.add(cfop);
+                activeCfops.add(cfop);
+
+                allItems.push({
+                  nNF,
+                  emitNome: xEmit,
+                  xProd:
+                    prod.getElementsByTagName("xProd")[0]?.textContent || "---",
+                  vProd: parseFloat(
+                    prod.getElementsByTagName("vProd")[0]?.textContent || "0",
+                  ),
+                  cfop,
+                  ncm,
+                });
+              }
             }
-          } catch (e) {}
+            // --- 2. DETECÇÃO DE NFS-e (Nota de Serviço) ---
+            else {
+              // Tenta localizar InfNfse (Padrão ABRASF/Betha/Etc)
+              const infNfse = xmlDoc.getElementsByTagName("InfNfse");
+              if (infNfse.length > 0) {
+                for (let inf of infNfse) {
+                  const nNF =
+                    inf.getElementsByTagName("Numero")[0]?.textContent || "---";
+
+                  // Localiza Prestador
+                  const prestador =
+                    inf.getElementsByTagName("PrestadorServico")[0] ||
+                    inf.getElementsByTagName("Prestador")[0];
+                  const xEmit =
+                    prestador?.getElementsByTagName("RazaoSocial")[0]
+                      ?.textContent || "---";
+                  const xProd =
+                    inf.getElementsByTagName("Discriminacao")[0]?.textContent ||
+                    "Prestação de Serviço";
+
+                  // Valor: Tenta vServ conforme solicitado, ou ValorServicos
+                  const vServTag =
+                    inf.getElementsByTagName("vServ")[0] ||
+                    inf.getElementsByTagName("ValorServicos")[0];
+                  const vProd = parseFloat(vServTag?.textContent || "0");
+
+                  const cfop = "SERVIÇO";
+                  const ncm = "00.00";
+
+                  uniqueCfops.add(cfop);
+                  activeCfops.add(cfop);
+
+                  allItems.push({
+                    nNF,
+                    emitNome: xEmit,
+                    xProd,
+                    vProd,
+                    cfop,
+                    ncm,
+                  });
+                }
+              } else {
+                // Caso simplificado: Procura apenas vServ, nNF e emit no root
+                const vServTagRoot =
+                  xmlDoc.getElementsByTagName("vServ")[0] ||
+                  xmlDoc.getElementsByTagName("ValorServicos")[0];
+                if (vServTagRoot) {
+                  const nNF =
+                    xmlDoc.getElementsByTagName("nNF")[0]?.textContent ||
+                    xmlDoc.getElementsByTagName("Numero")[0]?.textContent ||
+                    "---";
+                  const xEmit =
+                    xmlDoc.getElementsByTagName("xNome")[0]?.textContent ||
+                    xmlDoc.getElementsByTagName("RazaoSocial")[0]
+                      ?.textContent ||
+                    "---";
+                  const xProd =
+                    xmlDoc.getElementsByTagName("xProd")[0]?.textContent ||
+                    xmlDoc.getElementsByTagName("Discriminacao")[0]
+                      ?.textContent ||
+                    "Serviço Prestado";
+
+                  const vProd = parseFloat(vServTagRoot.textContent || "0");
+                  const cfop = "SERVIÇO";
+                  const ncm = "00.00";
+
+                  uniqueCfops.add(cfop);
+                  activeCfops.add(cfop);
+
+                  allItems.push({
+                    nNF,
+                    emitNome: xEmit,
+                    xProd,
+                    vProd,
+                    cfop,
+                    ncm,
+                  });
+                }
+              }
+            }
+          } catch (e) {
+            console.error("Erro ao processar XML:", e);
+          }
         });
 
         renderCfopChips();
@@ -1137,8 +1233,8 @@
         let sumBcOrig = 0,
           sumIbs = 0,
           sumCbs = 0,
-          sumTotal = 0,
-          sumEquiv = 0;
+          sumTributos = 0,
+          sumTotalGlobal = 0;
 
         let filteredCount = 0;
 
@@ -1151,21 +1247,21 @@
           let newBc = 0,
             valIbs = 0,
             valCbs = 0,
-            totalFinal = 0,
-            valEquiv = 0;
+            somaIbsCbs = 0,
+            totalFinal = 0;
 
           if (isSimulado) {
             newBc = item.vProd / (1 + params.effShareRate / 100);
             valIbs = newBc * (params.aliqIbs / 100);
             valCbs = newBc * (params.aliqCbs / 100);
-            totalFinal = newBc + valIbs + valCbs;
-            valEquiv = totalFinal * (equivPerc / 100);
+            somaIbsCbs = valIbs + valCbs;
+            totalFinal = newBc + somaIbsCbs;
 
             sumBcOrig += item.vProd;
             sumIbs += valIbs;
             sumCbs += valCbs;
-            sumTotal += totalFinal;
-            sumEquiv += valEquiv;
+            sumTributos += somaIbsCbs;
+            sumTotalGlobal += totalFinal;
           }
 
           const tr = document.createElement("tr");
@@ -1181,8 +1277,8 @@
             <td class="money">${isSimulado ? formatMoney(valIbs) : "---"}</td>
             <td class="money">${isSimulado ? params.aliqCbs.toFixed(2) + "%" : "---"}</td>
             <td class="money">${isSimulado ? formatMoney(valCbs) : "---"}</td>
+            <td class="money" style="color:var(--data-red); font-weight:600">${isSimulado ? formatMoney(somaIbsCbs) : "---"}</td>
             <td class="money highlight" style="color:${isSimulado ? "var(--data-purple)" : "inherit"}">${isSimulado ? formatMoney(totalFinal) : "---"}</td>
-            <td class="money" style="font-weight:700; color:var(--data-green)">${isSimulado && equivPerc > 0 ? formatMoney(valEquiv) : "---"}</td>
           `;
           tbody.appendChild(tr);
         });
@@ -1194,11 +1290,10 @@
             formatMoney(sumBcOrig);
           document.getElementById("totalIbs").innerText = formatMoney(sumIbs);
           document.getElementById("totalCbs").innerText = formatMoney(sumCbs);
-          document.getElementById("totalComp").innerText =
-            formatMoney(sumEquiv);
-          const impacto = sumBcOrig > 0 ? (sumTotal / sumBcOrig - 1) * 100 : 0;
-          document.getElementById("totalImpacto").innerText =
-            (impacto > 0 ? "+" : "") + impacto.toFixed(2) + "%";
+          document.getElementById("totalTributos").innerText =
+            formatMoney(sumTributos);
+          document.getElementById("totalFinalCalculado").innerText =
+            formatMoney(sumTotalGlobal);
 
           // NOVO: Cálculo do Valor Encargo Retirado (Base Total Filtrada * Alíquota Efetiva)
           const valEf = sumBcOrig * (params.effShareRate / 100);
@@ -1208,8 +1303,8 @@
           document.getElementById("totalBcOrig").innerText = "0,00";
           document.getElementById("totalIbs").innerText = "0,00";
           document.getElementById("totalCbs").innerText = "0,00";
-          document.getElementById("totalComp").innerText = "0,00";
-          document.getElementById("totalImpacto").innerText = "0,00%";
+          document.getElementById("totalTributos").innerText = "0,00";
+          document.getElementById("totalFinalCalculado").innerText = "0,00";
           document.getElementById("displayValEf").innerText = "---";
         }
       }
@@ -1229,13 +1324,10 @@
         document.getElementById("floatingTooltip").style.display = "none";
       }
 
-      function exportToCSV() {
+      function exportToExcel() {
         if (allItems.length === 0) return alert("Sem dados para exportar");
-        let csv =
-          "sep=;\nNota;Emitente;Produto;NCM;CFOP;Valor Bruto;BC Liquida;Aliq IBS;Val IBS;Aliq CBS;Val CBS;Impacto Final;Custo Min. Compra\n";
 
-        const rbt12 =
-          parseFloat(document.getElementById("inputRbt12").value) || 0;
+        const rbt12 = getRawValue("inputRbt12");
         const anexo = document.getElementById("inputAnexo").value;
         const share =
           parseFloat(document.getElementById("inputShare").value) || 0;
@@ -1245,34 +1337,85 @@
           parseFloat(document.getElementById("inputAliqCbs").value) || 0;
         const reducao =
           parseFloat(document.getElementById("inputReducao").value) || 0;
-        const equivPerc =
-          parseFloat(document.getElementById("inputEquiv").value) || 0;
 
         const fatorReducao = 1 - reducao / 100;
         const aliqIbs = aliqIbsBase * fatorReducao;
         const aliqCbs = aliqCbsBase * fatorReducao;
 
-        const simplesRate = calculosSimples[anexo](rbt12);
+        const simplesRate = calculosSimples[anexo]
+          ? calculosSimples[anexo](rbt12)
+          : 0;
         const effShareRate = simplesRate * (share / 100);
+
+        const dataArr = [];
+        // Header
+        dataArr.push([
+          "Nota",
+          "Emitente",
+          "Produto",
+          "NCM",
+          "CFOP",
+          "Valor Bruto",
+          "BC Liquida",
+          "Aliq IBS",
+          "Val IBS",
+          "Aliq CBS",
+          "Val CBS",
+          "Soma IBS+CBS",
+          "Valor Total Final",
+        ]);
 
         allItems.forEach((item) => {
           if (!activeCfops.has(item.cfop)) return;
+
           const newBc = item.vProd / (1 + effShareRate / 100);
           const valIbs = newBc * (aliqIbs / 100);
           const valCbs = newBc * (aliqCbs / 100);
-          const total = newBc + valIbs + valCbs;
-          const valEquiv = total * (equivPerc / 100);
+          const somaIbsCbs = valIbs + valCbs;
+          const totalFinal = newBc + somaIbsCbs;
 
-          csv += `${item.nNF};${item.emitNome};${item.xProd};${item.ncm};${item.cfop};${item.vProd.toFixed(2).replace(".", ",")};${newBc.toFixed(2).replace(".", ",")};${aliqIbs.toFixed(2).replace(".", ",")};${valIbs.toFixed(2).replace(".", ",")};${aliqCbs.toFixed(2).replace(".", ",")};${valCbs.toFixed(2).replace(".", ",")};${total.toFixed(2).replace(".", ",")};${valEquiv.toFixed(2).replace(".", ",")}\n`;
+          dataArr.push([
+            item.nNF,
+            item.emitNome,
+            item.xProd,
+            item.ncm,
+            item.cfop,
+            item.vProd,
+            newBc,
+            aliqIbs / 100,
+            valIbs,
+            aliqCbs / 100,
+            valCbs,
+            somaIbsCbs,
+            totalFinal,
+          ]);
         });
 
-        const blob = new Blob(["\uFEFF" + csv], {
-          type: "text/csv;charset=utf-8;",
-        });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "simulacao_simples_detalhada.csv";
-        link.click();
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(dataArr);
+
+        // Format columns as currency/percent where applicable
+        const fmtMoney = "#,##0.00";
+        const fmtPct = "0.00%";
+
+        const range = XLSX.utils.decode_range(ws["!ref"]);
+        for (let R = 1; R <= range.e.r; ++R) {
+          // Columns F, G, I, K, L, M (Money)
+          const moneyCols = [5, 6, 8, 10, 11, 12];
+          moneyCols.forEach((C) => {
+            const cell = ws[XLSX.utils.encode_cell({ r: R, c: C })];
+            if (cell) cell.z = fmtMoney;
+          });
+          // Columns H, J (Percent)
+          const pctCols = [7, 9];
+          pctCols.forEach((C) => {
+            const cell = ws[XLSX.utils.encode_cell({ r: R, c: C })];
+            if (cell) cell.z = fmtPct;
+          });
+        }
+
+        XLSX.utils.book_append_sheet(wb, ws, "Simulação");
+        XLSX.writeFile(wb, "simulacao_reforma_simples.xlsx");
       }
     </script>
   </body>
