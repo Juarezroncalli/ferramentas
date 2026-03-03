@@ -1,5 +1,4 @@
-<!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
   <head>
     <script>
       // Desabilita o clique direito
@@ -66,18 +65,41 @@
 
     <style>
       :root {
-        --primary: #FF5C00;
-        --accent: #FF5C00;
-        --sidebar-dark: #18181b; /* Zinc 900 */
-        --bg-light: #f4f4f5; /* Zinc 100 */
-        --card-bg: #ffffff;
-        --color-primary: #FF5C00;
-        --color-secondary: #71717a; /* Zinc 500 */
-        --color-accent: #FF5C00;
-        --color-success: #22c55e;
-        --color-danger: #ef4444;
+        --primary: #ea175c;
+        --accent: #ea175c;
+        --sidebar-bg: #18181b; 
+        --bg-app: #fcfcfc; 
+        --header-bg: #ffffff;
+        --footer-text: #94a3b8;
+        --tool-icon-bg: #ffffff; /* Fundo Branco */
+        --tool-icon-color: #ea175c; /* Ícone Rosa */
+        --primary-hover: #c2134d; /* Tom mais escuro */
       }
 
+      [data-theme="dark"] {
+        --sidebar-bg: #09090b;
+        --bg-app: #0f111a;
+        --card-bg: #1e2130;
+        --text-primary: #ffffff;
+        --text-secondary: #a0aec0;
+        --border-color: #2d3748;
+        --header-bg: #1e2130;
+        --footer-bg: #1e2130;
+        --footer-text: #718096;
+        --tool-icon-bg: #151725; 
+        --tool-icon-color: #ffffff;
+        --primary-hover: #c2134d;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: var(--bg-app);
+        color: var(--text-primary);
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        transition: background-color 0.3s, color 0.3s;
+      }
       .search-container {
         position: relative;
         width: 100%;
@@ -94,18 +116,19 @@
       .search-container input {
         width: 100%;
         padding: 12px 12px 12px 42px;
-        border: 1px solid #e4e4e7;
+        border: 1px solid var(--border-color);
         border-radius: 4px;
         font-size: 0.85rem;
         font-family: "Inter", sans-serif;
         outline: none;
         transition: all 0.2s;
-        background: #fafafa;
+        background: var(--card-bg);
+        color: var(--text-primary);
       }
       .search-container input:focus {
         border-color: var(--primary);
-        background: #fff;
-        box-shadow: 0 4px 12px rgba(255, 92, 0, 0.08);
+        background: var(--card-bg);
+        box-shadow: 0 4px 12px rgba(234, 23, 92, 0.15);
       }
       .search-mode h2 {
         display: none !important;
@@ -135,11 +158,12 @@
 
       body {
         font-family: "Inter", sans-serif;
-        background-color: var(--bg-light);
-        color: #18181b;
+        background-color: var(--bg-app);
+        color: var(--text-primary);
         height: 100vh;
         overflow: hidden;
         display: flex;
+        transition: background-color 0.3s, color 0.3s;
       }
 
       /* === Custom Scrollbar === */
@@ -157,7 +181,7 @@
       /* === SIDEBAR === */
       .sidebar {
         width: 280px;
-        background: var(--sidebar-dark);
+        background: var(--sidebar-bg);
         display: flex;
         flex-direction: column;
         padding: 1.5rem 1rem;
@@ -165,6 +189,7 @@
         overflow-y: auto;
         z-index: 10;
         box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+        transition: background 0.3s;
       }
 
       .logo {
@@ -233,31 +258,20 @@
 
       .nav-item.active {
         background-color: var(--primary);
-        color: #fff;
+        color: #ffffff;
       }
 
-      .nav-item[data-tab="tab-sped"].active {
-        background-color: #3f3f46; /* Zinc 700 */
-      }
-      .nav-item[data-tab="tab-importacao"].active {
-        background-color: #52525b; /* Zinc 600 */
-      }
-      .nav-item[data-tab="tab-analise"].active {
-        background-color: #FF5C00;
-      }
-      .nav-item[data-tab="tab-cartoes"].active {
-        background-color: #27272a; /* Zinc 800 */
-        color: #fff;
-      }
-      .nav-item[data-tab="tab-reforma"].active {
-        background-color: #f97316;
-      }
-      .nav-item[data-tab="tab-xml"].active {
-        background-color: #52525b;
-      }
+      .nav-item[data-tab="tab-sped"].active,
+      .nav-item[data-tab="tab-importacao"].active,
+      .nav-item[data-tab="tab-analise"].active,
+      .nav-item[data-tab="tab-cartoes"].active,
+      .nav-item[data-tab="tab-reforma"].active,
+      .nav-item[data-tab="tab-xml"].active,
       .nav-item[data-tab="tab-ofx"].active {
-        background-color: #3f3f46;
+        background-color: var(--primary) !important;
+        color: #ffffff !important;
       }
+
 
       /* === MAIN CONTENT === */
       .main-content {
@@ -265,14 +279,15 @@
         padding: 2rem;
         overflow-y: auto;
         position: relative;
-        background: var(--bg-light);
+        background: var(--bg-app);
+        transition: background 0.3s;
       }
 
       /* === HEADER === */
       .header-section {
         margin-bottom: 2rem;
-        background: #fff;
-        border: 1px solid #e4e4e7;
+        background: var(--header-bg);
+        border: 1px solid var(--border-color);
         padding: 1.5rem 2rem;
         border-radius: 4px;
         display: flex;
@@ -280,6 +295,7 @@
         align-items: center;
         flex-wrap: wrap;
         gap: 1.5rem;
+        transition: background 0.3s, border-color 0.3s;
       }
 
       .header-text h1 {
@@ -287,7 +303,7 @@
         font-weight: 700;
         font-size: 1.6rem;
         margin-bottom: 0.3rem;
-        color: #09090b;
+        color: var(--text-primary);
         text-transform: uppercase;
         letter-spacing: -0.5px;
       }
@@ -295,12 +311,12 @@
       .header-text p {
         font-family: "Inter", sans-serif;
         font-weight: 500;
-        color: #52525b;
+        color: var(--text-secondary);
         padding: 4px 12px;
-        background: #fff;
+        background: var(--card-bg);
         border-radius: 4px;
         font-size: 0.85rem;
-        border: 1px solid #e4e4e7;
+        border: 1px solid var(--border-color);
         display: inline-block;
       }
 
@@ -328,7 +344,7 @@
       .tab-pane h2 {
         font-family: "Outfit", sans-serif;
         background: transparent;
-        color: #0f172a;
+        color: var(--text-primary);
         display: flex;
         align-items: center;
         gap: 8px;
@@ -362,13 +378,15 @@
       /* === TOOL CARD === */
       .tool-card {
         background-color: var(--card-bg);
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--border-color);
         padding: 1.25rem;
         border-radius: 16px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
         transition:
           transform 0.2s ease,
-          box-shadow 0.2s ease;
+          box-shadow 0.2s ease,
+          background-color 0.3s,
+          border-color 0.3s;
         display: flex;
         flex-direction: column;
         cursor: pointer;
@@ -385,16 +403,17 @@
       .tool-icon {
         font-size: 1.5rem;
         margin-bottom: 1rem;
-        color: var(--primary);
+        color: var(--tool-icon-color);
         width: 48px;
         height: 48px;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #fff;
-        border: 1px solid #e4e4e7;
+        background: var(--tool-icon-bg);
+        border: 1px solid var(--border-color);
         border-radius: 4px;
         box-shadow: none;
+        transition: background 0.3s, border-color 0.3s, color 0.3s;
       }
 
       .tool-card:hover .tool-icon {
@@ -411,7 +430,7 @@
         line-height: 1.3;
         text-transform: uppercase;
         letter-spacing: -0.2px;
-        color: #09090b;
+        color: var(--text-primary);
         display: -webkit-box;
         -webkit-line-clamp: 2;
         line-clamp: 2;
@@ -428,7 +447,7 @@
       .tool-description {
         font-family: "Inter", sans-serif;
         font-size: 0.8rem;
-        color: #71717a;
+        color: var(--text-secondary);
         margin-bottom: 0.5rem;
         flex-grow: 0;
         line-height: 1.5;
@@ -512,23 +531,24 @@
       }
 
       .tool-card:hover .access-btn {
-        background: #18181b;
+        background: var(--primary-hover);
         color: #fff;
-        box-shadow: none;
-        transform: none;
+        box-shadow: 0 4px 12px rgba(234, 23, 92, 0.3);
+        transform: translateY(-1px);
       }
 
       /* === FOOTER === */
       footer {
         margin-top: auto;
         padding: 1rem 2rem;
-        border-top: 1px solid #e2e8f0;
+        border-top: 1px solid var(--border-color);
         text-align: center;
         font-family: "Inter", sans-serif;
         font-weight: 500;
         font-size: 0.75rem;
-        color: #94a3b8;
-        background: #fff;
+        color: var(--footer-text);
+        background: var(--footer-bg);
+        transition: background 0.3s, border-color 0.3s;
       }
 
       .footer-links a {
@@ -599,12 +619,12 @@
       }
 
       .whatsapp-text {
-        background-color: #fff;
-        color: #1e293b;
+        background-color: var(--card-bg);
+        color: var(--text-primary);
         padding: 12px 16px;
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--border-color);
         border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
         font-weight: 600;
         font-size: 0.85rem;
         max-width: 240px;
@@ -614,6 +634,7 @@
         display: none;
         animation: attention-shake 4s ease-in-out infinite;
         transform-origin: right center;
+        transition: background-color 0.3s, border-color 0.3s, color 0.3s;
       }
 
       .whatsapp-text span {
@@ -749,12 +770,31 @@
           />
         </div>
 
+        <button 
+          id="theme-toggle" 
+          style="
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          "
+        >
+          <i class="fas fa-moon"></i>
+        </button>
+
         <div 
           class="header-icon"
           style="
             font-size: 2.5rem;
-            color: var(--color-primary);
-            filter: drop-shadow(2px 2px 0px #18181b);
+            color: var(--primary);
+            filter: drop-shadow(2px 2px 0px var(--sidebar-bg));
           "
         >
           <i class="fas fa-cubes-stacked"></i>
@@ -1411,7 +1451,7 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/stone.html"
           >
-            <div class="tool-icon" style="background: #fff; color: #FF5C00">
+            <div class="tool-icon">
               <i class="fas fa-gem"></i>
             </div>
             <h3 class="tool-name">Stone > Domínio</h3>
@@ -1426,7 +1466,7 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/Alelo.html"
           >
-            <div class="tool-icon" style="background: #fff; color: #FF5C00">
+            <div class="tool-icon">
               <i class="fas fa-utensils"></i>
             </div>
             <h3 class="tool-name">Alelo > Domínio</h3>
@@ -1514,7 +1554,7 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/reforma2.html"
           >
-            <div class="tool-icon" style="background: #fff; color: #FF5C00">
+            <div class="tool-icon">
               <i class="fas fa-file-waveform"></i>
             </div>
             <h3 class="tool-name">Analisador de XMLS</h3>
@@ -1528,7 +1568,7 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/reforma1.html"
           >
-            <div class="tool-icon" style="background: #fff; color: #FF5C00">
+            <div class="tool-icon">
               <i class="fas fa-arrows-spin"></i>
             </div>
             <h3 class="tool-name">Alíquotas de transição</h3>
@@ -1544,7 +1584,7 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/simulacao_reforma.html"
           >
-            <div class="tool-icon" style="background: #fff; color: #FF5C00">
+            <div class="tool-icon">
               <i class="fas fa-chart-area"></i>
             </div>
             <h3 class="tool-name">Simulador de Cenários com Markup</h3>
@@ -1560,7 +1600,7 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/reforma_simples.html"
           >
-            <div class="tool-icon" style="background: #fff; color: #FF5C00">
+            <div class="tool-icon">
               <i class="fas fa-shop"></i>
             </div>
             <h3 class="tool-name">Impacto no Simples</h3>
@@ -1576,7 +1616,7 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/consulta_tributacao.html"
           >
-            <div class="tool-icon" style="background: #fff; color: #FF5C00">
+            <div class="tool-icon">
               <i class="fas fa-file-circle-check"></i>
             </div>
             <h3 class="tool-name">Consulta de Tributação</h3>
@@ -1597,7 +1637,7 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/correcao_xml.html"
           >
-            <div class="tool-icon" style="background: #fff; color: #FF5C00">
+            <div class="tool-icon">
               <i class="fas fa-map-location-dot"></i>
             </div>
             <h3 class="tool-name">
@@ -1616,7 +1656,7 @@
             class="tool-card"
             data-url="https://ferramentas-seven.vercel.app/separador_xml.html"
           >
-            <div class="tool-icon" style="background: #fff; color: #FF5C00">
+            <div class="tool-icon">
               <i class="fas fa-scissors"></i>
             </div>
             <h3 class="tool-name">
@@ -1639,7 +1679,7 @@
             data-url="https://ferramentas-seven.vercel.app/retencao_xml.html"
           >
             <span class="custom-solution-badge">Em andamento</span>
-            <div class="tool-icon" style="background: #fff; color: #FF5C00">
+            <div class="tool-icon">
               <i class="fas fa-shield-halved"></i>
             </div>
             <h3 class="tool-name">
@@ -1663,7 +1703,7 @@
             class="tool-card"
             data-url="https://jroncalli.pythonanywhere.com/"
           >
-            <div class="tool-icon" style="background: #fff; color: #FF5C00">
+            <div class="tool-icon">
               <i class="fas fa-file-pdf"></i>
             </div>
             <h3 class="tool-name">
@@ -1810,6 +1850,35 @@
             noResultsMsg.classList.add("visible");
           }
         });
+
+        // === THEME TOGGLE LOGIC ===
+        const themeToggle = document.getElementById("theme-toggle");
+        const html = document.documentElement;
+        
+        // Load saved theme or default to dark
+        const savedTheme = localStorage.getItem("theme") || "dark";
+        html.setAttribute("data-theme", savedTheme);
+        updateThemeIcon(savedTheme);
+
+        themeToggle.addEventListener("click", () => {
+          const currentTheme = html.getAttribute("data-theme");
+          const newTheme = currentTheme === "dark" ? "light" : "dark";
+          
+          html.setAttribute("data-theme", newTheme);
+          localStorage.setItem("theme", newTheme);
+          updateThemeIcon(newTheme);
+        });
+
+        function updateThemeIcon(theme) {
+          const icon = themeToggle.querySelector("i");
+          if (theme === "dark") {
+            icon.className = "fas fa-sun";
+            themeToggle.title = "Mudar para Modo Claro";
+          } else {
+            icon.className = "fas fa-moon";
+            themeToggle.title = "Mudar para Modo Escuro";
+          }
+        }
       });
     </script>
   </body>
