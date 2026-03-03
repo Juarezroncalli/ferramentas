@@ -99,7 +99,6 @@
 
         --shadow-card: 0px 4px 20px rgba(0, 0, 0, 0.05);
         --shadow-float: 0px 8px 30px rgba(0, 0, 0, 0.12);
-        --upload-pattern: radial-gradient(#e4e9f2 1px, transparent 1px);
 
         --font-ui:
           "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
@@ -144,7 +143,90 @@
 
         --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
         --shadow-float: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
-        --upload-pattern: radial-gradient(#2d3748 1px, transparent 1px);
+      }
+
+      /* Animações e Efeitos Visuais Antigravity */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(-15px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      .metric-card {
+        animation: fadeIn 0.5s ease backwards;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      }
+      .metric-card:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+      .metric-card:nth-child(2) {
+        animation-delay: 0.15s;
+      }
+      .metric-card:nth-child(3) {
+        animation-delay: 0.2s;
+      }
+      .metric-card:nth-child(4) {
+        animation-delay: 0.25s;
+      }
+      .metric-card:nth-child(5) {
+        animation-delay: 0.3s;
+      }
+      .metric-card:nth-child(6) {
+        animation-delay: 0.35s;
+      }
+      .metric-card:nth-child(7) {
+        animation-delay: 0.4s;
+      }
+      .metric-card:nth-child(8) {
+        animation-delay: 0.45s;
+      }
+
+      .metric-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: var(--shadow-float);
+        border-color: var(--accent-primary) !important;
+      }
+
+      #tabelaDados tbody tr {
+        animation: fadeIn 0.3s ease backwards;
+        transition: all 0.2s ease;
+      }
+      #tabelaDados tbody tr:hover {
+        background-color: var(--bg-hover) !important;
+        transform: scale(1.005);
+        z-index: 10;
+        position: relative;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      .btn-filter,
+      .btn-action,
+      .btn-toggle {
+        transition: all 0.2s ease !important;
+      }
+      .btn-filter:hover,
+      .btn-action:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.1);
+      }
+
+      .simulation-box {
+        animation: slideIn 0.4s ease-out;
       }
 
       * {
@@ -401,13 +483,6 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        transition:
-          transform 0.2s ease,
-          box-shadow 0.2s ease;
-      }
-      .metric-card:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-float);
       }
       .metric-icon-bg {
         width: 40px;
@@ -444,6 +519,21 @@
       .metric-card.orange .metric-value {
         color: var(--data-orange);
       }
+      .metric-card.indaco .metric-value {
+        color: #6366f1;
+      }
+      .metric-badge-perc {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        font-size: 11px;
+        font-weight: 700;
+        background: rgba(99, 102, 241, 0.1);
+        color: #6366f1;
+        padding: 4px 8px;
+        border-radius: 12px;
+        letter-spacing: 0.02em;
+      }
 
       .upload-area {
         background: var(--bg-panel);
@@ -455,8 +545,6 @@
         cursor: pointer;
         transition: all 0.2s ease;
         position: relative;
-        background-image: var(--upload-pattern);
-        background-size: 20px 20px;
       }
       .upload-area:hover {
         border-color: var(--data-blue);
@@ -1494,25 +1582,43 @@
               <div class="metric-value" id="totalValorNotas">R$ 0,00</div>
             </div>
           </div>
-          <div class="metric-card orange">
+
+          <!-- GRUPO COMPRAS (Cores Iguais - Indaco/Purple) -->
+          <div class="metric-card indaco">
+            <div id="percSimples" class="metric-badge-perc">(0%)</div>
+            <div
+              class="metric-icon-bg"
+              style="background: rgba(99, 102, 241, 0.1); color: #6366f1"
+            >
+              <i class="fas fa-store"></i>
+            </div>
+            <div>
+              <div class="metric-title">Compras Simples</div>
+              <div class="metric-value" id="totalSimples">R$ 0,00</div>
+            </div>
+          </div>
+          <div class="metric-card indaco">
+            <div id="percNormal" class="metric-badge-perc">(0%)</div>
+            <div
+              class="metric-icon-bg"
+              style="background: rgba(99, 102, 241, 0.1); color: #6366f1"
+            >
+              <i class="fas fa-building"></i>
+            </div>
+            <div>
+              <div class="metric-title">Compras Normal</div>
+              <div class="metric-value" id="totalNormal">R$ 0,00</div>
+            </div>
+          </div>
+
+          <!-- GRUPO TRIBUTOS (Cores Iguais - Green) -->
+          <div class="metric-card green">
             <div
               class="metric-icon-bg"
               style="
-                background: var(--badge-orange-bg);
-                color: var(--data-orange);
+                background: var(--badge-green-bg);
+                color: var(--data-green);
               "
-            >
-              <i class="fas fa-piggy-bank"></i>
-            </div>
-            <div>
-              <div class="metric-title">Benefício Fiscal</div>
-              <div class="metric-value" id="totalReducao">0</div>
-            </div>
-          </div>
-          <div class="metric-card blue">
-            <div
-              class="metric-icon-bg"
-              style="background: var(--badge-blue-bg); color: var(--data-blue)"
             >
               <i class="fas fa-file-invoice-dollar"></i>
             </div>
@@ -1534,6 +1640,22 @@
             <div>
               <div class="metric-title">IBS Acumulado (R$)</div>
               <div class="metric-value" id="totalIbs">0,00</div>
+            </div>
+          </div>
+
+          <div class="metric-card orange">
+            <div
+              class="metric-icon-bg"
+              style="
+                background: var(--badge-orange-bg);
+                color: var(--data-orange);
+              "
+            >
+              <i class="fas fa-piggy-bank"></i>
+            </div>
+            <div>
+              <div class="metric-title">Benefício Fiscal</div>
+              <div class="metric-value" id="totalReducao">0</div>
             </div>
           </div>
           <div class="metric-card purple">
@@ -1598,8 +1720,6 @@
               >
                 <option value="all">Todos</option>
                 <option value="green">Mais Baratos (-)</option>
-                <option value="red">Mais Caros (+)</option>
-                <option value="neutral">Neutros (=)</option>
               </select>
             </div>
             <div
@@ -1676,7 +1796,17 @@
 
         <div class="filters-container">
           <div class="filters-grid">
-            <div class="form-group" style="flex: 2">
+            <div class="form-group" style="flex: 1.5">
+              <label>Emitente (Empresa)</label>
+              <input
+                type="text"
+                id="filtroEmpresa"
+                class="neo-input"
+                placeholder="Filtrar por empresa..."
+                oninput="debounceFiltro()"
+              />
+            </div>
+            <div class="form-group" style="flex: 1.5">
               <label>Busca Inteligente (Produto)</label>
               <input
                 type="text"
@@ -1879,6 +2009,53 @@
       let filterTags = "all";
       let simOriginalItems = [];
       const tooltip = document.getElementById("floatingTooltip");
+
+      function formatMoney(v) {
+        return v.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
+      }
+
+      function parseRawValue(str) {
+        if (!str || str === "R$ 0,00" || str === "0,00" || str === "0")
+          return 0;
+        return parseFloat(str.replace(/[R$\s.]/g, "").replace(",", ".")) || 0;
+      }
+
+      function animateValue(id, start, end, duration, isCurrency = false) {
+        const obj = document.getElementById(id);
+        if (!obj) return;
+        if (start === end) {
+          if (isCurrency) obj.innerText = formatMoney(end);
+          else if (id === "percTagsNormal")
+            obj.innerText = end.toFixed(1) + "%";
+          else obj.innerText = end;
+          return;
+        }
+        let startTimestamp = null;
+        const step = (timestamp) => {
+          if (!startTimestamp) startTimestamp = timestamp;
+          const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+          const current = progress * (end - start) + start;
+          if (isCurrency) {
+            obj.innerText = formatMoney(current);
+          } else if (id === "percTagsNormal") {
+            obj.innerText = current.toFixed(1) + "%";
+          } else {
+            obj.innerText = Math.floor(current);
+          }
+          if (progress < 1) {
+            window.requestAnimationFrame(step);
+          } else {
+            if (isCurrency) obj.innerText = formatMoney(end);
+            else if (id === "percTagsNormal")
+              obj.innerText = end.toFixed(1) + "%";
+            else obj.innerText = end;
+          }
+        };
+        window.requestAnimationFrame(step);
+      }
 
       function showTooltip(e, idx) {
         const start = (currentPage - 1) * itemsPerPage;
@@ -2381,12 +2558,19 @@
         const fProd = document.getElementById("filtroProd")
           ? document.getElementById("filtroProd").value.trim().toLowerCase()
           : "";
+        const fEmpresa = document.getElementById("filtroEmpresa")
+          ? document.getElementById("filtroEmpresa").value.trim().toLowerCase()
+          : "";
         filteredItems = allItems.filter((item) => {
           const ncm = (item.ncm || "").toLowerCase();
           const cfop = (item.cfop || "").toLowerCase();
           const xProd = (item.xProd || "").toLowerCase();
+          const emit = (item.emitNome || "").toLowerCase();
           const matchText =
-            ncm.includes(fNcm) && cfop.includes(fCfop) && xProd.includes(fProd);
+            ncm.includes(fNcm) &&
+            cfop.includes(fCfop) &&
+            xProd.includes(fProd) &&
+            emit.includes(fEmpresa);
 
           const matchInteractiveCfop = activeCfops.has(item.cfop);
 
@@ -2409,6 +2593,8 @@
           totalCbs = 0,
           totalRed = 0,
           totalValor = 0;
+        let totalSimples = 0,
+          totalNormal = 0;
         const notasNormal = new Set();
         const notasNormalComTags = new Set();
         for (let i = 0; i < filteredItems.length; i++) {
@@ -2416,6 +2602,11 @@
           totalIbs += item.vIBS;
           totalCbs += item.vCBS;
           totalValor += item.vItemTotal || item.vProd;
+          if (item.regimeDesc === "SIMPLES") {
+            totalSimples += item.vItemTotal || item.vProd;
+          } else if (item.regimeDesc === "NORMAL") {
+            totalNormal += item.vItemTotal || item.vProd;
+          }
           if (item.hasTags && (item.pRedCBS > 0 || item.pRedIBS > 0))
             totalRed++;
           if (item.regimeDesc === "NORMAL") {
@@ -2426,14 +2617,49 @@
         let percentual = 0;
         if (notasNormal.size > 0)
           percentual = (notasNormalComTags.size / notasNormal.size) * 100;
-        document.getElementById("totalItens").innerText = filteredItems.length;
-        document.getElementById("totalReducao").innerText = totalRed;
-        document.getElementById("totalValorNotas").innerText =
-          formatMoney(totalValor);
-        document.getElementById("totalIbs").innerText = formatMoney(totalIbs);
-        document.getElementById("totalCbs").innerText = formatMoney(totalCbs);
-        document.getElementById("percTagsNormal").innerText =
-          percentual.toFixed(1) + "%";
+        const oldItens =
+          parseInt(document.getElementById("totalItens").innerText) || 0;
+        const oldRed =
+          parseInt(document.getElementById("totalReducao").innerText) || 0;
+        const oldValor = parseRawValue(
+          document.getElementById("totalValorNotas").innerText,
+        );
+        const oldIbs = parseRawValue(
+          document.getElementById("totalIbs").innerText,
+        );
+        const oldCbs = parseRawValue(
+          document.getElementById("totalCbs").innerText,
+        );
+        const oldSimples = parseRawValue(
+          document.getElementById("totalSimples").innerText,
+        );
+        const oldNormal = parseRawValue(
+          document.getElementById("totalNormal").innerText,
+        );
+        const oldPerc =
+          parseFloat(document.getElementById("percTagsNormal").innerText) || 0;
+
+        animateValue("totalItens", oldItens, filteredItems.length, 600);
+        animateValue("totalReducao", oldRed, totalRed, 600);
+        animateValue("totalValorNotas", oldValor, totalValor, 800, true);
+        animateValue("totalIbs", oldIbs, totalIbs, 800, true);
+        animateValue("totalCbs", oldCbs, totalCbs, 800, true);
+        animateValue("totalSimples", oldSimples, totalSimples, 800, true);
+        animateValue("totalNormal", oldNormal, totalNormal, 800, true);
+        animateValue("percTagsNormal", oldPerc, percentual, 800);
+
+        const totalSum = totalSimples + totalNormal;
+        if (totalSum > 0) {
+          const pSim = (totalSimples / totalSum) * 100;
+          const pNorm = (totalNormal / totalSum) * 100;
+          document.getElementById("percSimples").innerText =
+            `(${pSim.toFixed(1)}%)`;
+          document.getElementById("percNormal").innerText =
+            `(${pNorm.toFixed(1)}%)`;
+        } else {
+          document.getElementById("percSimples").innerText = "(0%)";
+          document.getElementById("percNormal").innerText = "(0%)";
+        }
       }
 
       function highlightTerm(text, term) {
@@ -2545,6 +2771,7 @@
         document.getElementById("filtroNcm").value = "";
         document.getElementById("filtroCfop").value = "";
         document.getElementById("filtroProd").value = "";
+        document.getElementById("filtroEmpresa").value = "";
         document.getElementById("totalValorNotas").innerText = "R$ 0,00";
 
         if (document.getElementById("aliqCBS2027"))
@@ -2670,17 +2897,22 @@
             let novosTrib = 0;
             let total2027 = 0;
             let variacao = 0;
+            const effectiveAliqCBS =
+              item.pRedCBS > 0 ? aliqCBS * (1 - item.pRedCBS / 100) : aliqCBS;
+            const effectiveAliqIBS =
+              item.pRedIBS > 0 ? 0.1 * (1 - item.pRedIBS / 100) : 0.1;
+            const nCBS =
+              !isSimples && item.vBcIbsCbs > 0
+                ? item.vBcIbsCbs * (effectiveAliqCBS / 100)
+                : 0;
+            const nIBS =
+              !isSimples && item.vBcIbsCbs > 0
+                ? item.vBcIbsCbs * (effectiveAliqIBS / 100)
+                : 0;
+
             if (!isSimples && item.vBcIbsCbs > 0) {
               baseCalculo = item.vBcIbsCbs;
-              let effectiveAliqCBS = aliqCBS;
-              let effectiveAliqIBS = 0.1;
-              if (item.pRedCBS > 0)
-                effectiveAliqCBS = aliqCBS * (1 - item.pRedCBS / 100);
-              if (item.pRedIBS > 0)
-                effectiveAliqIBS = 0.1 * (1 - item.pRedIBS / 100);
-              const novoCBS = baseCalculo * (effectiveAliqCBS / 100);
-              const novoIBS = baseCalculo * (effectiveAliqIBS / 100);
-              novosTrib = novoCBS + novoIBS;
+              novosTrib = nCBS + nIBS;
               total2027 =
                 baseCalculo + novosTrib + (item.vICMS || 0) + item.vST;
               const custoAtual =
@@ -2706,11 +2938,10 @@
                   : isSimples
                     ? "Simples"
                     : "Sem Tag",
-              "Novos Trib.": isSimples
-                ? "Simples Nacional"
-                : !isSimples && item.vBcIbsCbs > 0
-                  ? novosTrib
-                  : "-",
+              "Aliq. CBS (%)": isSimples ? "-" : effectiveAliqCBS.toFixed(2),
+              "CBS 2027 (R$)": nCBS,
+              "Aliq. IBS (%)": isSimples ? "-" : effectiveAliqIBS.toFixed(2),
+              "IBS 2027 (R$)": nIBS,
               "ICMS ST": item.vST,
               "TOTAL 2027": !isSimples && item.vBcIbsCbs > 0 ? total2027 : "-",
               "Var. R$": isSimples
@@ -2761,44 +2992,44 @@
             NCM: r.ncm,
             CFOP: r.cfop,
             CST: r.cst,
-            ClassTrib: r.cClassTrib,
-            "V.Prod": r.vProd,
-            "% CBS": r.pCBS,
+            Classificação: r.cClassTrib,
+            "Valor Item": r.vProd,
+            "Aliq. CBS (XML)": r.pCBS,
             "Red% CBS": r.pRedCBS,
-            "R$ CBS": r.vCBS,
-            "% IBS": r.pIBS,
+            "CBS (XML)": r.vCBS,
+            "Aliq. IBS (XML)": r.pIBS,
             "Red% IBS": r.pRedIBS,
-            "R$ IBS": r.vIBS,
+            "IBS (XML)": r.vIBS,
             Status: statusStr,
           };
         });
         const wb = XLSX.utils.book_new();
         const ws = XLSX.utils.json_to_sheet(formattedData);
         const wscols = [
-          { wch: 20 },
-          { wch: 15 },
+          { wch: 25 },
+          { wch: 18 },
           { wch: 10 },
           { wch: 44 },
-          { wch: 8 },
           { wch: 10 },
-          { wch: 10 },
+          { wch: 12 },
+          { wch: 12 },
           { wch: 40 },
           { wch: 10 },
-          { wch: 6 },
-          { wch: 6 },
+          { wch: 8 },
           { wch: 8 },
           { wch: 12 },
-          { wch: 6 },
-          { wch: 6 },
-          { wch: 10 },
-          { wch: 6 },
-          { wch: 6 },
+          { wch: 12 },
           { wch: 10 },
           { wch: 10 },
+          { wch: 12 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 12 },
+          { wch: 12 },
         ];
         ws["!cols"] = wscols;
-        XLSX.utils.book_append_sheet(wb, ws, "Auditoria");
-        XLSX.writeFile(wb, "auditoria_tax_audit_pro.xlsx");
+        XLSX.utils.book_append_sheet(wb, ws, "Auditoria Turbo");
+        XLSX.writeFile(wb, "auditoria_reforma_turbo.xlsx");
       }
 
       const MY_PIX_KEY = "553a7d69-3f85-4f42-a8b0-267a6f136fa1";
@@ -2857,11 +3088,11 @@
       function desativarModo2027() {
         modo2027 = false;
         document.querySelectorAll(
-          ".metric-card.blue .metric-title",
+          ".metric-card.green .metric-title",
         )[0].innerText = "CBS Acumulado (R$)";
         document.querySelectorAll(
           ".metric-card.green .metric-title",
-        )[0].innerText = "IBS Acumulado (R$)";
+        )[1].innerText = "IBS Acumulado (R$)";
         document.querySelectorAll(
           ".metric-card.orange .metric-title",
         )[0].innerText = "Benefício Fiscal";
@@ -2880,14 +3111,15 @@
         const aliqCBS =
           parseFloat(document.getElementById("aliqCBS2027").value) || 8.8;
 
-        // Mantém os filtros base (NCM, CFOP chips, etc) já aplicados em aplicarFiltros()
-        // O filteredItems já está correto.
         const filtroVar = document.getElementById("filtroVariacao2027")
           ? document.getElementById("filtroVariacao2027").value
           : "all";
 
+        // displayItems já vem filtrado pelo aplicarFiltros() (Empresa, Produto, NCM, CFOP, etc)
+        let displayItems = [...filteredItems];
+
         if (filtroVar !== "all") {
-          filteredItems = filteredItems.filter((item) => {
+          displayItems = displayItems.filter((item) => {
             const varVal = calcularVarFilter(item, aliqCBS);
             if (filtroVar === "green") return varVal < -0.01;
             if (filtroVar === "red") return varVal > 0.01;
@@ -2899,6 +3131,9 @@
         let simTotalCBS = 0;
         let simTotalIBS = 0;
         let simTotalNovos = 0;
+        let simTotalSimples = 0;
+        let simTotalNormal = 0;
+
         const thead = document.querySelector("#tabelaDados thead tr");
         thead.innerHTML = `
                 <th style="width:60px">Nota/Data</th><th>Emitente</th><th class="center" style="width:80px">Regime</th><th>Cód.</th><th>Produto</th><th>NCM/CFOP</th><th class="money" style="text-align:right; width:90px;">Base Calc.</th><th class="money" style="text-align:right; width:90px;">Novos Trib.</th><th class="money" style="text-align:right; width:90px; color:var(--data-blue)">ICMS ST</th><th class="money" style="text-align:right; width:90px;">Total 2027</th><th class="money" style="text-align:right; width:100px; font-weight:bold; color:var(--data-purple)">Custo Líq.</th><th class="money" style="text-align:right; width:90px; color:var(--data-green)">Créd. Recup.</th><th class="center" style="width:90px;">Var. R$</th>
@@ -2909,16 +3144,10 @@
         const fProd = document.getElementById("filtroProd")
           ? document.getElementById("filtroProd").value.trim()
           : "";
-        const fNcm = document.getElementById("filtroNcm")
-          ? document.getElementById("filtroNcm").value.trim()
-          : "";
-        const fCfop = document.getElementById("filtroCfop")
-          ? document.getElementById("filtroCfop").value.trim()
-          : "";
 
         const start = (currentPage - 1) * itemsPerPage;
         const end = start + itemsPerPage;
-        const itemsToRender = filteredItems.slice(start, end);
+        const itemsToRender = displayItems.slice(start, end);
         const fragment = document.createDocumentFragment();
 
         itemsToRender.forEach((item, index) => {
@@ -2932,6 +3161,12 @@
           let custoLiquido = 0;
           let isSimples = item.regimeDesc === "SIMPLES";
           let hasXmlTag = item.vBcIbsCbs > 0 || item.isMonofasico;
+
+          if (isSimples) {
+            simTotalSimples += item.vItemTotal || item.vProd;
+          } else {
+            simTotalNormal += item.vItemTotal || item.vProd;
+          }
 
           if (!isSimples && hasXmlTag && !item.isMonofasico) {
             baseCalculo = item.vBcIbsCbs;
@@ -2975,8 +3210,8 @@
           } else if (hasXmlTag) {
             let detailsHtml = `<div style="font-size:9px; color:var(--data-green); margin-top:2px;">Origem: XML</div>`;
             if (item.pRedCBS > 0) {
-              const baseReduzida = baseCalculo * (1 - item.pRedCBS / 100);
-              detailsHtml += `<div style="font-size:9px; color:var(--data-blue); margin-top:1px;">Base Red.: ${formatMoney(baseReduzida)} (-${item.pRedCBS}%)</div>`;
+              const effectiveAliqCBS = aliqCBS * (1 - item.pRedCBS / 100);
+              detailsHtml += `<div style="font-size:9px; color:var(--data-blue); margin-top:1px;">Aliq. Ef.: ${effectiveAliqCBS.toFixed(2)}% (${item.pRedCBS}% red.)</div>`;
             }
             baseDisplay = `<div>${formatMoney(baseCalculo)}</div>${detailsHtml}`;
           } else {
@@ -3025,23 +3260,38 @@
               : `<span class="badge-crt crt-normal">NORMAL</span>`;
 
           const displayProd = highlightTerm(item.xProd, fProd);
-          const displayNcm = highlightTerm(item.ncm, fNcm);
-          const displayCfop = highlightTerm(item.cfop, fCfop);
 
           tr.innerHTML = `
-                <td style="font-weight:600; font-size:11px" title="${item.nNF}">${item.nNF}<br><small style="color:var(--text-tertiary); font-weight:400">${item.data}</small></td><td title="${item.emitNome}">${item.emitNome}</td><td class="center">${regimeLabel}</td><td style="font-size:10px; color:var(--text-secondary)" title="${item.cProd || "-"}">${item.cProd || "-"}</td><td title="${item.xProd}"><span class="col-prod" onclick="copyFromProduct(${index})" onmouseover="showTooltip(event, ${index})" onmousemove="moveTooltip(event)" onmouseout="hideTooltip()">${displayProd}</span></td><td style="font-size:10px">${displayNcm}<br><span style="color:var(--text-tertiary)">${displayCfop}</span></td><td class="money">${baseDisplay}</td><td class="money" style="color:var(--text-secondary)">${novosTribDisplay}</td><td class="money" style="color:${item.vST > 0 ? "var(--data-blue)" : "inherit"}">${stDisplay}</td><td class="money">${total2027Display}</td><td class="money" style="font-weight:700; color:var(--data-purple)">${custoLiquidoDisplay}</td><td class="money" style="color:var(--data-green); font-weight:600">${creditoDisplay}</td><td class="center" style="font-weight:bold;">${varDisplay}</td>
+                <td style="font-weight:600; font-size:11px" title="${item.nNF}">${item.nNF}<br><small style="color:var(--text-tertiary); font-weight:400">${item.data}</small></td><td title="${item.emitNome}">${item.emitNome}</td><td class="center">${regimeLabel}</td><td style="font-size:10px; color:var(--text-secondary)" title="${item.cProd || "-"}">${item.cProd || "-"}</td><td title="${item.xProd}"><span class="col-prod" onclick="copyFromProduct(${index})" onmouseover="showTooltip(event, ${index})" onmousemove="moveTooltip(event)" onmouseout="hideTooltip()">${displayProd}</span></td><td style="font-size:10px">${item.ncm}<br><span style="color:var(--text-tertiary)">${item.cfop}</span></td><td class="money">${baseDisplay}</td><td class="money" style="color:var(--text-secondary)">${novosTribDisplay}</td><td class="money" style="color:${item.vST > 0 ? "var(--data-blue)" : "inherit"}">${stDisplay}</td><td class="money">${total2027Display}</td><td class="money" style="font-weight:700; color:var(--data-purple)">${custoLiquidoDisplay}</td><td class="money" style="color:var(--data-green); font-weight:600">${creditoDisplay}</td><td class="center" style="font-weight:bold;">${varDisplay}</td>
                 `;
           fragment.appendChild(tr);
         });
         tbody.appendChild(fragment);
 
-        document.getElementById("totalItens").innerText = filteredItems.length;
+        document.getElementById("totalItens").innerText = displayItems.length;
+        document.getElementById("totalSimples").innerText =
+          formatMoney(simTotalSimples);
+        document.getElementById("totalNormal").innerText =
+          formatMoney(simTotalNormal);
+
+        const totalSimValue = simTotalSimples + simTotalNormal;
+        if (totalSimValue > 0) {
+          const pSim = (simTotalSimples / totalSimValue) * 100;
+          const pNorm = (simTotalNormal / totalSimValue) * 100;
+          document.getElementById("percSimples").innerText =
+            `(${pSim.toFixed(1)}%)`;
+          document.getElementById("percNormal").innerText =
+            `(${pNorm.toFixed(1)}%)`;
+        } else {
+          document.getElementById("percSimples").innerText = "(0%)";
+          document.getElementById("percNormal").innerText = "(0%)";
+        }
         document.querySelectorAll(
-          ".metric-card.blue .metric-title",
+          ".metric-card.green .metric-title",
         )[0].innerText = `CBS 2027 (Est.)`;
         document.querySelectorAll(
           ".metric-card.green .metric-title",
-        )[0].innerText = `IBS 2027 (Est.)`;
+        )[1].innerText = `IBS 2027 (Est.)`;
         document.querySelector(".metric-card.orange .metric-title").innerText =
           "Simples Ignorado";
         document.getElementById("totalReducao").innerText = "-";
@@ -3051,7 +3301,7 @@
         let fullSimIBS = 0;
         let fullTotalValor = 0;
 
-        filteredItems.forEach((item) => {
+        displayItems.forEach((item) => {
           fullTotalValor += item.vItemTotal || item.vProd;
           let isSimples = item.regimeDesc === "SIMPLES";
           let hasXmlTag = item.vBcIbsCbs > 0;
@@ -3072,9 +3322,12 @@
         document.getElementById("totalCbs").innerText = formatMoney(fullSimCBS);
         document.getElementById("totalIbs").innerText = formatMoney(fullSimIBS);
 
-        atualizarControlesPaginacao();
-
-        atualizarControlesPaginacao();
+        const totalPages = Math.ceil(displayItems.length / itemsPerPage) || 1;
+        document.getElementById("pageInfo").innerText =
+          `${currentPage} / ${totalPages}`;
+        document.getElementById("btnPrev").disabled = currentPage === 1;
+        document.getElementById("btnNext").disabled =
+          currentPage === totalPages;
       }
     </script>
   </body>
