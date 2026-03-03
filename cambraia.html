@@ -575,18 +575,25 @@
               <p
                 class="text-xs uppercase tracking-[0.2em] text-slate-500 font-bold mb-4"
               >
-                Valor recolhido no Simples (IBS e CBS)
+                Total da Guia do Simples Nacional (9,09%)
               </p>
               <p
                 class="text-5xl lg:text-6xl font-bold text-stone-100 whitespace-nowrap"
               >
                 R$&nbsp;<span
                   class="counter"
-                  data-target="1896.26"
+                  data-target="12234.75"
                   data-format="currency"
                   >0</span
                 >
               </p>
+              <div class="mt-4 pt-4 border-t border-gold/10">
+                <p class="text-sm text-stone-400">
+                  Deste total,
+                  <span class="text-gold font-bold">R$ 1.896,26 (1,41%)</span>
+                  referem-se ao IBS e CBS.
+                </p>
+              </div>
             </div>
           </div>
 
@@ -611,10 +618,13 @@
                 >
               </div>
             </div>
-            <div class="mt-6 flex items-center gap-3 bg-gold/8 border border-gold/20 rounded-lg px-4 py-2">
+            <div
+              class="mt-6 flex items-center gap-3 bg-gold/8 border border-gold/20 rounded-lg px-4 py-2"
+            >
               <span class="w-3 h-3 rounded-full bg-[#E8C97D] shrink-0"></span>
               <p class="text-[11px] text-slate-300 leading-snug">
-                <span class="text-gold font-bold">15,5%</span> da alíquota de 9,09% corresponde a IBS/CBS
+                <span class="text-gold font-bold">15,5%</span> da alíquota de
+                9,09% corresponde a IBS/CBS
                 <span class="text-slate-500 ml-1">(= 1,41% efetivo)</span>
               </p>
             </div>
@@ -901,161 +911,78 @@
           </div>
         </div>
       </section>
-
-      <!-- 5. Ponto de Equilíbrio -->
-      <section id="equilibrio" class="py-24 border-t thin-border scroll-mt-24">
+      <!-- 5. Créditos Transição Fev/2026 (Comparativo) -->
+      <section
+        id="comparativo-fev"
+        class="py-24 border-t thin-border scroll-mt-24"
+      >
         <div class="mb-12">
           <h2 class="font-serif text-5xl lg:text-6xl mb-4 text-stone-100">
-            Visualizador: Ponto de Equilíbrio
+            Créditos de Referência
           </h2>
-          <p class="text-stone-400 max-w-3xl text-base leading-relaxed">
-            O Ponto de Equilíbrio mostra qual deve ser o volume de
-            <span class="text-gold">compras tributadas</span> necessário para
-            gerar crédito suficiente e empatar com o imposto pago hoje no
-            Simples Nacional.
+          <p
+            class="text-gold text-[10px] uppercase tracking-[0.35em] font-bold mt-1"
+          >
+            Fevereiro / 2026 - Título de Comparação
           </p>
         </div>
 
-        <div
-          class="glass-panel p-6 md:p-10 mb-12 shadow-2xl relative overflow-hidden"
-          data-aos="fade-up"
-        >
-          <div
-            class="absolute top-0 right-0 p-32 bg-primary/20 blur-[100px] rounded-full pointer-events-none"
-          ></div>
-
-          <div
-            class="bg-charcoal/80 border thin-border rounded-xl p-6 md:p-8 mb-10 relative z-10"
-          >
-            <label
-              class="block text-gold text-xs uppercase tracking-[0.2em] font-bold mb-4 flex items-center gap-2"
-            >
-              <span class="material-symbols-outlined text-sm">edit</span> Insira
-              o valor da Venda Desejada (R$):
-            </label>
-            <div class="relative">
-              <span
-                class="absolute left-6 top-1/2 -translate-y-1/2 text-2xl text-slate-500"
-                >R$</span
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8" data-aos="fade-up">
+          <div class="glass-panel p-8 border-t-4 border-t-gold/60">
+            <div class="flex justify-between items-start mb-6">
+              <div>
+                <p
+                  class="text-xs uppercase text-stone-400 tracking-widest mb-1"
+                >
+                  Crédito CBS
+                </p>
+                <p class="text-3xl font-serif text-stone-100 italic">
+                  Fevereiro 2026
+                </p>
+              </div>
+              <span class="material-symbols-outlined text-gold text-2xl"
+                >account_balance_wallet</span
               >
-              <input
-                type="number"
-                id="inputVenda"
-                value="500"
-                class="w-full bg-background-dark/80 text-3xl md:text-5xl font-light py-4 md:py-6 pl-16 pr-6 text-white rounded-lg border border-gold/40 focus:border-gold focus:ring-4 focus:ring-gold/10 outline-none transition-all"
-                oninput="calculateEquilibrium()"
-              />
             </div>
-            <p class="text-[10px] text-slate-500 mt-3 ml-2">
-              *Os valores calcularão a compra necessária com base em uma
-              alíquota de IBS/CBS combinada de 8,9% e imposto alvo de 1,41%.
-            </p>
+            <p class="text-4xl font-bold text-stone-100">R$ 3.980,26</p>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
-            <div
-              class="border border-secondary/50 rounded-lg p-6 bg-background-dark/50"
-            >
-              <h4
-                class="text-xs uppercase tracking-widest text-platinum font-bold mb-6 flex items-center gap-2 border-b border-secondary/50 pb-3"
-              >
-                <span class="material-symbols-outlined text-[16px]"
-                  >shopping_bag</span
+          <div class="glass-panel p-8 border-t-4 border-t-platinum/60">
+            <div class="flex justify-between items-start mb-6">
+              <div>
+                <p
+                  class="text-xs uppercase text-stone-400 tracking-widest mb-1"
                 >
-                1. Faturamento
-              </h4>
-              <div class="space-y-4">
-                <div class="flex justify-between items-end">
-                  <span class="text-sm text-stone-400"
-                    >Base Venda (sem imposto)</span
-                  >
-                  <span
-                    class="text-xl font-serif text-stone-100"
-                    id="calcBaseVenda"
-                    >R$&nbsp;459,14</span
-                  >
-                </div>
-                <div class="flex justify-between items-end">
-                  <span class="text-sm text-stone-400"
-                    >Débito IBS/CBS (8,9%)</span
-                  >
-                  <span
-                    class="text-xl font-serif text-stone-300"
-                    id="calcImpostoVenda"
-                    >R$&nbsp;40,86</span
-                  >
-                </div>
+                  Crédito IBS
+                </p>
+                <p class="text-3xl font-serif text-stone-100 italic">
+                  Fevereiro 2026
+                </p>
               </div>
-            </div>
-
-            <div
-              class="border border-secondary/50 rounded-lg p-6 bg-background-dark/50"
-            >
-              <h4
-                class="text-xs uppercase tracking-widest text-gold font-bold mb-6 flex items-center gap-2 border-b border-secondary/50 pb-3"
+              <span class="material-symbols-outlined text-platinum text-2xl"
+                >savings</span
               >
-                <span class="material-symbols-outlined text-[16px]"
-                  >inventory_2</span
-                >
-                2. Compra Necessária
-              </h4>
-              <div class="space-y-4">
-                <div class="flex justify-between items-end">
-                  <span class="text-sm text-stone-400">Crédito Necessário</span>
-                  <span class="text-xl font-serif text-gold" id="calcCredito"
-                    >R$&nbsp;33,81</span
-                  >
-                </div>
-                <div class="flex justify-between items-end">
-                  <span class="text-sm text-stone-400"
-                    >Base Compra exigida</span
-                  >
-                  <span
-                    class="text-xl font-serif text-stone-100"
-                    id="calcBaseCompra"
-                    >R$&nbsp;379,89</span
-                  >
-                </div>
-              </div>
             </div>
+            <p class="text-4xl font-bold text-stone-100">R$ 45,23</p>
           </div>
 
           <div
-            class="mt-8 bg-gradient-to-r from-secondary/20 to-background-dark border border-secondary/30 rounded-lg p-8 flex flex-col md:flex-row items-center justify-between gap-6 relative z-10"
+            class="glass-panel p-8 bg-gradient-to-br from-secondary/30 to-background-dark border border-gold/30"
           >
-            <div>
-              <p class="text-xs uppercase text-stone-400 tracking-widest mb-1">
-                Cálculo de Verificação
-              </p>
-              <p class="text-sm text-stone-300">
-                Débito (R$&nbsp;<span id="verifDebito">40,86</span>) - Crédito
-                (R$ <span id="verifCredito">33,81</span>) =
-                <span
-                  class="font-bold text-stone-100 italic"
-                  id="calcImpostoFinal"
-                  >R$&nbsp;7,05</span
-                >
-              </p>
-              <p
-                class="text-[10px] text-gold/70 mt-1 uppercase tracking-widest"
+            <div class="flex justify-between items-start mb-6">
+              <div>
+                <p class="text-xs uppercase text-gold tracking-widest mb-1">
+                  Total de Créditos
+                </p>
+                <p class="text-3xl font-serif text-stone-100 italic">
+                  Mês 02/2026
+                </p>
+              </div>
+              <span class="material-symbols-outlined text-gold text-2xl"
+                >payments</span
               >
-                Exatamente igual a 1,41% de R$&nbsp;500,00
-              </p>
             </div>
-
-            <div class="text-right">
-              <p
-                class="text-[10px] uppercase text-gold tracking-[0.3em] font-bold mb-2"
-              >
-                Compra Bruta (Total NF)
-              </p>
-              <p
-                class="text-4xl md:text-5xl font-bold text-white whitespace-nowrap"
-                id="calcCompraNecessaria"
-              >
-                R$&nbsp;420,79
-              </p>
-            </div>
+            <p class="text-5xl font-bold gold-text">R$ 4.025,49</p>
           </div>
         </div>
       </section>
@@ -1267,7 +1194,9 @@
               <div
                 class="flex justify-between border-b border-stone-800/50 pb-2"
               >
-                <span class="text-sm text-stone-400">CMV (413,70 / 1,089%)</span>
+                <span class="text-sm text-stone-400"
+                  >CMV (413,70 / 1,089%)</span
+                >
                 <span class="text-sm font-bold text-red-400/80"
                   >- R$ 379,89</span
                 >
@@ -1500,7 +1429,13 @@
                       const val = context.raw;
                       const efetivo = ((val / 100) * 9.09).toFixed(2);
                       return [
-                        " " + (context.dataIndex === 0 ? "IBS e CBS" : "Demais Tributos") + ": " + val + "%",
+                        " " +
+                          (context.dataIndex === 0
+                            ? "IBS e CBS"
+                            : "Demais Tributos") +
+                          ": " +
+                          val +
+                          "%",
                         " Parcela efetiva: " + efetivo + "% da alíquota",
                       ];
                     },
@@ -1517,101 +1452,6 @@
           });
         }
       });
-
-      function calculateEquilibrium() {
-        const inputVenda = document.getElementById("inputVenda").value;
-        const vendaBruta = parseFloat(inputVenda);
-
-        if (isNaN(vendaBruta) || vendaBruta <= 0) return;
-
-        const aliquotaVenda = 0.089;
-        const aliquotaCompra = 1.10766;
-
-        const baseVenda = vendaBruta / (1 + aliquotaVenda);
-        const impostoVenda = vendaBruta - baseVenda;
-
-        const impostoAlvo = vendaBruta * 0.0141;
-
-        const creditoNecessario = impostoVenda - impostoAlvo;
-
-        const baseCompra = creditoNecessario / aliquotaVenda;
-
-        const compraBruta = baseCompra * aliquotaCompra;
-
-        document.getElementById("calcBaseVenda").innerText =
-          "R$\u00A0" +
-          baseVenda.toLocaleString("pt-BR", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          });
-        document.getElementById("calcImpostoVenda").innerText =
-          "R$\u00A0" +
-          impostoVenda.toLocaleString("pt-BR", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          });
-
-        document.getElementById("calcCredito").innerText =
-          "R$\u00A0" +
-          creditoNecessario.toLocaleString("pt-BR", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          });
-        document.getElementById("calcBaseCompra").innerText =
-          "R$\u00A0" +
-          baseCompra.toLocaleString("pt-BR", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          });
-
-        document.getElementById("calcImpostoFinal").innerText =
-          "R$\u00A0" +
-          impostoAlvo.toLocaleString("pt-BR", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          });
-        document.getElementById("calcCompraNecessaria").innerText =
-          "R$\u00A0" +
-          compraBruta.toLocaleString("pt-BR", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          });
-
-        document.getElementById("verifDebito").innerText =
-          impostoVenda.toLocaleString("pt-BR", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          });
-        document.getElementById("verifCredito").innerText =
-          creditoNecessario.toLocaleString("pt-BR", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          });
-
-        const resultElements = [
-          "calcBaseVenda",
-          "calcImpostoVenda",
-          "calcCredito",
-          "calcBaseCompra",
-          "calcImpostoFinal",
-          "calcCompraNecessaria",
-          "verifDebito",
-          "verifCredito",
-        ];
-
-        resultElements.forEach((id) => {
-          const el = document.getElementById(id);
-          if (el) {
-            el.style.transition = "color 0.3s ease, transform 0.3s ease";
-            el.style.color = "#C5A059";
-            el.style.transform = "scale(1.05)";
-            setTimeout(() => {
-              el.style.color = "";
-              el.style.transform = "";
-            }, 300);
-          }
-        });
-      }
 
       // Gauge animation on load
       window.addEventListener("load", () => {
