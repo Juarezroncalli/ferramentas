@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -416,8 +416,12 @@
 
     <script>
       function toggleTheme() {
-        document.body.dataset.theme =
-          document.body.dataset.theme === "dark" ? "light" : "dark";
+        const theme =
+          document.documentElement.getAttribute("data-theme") || "light";
+        document.documentElement.setAttribute(
+          "data-theme",
+          theme === "dark" ? "light" : "dark",
+        );
       }
       const ANOS_TRANSICAO = [2027, 2028, 2029, 2030, 2031, 2032, 2033];
       const ESCALA_IBS = {
