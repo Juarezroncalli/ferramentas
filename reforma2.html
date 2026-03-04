@@ -2602,6 +2602,78 @@
         aplicarFiltros();
       }
 
+      function getFilterState() {
+        return {
+          fNcm:
+            document.getElementById("filtroNcm")?.value.trim().toLowerCase() ||
+            "",
+          fCfop:
+            document.getElementById("filtroCfop")?.value.trim().toLowerCase() ||
+            "",
+          fProd:
+            document.getElementById("filtroProd")?.value.trim().toLowerCase() ||
+            "",
+          fEmpresa:
+            document
+              .getElementById("filtroEmpresa")
+              ?.value.trim()
+              .toLowerCase() || "",
+        };
+      }
+
+      function itemMatchesFilter(item, filters, excludeGroup) {
+        // 1. Filtros de Texto Globais
+        if (
+          filters.fNcm &&
+          !(item.ncm || "").toLowerCase().includes(filters.fNcm)
+        )
+          return false;
+        if (
+          filters.fCfop &&
+          !(item.cfop || "").toLowerCase().includes(filters.fCfop)
+        )
+          return false;
+        if (
+          filters.fProd &&
+          !(item.xProd || "").toLowerCase().includes(filters.fProd)
+        )
+          return false;
+        if (
+          filters.fEmpresa &&
+          !(item.emitNome || "").toLowerCase().includes(filters.fEmpresa)
+        )
+          return false;
+
+        // 2. Toggles de Regime e Tags
+        if (filterRegime !== "all" && item.regimeDesc !== filterRegime)
+          return false;
+        if (filterTags === "yes" && !item.hasTags) return false;
+        if (filterTags === "no" && item.hasTags) return false;
+
+        // 3. Filtros Interativos (Chips)
+        // Se estivermos validando um grupo (ex: CFOP), ignoramos a seleção do próprio grupo para saber o que "poderia" estar disponível
+        if (
+          excludeGroup !== "cfop" &&
+          activeCfops.size > 0 &&
+          !activeCfops.has(item.cfop)
+        )
+          return false;
+        if (
+          excludeGroup !== "cst" &&
+          activeCsts.size > 0 &&
+          !activeCsts.has(item.cst)
+        )
+          return false;
+        if (
+          excludeGroup !== "classTrib" &&
+          activeClassTribs.size > 0 &&
+          !activeClassTribs.has(item.cClassTrib)
+        )
+          return false;
+
+        return true;
+      }
+
       function renderCfopChips() {
         const section = document.getElementById("cfopFilterSection");
         const area = document.getElementById("cfopChipsArea");
@@ -2611,22 +2683,26 @@
           return;
         }
         section.style.display = "block";
+        const filters = getFilterState();
         const sortedCfops = Array.from(uniqueCfops).sort();
 
-        // Determinar quais CFOPs estão disponíveis dada a seleção atual de CST e ClassTrib
+        // Determinar disponibilidade baseada em TODOS os outros filtros
         const availableCfops = new Set();
         allItems.forEach((item) => {
-          const matchCst = activeCsts.size === 0 || activeCsts.has(item.cst);
-          const matchClass =
-            activeClassTribs.size === 0 ||
-            activeClassTribs.has(item.cClassTrib);
-          if (matchCst && matchClass) availableCfops.add(item.cfop);
+          if (itemMatchesFilter(item, filters, "cfop")) {
+            availableCfops.add(item.cfop);
+          }
         });
 
         sortedCfops.forEach((cfop) => {
           const isAvailable = availableCfops.has(cfop);
+          const isActive = activeCfops.has(cfop);
+
+          // Se não estiver disponível e não estiver selecionado, ocultamos para limpar o visual ("mostre apenas")
+          if (!isAvailable && !isActive) return;
+
           const chip = document.createElement("div");
-          chip.className = `cfop-chip ${activeCfops.has(cfop) ? "active" : ""} ${isAvailable ? "" : "unavailable"}`;
+          chip.className = `cfop-chip ${isActive ? "active" : ""} ${isAvailable ? "" : "unavailable"}`;
           chip.innerText = cfop;
           chip.onclick = () => toggleCfop(cfop);
           area.appendChild(chip);
@@ -2642,22 +2718,24 @@
           return;
         }
         section.style.display = "block";
+        const filters = getFilterState();
         const sortedCsts = Array.from(uniqueCsts).sort();
 
         const availableCsts = new Set();
         allItems.forEach((item) => {
-          const matchCfop =
-            activeCfops.size === 0 || activeCfops.has(item.cfop);
-          const matchClass =
-            activeClassTribs.size === 0 ||
-            activeClassTribs.has(item.cClassTrib);
-          if (matchCfop && matchClass) availableCsts.add(item.cst);
+          if (itemMatchesFilter(item, filters, "cst")) {
+            availableCsts.add(item.cst);
+          }
         });
 
         sortedCsts.forEach((cst) => {
           const isAvailable = availableCsts.has(cst);
+          const isActive = activeCsts.has(cst);
+
+          if (!isAvailable && !isActive) return;
+
           const chip = document.createElement("div");
-          chip.className = `cfop-chip ${activeCsts.has(cst) ? "active" : ""} ${isAvailable ? "" : "unavailable"}`;
+          chip.className = `cfop-chip ${isActive ? "active" : ""} ${isAvailable ? "" : "unavailable"}`;
           chip.innerText = cst || "N/A";
           chip.onclick = () => toggleCst(cst);
           area.appendChild(chip);
@@ -2673,20 +2751,24 @@
           return;
         }
         section.style.display = "block";
+        const filters = getFilterState();
         const sortedClasses = Array.from(uniqueClassTribs).sort();
 
         const availableClasses = new Set();
         allItems.forEach((item) => {
-          const matchCfop =
-            activeCfops.size === 0 || activeCfops.has(item.cfop);
-          const matchCst = activeCsts.size === 0 || activeCsts.has(item.cst);
-          if (matchCfop && matchCst) availableClasses.add(item.cClassTrib);
+          if (itemMatchesFilter(item, filters, "classTrib")) {
+            availableClasses.add(item.cClassTrib);
+          }
         });
 
         sortedClasses.forEach((cls) => {
           const isAvailable = availableClasses.has(cls);
+          const isActive = activeClassTribs.has(cls);
+
+          if (!isAvailable && !isActive) return;
+
           const chip = document.createElement("div");
-          chip.className = `cfop-chip ${activeClassTribs.has(cls) ? "active" : ""} ${isAvailable ? "" : "unavailable"}`;
+          chip.className = `cfop-chip ${isActive ? "active" : ""} ${isAvailable ? "" : "unavailable"}`;
           chip.innerText = cls || "N/A";
           chip.onclick = () => toggleClassTrib(cls);
           area.appendChild(chip);
@@ -2697,124 +2779,62 @@
         if (activeCfops.has(cfop)) activeCfops.delete(cfop);
         else activeCfops.add(cfop);
         aplicarFiltros();
-        renderCfopChips();
-        renderCstChips();
-        renderClassTribChips();
       }
 
       function toggleCst(cst) {
         if (activeCsts.has(cst)) activeCsts.delete(cst);
         else activeCsts.add(cst);
         aplicarFiltros();
-        renderCfopChips();
-        renderCstChips();
-        renderClassTribChips();
       }
 
       function toggleClassTrib(cls) {
         if (activeClassTribs.has(cls)) activeClassTribs.delete(cls);
         else activeClassTribs.add(cls);
         aplicarFiltros();
-        renderCfopChips();
-        renderCstChips();
-        renderClassTribChips();
       }
 
       function selecionarTodosCfops() {
         uniqueCfops.forEach((cfop) => activeCfops.add(cfop));
         aplicarFiltros();
-        renderCfopChips();
-        renderCstChips();
-        renderClassTribChips();
       }
 
       function desmarcarTodosCfops() {
         activeCfops.clear();
         aplicarFiltros();
-        renderCfopChips();
-        renderCstChips();
-        renderClassTribChips();
       }
 
       function selecionarTodosCst() {
         uniqueCsts.forEach((v) => activeCsts.add(v));
         aplicarFiltros();
-        renderCfopChips();
-        renderCstChips();
-        renderClassTribChips();
       }
       function desmarcarTodosCst() {
         activeCsts.clear();
         aplicarFiltros();
-        renderCfopChips();
-        renderCstChips();
-        renderClassTribChips();
       }
       function selecionarTodosClassTrib() {
         uniqueClassTribs.forEach((v) => activeClassTribs.add(v));
         aplicarFiltros();
-        renderCfopChips();
-        renderCstChips();
-        renderClassTribChips();
       }
       function desmarcarTodosClassTrib() {
         activeClassTribs.clear();
         aplicarFiltros();
-        renderCfopChips();
-        renderCstChips();
-        renderClassTribChips();
       }
 
       function aplicarFiltros() {
-        const fNcm = document.getElementById("filtroNcm")
-          ? document.getElementById("filtroNcm").value.trim().toLowerCase()
-          : "";
-        const fCfop = document.getElementById("filtroCfop")
-          ? document.getElementById("filtroCfop").value.trim().toLowerCase()
-          : "";
-        const fProd = document.getElementById("filtroProd")
-          ? document.getElementById("filtroProd").value.trim().toLowerCase()
-          : "";
-        const fEmpresa = document.getElementById("filtroEmpresa")
-          ? document.getElementById("filtroEmpresa").value.trim().toLowerCase()
-          : "";
-        filteredItems = allItems.filter((item) => {
-          const ncm = (item.ncm || "").toLowerCase();
-          const cfop = (item.cfop || "").toLowerCase();
-          const xProd = (item.xProd || "").toLowerCase();
-          const emit = (item.emitNome || "").toLowerCase();
-          const matchText =
-            ncm.includes(fNcm) &&
-            cfop.includes(fCfop) &&
-            xProd.includes(fProd) &&
-            emit.includes(fEmpresa);
+        const filters = getFilterState();
 
-          const matchInteractiveCfop =
-            activeCfops.size === 0 || activeCfops.has(item.cfop);
-          const matchInteractiveCst =
-            activeCsts.size === 0 || activeCsts.has(item.cst);
-          const matchInteractiveClass =
-            activeClassTribs.size === 0 ||
-            activeClassTribs.has(item.cClassTrib);
-
-          let matchRegime = true;
-          if (filterRegime !== "all")
-            matchRegime = item.regimeDesc === filterRegime;
-          let matchTags = true;
-          if (filterTags === "yes") matchTags = item.hasTags === true;
-          if (filterTags === "no") matchTags = item.hasTags === false;
-          return (
-            matchText &&
-            matchRegime &&
-            matchTags &&
-            matchInteractiveCfop &&
-            matchInteractiveCst &&
-            matchInteractiveClass
-          );
-        });
+        filteredItems = allItems.filter((item) =>
+          itemMatchesFilter(item, filters),
+        );
 
         atualizarTotais();
         currentPage = 1;
+
+        // Atualiza os chips para refletir o novo estado de filtragem
+        renderCfopChips();
+        renderCstChips();
+        renderClassTribChips();
+
         renderizarTabela();
       }
 
