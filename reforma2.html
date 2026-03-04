@@ -700,19 +700,47 @@
           flex-direction: column;
         }
       }
+      .filter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0;
+        cursor: pointer;
+        padding: 4px 0;
+      }
+      .cfop-filter-container.expanded .filter-header {
+        margin-bottom: 12px;
+      }
       .filter-title {
         font-weight: 600;
         color: var(--text-secondary);
         font-size: 11px;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-      }
-      .filter-header {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        margin-bottom: 12px;
+        gap: 8px;
       }
+      .toggle-icon {
+        font-size: 10px;
+        transition: transform 0.3s ease;
+        color: var(--text-tertiary);
+      }
+      .cfop-filter-container.expanded .toggle-icon {
+        transform: rotate(180deg);
+      }
+      .collapsible-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 0;
+      }
+      .cfop-filter-container.expanded .collapsible-content {
+        max-height: 1200px;
+        opacity: 1;
+        padding-top: 4px;
+      }
+
       .filter-actions {
         display: flex;
         gap: 8px;
@@ -1814,20 +1842,38 @@
         </div>
 
         <div class="cfop-filter-container" id="cfopFilterSection">
-          <div class="filter-header">
+          <div
+            class="filter-header"
+            onclick="toggleFilterSection('cfopFilterSection')"
+          >
             <div class="filter-title">
               <i class="fas fa-tags"></i> CFOPs Identificados
+              <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
             <div class="filter-actions">
-              <button class="btn-helper" onclick="selecionarTodosCfops()">
+              <button
+                class="btn-helper"
+                onclick="
+                  event.stopPropagation();
+                  selecionarTodosCfops();
+                "
+              >
                 Todos
               </button>
-              <button class="btn-helper" onclick="desmarcarTodosCfops()">
+              <button
+                class="btn-helper"
+                onclick="
+                  event.stopPropagation();
+                  desmarcarTodosCfops();
+                "
+              >
                 Limpar
               </button>
             </div>
           </div>
-          <div class="chips-area" id="cfopChipsArea"></div>
+          <div class="collapsible-content">
+            <div class="chips-area" id="cfopChipsArea"></div>
+          </div>
         </div>
 
         <div class="filter-chips-grid">
@@ -1836,20 +1882,38 @@
             id="cstFilterSection"
             style="display: none"
           >
-            <div class="filter-header">
+            <div
+              class="filter-header"
+              onclick="toggleFilterSection('cstFilterSection')"
+            >
               <div class="filter-title">
                 <i class="fas fa-percentage"></i> CSTs Encontrados
+                <i class="fas fa-chevron-down toggle-icon"></i>
               </div>
               <div class="filter-actions">
-                <button class="btn-helper" onclick="selecionarTodosCst()">
+                <button
+                  class="btn-helper"
+                  onclick="
+                    event.stopPropagation();
+                    selecionarTodosCst();
+                  "
+                >
                   Todos
                 </button>
-                <button class="btn-helper" onclick="desmarcarTodosCst()">
+                <button
+                  class="btn-helper"
+                  onclick="
+                    event.stopPropagation();
+                    desmarcarTodosCst();
+                  "
+                >
                   Limpar
                 </button>
               </div>
             </div>
-            <div class="chips-area" id="cstChipsArea"></div>
+            <div class="collapsible-content">
+              <div class="chips-area" id="cstChipsArea"></div>
+            </div>
           </div>
 
           <div
@@ -1857,20 +1921,38 @@
             id="classTribFilterSection"
             style="display: none"
           >
-            <div class="filter-header">
+            <div
+              class="filter-header"
+              onclick="toggleFilterSection('classTribFilterSection')"
+            >
               <div class="filter-title">
                 <i class="fas fa-shield-halved"></i> Classificações Tributárias
+                <i class="fas fa-chevron-down toggle-icon"></i>
               </div>
               <div class="filter-actions">
-                <button class="btn-helper" onclick="selecionarTodosClassTrib()">
+                <button
+                  class="btn-helper"
+                  onclick="
+                    event.stopPropagation();
+                    selecionarTodosClassTrib();
+                  "
+                >
                   Todos
                 </button>
-                <button class="btn-helper" onclick="desmarcarTodosClassTrib()">
+                <button
+                  class="btn-helper"
+                  onclick="
+                    event.stopPropagation();
+                    desmarcarTodosClassTrib();
+                  "
+                >
                   Limpar
                 </button>
               </div>
             </div>
-            <div class="chips-area" id="classTribChipsArea"></div>
+            <div class="collapsible-content">
+              <div class="chips-area" id="classTribChipsArea"></div>
+            </div>
           </div>
         </div>
 
@@ -2569,15 +2651,12 @@
 
                 if (cfop) {
                   uniqueCfops.add(cfop);
-                  activeCfops.add(cfop);
                 }
                 if (cst) {
                   uniqueCsts.add(cst);
-                  activeCsts.add(cst);
                 }
                 if (cClassTrib) {
                   uniqueClassTribs.add(cClassTrib);
-                  activeClassTribs.add(cClassTrib);
                 }
               }
             } catch (err) {
@@ -2602,45 +2681,38 @@
         aplicarFiltros();
       }
 
+      function normalizeText(text) {
+        if (!text) return "";
+        return text
+          .toString()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase()
+          .trim();
+      }
+
       function getFilterState() {
         return {
-          fNcm:
-            document.getElementById("filtroNcm")?.value.trim().toLowerCase() ||
-            "",
-          fCfop:
-            document.getElementById("filtroCfop")?.value.trim().toLowerCase() ||
-            "",
-          fProd:
-            document.getElementById("filtroProd")?.value.trim().toLowerCase() ||
-            "",
-          fEmpresa:
-            document
-              .getElementById("filtroEmpresa")
-              ?.value.trim()
-              .toLowerCase() || "",
+          fNcm: normalizeText(document.getElementById("filtroNcm")?.value),
+          fCfop: normalizeText(document.getElementById("filtroCfop")?.value),
+          fProd: normalizeText(document.getElementById("filtroProd")?.value),
+          fEmpresa: normalizeText(
+            document.getElementById("filtroEmpresa")?.value,
+          ),
         };
       }
 
       function itemMatchesFilter(item, filters, excludeGroup) {
-        // 1. Filtros de Texto Globais
-        if (
-          filters.fNcm &&
-          !(item.ncm || "").toLowerCase().includes(filters.fNcm)
-        )
+        // 1. Filtros de Texto Globais (agora normatizados)
+        if (filters.fNcm && !normalizeText(item.ncm).includes(filters.fNcm))
           return false;
-        if (
-          filters.fCfop &&
-          !(item.cfop || "").toLowerCase().includes(filters.fCfop)
-        )
+        if (filters.fCfop && !normalizeText(item.cfop).includes(filters.fCfop))
           return false;
-        if (
-          filters.fProd &&
-          !(item.xProd || "").toLowerCase().includes(filters.fProd)
-        )
+        if (filters.fProd && !normalizeText(item.xProd).includes(filters.fProd))
           return false;
         if (
           filters.fEmpresa &&
-          !(item.emitNome || "").toLowerCase().includes(filters.fEmpresa)
+          !normalizeText(item.emitNome).includes(filters.fEmpresa)
         )
           return false;
 
@@ -2651,7 +2723,6 @@
         if (filterTags === "no" && item.hasTags) return false;
 
         // 3. Filtros Interativos (Chips)
-        // Se estivermos validando um grupo (ex: CFOP), ignoramos a seleção do próprio grupo para saber o que "poderia" estar disponível
         if (
           excludeGroup !== "cfop" &&
           activeCfops.size > 0 &&
@@ -2674,8 +2745,16 @@
         return true;
       }
 
+      function toggleFilterSection(id) {
+        const section = document.getElementById(id);
+        if (section) {
+          section.classList.toggle("expanded");
+        }
+      }
+
       function renderCfopChips() {
         const section = document.getElementById("cfopFilterSection");
+        const titleEl = section.querySelector(".filter-title");
         const area = document.getElementById("cfopChipsArea");
         area.innerHTML = "";
         if (uniqueCfops.size === 0) {
@@ -2683,10 +2762,19 @@
           return;
         }
         section.style.display = "block";
+
+        // Atualizar título com contador
+        const selectedCount = activeCfops.size;
+        const iconHtml = '<i class="fas fa-tags"></i>';
+        const chevronHtml = '<i class="fas fa-chevron-down toggle-icon"></i>';
+        const badgeHtml = selectedCount
+          ? `<span style="background:var(--data-purple); color:#fff; border-radius:10px; padding:0 6px; font-size:9px; margin-left:4px;">${selectedCount}</span>`
+          : "";
+        titleEl.innerHTML = `${iconHtml} CFOPs Identificados ${badgeHtml} ${chevronHtml}`;
+
         const filters = getFilterState();
         const sortedCfops = Array.from(uniqueCfops).sort();
 
-        // Determinar disponibilidade baseada em TODOS os outros filtros
         const availableCfops = new Set();
         allItems.forEach((item) => {
           if (itemMatchesFilter(item, filters, "cfop")) {
@@ -2697,20 +2785,22 @@
         sortedCfops.forEach((cfop) => {
           const isAvailable = availableCfops.has(cfop);
           const isActive = activeCfops.has(cfop);
-
-          // Se não estiver disponível e não estiver selecionado, ocultamos para limpar o visual ("mostre apenas")
           if (!isAvailable && !isActive) return;
 
           const chip = document.createElement("div");
           chip.className = `cfop-chip ${isActive ? "active" : ""} ${isAvailable ? "" : "unavailable"}`;
           chip.innerText = cfop;
-          chip.onclick = () => toggleCfop(cfop);
+          chip.onclick = (e) => {
+            e.stopPropagation();
+            toggleCfop(cfop);
+          };
           area.appendChild(chip);
         });
       }
 
       function renderCstChips() {
         const section = document.getElementById("cstFilterSection");
+        const titleEl = section.querySelector(".filter-title");
         const area = document.getElementById("cstChipsArea");
         area.innerHTML = "";
         if (uniqueCsts.size === 0) {
@@ -2718,6 +2808,15 @@
           return;
         }
         section.style.display = "block";
+
+        const selectedCount = activeCsts.size;
+        const iconHtml = '<i class="fas fa-percentage"></i>';
+        const chevronHtml = '<i class="fas fa-chevron-down toggle-icon"></i>';
+        const badgeHtml = selectedCount
+          ? `<span style="background:var(--data-purple); color:#fff; border-radius:10px; padding:0 6px; font-size:9px; margin-left:4px;">${selectedCount}</span>`
+          : "";
+        titleEl.innerHTML = `${iconHtml} CSTs Encontrados ${badgeHtml} ${chevronHtml}`;
+
         const filters = getFilterState();
         const sortedCsts = Array.from(uniqueCsts).sort();
 
@@ -2731,19 +2830,22 @@
         sortedCsts.forEach((cst) => {
           const isAvailable = availableCsts.has(cst);
           const isActive = activeCsts.has(cst);
-
           if (!isAvailable && !isActive) return;
 
           const chip = document.createElement("div");
           chip.className = `cfop-chip ${isActive ? "active" : ""} ${isAvailable ? "" : "unavailable"}`;
           chip.innerText = cst || "N/A";
-          chip.onclick = () => toggleCst(cst);
+          chip.onclick = (e) => {
+            e.stopPropagation();
+            toggleCst(cst);
+          };
           area.appendChild(chip);
         });
       }
 
       function renderClassTribChips() {
         const section = document.getElementById("classTribFilterSection");
+        const titleEl = section.querySelector(".filter-title");
         const area = document.getElementById("classTribChipsArea");
         area.innerHTML = "";
         if (uniqueClassTribs.size === 0) {
@@ -2751,6 +2853,15 @@
           return;
         }
         section.style.display = "block";
+
+        const selectedCount = activeClassTribs.size;
+        const iconHtml = '<i class="fas fa-shield-halved"></i>';
+        const chevronHtml = '<i class="fas fa-chevron-down toggle-icon"></i>';
+        const badgeHtml = selectedCount
+          ? `<span style="background:var(--data-purple); color:#fff; border-radius:10px; padding:0 6px; font-size:9px; margin-left:4px;">${selectedCount}</span>`
+          : "";
+        titleEl.innerHTML = `${iconHtml} Classificações Tributárias ${badgeHtml} ${chevronHtml}`;
+
         const filters = getFilterState();
         const sortedClasses = Array.from(uniqueClassTribs).sort();
 
@@ -2764,13 +2875,15 @@
         sortedClasses.forEach((cls) => {
           const isAvailable = availableClasses.has(cls);
           const isActive = activeClassTribs.has(cls);
-
           if (!isAvailable && !isActive) return;
 
           const chip = document.createElement("div");
           chip.className = `cfop-chip ${isActive ? "active" : ""} ${isAvailable ? "" : "unavailable"}`;
           chip.innerText = cls || "N/A";
-          chip.onclick = () => toggleClassTrib(cls);
+          chip.onclick = (e) => {
+            e.stopPropagation();
+            toggleClassTrib(cls);
+          };
           area.appendChild(chip);
         });
       }
