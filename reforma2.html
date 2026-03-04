@@ -490,26 +490,29 @@
         overflow: hidden;
       }
       .metric-icon-bg {
-        width: 38px;
-        height: 38px;
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 0.75rem;
-        font-size: 16px;
+        margin-bottom: 0.5rem;
+        font-size: 14px;
       }
       .metric-title {
         font-weight: 600;
-        font-size: 11px;
+        font-size: 10px;
         color: var(--text-tertiary);
-        margin-bottom: 0.4rem;
+        margin-bottom: 0.25rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       .metric-value {
         font-family: var(--font-ui);
-        font-size: clamp(18px, 1.8vw, 24px);
+        font-size: clamp(14px, 1.25vw, 19px);
         font-weight: 700;
         color: var(--text-primary);
         letter-spacing: -0.04em;
@@ -517,6 +520,7 @@
         word-wrap: break-word;
         overflow-wrap: anywhere;
         max-width: 100%;
+        transition: all 0.2s ease;
       }
       .metric-card.purple .metric-value {
         color: var(--data-purple);
@@ -535,14 +539,14 @@
       }
       .metric-badge-perc {
         position: absolute;
-        top: 12px;
-        right: 12px;
-        font-size: 11px;
+        top: 8px;
+        right: 8px;
+        font-size: 9px;
         font-weight: 700;
         background: rgba(99, 102, 241, 0.1);
         color: #6366f1;
-        padding: 4px 8px;
-        border-radius: 12px;
+        padding: 2px 6px;
+        border-radius: 10px;
         letter-spacing: 0.02em;
       }
 
@@ -676,12 +680,25 @@
 
       /* Filter Chips */
       .cfop-filter-container {
-        display: none;
         background: var(--bg-surface);
         padding: 1rem;
         border-radius: var(--radius-md);
         box-shadow: var(--shadow-card);
         margin-bottom: 1.5rem;
+      }
+      .filter-chips-grid {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+      .filter-chips-grid .cfop-filter-container {
+        flex: 1;
+        margin-bottom: 0;
+      }
+      @media (max-width: 1200px) {
+        .filter-chips-grid {
+          flex-direction: column;
+        }
       }
       .filter-title {
         font-weight: 600;
@@ -740,6 +757,15 @@
         color: var(--data-purple);
         border-color: var(--data-purple);
         box-shadow: 0 2px 8px rgba(83, 71, 206, 0.15);
+      }
+      .cfop-chip.unavailable {
+        opacity: 0.35;
+        filter: grayscale(0.8);
+        border-style: dotted;
+        pointer-events: auto; /* Permitir clicar mesmo 'unavailabe' para forçar a seleção se o usuário quiser */
+      }
+      .cfop-chip.unavailable:hover {
+        opacity: 0.6;
       }
 
       .table-container {
@@ -1108,9 +1134,7 @@
       }
 
       @media (max-width: 1024px) {
-        .dashboard-grid {
-          grid-template-columns: repeat(2, 1fr);
-        }
+        /* Mantém uma linha com scroll se necessário */
       }
       @media (max-width: 768px) {
         body {
@@ -1153,7 +1177,8 @@
           padding-bottom: 80px;
         }
         .dashboard-grid {
-          grid-template-columns: 1fr;
+          grid-template-columns: repeat(8, 1fr); /* Mantém na mesma linha */
+          min-width: 900px; /* Garante que não esprema demais */
         }
         .filters-grid {
           flex-direction: column;
@@ -1788,21 +1813,65 @@
           </div>
         </div>
 
-        <div id="cfopFilterSection" class="cfop-filter-container">
+        <div class="cfop-filter-container" id="cfopFilterSection">
           <div class="filter-header">
-            <div class="filter-title" style="margin-bottom: 0">
-              <i class="fas fa-filter"></i> Selecione os CFOPs para o cálculo:
+            <div class="filter-title">
+              <i class="fas fa-tags"></i> CFOPs Identificados
             </div>
             <div class="filter-actions">
               <button class="btn-helper" onclick="selecionarTodosCfops()">
-                Marcar Todos
+                Todos
               </button>
               <button class="btn-helper" onclick="desmarcarTodosCfops()">
-                Desmarcar Todos
+                Limpar
               </button>
             </div>
           </div>
-          <div id="cfopChipsArea" class="chips-area"></div>
+          <div class="chips-area" id="cfopChipsArea"></div>
+        </div>
+
+        <div class="filter-chips-grid">
+          <div
+            class="cfop-filter-container"
+            id="cstFilterSection"
+            style="display: none"
+          >
+            <div class="filter-header">
+              <div class="filter-title">
+                <i class="fas fa-percentage"></i> CSTs Encontrados
+              </div>
+              <div class="filter-actions">
+                <button class="btn-helper" onclick="selecionarTodosCst()">
+                  Todos
+                </button>
+                <button class="btn-helper" onclick="desmarcarTodosCst()">
+                  Limpar
+                </button>
+              </div>
+            </div>
+            <div class="chips-area" id="cstChipsArea"></div>
+          </div>
+
+          <div
+            class="cfop-filter-container"
+            id="classTribFilterSection"
+            style="display: none"
+          >
+            <div class="filter-header">
+              <div class="filter-title">
+                <i class="fas fa-shield-halved"></i> Classificações Tributárias
+              </div>
+              <div class="filter-actions">
+                <button class="btn-helper" onclick="selecionarTodosClassTrib()">
+                  Todos
+                </button>
+                <button class="btn-helper" onclick="desmarcarTodosClassTrib()">
+                  Limpar
+                </button>
+              </div>
+            </div>
+            <div class="chips-area" id="classTribChipsArea"></div>
+          </div>
         </div>
 
         <div class="filters-container">
@@ -2011,6 +2080,10 @@
       let filteredItems = [];
       let uniqueCfops = new Set();
       let activeCfops = new Set();
+      let uniqueCsts = new Set();
+      let activeCsts = new Set();
+      let uniqueClassTribs = new Set();
+      let activeClassTribs = new Set();
       let currentPage = 1;
       const itemsPerPage = 200;
       let debounceTimer;
@@ -2213,7 +2286,11 @@
       async function handleFiles(files) {
         allItems = [];
         uniqueCfops.clear();
+        uniqueCsts.clear();
+        uniqueClassTribs.clear();
         activeCfops.clear();
+        activeCsts.clear();
+        activeClassTribs.clear();
         const status = document.getElementById("statusMsg");
         status.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processando ${files.length} arquivos...`;
         const xmlTextList = [];
@@ -2494,6 +2571,14 @@
                   uniqueCfops.add(cfop);
                   activeCfops.add(cfop);
                 }
+                if (cst) {
+                  uniqueCsts.add(cst);
+                  activeCsts.add(cst);
+                }
+                if (cClassTrib) {
+                  uniqueClassTribs.add(cClassTrib);
+                  activeClassTribs.add(cClassTrib);
+                }
               }
             } catch (err) {
               console.error("Erro leitura", err);
@@ -2512,6 +2597,8 @@
         }
         status.innerHTML = `<span style='color:var(--data-green)'>✔</span> ${allItems.length} itens carregados com sucesso.`;
         renderCfopChips();
+        renderCstChips();
+        renderClassTribChips();
         aplicarFiltros();
       }
 
@@ -2519,44 +2606,163 @@
         const section = document.getElementById("cfopFilterSection");
         const area = document.getElementById("cfopChipsArea");
         area.innerHTML = "";
-
         if (uniqueCfops.size === 0) {
           section.style.display = "none";
           return;
         }
-
         section.style.display = "block";
         const sortedCfops = Array.from(uniqueCfops).sort();
 
+        // Determinar quais CFOPs estão disponíveis dada a seleção atual de CST e ClassTrib
+        const availableCfops = new Set();
+        allItems.forEach((item) => {
+          const matchCst = activeCsts.size === 0 || activeCsts.has(item.cst);
+          const matchClass =
+            activeClassTribs.size === 0 ||
+            activeClassTribs.has(item.cClassTrib);
+          if (matchCst && matchClass) availableCfops.add(item.cfop);
+        });
+
         sortedCfops.forEach((cfop) => {
+          const isAvailable = availableCfops.has(cfop);
           const chip = document.createElement("div");
-          chip.className = `cfop-chip ${activeCfops.has(cfop) ? "active" : ""}`;
+          chip.className = `cfop-chip ${activeCfops.has(cfop) ? "active" : ""} ${isAvailable ? "" : "unavailable"}`;
           chip.innerText = cfop;
           chip.onclick = () => toggleCfop(cfop);
           area.appendChild(chip);
         });
       }
 
-      function toggleCfop(cfop) {
-        if (activeCfops.has(cfop)) {
-          activeCfops.delete(cfop);
-        } else {
-          activeCfops.add(cfop);
+      function renderCstChips() {
+        const section = document.getElementById("cstFilterSection");
+        const area = document.getElementById("cstChipsArea");
+        area.innerHTML = "";
+        if (uniqueCsts.size === 0) {
+          section.style.display = "none";
+          return;
         }
-        renderCfopChips();
+        section.style.display = "block";
+        const sortedCsts = Array.from(uniqueCsts).sort();
+
+        const availableCsts = new Set();
+        allItems.forEach((item) => {
+          const matchCfop =
+            activeCfops.size === 0 || activeCfops.has(item.cfop);
+          const matchClass =
+            activeClassTribs.size === 0 ||
+            activeClassTribs.has(item.cClassTrib);
+          if (matchCfop && matchClass) availableCsts.add(item.cst);
+        });
+
+        sortedCsts.forEach((cst) => {
+          const isAvailable = availableCsts.has(cst);
+          const chip = document.createElement("div");
+          chip.className = `cfop-chip ${activeCsts.has(cst) ? "active" : ""} ${isAvailable ? "" : "unavailable"}`;
+          chip.innerText = cst || "N/A";
+          chip.onclick = () => toggleCst(cst);
+          area.appendChild(chip);
+        });
+      }
+
+      function renderClassTribChips() {
+        const section = document.getElementById("classTribFilterSection");
+        const area = document.getElementById("classTribChipsArea");
+        area.innerHTML = "";
+        if (uniqueClassTribs.size === 0) {
+          section.style.display = "none";
+          return;
+        }
+        section.style.display = "block";
+        const sortedClasses = Array.from(uniqueClassTribs).sort();
+
+        const availableClasses = new Set();
+        allItems.forEach((item) => {
+          const matchCfop =
+            activeCfops.size === 0 || activeCfops.has(item.cfop);
+          const matchCst = activeCsts.size === 0 || activeCsts.has(item.cst);
+          if (matchCfop && matchCst) availableClasses.add(item.cClassTrib);
+        });
+
+        sortedClasses.forEach((cls) => {
+          const isAvailable = availableClasses.has(cls);
+          const chip = document.createElement("div");
+          chip.className = `cfop-chip ${activeClassTribs.has(cls) ? "active" : ""} ${isAvailable ? "" : "unavailable"}`;
+          chip.innerText = cls || "N/A";
+          chip.onclick = () => toggleClassTrib(cls);
+          area.appendChild(chip);
+        });
+      }
+
+      function toggleCfop(cfop) {
+        if (activeCfops.has(cfop)) activeCfops.delete(cfop);
+        else activeCfops.add(cfop);
         aplicarFiltros();
+        renderCfopChips();
+        renderCstChips();
+        renderClassTribChips();
+      }
+
+      function toggleCst(cst) {
+        if (activeCsts.has(cst)) activeCsts.delete(cst);
+        else activeCsts.add(cst);
+        aplicarFiltros();
+        renderCfopChips();
+        renderCstChips();
+        renderClassTribChips();
+      }
+
+      function toggleClassTrib(cls) {
+        if (activeClassTribs.has(cls)) activeClassTribs.delete(cls);
+        else activeClassTribs.add(cls);
+        aplicarFiltros();
+        renderCfopChips();
+        renderCstChips();
+        renderClassTribChips();
       }
 
       function selecionarTodosCfops() {
         uniqueCfops.forEach((cfop) => activeCfops.add(cfop));
-        renderCfopChips();
         aplicarFiltros();
+        renderCfopChips();
+        renderCstChips();
+        renderClassTribChips();
       }
 
       function desmarcarTodosCfops() {
         activeCfops.clear();
-        renderCfopChips();
         aplicarFiltros();
+        renderCfopChips();
+        renderCstChips();
+        renderClassTribChips();
+      }
+
+      function selecionarTodosCst() {
+        uniqueCsts.forEach((v) => activeCsts.add(v));
+        aplicarFiltros();
+        renderCfopChips();
+        renderCstChips();
+        renderClassTribChips();
+      }
+      function desmarcarTodosCst() {
+        activeCsts.clear();
+        aplicarFiltros();
+        renderCfopChips();
+        renderCstChips();
+        renderClassTribChips();
+      }
+      function selecionarTodosClassTrib() {
+        uniqueClassTribs.forEach((v) => activeClassTribs.add(v));
+        aplicarFiltros();
+        renderCfopChips();
+        renderCstChips();
+        renderClassTribChips();
+      }
+      function desmarcarTodosClassTrib() {
+        activeClassTribs.clear();
+        aplicarFiltros();
+        renderCfopChips();
+        renderCstChips();
+        renderClassTribChips();
       }
 
       function aplicarFiltros() {
@@ -2583,7 +2789,13 @@
             xProd.includes(fProd) &&
             emit.includes(fEmpresa);
 
-          const matchInteractiveCfop = activeCfops.has(item.cfop);
+          const matchInteractiveCfop =
+            activeCfops.size === 0 || activeCfops.has(item.cfop);
+          const matchInteractiveCst =
+            activeCsts.size === 0 || activeCsts.has(item.cst);
+          const matchInteractiveClass =
+            activeClassTribs.size === 0 ||
+            activeClassTribs.has(item.cClassTrib);
 
           let matchRegime = true;
           if (filterRegime !== "all")
@@ -2591,7 +2803,14 @@
           let matchTags = true;
           if (filterTags === "yes") matchTags = item.hasTags === true;
           if (filterTags === "no") matchTags = item.hasTags === false;
-          return matchText && matchRegime && matchTags && matchInteractiveCfop;
+          return (
+            matchText &&
+            matchRegime &&
+            matchTags &&
+            matchInteractiveCfop &&
+            matchInteractiveCst &&
+            matchInteractiveClass
+          );
         });
 
         atualizarTotais();
@@ -2778,12 +2997,23 @@
         allItems = [];
         filteredItems = [];
         simOriginalItems = [];
+        uniqueCfops.clear();
+        activeCfops.clear();
+        uniqueCsts.clear();
+        activeCsts.clear();
+        uniqueClassTribs.clear();
+        activeClassTribs.clear();
+
         document.getElementById("xmlInput").value = "";
         document.getElementById("filtroNcm").value = "";
         document.getElementById("filtroCfop").value = "";
         document.getElementById("filtroProd").value = "";
         document.getElementById("filtroEmpresa").value = "";
         document.getElementById("totalValorNotas").innerText = "R$ 0,00";
+
+        renderCfopChips();
+        renderCstChips();
+        renderClassTribChips();
 
         if (document.getElementById("aliqCBS2027"))
           document.getElementById("aliqCBS2027").value = "8.8";
