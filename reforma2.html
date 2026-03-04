@@ -774,23 +774,38 @@
         font-size: 11px;
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.2s;
-        border: 1px solid var(--border-subtle);
-        background: var(--bg-input);
-        color: var(--text-tertiary);
-        user-select: none;
-      }
-      .cfop-chip.active {
-        background: var(--badge-purple-bg);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid var(--data-purple);
+        background: transparent;
         color: var(--data-purple);
-        border-color: var(--data-purple);
-        box-shadow: 0 2px 8px rgba(83, 71, 206, 0.15);
+        user-select: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
       }
+      /* ACESOS (Borda Roxa Nítida) */
+      .cfop-chip:not(.unavailable) {
+        border-color: var(--data-purple);
+        color: var(--data-purple);
+        opacity: 1;
+      }
+      /* APAGADOS (Borda Roxa muito suave, sem cinzas/beige) */
       .cfop-chip.unavailable {
-        opacity: 0.35;
-        filter: grayscale(0.8);
-        border-style: dotted;
-        pointer-events: auto; /* Permitir clicar mesmo 'unavailabe' para forçar a seleção se o usuário quiser */
+        background: transparent;
+        border-color: rgba(83, 71, 206, 0.2);
+        color: rgba(83, 71, 206, 0.3);
+        pointer-events: none;
+      }
+      /* SELECIONADO (Sólido) */
+      .cfop-chip.active {
+        background: var(--data-purple) !important;
+        color: #ffffff !important;
+        border-color: var(--data-purple) !important;
+        box-shadow: 0 4px 12px rgba(83, 71, 206, 0.3);
+      }
+      .cfop-chip:hover:not(.unavailable) {
+        background: rgba(83, 71, 206, 0.05);
+        transform: translateY(-2px);
       }
       .cfop-chip.unavailable:hover {
         opacity: 0.6;
@@ -2763,18 +2778,7 @@
         }
         section.style.display = "block";
 
-        // Atualizar título com contador
-        const selectedCount = activeCfops.size;
-        const iconHtml = '<i class="fas fa-tags"></i>';
-        const chevronHtml = '<i class="fas fa-chevron-down toggle-icon"></i>';
-        const badgeHtml = selectedCount
-          ? `<span style="background:var(--data-purple); color:#fff; border-radius:10px; padding:0 6px; font-size:9px; margin-left:4px;">${selectedCount}</span>`
-          : "";
-        titleEl.innerHTML = `${iconHtml} CFOPs Identificados ${badgeHtml} ${chevronHtml}`;
-
         const filters = getFilterState();
-        const sortedCfops = Array.from(uniqueCfops).sort();
-
         const availableCfops = new Set();
         allItems.forEach((item) => {
           if (itemMatchesFilter(item, filters, "cfop")) {
@@ -2782,10 +2786,18 @@
           }
         });
 
+        // Atualizar título com contador (BASEADO NA DISPONIBILIDADE)
+        const availableCount = availableCfops.size;
+        const iconHtml = '<i class="fas fa-tags"></i>';
+        const chevronHtml = '<i class="fas fa-chevron-down toggle-icon"></i>';
+        const badgeHtml = `<span style="background:var(--data-purple); color:#fff; border-radius:12px; min-width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:11px; margin: 0 10px; font-weight:700; box-shadow: 0 2px 6px rgba(83,71,206,0.2);">${availableCount}</span>`;
+        titleEl.innerHTML = `<div>${iconHtml} CFOPs Identificados ${badgeHtml}</div> ${chevronHtml}`;
+
+        const sortedCfops = Array.from(uniqueCfops).sort();
+
         sortedCfops.forEach((cfop) => {
           const isAvailable = availableCfops.has(cfop);
           const isActive = activeCfops.has(cfop);
-          if (!isAvailable && !isActive) return;
 
           const chip = document.createElement("div");
           chip.className = `cfop-chip ${isActive ? "active" : ""} ${isAvailable ? "" : "unavailable"}`;
@@ -2809,17 +2821,7 @@
         }
         section.style.display = "block";
 
-        const selectedCount = activeCsts.size;
-        const iconHtml = '<i class="fas fa-percentage"></i>';
-        const chevronHtml = '<i class="fas fa-chevron-down toggle-icon"></i>';
-        const badgeHtml = selectedCount
-          ? `<span style="background:var(--data-purple); color:#fff; border-radius:10px; padding:0 6px; font-size:9px; margin-left:4px;">${selectedCount}</span>`
-          : "";
-        titleEl.innerHTML = `${iconHtml} CSTs Encontrados ${badgeHtml} ${chevronHtml}`;
-
         const filters = getFilterState();
-        const sortedCsts = Array.from(uniqueCsts).sort();
-
         const availableCsts = new Set();
         allItems.forEach((item) => {
           if (itemMatchesFilter(item, filters, "cst")) {
@@ -2827,10 +2829,17 @@
           }
         });
 
+        const availableCount = availableCsts.size;
+        const iconHtml = '<i class="fas fa-percentage"></i>';
+        const chevronHtml = '<i class="fas fa-chevron-down toggle-icon"></i>';
+        const badgeHtml = `<span style="background:var(--data-purple); color:#fff; border-radius:12px; min-width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:11px; margin: 0 10px; font-weight:700; box-shadow: 0 2px 6px rgba(83,71,206,0.2);">${availableCount}</span>`;
+        titleEl.innerHTML = `<div>${iconHtml} CSTs Encontrados ${badgeHtml}</div> ${chevronHtml}`;
+
+        const sortedCsts = Array.from(uniqueCsts).sort();
+
         sortedCsts.forEach((cst) => {
           const isAvailable = availableCsts.has(cst);
           const isActive = activeCsts.has(cst);
-          if (!isAvailable && !isActive) return;
 
           const chip = document.createElement("div");
           chip.className = `cfop-chip ${isActive ? "active" : ""} ${isAvailable ? "" : "unavailable"}`;
@@ -2854,17 +2863,7 @@
         }
         section.style.display = "block";
 
-        const selectedCount = activeClassTribs.size;
-        const iconHtml = '<i class="fas fa-shield-halved"></i>';
-        const chevronHtml = '<i class="fas fa-chevron-down toggle-icon"></i>';
-        const badgeHtml = selectedCount
-          ? `<span style="background:var(--data-purple); color:#fff; border-radius:10px; padding:0 6px; font-size:9px; margin-left:4px;">${selectedCount}</span>`
-          : "";
-        titleEl.innerHTML = `${iconHtml} Classificações Tributárias ${badgeHtml} ${chevronHtml}`;
-
         const filters = getFilterState();
-        const sortedClasses = Array.from(uniqueClassTribs).sort();
-
         const availableClasses = new Set();
         allItems.forEach((item) => {
           if (itemMatchesFilter(item, filters, "classTrib")) {
@@ -2872,10 +2871,17 @@
           }
         });
 
+        const availableCount = availableClasses.size;
+        const iconHtml = '<i class="fas fa-shield-halved"></i>';
+        const chevronHtml = '<i class="fas fa-chevron-down toggle-icon"></i>';
+        const badgeHtml = `<span style="background:var(--data-purple); color:#fff; border-radius:12px; min-width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font-size:11px; margin: 0 10px; font-weight:700; box-shadow: 0 2px 6px rgba(83,71,206,0.2);">${availableCount}</span>`;
+        titleEl.innerHTML = `<div>${iconHtml} Classificações Tributárias ${badgeHtml}</div> ${chevronHtml}`;
+
+        const sortedClasses = Array.from(uniqueClassTribs).sort();
+
         sortedClasses.forEach((cls) => {
           const isAvailable = availableClasses.has(cls);
           const isActive = activeClassTribs.has(cls);
-          if (!isAvailable && !isActive) return;
 
           const chip = document.createElement("div");
           chip.className = `cfop-chip ${isActive ? "active" : ""} ${isAvailable ? "" : "unavailable"}`;
