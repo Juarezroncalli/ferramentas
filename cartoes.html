@@ -76,6 +76,10 @@
         transition:
           background-color 0.3s,
           color 0.3s;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
       }
 
       /* === Custom Scrollbar === */
@@ -1428,6 +1432,38 @@
         const target = document.getElementById(`${sectionName}-section`);
         if (target) target.classList.remove("hidden");
       }
+
+      // === SECURITY PROTECTION ===
+      document.addEventListener("contextmenu", (event) =>
+        event.preventDefault(),
+      );
+
+      window.addEventListener("keydown", function (e) {
+        // Block F12
+        if (e.keyCode === 123) {
+          e.preventDefault();
+          return false;
+        }
+        // Block Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
+        if (
+          e.ctrlKey &&
+          e.shiftKey &&
+          (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)
+        ) {
+          e.preventDefault();
+          return false;
+        }
+        // Block Ctrl+U (View Source)
+        if (e.ctrlKey && e.keyCode === 85) {
+          e.preventDefault();
+          return false;
+        }
+        // Block Ctrl+S (Save Page)
+        if (e.ctrlKey && e.keyCode === 83) {
+          e.preventDefault();
+          return false;
+        }
+      });
     </script>
   </body>
 </html>
