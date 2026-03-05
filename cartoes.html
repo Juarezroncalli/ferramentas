@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
   <head>
     <script
@@ -11,26 +11,11 @@
         dataLayer.push(arguments);
       }
       gtag("js", new Date());
-
-      // Configurações para proteção de dados e privacidade
-      gtag("config", "G-6XKND47T4H", {
-        anonymize_ip: true,
-        allow_google_signals: false,
-        allow_ad_personalization_signals: false,
-      });
-    </script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-
       gtag("config", "G-6XKND47T4H");
     </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gerador Contábil [BRUTALISM]</title>
+    <title>J.Roncalli - Conciliação de Cartões</title>
     <link rel="icon" href="icone.ico" type="image/x-icon" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link
@@ -40,25 +25,39 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
 
     <style>
       :root {
-        /* --- PALETA VIBRANTE (Mesma do Dashboard) --- */
-        --bg-body: #06b6d4; /* Ciano (Fundo Azul) */
+        --primary: #ea175c;
+        --accent: #ea175c;
+        --sidebar-bg: #18181b;
+        --bg-app: #fcfcfc;
+        --header-bg: #ffffff;
         --card-bg: #ffffff;
-        --border-black: #000000;
+        --text-primary: #18181b;
+        --text-secondary: #71717a;
+        --border-color: #e4e4e7;
+        --footer-text: #94a3b8;
+        --tool-icon-bg: #ffffff;
+        --tool-icon-color: #ea175c;
+        --primary-hover: #c2134d;
+      }
 
-        --color-primary: #8b5cf6; /* Roxo */
-        --color-secondary: #f472b6; /* Rosa */
-        --color-accent: #facc15; /* Amarelo */
-        --color-success: #22c55e; /* Verde */
-        --color-danger: #ef4444; /* Vermelho */
-
-        --shadow-dist: 6px;
-        --border-width: 3px;
+      [data-theme="dark"] {
+        --sidebar-bg: #09090b;
+        --bg-app: #0f111a;
+        --card-bg: #1e2130;
+        --text-primary: #ffffff;
+        --text-secondary: #a0aec0;
+        --border-color: #2d3748;
+        --header-bg: #1e2130;
+        --footer-bg: #1e2130;
+        --footer-text: #718096;
+        --tool-icon-bg: #151725;
+        --tool-icon-color: #ffffff;
       }
 
       * {
@@ -68,202 +67,224 @@
       }
 
       body {
-        font-family: "Space Grotesk", sans-serif;
-        /* FUNDO AZUL QUADRICULADO */
-        background-color: var(--bg-body);
-        background-image: linear-gradient(#fff 2px, transparent 2px),
-          linear-gradient(90deg, #fff 2px, transparent 2px);
-        background-size: 40px 40px;
-        background-position: -2px -2px;
-
-        color: var(--border-black);
+        font-family: "Inter", sans-serif;
+        background-color: var(--bg-app);
+        color: var(--text-primary);
         height: 100vh;
-        overflow: hidden; /* Sidebar fixa */
+        overflow: hidden;
         display: flex;
+        transition:
+          background-color 0.3s,
+          color 0.3s;
       }
 
-      /* --- Layout Sidebar + Content --- */
+      /* === Custom Scrollbar === */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #d4d4d8;
+        border-radius: 4px;
+      }
+
+      /* === SIDEBAR === */
       .sidebar {
         width: 280px;
-        background: var(--color-accent); /* Amarelo */
-        border-right: var(--border-width) solid var(--border-black);
+        background: var(--sidebar-bg);
         display: flex;
         flex-direction: column;
-        padding: 2rem 1.5rem;
+        padding: 1.5rem 1rem;
         flex-shrink: 0;
         overflow-y: auto;
-        box-shadow: 4px 0 0 rgba(0, 0, 0, 0.1);
+        z-index: 10;
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+        transition: background 0.3s;
       }
 
       .logo {
-        font-weight: 900;
-        font-size: 1.5rem;
+        font-family: "Outfit", sans-serif;
+        font-weight: 700;
+        font-size: 1.4rem;
         display: flex;
         align-items: center;
-        gap: 15px;
-        margin-bottom: 3rem;
-        text-transform: uppercase;
+        gap: 12px;
+        margin-bottom: 0.5rem;
+        text-decoration: none;
+        color: #ffffff;
         letter-spacing: -1px;
+        text-transform: uppercase;
       }
 
       .logo i {
-        background: var(--color-primary);
+        background: var(--primary);
         color: #fff;
         padding: 10px;
-        border: var(--border-width) solid var(--border-black);
-        box-shadow: 4px 4px 0 0 black;
-        font-size: 1.2rem;
+        border-radius: 4px;
+        font-size: 1.1rem;
+      }
+
+      .slogan {
+        font-family: "Inter", sans-serif;
+        font-size: 0.75rem;
+        color: #71717a;
+        margin-bottom: 2rem;
+        font-weight: 500;
+        line-height: 1.4;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .nav-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
       }
 
       .nav-item {
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 15px;
-        margin-bottom: 1rem;
-        font-weight: 800;
-        color: #000;
+        padding: 12px 14px;
+        font-weight: 500;
+        color: #a1a1aa;
         cursor: pointer;
-        transition: 0.1s;
-        border: var(--border-width) solid var(--border-black);
-        background: #fff;
-        box-shadow: 4px 4px 0 0 black;
+        transition: all 0.2s ease;
+        border-radius: 4px;
+        font-size: 0.85rem;
         text-transform: uppercase;
-        font-size: 0.9rem;
+        letter-spacing: 0.05em;
+        text-decoration: none;
+      }
+
+      .nav-item:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #ffffff;
       }
 
       .nav-item.active {
-        background-color: var(--color-primary);
-        color: #fff;
-        transform: translate(-2px, -2px);
-        box-shadow: 6px 6px 0 0 black;
+        background-color: var(--primary);
+        color: #ffffff;
       }
 
-      .nav-item:hover:not(.active) {
-        transform: translate(-2px, -2px);
-        box-shadow: 6px 6px 0 0 black;
-      }
-
+      /* === MAIN CONTENT === */
       .main-content {
         flex: 1;
         padding: 2rem;
         overflow-y: auto;
+        position: relative;
+        background: var(--bg-app);
+        transition: background 0.3s;
       }
 
-      /* --- Componentes Neo-Brutalist --- */
-      .neo-header {
+      /* === HEADER === */
+      .header-section {
+        margin-bottom: 2rem;
+        background: var(--header-bg);
+        border: 1px solid var(--border-color);
+        padding: 1.5rem 2rem;
+        border-radius: 4px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 2.5rem;
-        background: #fff;
-        border: var(--border-width) solid var(--border-black);
-        padding: 2rem;
-        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        transition:
+          background 0.3s,
+          border-color 0.3s;
       }
 
-      .header-title h1 {
-        font-weight: 900;
-        font-size: 2.5rem;
-        text-transform: uppercase;
-        margin-bottom: 0.5rem;
-        text-shadow: 2px 2px 0 #ddd;
-      }
-      .header-title span {
-        font-family: "Space Mono", monospace;
-        font-size: 0.9rem;
+      .header-text h1 {
+        font-family: "Outfit", sans-serif;
         font-weight: 700;
-        background: var(--color-secondary);
-        color: #fff;
-        padding: 5px 10px;
-        border: 2px solid #000;
+        font-size: 1.6rem;
+        margin-bottom: 0.3rem;
+        color: var(--text-primary);
+        text-transform: uppercase;
+        letter-spacing: -0.5px;
       }
 
-      /* Inputs Grid */
+      .header-text p {
+        font-family: "Inter", sans-serif;
+        font-weight: 500;
+        color: var(--text-secondary);
+        padding: 4px 12px;
+        background: var(--card-bg);
+        border-radius: 4px;
+        font-size: 0.85rem;
+        border: 1px solid var(--border-color);
+        display: inline-block;
+      }
+
+      /* === CONFIG GRID === */
       .config-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
         gap: 1.5rem;
         margin-bottom: 2rem;
       }
 
       .config-item {
-        background: #fff;
-        border: var(--border-width) solid var(--border-black);
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
         padding: 1.5rem;
-        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
-        position: relative;
-        transition: transform 0.2s;
+        border-radius: 8px;
+        transition: all 0.3s;
       }
-
-      .config-item:hover {
-        transform: translate(-3px, -3px);
-        box-shadow: 8px 8px 0 0 black;
-        z-index: 2;
-      }
-
-      /* Ícones coloridos nos inputs */
-      .config-item:nth-child(1) .icon-box {
-        background: var(--color-secondary);
-        color: #fff;
-      } /* Rosa */
-      .config-item:nth-child(2) .icon-box {
-        background: var(--color-success);
-        color: #000;
-      } /* Verde */
-      .config-item:nth-child(3) .icon-box {
-        background: var(--color-accent);
-        color: #000;
-      } /* Amarelo */
-      .config-item:nth-child(4) .icon-box {
-        background: var(--color-primary);
-        color: #fff;
-      } /* Roxo */
 
       .config-item label {
-        font-weight: 800;
-        font-size: 0.9rem;
-        margin-bottom: 1rem;
         display: flex;
         align-items: center;
         gap: 10px;
-        font-family: "Space Mono", monospace;
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
         text-transform: uppercase;
+        font-family: "Outfit", sans-serif;
       }
 
       .icon-box {
-        width: 35px;
-        height: 35px;
+        width: 32px;
+        height: 32px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 2px solid black;
-        font-size: 1rem;
-        box-shadow: 2px 2px 0 0 black;
+        background: var(--tool-icon-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        color: var(--primary);
+        font-size: 0.9rem;
       }
 
       .neo-input {
         width: 100%;
-        padding: 12px;
-        border: 2px solid var(--border-black);
-        font-family: "Space Mono", monospace;
-        font-size: 1rem;
-        background: #f3f4f6;
+        padding: 10px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        font-family: "Inter", sans-serif;
+        font-size: 0.9rem;
+        background: var(--bg-app);
+        color: var(--text-primary);
         outline: none;
         transition: all 0.2s;
       }
+
       .neo-input:focus {
-        background-color: #fff;
-        box-shadow: 4px 4px 0 0 black;
-        transform: translate(-2px, -2px);
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(234, 23, 92, 0.1);
       }
 
-      /* Upload Area */
+      /* === UPLOAD AREA === */
       .upload-container {
         display: flex;
         gap: 2rem;
         flex-wrap: wrap;
-        margin-bottom: 3rem;
+        margin-bottom: 2rem;
       }
 
       .upload-section {
@@ -271,251 +292,204 @@
         min-width: 300px;
       }
 
-      .actions-section {
-        flex: 1;
-        min-width: 250px;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-      }
-
       .upload-area {
-        background: #fef9c3; /* Amarelo pálido */
-        border: 3px dashed var(--border-black);
+        background: var(--card-bg);
+        border: 2px dashed var(--border-color);
         padding: 3rem;
         text-align: center;
+        border-radius: 8px;
         cursor: pointer;
-        transition: 0.2s;
-        position: relative;
-        overflow: hidden;
+        transition: all 0.2s;
       }
 
       .upload-area:hover {
-        background-color: var(--color-accent);
-        border-style: solid;
-        transform: translate(-4px, -4px);
-        box-shadow: 8px 8px 0 0 black;
+        border-color: var(--primary);
+        background: rgba(234, 23, 92, 0.02);
       }
 
       .upload-icon {
-        font-size: 3.5rem;
+        font-size: 2.5rem;
+        color: var(--primary);
         margin-bottom: 1rem;
-        color: var(--border-black);
       }
 
-      /* Buttons */
+      /* === BUTTONS === */
       .neo-btn {
-        padding: 15px;
-        font-weight: 800;
-        font-size: 1rem;
-        font-family: "Space Grotesk", sans-serif;
-        border: var(--border-width) solid var(--border-black);
-        cursor: pointer;
-        box-shadow: 4px 4px 0 0 black;
-        transition: all 0.1s;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 10px;
+        padding: 12px 20px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
         text-transform: uppercase;
-      }
-
-      .neo-btn:active {
-        box-shadow: 0 0 0 0 black;
-        transform: translate(4px, 4px);
-      }
-
-      .neo-btn:disabled {
-        background-color: #e5e5e5;
-        color: #888;
-        cursor: not-allowed;
-        box-shadow: none;
+        letter-spacing: 0.5px;
+        border: 1px solid var(--border-color);
       }
 
       .btn-primary {
-        background-color: var(--color-success);
-        color: black;
+        background: var(--primary);
+        color: #fff;
+        border: none;
       }
+
+      .btn-primary:hover:not(:disabled) {
+        background: var(--primary-hover);
+        box-shadow: 0 4px 12px rgba(234, 23, 92, 0.3);
+      }
+
       .btn-secondary {
-        background-color: #fff;
-        color: black;
-      }
-      .btn-black {
-        background-color: black;
-        color: white;
+        background: var(--card-bg);
+        color: var(--text-primary);
       }
 
       .btn-secondary:hover {
-        background-color: var(--color-secondary);
+        background: var(--bg-app);
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      .btn-black {
+        background: var(--sidebar-bg);
         color: #fff;
+        border: none;
       }
 
-      /* File Info */
-      .file-info {
-        margin-top: 1rem;
-        background: #fff;
-        border: 2px solid black;
-        padding: 1rem;
-        box-shadow: 4px 4px 0 0 var(--color-primary);
-        display: none;
-      }
-      .file-info.show {
-        display: block;
+      .neo-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
       }
 
-      /* Tabela e Resultados */
+      /* === RESULTS & TABLES === */
       .results-area {
         margin-top: 2rem;
-        background: #fff;
-        border: var(--border-width) solid black;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
         padding: 2rem;
-        box-shadow: var(--shadow-dist) var(--shadow-dist) 0 #000;
+        border-radius: 8px;
       }
 
       .summary-cards {
-        display: flex;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1.5rem;
         margin-bottom: 2rem;
-        flex-wrap: wrap;
       }
 
       .summary-card {
-        flex: 1;
-        min-width: 200px;
-        background: black;
-        color: white;
+        background: var(--bg-app);
+        border: 1px solid var(--border-color);
         padding: 1.5rem;
-        border: var(--border-width) solid black;
-        box-shadow: 6px 6px 0 0 rgba(0, 0, 0, 0.3);
-      }
-
-      .summary-card.negative {
-        background: var(--color-danger);
-        color: #fff;
-      }
-
-      .summary-card.liquid {
-        background: #fff;
-        color: black;
-        box-shadow: 6px 6px 0 0 var(--color-success);
+        border-radius: 8px;
       }
 
       .summary-label {
-        font-family: "Space Mono", monospace;
-        font-size: 0.8rem;
-        text-transform: uppercase;
         display: block;
-        margin-bottom: 5px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        margin-bottom: 8px;
       }
+
       .summary-value {
-        font-size: 1.8rem;
-        font-weight: 800;
+        font-size: 1.5rem;
+        font-weight: 700;
+        font-family: "Outfit", sans-serif;
       }
 
       table {
         width: 100%;
         border-collapse: collapse;
-        border: var(--border-width) solid black;
-        background: white;
         margin-top: 1rem;
       }
 
       th {
-        background: black;
-        color: #fff;
-        border: 1px solid black;
-        padding: 1rem;
-        text-align: left;
-        font-family: "Space Mono", monospace;
+        background: var(--bg-app);
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+        font-weight: 700;
         text-transform: uppercase;
+        padding: 12px 16px;
+        text-align: left;
+        border-bottom: 2px solid var(--border-color);
       }
 
       td {
-        padding: 1rem;
-        border: 1px solid black;
-        font-family: "Space Mono", monospace;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.9rem;
+        color: var(--text-primary);
       }
 
-      tr:nth-child(even) td {
-        background-color: #f3f4f6;
+      tr:hover td {
+        background: rgba(234, 23, 92, 0.02);
       }
 
-      /* Modal */
+      /* === MODAL === */
       .modal-overlay {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(139, 92, 246, 0.8); /* Roxo translúcido */
-        backdrop-filter: blur(5px);
-        z-index: 999;
-        display: flex;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+        display: none;
         align-items: center;
         justify-content: center;
-        opacity: 0;
-        pointer-events: none;
-        transition: 0.3s;
       }
+
       .modal-overlay.show {
-        opacity: 1;
-        pointer-events: all;
+        display: flex;
       }
 
       .modal-content {
-        background: white;
-        width: 600px;
-        max-width: 90%;
-        border: 4px solid black;
-        box-shadow: 12px 12px 0 0 black;
-        padding: 2.5rem;
+        background: var(--card-bg);
+        width: 100%;
+        max-width: 600px;
+        padding: 2rem;
+        border-radius: 12px;
         position: relative;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
       }
 
       .modal-close {
         position: absolute;
         top: 1rem;
         right: 1rem;
-        background: var(--color-danger);
-        color: #fff;
-        border: 2px solid black;
-        width: 35px;
-        height: 35px;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--text-secondary);
         cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        box-shadow: 2px 2px 0 0 black;
-      }
-      .modal-close:hover {
-        transform: translate(-1px, -1px);
-        box-shadow: 3px 3px 0 0 black;
       }
 
+      /* === UTILS === */
       .hidden {
         display: none !important;
       }
 
       .loading-spinner {
-        border: 5px solid rgba(0, 0, 0, 0.1);
-        border-left: 5px solid var(--color-primary);
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(234, 23, 92, 0.1);
+        border-top-color: var(--primary);
         border-radius: 50%;
-        width: 50px;
-        height: 50px;
         animation: spin 1s linear infinite;
         margin: 2rem auto;
       }
+
       @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
+        to {
           transform: rotate(360deg);
         }
       }
 
-      /* Responsividade */
       @media (max-width: 768px) {
         body {
           flex-direction: column;
@@ -524,44 +498,27 @@
         .sidebar {
           width: 100%;
           height: auto;
-          border-right: none;
-          border-bottom: 3px solid black;
-          flex-direction: row;
-          align-items: center;
-          overflow-x: auto;
+        }
+        .main-content {
           padding: 1rem;
-        }
-        .logo {
-          margin-bottom: 0;
-          margin-right: 2rem;
-        }
-        .nav-item {
-          margin-bottom: 0;
-          white-space: nowrap;
-        }
-        .neo-header {
-          flex-direction: column;
-          gap: 1rem;
-          text-align: center;
-        }
-        .config-grid {
-          grid-template-columns: 1fr;
-        }
-        .upload-container {
-          flex-direction: column;
         }
       }
     </style>
   </head>
   <body>
     <aside class="sidebar">
-      <div class="logo">
-        <i class="fas fa-wallet"></i>
-        <span>ContabilApp</span>
-      </div>
-      <nav>
+      <a href="index.html" class="logo">
+        <i class="fas fa-robot"></i>
+        J.Roncalli
+      </a>
+      <div class="slogan">Ferramentas inteligentes v2.0</div>
+
+      <nav class="nav-group">
+        <a href="index.html" class="nav-item">
+          <i class="fas fa-home"></i> Home
+        </a>
         <div class="nav-item active">
-          <i class="fas fa-file-invoice-dollar"></i> Gerador
+          <i class="fas fa-credit-card"></i> Gerador
         </div>
         <div
           class="nav-item"
@@ -573,15 +530,58 @@
     </aside>
 
     <main class="main-content">
-      <div class="neo-header">
-        <div class="header-title">
-          <h1>Conciliação de Cartões</h1>
-          <span>Consolidação diária de lançamentos</span>
+      <section class="header-section">
+        <div class="header-text">
+          <h1>Conciliação de Cartões 👋</h1>
+          <p>Consolidação diária de lançamentos para importação contábil.</p>
         </div>
-        <button class="neo-btn btn-black" id="info-btn">
-          <i class="fas fa-info"></i> COMO USAR
+
+        <button
+          id="info-btn"
+          style="
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: auto;
+          "
+        >
+          <i class="fas fa-question-circle"></i>
         </button>
-      </div>
+
+        <button
+          id="theme-toggle"
+          style="
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          "
+        >
+          <i class="fas fa-moon"></i>
+        </button>
+
+        <div
+          class="header-icon"
+          style="font-size: 2.5rem; color: var(--primary)"
+        >
+          <i class="fas fa-credit-card"></i>
+        </div>
+      </section>
 
       <div class="config-grid">
         <div class="config-item">
@@ -643,11 +643,22 @@
             <div class="upload-icon">
               <i class="fas fa-cloud-upload-alt"></i>
             </div>
-            <h3 style="font-weight: 800; text-transform: uppercase">
+            <h3
+              style="
+                font-weight: 700;
+                text-transform: uppercase;
+                font-size: 1rem;
+                color: var(--text-primary);
+              "
+            >
               Arraste sua planilha aqui
             </h3>
             <p
-              style="color: #000; font-family: 'Space Mono'; margin-top: 0.5rem"
+              style="
+                color: var(--text-secondary);
+                font-size: 0.85rem;
+                margin-top: 0.5rem;
+              "
             >
               ou clique para buscar arquivos .xlsx
             </p>
@@ -669,7 +680,7 @@
               style="
                 margin-top: 0.5rem;
                 padding-left: 1.2rem;
-                font-family: 'Space Mono';
+                font-family: &quot;Space Mono&quot;;
               "
             ></ul>
           </div>
@@ -727,20 +738,30 @@
             <div
               class="summary-value"
               id="total-vendas-valor"
-              style="color: var(--color-success)"
+              style="color: var(--primary)"
             >
               R$ 0,00
             </div>
           </div>
-          <div class="summary-card negative">
-            <span class="summary-label" style="color: #fff">Total Tarifas</span>
-            <div class="summary-value" id="total-tarifas-valor">R$ 0,00</div>
-          </div>
-          <div class="summary-card liquid">
-            <span class="summary-label" style="color: #000"
-              >Líquido Estimado</span
+          <div class="summary-card">
+            <span class="summary-label">Total Tarifas</span>
+            <div
+              class="summary-value"
+              id="total-tarifas-valor"
+              style="color: #ef4444"
             >
-            <div class="summary-value" id="total-liquido-calc">R$ 0,00</div>
+              R$ 0,00
+            </div>
+          </div>
+          <div class="summary-card">
+            <span class="summary-label">Líquido Estimado</span>
+            <div
+              class="summary-value"
+              id="total-liquido-calc"
+              style="color: #22c55e"
+            >
+              R$ 0,00
+            </div>
           </div>
         </div>
 
@@ -776,7 +797,9 @@
           style="
             margin-bottom: 1.5rem;
             text-transform: uppercase;
-            font-weight: 900;
+            font-family: &quot;Outfit&quot;, sans-serif;
+            font-weight: 700;
+            color: var(--text-primary);
           "
         >
           Como usar o Gerador
@@ -784,38 +807,39 @@
 
         <div
           style="
-            background: var(--color-accent);
+            background: var(--bg-app);
             padding: 1rem;
-            border: 2px solid black;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             margin-bottom: 1rem;
-            box-shadow: 4px 4px 0 #000;
           "
         >
-          <strong>PASSO 1:</strong> Preencha as contas contábeis no topo.
+          <strong style="color: var(--primary)">PASSO 1:</strong> Preencha as
+          contas contábeis no topo.
         </div>
         <div
           style="
-            background: var(--color-secondary);
-            color: #fff;
+            background: var(--bg-app);
             padding: 1rem;
-            border: 2px solid black;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             margin-bottom: 1rem;
-            box-shadow: 4px 4px 0 #000;
           "
         >
-          <strong>PASSO 2:</strong> Use o botão "Baixar Modelo" se não souber o
-          formato da planilha. As colunas DATA e VALOR BRUTO são obrigatórias.
+          <strong style="color: var(--primary)">PASSO 2:</strong> Use o botão
+          "Baixar Modelo" se não souber o formato da planilha. As colunas DATA e
+          VALOR BRUTO são obrigatórias.
         </div>
         <div
           style="
-            background: var(--color-success);
+            background: var(--bg-app);
             padding: 1rem;
-            border: 2px solid black;
-            box-shadow: 4px 4px 0 #000;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
           "
         >
-          <strong>PASSO 3:</strong> Arraste o arquivo, clique em Processar e
-          depois baixe o TXT.
+          <strong style="color: var(--primary)">PASSO 3:</strong> Arraste o
+          arquivo, clique em Processar e depois baixe o TXT.
         </div>
       </div>
     </div>
@@ -836,9 +860,52 @@
       const previewTableBody = document.querySelector("#preview-table tbody");
       const generateBtn = document.getElementById("generate-btn");
       const generateModelBtn = document.getElementById("generate-model-btn");
-      const infoBtn = document.getElementById("info-btn");
-      const infoModal = document.getElementById("info-modal");
       const closeModalBtn = document.getElementById("close-modal-btn");
+      const infoModal = document.getElementById("info-modal");
+      const infoBtn = document.getElementById("info-btn");
+
+      if (infoBtn) {
+        infoBtn.addEventListener("click", () =>
+          infoModal.classList.add("show"),
+        );
+      }
+
+      if (closeModalBtn) {
+        closeModalBtn.addEventListener("click", () =>
+          infoModal.classList.remove("show"),
+        );
+      }
+
+      window.addEventListener("click", (e) => {
+        if (e.target === infoModal) infoModal.classList.remove("show");
+      });
+
+      // === THEME TOGGLE LOGIC ===
+      const themeToggle = document.getElementById("theme-toggle");
+      const html = document.documentElement;
+
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      html.setAttribute("data-theme", savedTheme);
+      updateThemeIcon(savedTheme);
+
+      themeToggle.addEventListener("click", () => {
+        const currentTheme = html.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+        html.setAttribute("data-theme", newTheme);
+        localStorage.setItem("theme", newTheme);
+        updateThemeIcon(newTheme);
+      });
+
+      function updateThemeIcon(theme) {
+        const icon = themeToggle.querySelector("i");
+        if (theme === "dark") {
+          icon.className = "fas fa-sun";
+          themeToggle.title = "Mudar para Modo Claro";
+        } else {
+          icon.className = "fas fa-moon";
+          themeToggle.title = "Mudar para Modo Escuro";
+        }
+      }
 
       let processedData = [];
       let selectedFiles = [];
@@ -850,21 +917,21 @@
             e.preventDefault();
             e.stopPropagation();
           },
-          false
+          false,
         );
       });
       uploadArea.addEventListener("drop", (e) =>
-        handleFileSelect(e.dataTransfer.files)
+        handleFileSelect(e.dataTransfer.files),
       );
       fileInput.addEventListener("change", (e) =>
-        handleFileSelect(e.target.files)
+        handleFileSelect(e.target.files),
       );
       processBtn.addEventListener("click", processFiles);
       generateBtn.addEventListener("click", generateAndDownload);
       generateModelBtn.addEventListener("click", generateModelSheet);
       infoBtn.addEventListener("click", () => infoModal.classList.add("show"));
       closeModalBtn.addEventListener("click", () =>
-        infoModal.classList.remove("show")
+        infoModal.classList.remove("show"),
       );
       infoModal.addEventListener("click", (e) => {
         if (e.target === infoModal) {
@@ -908,7 +975,7 @@
         ];
         if (requiredInputs.some((input) => !input.value.trim())) {
           alert(
-            "⚠️ Por favor, preencha os campos de contas (Clientes, Cartão e Tarifas)."
+            "⚠️ Por favor, preencha os campos de contas (Clientes, Cartão e Tarifas).",
           );
           return;
         }
@@ -954,11 +1021,11 @@
           const valorBrutoStr = data.valorBruto.toFixed(2).replace(".", ",");
           const valorTaxaStr = data.valorTaxa.toFixed(2).replace(".", ",");
           txtContent.push(
-            `${data.data};${contaCartao};${contaClientes};${valorBrutoStr};;${historicoVenda};;;;`
+            `${data.data};${contaCartao};${contaClientes};${valorBrutoStr};;${historicoVenda};;;;`,
           );
           if (Math.abs(data.valorTaxa) > 0.005) {
             txtContent.push(
-              `${data.data};${contaTarifas};${contaCartao};${valorTaxaStr};;${historicoTaxa};;;;`
+              `${data.data};${contaTarifas};${contaCartao};${valorTaxaStr};;${historicoTaxa};;;;`,
             );
           }
         });
@@ -970,7 +1037,7 @@
         link.href = URL.createObjectURL(blob);
         const today = new Date();
         const dateStr = `${today.getFullYear()}${String(
-          today.getMonth() + 1
+          today.getMonth() + 1,
         ).padStart(2, "0")}${String(today.getDate()).padStart(2, "0")}`;
         const fileNameBandeira = bandeira
           ? bandeira.replace(/\s+/g, "_")
@@ -1004,8 +1071,8 @@
                 if (!colMap.data || !colMap.bruto) {
                   return reject(
                     new Error(
-                      `No arquivo "${file.name}", colunas "DATA" e "VALOR BRUTO" não encontradas.`
-                    )
+                      `No arquivo "${file.name}", colunas "DATA" e "VALOR BRUTO" não encontradas.`,
+                    ),
                   );
                 }
                 const fileData = [];
@@ -1042,7 +1109,7 @@
                 resolve(fileData);
               } catch (error) {
                 reject(
-                  new Error(`Erro ao ler "${file.name}": ${error.message}`)
+                  new Error(`Erro ao ler "${file.name}": ${error.message}`),
                 );
               }
             };
@@ -1078,7 +1145,7 @@
             .split("/")
             .reverse()
             .join("-")
-            .localeCompare(b.data.split("/").reverse().join("-"))
+            .localeCompare(b.data.split("/").reverse().join("-")),
         );
       }
 
@@ -1100,11 +1167,11 @@
 
         const totalVendas = processedData.reduce(
           (sum, item) => sum + item.valorBruto,
-          0
+          0,
         );
         const totalTarifas = processedData.reduce(
           (sum, item) => sum + item.valorTaxa,
-          0
+          0,
         );
         const totalLiquido = totalVendas - totalTarifas;
 
@@ -1127,7 +1194,7 @@
                 <td>${formatBRL(data.valorBruto)}</td>
                 <td>${formatBRL(data.valorLiquido)}</td>
                 <td style="color: #FF5252; font-weight:bold;">${formatBRL(
-                  data.valorTaxa
+                  data.valorTaxa,
                 )}</td>
                 <td ${estiloTaxaPercentual}>${taxaPercentualStr}</td>
             `;
@@ -1192,7 +1259,7 @@
             if (day && month && year) {
               return `${String(day).padStart(2, "0")}/${String(month).padStart(
                 2,
-                "0"
+                "0",
               )}/${year}`;
             }
           }
