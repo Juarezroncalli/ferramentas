@@ -527,6 +527,27 @@
           <i class="fas fa-question-circle"></i> Ajuda
         </div>
       </nav>
+
+      <div
+        style="
+          margin-top: auto;
+          padding-top: 2rem;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+        "
+      >
+        <button
+          class="nav-item"
+          id="generate-model-btn"
+          style="
+            width: 100%;
+            background: rgba(234, 23, 92, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(234, 23, 92, 0.3);
+          "
+        >
+          <i class="fas fa-file-excel"></i> BAIXAR MODELO
+        </button>
+      </div>
     </aside>
 
     <main class="main-content">
@@ -686,18 +707,21 @@
           </div>
         </div>
 
-        <div class="actions-section">
-          <button class="neo-btn btn-secondary" id="generate-model-btn">
-            <i class="fas fa-file-excel"></i> BAIXAR MODELO
-          </button>
-
+        <div
+          class="actions-section"
+          style="display: flex; flex-direction: column"
+        >
           <button
             class="neo-btn btn-primary"
             id="process-btn"
             disabled
-            style="height: 100%"
+            style="flex: 1; min-height: 100px"
           >
-            <i class="fas fa-cogs"></i> PROCESSAR DADOS
+            <i
+              class="fas fa-cogs"
+              style="font-size: 1.5rem; margin-bottom: 10px"
+            ></i>
+            <span>PROCESSAR DADOS</span>
           </button>
         </div>
       </section>
