@@ -448,6 +448,94 @@
         display: flex;
       }
 
+      /* === CUSTOM ALERT === */
+      .alert-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(8px);
+        z-index: 2000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .alert-overlay.show {
+        display: flex;
+        opacity: 1;
+      }
+
+      .alert-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        padding: 2.5rem;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 420px;
+        text-align: center;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        transform: scale(0.9);
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      .alert-overlay.show .alert-card {
+        transform: scale(1);
+      }
+
+      .alert-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(234, 23, 92, 0.1);
+        color: var(--primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin: 0 auto 1.5rem;
+      }
+
+      .alert-title {
+        font-family: "Outfit", sans-serif;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.75rem;
+        text-transform: uppercase;
+      }
+
+      .alert-message {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 2rem;
+      }
+
+      .alert-btn {
+        width: 100%;
+        padding: 12px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .alert-btn:hover {
+        background: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(234, 23, 92, 0.3);
+      }
+
       .modal-content {
         background: var(--card-bg);
         width: 100%;
@@ -814,6 +902,19 @@
       </section>
     </main>
 
+    <div class="alert-overlay" id="custom-alert">
+      <div class="alert-card">
+        <div class="alert-icon">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="alert-title" id="alert-title">Atenção</div>
+        <div class="alert-message" id="alert-message">
+          Por favor, preencha todos os campos obrigatórios.
+        </div>
+        <button class="alert-btn" id="alert-close-btn">ENTENDI</button>
+      </div>
+    </div>
+
     <div class="modal-overlay" id="info-modal">
       <div class="modal-content">
         <button class="modal-close" id="close-modal-btn">&times;</button>
@@ -887,6 +988,22 @@
       const closeModalBtn = document.getElementById("close-modal-btn");
       const infoModal = document.getElementById("info-modal");
       const infoBtn = document.getElementById("info-btn");
+      const customAlert = document.getElementById("custom-alert");
+      const alertTitle = document.getElementById("alert-title");
+      const alertMessage = document.getElementById("alert-message");
+      const alertCloseBtn = document.getElementById("alert-close-btn");
+
+      function showAlert(message, title = "Atenção") {
+        alertTitle.textContent = title;
+        alertMessage.textContent = message;
+        customAlert.classList.add("show");
+      }
+
+      if (alertCloseBtn) {
+        alertCloseBtn.addEventListener("click", () => {
+          customAlert.classList.remove("show");
+        });
+      }
 
       if (infoBtn) {
         infoBtn.addEventListener("click", () =>
@@ -902,6 +1019,7 @@
 
       window.addEventListener("click", (e) => {
         if (e.target === infoModal) infoModal.classList.remove("show");
+        if (e.target === customAlert) customAlert.classList.remove("show");
       });
 
       // === THEME TOGGLE LOGIC ===
@@ -998,13 +1116,14 @@
           contaTarifasInput,
         ];
         if (requiredInputs.some((input) => !input.value.trim())) {
-          alert(
-            "⚠️ Por favor, preencha os campos de contas (Clientes, Cartão e Tarifas).",
+          showAlert(
+            "Por favor, preencha os campos de contas (Clientes, Cartão e Tarifas).",
+            "DADOS INCOMPLETOS",
           );
           return;
         }
         if (selectedFiles.length === 0) {
-          alert("⚠️ Selecione pelo menos um arquivo Excel.");
+          showAlert("Selecione pelo menos um arquivo Excel.", "NENHUM ARQUIVO");
           return;
         }
         showSection("loading");
@@ -1015,14 +1134,17 @@
           displayPreview();
           showSection("preview");
         } catch (error) {
-          alert(`Ocorreu um erro: ${error.message}`);
+          showAlert(
+            `Ocorreu um erro: ${error.message}`,
+            "ERRO NO PROCESSAMENTO",
+          );
           showSection("upload");
         }
       }
 
       function generateAndDownload() {
         if (processedData.length === 0) {
-          alert("Não há dados para gerar o arquivo.");
+          showAlert("Não há dados para gerar o arquivo.", "SEM DADOS");
           return;
         }
         const contaCartao = contaCartaoInput.value.trim();
